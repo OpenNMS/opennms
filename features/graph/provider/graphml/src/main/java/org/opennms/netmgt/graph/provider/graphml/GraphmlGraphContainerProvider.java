@@ -175,7 +175,6 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
             graphBuilder.focus().all().apply();
         } else if ("first".equalsIgnoreCase(strategy)) {
             graphBuilder.focus().first().apply();
-            graphBuilder.focus().empty().apply();
         } else if ("specific".equalsIgnoreCase(strategy) || "selection".equalsIgnoreCase(strategy)) {
             final List<String> focusIds = getFocusIds(graphMLGraph);
             graphBuilder.focus().selection(graphBuilder.getNamespace(), focusIds).apply();

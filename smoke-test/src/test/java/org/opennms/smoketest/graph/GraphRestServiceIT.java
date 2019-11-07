@@ -35,10 +35,13 @@ import static io.restassured.RestAssured.preemptive;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
+import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.RestClient;
 
@@ -50,6 +53,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     private static final String CONTAINER_ID = "test";
 
     private final RestClient restClient = stack.opennms().getRestClient();
+    private GraphmlDocument graphmlDocument;
 
     @Before
     public void setUp() {
@@ -59,13 +63,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
 
         // Ensure no graph exists
-        deleteGraphMLIfExists();
+        graphmlDocument = new GraphmlDocument(CONTAINER_ID, "/topology/graphml/test-topology.xml");
+        graphmlDocument.delete(restClient);
     }
 
     @After
     public void tearDown() {
         RestAssured.reset();
-        deleteGraphMLIfExists();
+        graphmlDocument.delete(restClient);
     }
 
     @Test
@@ -77,79 +82,98 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().then().statusCode(204);
 
         // Post a Graph
-        createGraphML();
+        createGraphMLAndWaitUntilDone(graphmlDocument);
 
         // Verify creation if asked explicitly for JSON
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
-            given().accept(ContentType.JSON).get()
-                    .then().statusCode(200)
-                    .contentType(ContentType.JSON)
-                    .content("[0].id", Matchers.is("application"))
-                    .content("[0].label", Matchers.is("Application Graph"))
-                    .content("[0].graphs.size()", Matchers.is(1))
-                    .content("[0].graphs[0].namespace", Matchers.is("application"))
-                    .content("[0].graphs[0].label", Matchers.is("Application Graph"))
-                    .content("[0].graphs[0].description", Matchers.is("This Topology Provider displays all defined Applications and their calculated states."))
+        given().accept(ContentType.JSON).get()
+                .then().statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("[0].id", Matchers.is("application"))
+                .content("[0].label", Matchers.is("Application Graph"))
+                .content("[0].graphs.size()", Matchers.is(1))
+                .content("[0].graphs[0].namespace", Matchers.is("application"))
+                .content("[0].graphs[0].label", Matchers.is("Application Graph"))
+                .content("[0].graphs[0].description", Matchers.is("This Topology Provider displays all defined Applications and their calculated states."))
 
-                    .content("[1].id", Matchers.is("bsm"))
-                    .content("[1].label", Matchers.is("Business Service Graph"))
-                    .content("[1].graphs.size()", Matchers.is(1))
-                    .content("[1].graphs[0].namespace", Matchers.is("bsm"))
-                    .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
-                    .content("[1].graphs[0].description", Matchers.is("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."))
+                .content("[1].id", Matchers.is("bsm"))
+                .content("[1].label", Matchers.is("Business Service Graph"))
+                .content("[1].graphs.size()", Matchers.is(1))
+                .content("[1].graphs[0].namespace", Matchers.is("bsm"))
+                .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
+                .content("[1].graphs[0].description", Matchers.is("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."))
 
-                    .content("[2].id", Matchers.is("nodes"))
-                    .content("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                    .content("[2].graphs.size()", Matchers.is(1))
-                    .content("[2].graphs[0].namespace", Matchers.is("nodes"))
-                    .content("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                    .content("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
+                .content("[2].id", Matchers.is("nodes"))
+                .content("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .content("[2].graphs.size()", Matchers.is(1))
+                .content("[2].graphs[0].namespace", Matchers.is("nodes"))
+                .content("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .content("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
 
-                    .content("[3].id", Matchers.is(CONTAINER_ID))
-                    .content("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                    .content("[3].graphs.size()", Matchers.is(2))
-                    .content("[3].graphs[0].namespace", Matchers.is("acme:markets"))
-                    .content("[3].graphs[0].label", Matchers.is("Markets"))
-                    .content("[3].graphs[0].description", Matchers.is("The Markets Layer"))
-                    .content("[3].graphs[1].namespace", Matchers.is("acme:regions"))
+                .content("[3].id", Matchers.is(CONTAINER_ID))
+                .content("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                .content("[3].graphs.size()", Matchers.is(2))
+                .content("[3].graphs[0].namespace", Matchers.is("acme:markets"))
+                .content("[3].graphs[0].label", Matchers.is("Markets"))
+                .content("[3].graphs[0].description", Matchers.is("The Markets Layer"))
+                .content("[3].graphs[1].namespace", Matchers.is("acme:regions"))
 
-                    .content("[4].id", Matchers.is("vmware"))
-                    .content("[4].label", Matchers.is("VMware Topology Provider"))
-                    .content("[4].graphs.size()", Matchers.is(1))
-                    .content("[4].graphs[0].namespace", Matchers.is("vmware"))
-                    .content("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
-                    .content("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
-                    ;
-        });
+                .content("[4].id", Matchers.is("vmware"))
+                .content("[4].label", Matchers.is("VMware Topology Provider"))
+                .content("[4].graphs.size()", Matchers.is(1))
+                .content("[4].graphs[0].namespace", Matchers.is("vmware"))
+                .content("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
+                .content("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
+                ;
     }
 
     @Test
     public void verifyGetContainer() {
-        createGraphML();
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
-            given().get(CONTAINER_ID).then()
-                    .contentType(ContentType.JSON)
-                    .content("graphs", Matchers.hasSize(2))
-                    .content("graphs[0].id", Matchers.is("markets"))
-                    .content("graphs[0].namespace", Matchers.is("acme:markets"))
-                    .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
-                    .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
-                    .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
-                    .content("graphs[0].vertices", Matchers.hasSize(16))
-                    .content("graphs[0].edges", Matchers.hasSize(0))
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+        given().get(CONTAINER_ID).then()
+                .contentType(ContentType.JSON)
+                .content("graphs", Matchers.hasSize(2))
+                .content("graphs[0].id", Matchers.is("markets"))
+                .content("graphs[0].namespace", Matchers.is("acme:markets"))
+                .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
+                .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
+                .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .content("graphs[0].vertices", Matchers.hasSize(16))
+                .content("graphs[0].edges", Matchers.hasSize(0))
 
-                    .content("graphs[1].id", Matchers.is("regions"))
-                    .content("graphs[1].namespace", Matchers.is("acme:regions"))
-                    .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
-                    .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
-                    .content("graphs[1].vertices", Matchers.hasSize(4))
-                    .content("graphs[1].edges", Matchers.hasSize(16));
-        });
+                .content("graphs[1].id", Matchers.is("regions"))
+                .content("graphs[1].namespace", Matchers.is("acme:regions"))
+                .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
+                .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
+                .content("graphs[1].vertices", Matchers.hasSize(4))
+                .content("graphs[1].edges", Matchers.hasSize(16));
+    }
+
+    @Test
+    public void verifyGetGraph() {
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+        given().get(CONTAINER_ID + "/{namespace}", "acme:markets")
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("markets"))
+                .content("defaultFocus.type", Matchers.is("SELECTION"))
+                .content("defaultFocus.vertexIds.size()", Matchers.is(1))
+                .content("defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .content("vertices", Matchers.hasSize(16))
+                .content("edges", Matchers.hasSize(0));
+        given().get(CONTAINER_ID + "/{namespace}", "acme:regions")
+                .then()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("regions"))
+                .content("namespace", Matchers.is("acme:regions"))
+                .content("defaultFocus.type", Matchers.is("ALL"))
+                .content("defaultFocus.vertexIds.size()", Matchers.is(4))
+                .content("vertices", Matchers.hasSize(4))
+                .content("edges", Matchers.hasSize(16));
     }
 
     @Test
     public void verifySuggest() {
-    	createGraphMLAndWaitUntilDone();
+    	createGraphMLAndWaitUntilDone(graphmlDocument);
         given().log().ifValidationFails()
                .params("s", "unknown")
                .accept(ContentType.JSON)
@@ -172,7 +196,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifySearch() {
-    	createGraphMLAndWaitUntilDone();
+    	createGraphMLAndWaitUntilDone(graphmlDocument);
         given().log().ifValidationFails()
                .params("providerId", "LabelSearchProvider")
                .params("criteria", "unknown")
@@ -197,8 +221,75 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .content("", Matchers.hasSize(1));
     }
 
-    private void createGraphMLAndWaitUntilDone() {
-    	createGraphML();
+    @Test
+    public void verifyDefaultFocus() {
+        // Use a different graph and create it
+        graphmlDocument = new GraphmlDocument(CONTAINER_ID, "/topology/graphml/test-topology-2.xml");
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+
+        // Verify default focus
+        given().log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .body("{}")
+                .post(CONTAINER_ID + "/{namespace}", "test")
+                .then()
+                .log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("focus.semanticZoomLevel", Matchers.is(1))
+                .content("focus.vertices", Matchers.hasSize(1))
+                .content("vertices", Matchers.hasSize(2))
+                .content("edges", Matchers.hasSize(1))
+                .content("vertices[0].id", Matchers.is("v1.1"))
+                .content("vertices[1].id", Matchers.is("v1.1.2"));
+    }
+
+    @Test
+    public void verifyCustomFocus() {
+        // Use a different graph and create it
+        graphmlDocument = new GraphmlDocument(CONTAINER_ID, "/topology/graphml/test-topology-2.xml");
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+
+        // Verify custom focus
+        final JSONObject query = new JSONObject()
+                .put("semanticZoomLevel", 1)
+                .put("verticesInFocus", new JSONArray().put("v1.1.1"));
+        given().log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .body(query.toString())
+                .post(CONTAINER_ID + "/{namespace}", "test")
+                .then()
+                .log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("vertices", Matchers.hasSize(2))
+                .content("edges", Matchers.hasSize(1))
+                .content("vertices[0].id", Matchers.is("v1.1"))
+                .content("vertices[1].id", Matchers.is("v1.1.1"));
+
+        //  Increase SZL
+        query.put("semanticZoomLevel", 2);
+        given().log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .body(query.toString())
+                .post(CONTAINER_ID + "/{namespace}", "test")
+                .then()
+                .log().ifValidationFails()
+                .contentType(ContentType.JSON)
+                .content("id", Matchers.is("test"))
+                .content("namespace", Matchers.is("test"))
+                .content("vertices", Matchers.hasSize(4))
+                .content("edges", Matchers.hasSize(3))
+                .content("vertices[0].id", Matchers.is("v1"))
+                .content("vertices[1].id", Matchers.is("v1.1"))
+                .content("vertices[2].id", Matchers.is("v1.1.1"))
+                .content("vertices[3].id", Matchers.is("v1.1.2"));
+    }
+
+    private void createGraphMLAndWaitUntilDone(GraphmlDocument graphmlDocument) {
+        graphmlDocument.create(restClient);
     	await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
             given().accept(ContentType.JSON).get()
                     .then().statusCode(200)
@@ -210,17 +301,4 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .content("[4].id", Matchers.is("vmware"));
         });
     }
-
-    private void createGraphML() {
-        if (restClient.getGraphML(CONTAINER_ID).getStatus() == 404) {
-            restClient.sendGraphML(CONTAINER_ID, getClass().getResourceAsStream("/topology/graphml/test-topology.xml"));
-        }
-    }
-
-    private void deleteGraphMLIfExists() {
-        if (restClient.getGraphML(CONTAINER_ID).getStatus() != 404) {
-            restClient.deleteGraphML(CONTAINER_ID);
-        }
-    }
-
 }

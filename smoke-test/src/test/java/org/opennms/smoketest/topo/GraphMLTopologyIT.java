@@ -50,6 +50,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT;
+import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.utils.RestClient;
 
 import com.google.common.collect.Lists;
@@ -65,6 +66,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     private final String URL = getBaseUrlExternal() + "opennms/rest/graphml/test-graph";
 
     public static final String LABEL = "GraphML Topology Provider (test-graph)";
+
+    private final GraphmlDocument graphmlDocument = new GraphmlDocument("test-topology.xml", "/topology/graphml/test-topology.xml");
 
     private TopologyIT.TopologyUIPage topologyUIPage;
 
@@ -325,17 +328,19 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     private boolean existsGraph() {
-        return restClient.getGraphML("test-topology.xml").getStatus() == 200;
+        return graphmlDocument.exists(restClient);
     }
 
     private void importGraph() throws InterruptedException {
-        restClient.sendGraphML("test-topology.xml", getClass().getResourceAsStream("/topology/graphml/test-topology.xml"));
+        graphmlDocument.create(restClient);
+
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
         Thread.sleep(20000);
     }
 
     private void deleteGraph() throws InterruptedException {
-        restClient.deleteGraphML("test-topology.xml");
+        graphmlDocument.delete(restClient);
+
         // We wait to give the GraphMLMetaTopologyFactory the chance to clean up afterwards
         Thread.sleep(20000);
     }

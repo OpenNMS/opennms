@@ -33,6 +33,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+// TODO MVR this does not seem to be used at all
 public class Query {
 
     // selected container

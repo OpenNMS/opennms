@@ -34,10 +34,15 @@ import java.util.Objects;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONObject;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.rest.api.GraphRestService;
+import org.opennms.netmgt.graph.rest.api.Query;
 import org.opennms.netmgt.graph.rest.impl.renderer.JsonGraphRenderer;
 
 public class GraphRestServiceImpl implements GraphRestService {
@@ -68,11 +73,58 @@ public class GraphRestServiceImpl implements GraphRestService {
         return Response.ok(rendered).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
+    @Override
+    public Response getGraph(String containerId, String namespace) {
+        final GenericGraph graph = graphService.getGraph(containerId, namespace);
+        if (graph == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        final String rendered = render(graph);
+        return Response.ok(rendered).type(MediaType.APPLICATION_JSON_TYPE).build();
+    }
+
+    @Override
+    public Response getView(String containerId, String namespace, Query query) {
+        final GenericGraph graph = graphService.getGraph(containerId, namespace);
+        if (graph == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(query.getSemanticZoomLevel() == null) {
+            query.setSemanticZoomLevel(Query.DEFAULT_SEMANTIC_ZOOM_LEVEL);
+        }
+        if (query.getSemanticZoomLevel() < 0) {
+            return Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity(new JSONObject().put("error", "SemanticZoomLevel must be >= 0 but was " + query.getSemanticZoomLevel()).toString())
+                .build();
+        }
+        if (query.getVerticesInFocus() == null || query.getVerticesInFocus().isEmpty()) {
+            query.setVerticesInFocus(graph.getDefaultFocus().getVertexIds());
+        }
+        final List<GenericVertex> focussedVertices = graph.resolveVertices(query.getVerticesInFocus());
+        final GenericGraph view = graph.getView(focussedVertices, query.getSemanticZoomLevel()).asGenericGraph();
+        final JSONObject jsonView = new JsonGraphRenderer().convert(view);
+        jsonView.put("focus", convert(query));
+        jsonView.remove("defaultFocus"); // There shouldn't be a default focus
+        return Response.ok(jsonView.toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+    }
+
+    private static JSONObject convert(Query query) {
+        final JSONObject jsonQuery = new JSONObject();
+        jsonQuery.put("semanticZoomLevel", query.getSemanticZoomLevel());
+        jsonQuery.put("vertices", query.getVerticesInFocus());
+        return jsonQuery;
+    }
+
     private static String render(List<GraphContainerInfo> infos) {
         return new JsonGraphRenderer().render(infos);
     }
 
     private static String render(ImmutableGraphContainer graphContainer) {
         return new JsonGraphRenderer().render(graphContainer);
+    }
+
+    private static String render(ImmutableGraph graph) {
+        return new JsonGraphRenderer().render(graph);
     }
 }

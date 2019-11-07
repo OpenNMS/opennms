@@ -26,16 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.rest.impl.renderer;
+package org.opennms.smoketest.graphml;
 
-import java.util.List;
+import java.io.InputStream;
+import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
+import org.opennms.smoketest.utils.RestClient;
 
-public interface GraphRenderer {
-    String render(List<GraphContainerInfo> containerInfos);
-    String render(ImmutableGraphContainer<?> graphContainer);
-    String render(ImmutableGraph<?, ?> graph);
+public class GraphmlDocument {
+
+    private final String name;
+    private final String resource;
+
+    public GraphmlDocument(final String graphName, final String graphResource) {
+        this.name = Objects.requireNonNull(graphName);
+        this.resource = Objects.requireNonNull(graphResource);
+        Objects.requireNonNull(getResourceAsStream());
+    }
+
+    public void create(final RestClient client) {
+        if (client.getGraphML(name).getStatus() == 404) {
+            client.sendGraphML(name, getResourceAsStream());
+        }
+    }
+
+    public void delete(final RestClient client) {
+        if (client.getGraphML(name).getStatus() != 404) {
+            client.deleteGraphML(name);
+        }
+    }
+
+    public boolean exists(RestClient client) {
+        return client.getGraphML(name).getStatus() == 200;
+    }
+
+    private InputStream getResourceAsStream() {
+        return getClass().getResourceAsStream(resource);
+    }
 }

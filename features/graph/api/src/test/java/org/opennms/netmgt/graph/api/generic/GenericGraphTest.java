@@ -28,11 +28,21 @@
 
 package org.opennms.netmgt.graph.api.generic;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
+import java.util.List;
+
+import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
+import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.focus.Focus;
+import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
+
+import com.google.common.collect.Lists;
 
 public class GenericGraphTest {
 
@@ -66,7 +76,7 @@ public class GenericGraphTest {
     
     @Test
     public void shouldNotAllowNamespaceChangeAfterAddingElements(){
-        GenericGraphBuilder graphBuilder =  GenericGraph.builder();
+        GenericGraphBuilder graphBuilder = GenericGraph.builder();
         
         // 1.) set namespace on "empty graph" => shouldn't be a problem
         graphBuilder.namespace("some namespace");
@@ -85,5 +95,54 @@ public class GenericGraphTest {
         assertThrowsException(IllegalStateException.class, () -> graphBuilder.property(GenericProperties.NAMESPACE, otherNamespace));
         assertThrowsException(IllegalStateException.class, () -> graphBuilder.properties(new MapBuilder<String, Object>()
                 .withProperty(GenericProperties.NAMESPACE, otherNamespace).build()));
+    }
+
+    @Test
+    public void shouldConsiderSemanticZoomLevel() {
+        final String namespace = "dummy";
+        final Focus defaultFocus = new Focus(FocusStrategy.SELECTION, Lists.newArrayList(new VertexRef(namespace, "v1")));
+        final GenericGraph graph = GenericGraph.builder()
+                .namespace(namespace)
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.2").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.1.1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.1.2").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.2.1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1.2.2").build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1")).target(new VertexRef(namespace, "v1.1")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1")).target(new VertexRef(namespace, "v1.2")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.1")).target(new VertexRef(namespace, "v1.1.1")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.1")).target(new VertexRef(namespace, "v1.1.2")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.2")).target(new VertexRef(namespace, "v1.2.1")).build())
+                .addEdge(GenericEdge.builder().namespace(namespace).source(new VertexRef(namespace, "v1.2")).target(new VertexRef(namespace, "v1.2.2")).build())
+                .focus(defaultFocus)
+                .build();
+        final List<GenericVertex> genericVertices = graph.resolveVertices(defaultFocus.getVertexIds());
+
+        // Verify if no szl is defined, a graph only containing the default focus is returned
+        ImmutableGraph<GenericVertex, GenericEdge> view = graph.getView(genericVertices, 0);
+        assertNotNull(view);
+        assertThat(view.getVertices(), Matchers.hasSize(1));
+        assertThat(view.getEdges(), Matchers.hasSize(0));
+        assertThat(view.getVertexIds(), Matchers.hasItems("v1"));
+
+        // If provided vertices do not exist, an empty graph is returned instead
+        view = graph.getView(Lists.newArrayList(GenericVertex.builder().namespace(namespace).id("UNKNOWN").build()), 0);
+        assertNotNull(view);
+        assertThat(view.getVertices(), Matchers.hasSize(0));
+        assertThat(view.getEdges(), Matchers.hasSize(0));
+
+        // Verify szl 1
+        view = graph.getView(genericVertices, 1);
+        assertThat(view.getVertices(), Matchers.hasSize(3));
+        assertThat(view.getEdges(), Matchers.hasSize(2));
+        assertThat(view.getVertexIds(), Matchers.hasItems("v1", "v1.1", "v1.2"));
+
+        // Verify szl 2
+        view = graph.getView(genericVertices, 2);
+        assertThat(view.getVertices(), Matchers.hasSize(7));
+        assertThat(view.getEdges(), Matchers.hasSize(6));
+        assertThat(view.getVertexIds(), Matchers.hasItems("v1", "v1.1", "v1.2", "v1.1.1", "v1.1.2", "v1.2.1", "v1.2.2"));
     }
 }
