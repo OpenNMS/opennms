@@ -73,10 +73,11 @@ public final class IpServiceVertex extends AbstractBusinessServiceVertex {
             ipServiceId(ipService.getId());
             label(ipService.getServiceName()); 
             type(Type.IpService);
-            // ipAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
             isLeaf(true);
             reductionKeys(ipService.getReductionKeys());      
-            nodeRefString(Integer.toString(ipService.getNodeId()));
+            nodeRef(ipService.getNodeId());
+            property("ipAddr", ipService.getIpAddress());
+            property("ipAddress", ipService.getIpAddress());
             return this;
         }
         

@@ -124,7 +124,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
             this.properties.put(Property.SERVICE_TYPE_ID, Objects.requireNonNull(monitoredService.getServiceType().getId()));
             this.properties.put(Property.NAME, monitoredService.getServiceName());
             this.properties.put(Property.IP_ADDRESS, monitoredService.getIpAddress().toString());
-            super.nodeRefString(Integer.toString(monitoredService.getNodeId()));
+            super.nodeRef(Integer.toString(monitoredService.getNodeId()));
             return this;            
         }
         

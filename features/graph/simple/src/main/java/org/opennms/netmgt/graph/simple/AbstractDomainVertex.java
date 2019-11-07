@@ -104,12 +104,17 @@ public class AbstractDomainVertex implements Vertex, NodeRefAware {
         
         public T nodeInfo(NodeInfo nodeInfo) {
             this.properties.put(GenericProperties.NODE_INFO, nodeInfo);
-            return (T)this;
+            return (T) this;
         }
         
-        public T nodeRefString(String nodeRefString) {
+        public T nodeRef(String nodeRefString) {
             this.properties.put(GenericProperties.NODE_CRITERIA, nodeRefString);
-            return (T)this;           
+            return (T) this;
+        }
+
+        public T nodeRef(int nodeId) {
+            this.properties.put(GenericProperties.NODE_CRITERIA, Integer.toString(nodeId));
+            return (T) this;
         }
     }
 }

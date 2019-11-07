@@ -66,7 +66,6 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-// TODO MVR dao module should probably be named persistence instead
 public class DefaultGraphRepositoryIT {
 
     @Autowired

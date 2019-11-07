@@ -80,7 +80,6 @@ public final class ReductionKeyVertex extends AbstractBusinessServiceVertex {
             id(Type.ReductionKey + ":" + reductionKey);
             label(getLabelFromReductionKey(reductionKey)); 
             type(Type.ReductionKey);
-            // ipAddress(ipAddress); // TODO MVR this is not yet supported. Maybe IpRef or something like this could be added
             isLeaf(true);
             reductionKeys(ImmutableSet.of(reductionKey));      
             return this;

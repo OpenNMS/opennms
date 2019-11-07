@@ -85,15 +85,11 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 
     @Override
     public List<GenericVertex> getVertices() {
-        // TODO MVR use junggraph.getVetices instead. However addEdge is adding the edges if not in same namespace
-        // We have to figure out a workaround for that somehow
         return new ArrayList<>(vertexToIdMap.values());
     }
 
     @Override
     public List<GenericEdge> getEdges() {
-        // TODO MVR use junggraph.getEdges instead. However addEdge is adding the edges if not in same namespace
-        // We have to figure out a workaround for that somehow
         return new ArrayList<>(edgeToIdMap.values());
     }
 
