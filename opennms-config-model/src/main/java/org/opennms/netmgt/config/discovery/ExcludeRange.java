@@ -34,6 +34,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -57,6 +58,14 @@ public class ExcludeRange implements Serializable {
      */
     @XmlElement(name = "end", required = true)
     private String m_end;
+
+    /**
+     * The monitoring location where this exclude range
+     *  will be excluded
+     */
+    @XmlAttribute(name = "location")
+    private String m_location;
+
 
     public ExcludeRange() {
     }
@@ -82,11 +91,20 @@ public class ExcludeRange implements Serializable {
         m_end = ConfigUtils.assertNotEmpty(end, "end");
     }
 
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        m_location = location;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(
                             m_begin, 
-                            m_end);
+                            m_end,
+                            m_location);
     }
 
     @Override
@@ -98,14 +116,20 @@ public class ExcludeRange implements Serializable {
         if (obj instanceof ExcludeRange) {
             final ExcludeRange temp = (ExcludeRange)obj;
             return Objects.equals(temp.m_begin, m_begin)
-                    && Objects.equals(temp.m_end, m_end);
+                    && Objects.equals(temp.m_end, m_end)
+                    && Objects.equals(temp.m_location, m_location);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "ExcludeRange [begin=" + m_begin + ", end=" + m_end + "]";
+        return "ExcludeRange{" +
+                "m_begin='" + m_begin + '\'' +
+                ", m_end='" + m_end + '\'' +
+                ", m_location='" + m_location + '\'' +
+                '}';
     }
+
 
 }

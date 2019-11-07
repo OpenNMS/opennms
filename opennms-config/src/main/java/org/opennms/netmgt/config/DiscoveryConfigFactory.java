@@ -525,18 +525,29 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     /**
      * <p>isExcluded</p>
      *
-     * @param address a {@link java.net.InetAddress} object.
+     * @param address a {@link InetAddress} object.
+     * @param location
      * @return a boolean.
      */
     @Override
-    public boolean isExcluded(final InetAddress address) {
+    public boolean isExcluded(final InetAddress address, String location) {
         getReadLock().lock();
         try {
-            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRanges();
-            if (excludeRange != null) {
-                final byte[] laddr = address.getAddress();
+            final List<ExcludeRange> excludeRanges = getConfiguration().getExcludeRanges();
+            // Get exclude ranges from definitions. Assign location from definition.
+            getConfiguration().getDefinitions().forEach(def -> {
+                setLocationFromDefinition(def);
+                excludeRanges.addAll(def.getExcludeRanges());
+            });
+            if (!excludeRanges.isEmpty()) {
 
-                for (final ExcludeRange range : excludeRange) {
+                final byte[] laddr = address.getAddress();
+                for (final ExcludeRange range : excludeRanges) {
+
+                    if(!isLocationMatched(range.getLocation(), location)) {
+                        continue;
+                    }
+
                     if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
                         return true;
                     }
@@ -546,6 +557,26 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    private void setLocationFromDefinition(Definition definition) {
+        if (!definition.getExcludeRanges().isEmpty()) {
+            List<ExcludeRange> excludeRangesFromDef = definition.getExcludeRanges();
+            excludeRangesFromDef.forEach(exRange -> {
+                if (Strings.isNullOrEmpty(exRange.getLocation())) {
+                    exRange.setLocation(definition.getLocation().orElse(null));
+                }
+            });
+        }
+    }
+
+    private boolean isLocationMatched(String locationFromRange, String location) {
+        if (Strings.isNullOrEmpty(locationFromRange) && Strings.isNullOrEmpty(location)) {
+            return true;
+        } else if (!Strings.isNullOrEmpty(locationFromRange)) {
+            return locationFromRange.equals(location);
+        }
+        return false;
     }
 
     @Override
@@ -690,7 +721,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 Spliterators.spliteratorUnknownSize(it, ORDERED | IMMUTABLE), false
             )
             // Filter out excluded addresses
-            .filter(item -> !isExcluded(item.getAddress()))
+            .filter(item -> !isExcluded(item.getAddress(), item.getLocation()))
             .iterator();
     }
 
