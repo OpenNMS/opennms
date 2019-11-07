@@ -34,12 +34,9 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
-import org.opennms.netmgt.graph.api.aware.LocationAware;
-import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.aware.NodeRefAware;
-import org.opennms.netmgt.graph.api.info.NodeInfo;
 
-public final class GenericVertex extends GenericElement implements Vertex, NodeAware, NodeRefAware, LocationAware {
+public final class GenericVertex extends GenericElement implements Vertex, NodeRefAware {
     
     private GenericVertex(Map<String, Object> properties) {
         super(properties);
@@ -64,28 +61,11 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeA
         return null;
     }
 
-    // TODO MVR implement me
-    @Override
-    public NodeInfo getNodeInfo() {
-        return null;
-//        final Optional<Object> first = graphProperties.getProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst();
-//        if (first.isPresent()) {
-//            return (NodeInfo) first.get();
-//        }
-//        return (NodeInfo) graphProperties.getComputedProperties().values().stream().filter(v -> v instanceof NodeInfo).findFirst().orElse(null);
-    }
-
     @Override
     public GenericVertex asGenericVertex() {
         return this;
     }
 
-    // TODO MVR implement me
-    @Override
-    public String getLocation() {
-        return null;
-    }
-    
     public static GenericVertexBuilder builder() {
     	return new GenericVertexBuilder();
     }

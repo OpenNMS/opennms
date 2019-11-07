@@ -50,14 +50,6 @@ public final class SimpleVertex extends AbstractDomainVertex {
     }
 
     @Override
-    public String getLocation() {
-        if (getNodeInfo() != null) {
-            return getNodeInfo().getLocation();
-        }
-        return null;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

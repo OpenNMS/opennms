@@ -32,8 +32,6 @@ import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
-import org.opennms.netmgt.graph.api.aware.LocationAware;
-import org.opennms.netmgt.graph.api.aware.NodeAware;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
@@ -43,7 +41,7 @@ import org.opennms.netmgt.graph.api.info.NodeInfo;
 * Can be extended by a domain specific vertex class.
 * It contains no data of it's own but operates on the data of it's wrapped GenericVertex.
 **/
-public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
+public class AbstractDomainVertex implements Vertex  {
     
     protected final GenericVertex delegate;
 
@@ -74,10 +72,6 @@ public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
         return delegate;
     }
 
-    public NodeInfo getNodeInfo() {
-        return delegate.getNodeInfo();
-    }
-
     // TODO MVR AFAIK this is not needed
     public String getNodeRefString() {
         return delegate.getProperty(GenericProperties.NODE_REF);
@@ -86,14 +80,6 @@ public class AbstractDomainVertex implements Vertex, NodeAware, LocationAware  {
     @Override
     public String toString() {
         return delegate.toString();
-    }
-
-    @Override
-    public String getLocation() {
-        if (getNodeInfo() != null) {
-            return getNodeInfo().getLocation();
-        }
-        return null;
     }
 
     @Override
