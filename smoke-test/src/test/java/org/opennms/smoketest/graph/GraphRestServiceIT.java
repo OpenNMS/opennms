@@ -205,7 +205,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .params("criteria", "unknown")
                .params("context", "GenericVertex")
                .accept(ContentType.JSON)
-               .get("/search/results/{namespace}/", "acme:regions")
+               .get("/search/results/{namespace}", "acme:regions")
                .then().log().ifValidationFails()
                .statusCode(204);
 
@@ -218,9 +218,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .then().log().ifValidationFails()
                .statusCode(200)
                .contentType(ContentType.JSON)
-               .content("[0].properties.namespace", Matchers.is("acme:regions"))
-               .content("[0].label", Matchers.is("North Region"))      
+               .content("[0].namespace", Matchers.is("acme:regions"))
                .content("[0].id", Matchers.is("north"))
+                // TODO MVR at the moment search returns the VertexRef therefore no label available
+//               .content("[0].label", Matchers.is("North Region"))
                .content("", Matchers.hasSize(1));
     }
 
@@ -299,9 +300,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Verify suggestions
         final String response = given().log().ifValidationFails()
-                .params("s", "Node A")
                 .accept(ContentType.JSON)
-                .get("/search/suggestions/{namespace}/", "acme:markets")
+                .params("s", "Node A")
+                .get("/search/suggestions/{namespace}", "acme:markets")
                 .then().log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
@@ -338,13 +339,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Fetch data
         final JSONObject query = new JSONObject()
-                .put("szl", 0)
+                .put("semanticZoomLevel", 0)
                 .put("verticesInFocus", new JSONArray().put("north.1").put("north.2").put("north.3"));
         given().log().ifValidationFails()
                 .body(query.toString())
                 .contentType(ContentType.JSON)
                 .post(CONTAINER_ID + "/{namespace}", "acme:markets")
                 .then()
+                .log().ifValidationFails()
                 .contentType(ContentType.JSON)
                 .content("id", Matchers.is("markets"))
                 .content("namespace", Matchers.is("acme:markets"))

@@ -85,6 +85,9 @@ public class NodeSearchProvider implements SearchProvider {
         final OnmsNode node = nodeDao.get(searchCriteria.getCriteria());
         final NodeRef nodeRef = NodeRef.from(node.getId(), node.getForeignSource(), node.getForeignId());
         final GenericVertex vertex = graphService.getGraph(searchCriteria.getNamespace()).getVertex(nodeRef);
-        return Lists.newArrayList(vertex);
+        if (vertex != null) {
+            return Lists.newArrayList(vertex);
+        }
+        return Lists.newArrayList();
     }
 }

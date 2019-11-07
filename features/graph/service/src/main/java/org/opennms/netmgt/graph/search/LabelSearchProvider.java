@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.SearchContext;
@@ -43,8 +42,6 @@ import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
 
 public class LabelSearchProvider implements SearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LabelSearchProvider.class);
@@ -67,9 +64,11 @@ public class LabelSearchProvider implements SearchProvider {
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-        final VertexRef vertexRef = new VertexRef(searchCriteria.getNamespace(), searchCriteria.getCriteria());
-        final GenericVertex genericVertex = graphService.getGraph(searchCriteria.getNamespace()).resolveVertex(vertexRef);
-        return Lists.newArrayList(genericVertex);
+        final List<GenericVertex> vertices = getVerticesOfGraph(graphService, searchCriteria.getNamespace())
+                .stream()
+                .filter(v -> v.getLabel() != null && v.getLabel().contains(searchCriteria.getCriteria()))
+                .collect(Collectors.toList());
+        return vertices;
     }
 
     private List<GenericVertex> getVerticesOfGraph(GraphService graphService, String namespace) {
