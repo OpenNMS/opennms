@@ -30,10 +30,12 @@ package org.opennms.netmgt.telemetry.common.utils;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.primitives.UnsignedLong;
 
 public class BufferUtils {
@@ -176,5 +178,26 @@ public class BufferUtils {
 
     public static void skip(final ByteBuffer buffer, final int size) {
         buffer.position(buffer.position() + size);
+    }
+
+    public static <T, E extends Exception> List<T> repeatRemaining(final ByteBuffer buffer, final Parser<T, E> parser) throws E {
+        final List<T> elements = Lists.newArrayList();
+        while (buffer.hasRemaining()) {
+            elements.add(parser.parse(buffer));
+        }
+        return Collections.unmodifiableList(elements);
+    }
+
+    public static <T, E extends Exception> List<T> repeatCount(final ByteBuffer buffer, final int count, final Parser<T, E> parser) throws E {
+        final List<T> elements = Lists.newArrayList();
+        for (int i = 0; i < count; i++) {
+            elements.add(parser.parse(buffer));
+        }
+        return Collections.unmodifiableList(elements);
+    }
+
+    @FunctionalInterface
+    public interface Parser<T, E extends Exception> {
+        T parse(final ByteBuffer buffer) throws E;
     }
 }
