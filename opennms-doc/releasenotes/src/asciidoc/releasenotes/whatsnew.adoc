@@ -71,6 +71,11 @@ This reduces the amount of code we run through trying to figure out date formats
 * Docker containers are now built automatically as part of our CI process.
 * The `horizon` Docker container now runs as non-root by default.
 
+==== Systemd Updates
+
+The OpenNMS, Minion, and Sentinel packages all contain first-class Systemd files for startup.
+If you're upgrading from a previous release, you may need to do a `systemctl enable <service>` (`minion`, `sentinel`, etc.) and `systemctl daemon-reload` for things to start up as expected.
+
 ==== Poller
 
 * Pollerd now reloads properly with a `daemonReload` event.
