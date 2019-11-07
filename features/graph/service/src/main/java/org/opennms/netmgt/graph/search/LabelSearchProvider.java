@@ -55,9 +55,9 @@ public class LabelSearchProvider implements SearchProvider {
     public List<SearchSuggestion> getSuggestions(SearchContext searchContext, String namespace, String input) {
         Objects.requireNonNull(input);
         return getVerticesOfGraph(searchContext.getGraphService(), namespace)
-                .parallelStream()
-                .filter(v -> (v.getLabel() != null && v.getLabel().toLowerCase().contains(input.toLowerCase())))
-                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getId(), v.getLabel()))
+                .stream()
+                .filter(v -> v.getLabel() != null && v.getLabel().toLowerCase().contains(input.toLowerCase()))
+                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), input, v.getLabel()))
                 .limit(searchContext.getSuggestionsLimit())
                 .collect(Collectors.toList());
     }
@@ -66,7 +66,7 @@ public class LabelSearchProvider implements SearchProvider {
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
         final List<GenericVertex> vertices = getVerticesOfGraph(graphService, searchCriteria.getNamespace())
                 .stream()
-                .filter(v -> v.getLabel() != null && v.getLabel().contains(searchCriteria.getCriteria()))
+                .filter(v -> v.getLabel() != null && v.getLabel().toLowerCase().contains(searchCriteria.getCriteria()))
                 .collect(Collectors.toList());
         return vertices;
     }

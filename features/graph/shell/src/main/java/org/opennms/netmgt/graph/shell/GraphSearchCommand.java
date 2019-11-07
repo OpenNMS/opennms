@@ -29,7 +29,7 @@
 package org.opennms.netmgt.graph.shell;
 
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -39,6 +39,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.renderer.GraphRenderer;
 import org.opennms.netmgt.graph.api.search.GraphSearchService;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
@@ -46,8 +47,8 @@ import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.shell.completer.NamespaceCompleter;
 import org.opennms.netmgt.graph.shell.completer.SuggestionCompleter;
 
-@Command(scope = "graph", name = "search", description="Searches vertices in a given namespace (graph)")
 @Service
+@Command(scope = "graph", name = "search", description="Searches vertices in a given namespace (graph)")
 public class GraphSearchCommand implements Action {
 
     @Reference
@@ -55,6 +56,9 @@ public class GraphSearchCommand implements Action {
 
     @Reference
     private GraphSearchService graphSearchService;
+
+    @Reference
+    private GraphRenderer graphRenderer;
 
     @Completion( NamespaceCompleter.class)
     @Option(name="--namespace", description="The namespace of the graph", required = true)
@@ -82,15 +86,13 @@ public class GraphSearchCommand implements Action {
                         suggestion.getContext()
                 );
                 final List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
+                final String rendered = vertices.stream()
+                        .map(vertex -> graphRenderer.render(2, vertex))
+                        .collect(Collectors.joining(",\n"));
                 System.out.println("Search results: " + vertices.size() + " vertices found.");
-                for(GenericVertex vertex : vertices) {
-                    System.out.println("");
-                    for(Map.Entry<String, Object> entry : vertex.getProperties().entrySet()) {
-                        System.out.println("  " + entry.getKey() + " => " + entry.getValue());
-                    }
-                }
+                System.out.println(rendered);
             } else {
-                System.out.println(String.format("No vertices found for namespace=%s and input=%s", namespace, input));
+                System.out.println(String.format("No vertices found for namespace='%s' and input='%s'", namespace, input));
             }
         }
         return null;

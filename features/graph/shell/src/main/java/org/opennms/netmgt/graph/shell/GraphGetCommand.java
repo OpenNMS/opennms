@@ -35,56 +35,48 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.renderer.GraphRenderer;
 import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.shell.completer.ContainerIdCompleter;
 import org.opennms.netmgt.graph.shell.completer.ContainerNamespaceCompleter;
 
-@Command(scope = "graph", name = "get", description="Gets a graph identified by its namespace")
+import com.google.common.base.Strings;
+
 @Service
-// TODO MVR expose via xml (graphml) or json
+@Command(scope = "graph", name = "get", description="Gets a graph identified by its namespace")
 public class GraphGetCommand implements Action {
 
     @Reference
     private GraphService graphService;
 
+    @Reference
+    private GraphRenderer graphRenderer;
+
     @Completion(ContainerIdCompleter.class)
-    @Option(name="--container", description="The id of the container", required=true)
+    @Option(name="--container", description="The id of the container", required=false)
     private String containerId;
 
     @Completion(ContainerNamespaceCompleter.class)
-    @Option(name="--namespace", description="The namespace of the graph", required = false)
+    @Option(name="--namespace", description="The namespace of the graph", required = true)
     private String namespace;
 
     @Override
     public Object execute() throws Exception {
-        final GenericGraph genericGraph = graphService.getGraph(containerId, namespace);
+        final GenericGraph genericGraph = getGraph();
         if (genericGraph == null) {
             System.out.println("No graph in container with id '" + containerId + "' and namespace '" + namespace + "' found");
         } else {
-            System.out.println("Graph Details:");
-            genericGraph.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
-            System.out.println();
-            if (genericGraph.getVertices().isEmpty()) {
-                System.out.println("No Vertices");
-            } else {
-                System.out.println("Vertex Details (" + genericGraph.getVertices().size() + ")");
-                genericGraph.getVertices().forEach(v -> {
-                    v.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
-                });
-            }
-            System.out.println();
-            if (genericGraph.getEdges().isEmpty()) {
-                System.out.println("No Edges");
-            } else {
-                System.out.println("Edge Details (" + genericGraph.getEdges().size() + ")");
-                genericGraph.getEdges().forEach(e -> {
-                    System.out.println(e.getSource().getId() + ":" + e.getSource().getNamespace() + " -> " + e.getTarget().getId() + ":" + e.getTarget().getNamespace());
-                    e.getProperties().forEach((key, value) -> System.out.println("  " + key + " => " + value));
-                });
-            }
-            System.out.println();
-            System.out.println("Warning: This command is not fully implemented");
+            final String rendered = graphRenderer.render(2, genericGraph);
+            System.out.println(rendered);
         }
         return null;
+    }
+
+    // If containerId is defined explicitly, use it otherwise only use namespace
+    private GenericGraph getGraph() {
+        if (!Strings.isNullOrEmpty(containerId)) {
+            return graphService.getGraph(containerId, namespace);
+        }
+        return graphService.getGraph(namespace);
     }
 }

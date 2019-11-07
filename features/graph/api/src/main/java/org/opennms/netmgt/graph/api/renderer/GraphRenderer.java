@@ -26,16 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.rest.impl.renderer;
+package org.opennms.netmgt.graph.api.renderer;
 
 import java.util.List;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
 public interface GraphRenderer {
-    String render(List<GraphContainerInfo> containerInfos);
-    String render(ImmutableGraphContainer<?> graphContainer);
-    String render(ImmutableGraph<?, ?> graph);
+    String getContentType();
+    String render(int identation, List<GraphContainerInfo> containerInfos);
+    String render(int identation, ImmutableGraphContainer<?> graphContainer);
+    String render(int identation, ImmutableGraph<?, ?> graph);
+    String render(int identation, Vertex vertex);
+
+    default String render(List<GraphContainerInfo> containerInfos) {
+        return render(0, containerInfos);
+    }
+
+    default String render(ImmutableGraphContainer<?> graphContainer) {
+        return render(0, graphContainer);
+    }
+
+    default String render(ImmutableGraph<?, ?> graph) {
+        return render(0, graph);
+    }
+
+    default String render(Vertex vertex) {
+        return render(0, vertex);
+    }
 }

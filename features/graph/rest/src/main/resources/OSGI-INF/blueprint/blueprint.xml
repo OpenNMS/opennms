@@ -30,4 +30,7 @@
             <entry key="application-path" value="/api/v2" />
         </service-properties>
     </service>
+    <service interface="org.opennms.netmgt.graph.api.renderer.GraphRenderer">
+        <bean class="org.opennms.netmgt.graph.rest.impl.renderer.JsonGraphRenderer"/>
+    </service>
 </blueprint>

@@ -47,11 +47,17 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.info.IpInfo;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
+import org.opennms.netmgt.graph.api.renderer.GraphRenderer;
 
 public class JsonGraphRenderer implements GraphRenderer {
 
     @Override
-    public String render(List<GraphContainerInfo> containerInfos) {
+    public String getContentType() {
+        return "application/json";
+    }
+
+    @Override
+    public String render(int identation, List<GraphContainerInfo> containerInfos) {
         final JSONArray graphContainerJsonArray = new JSONArray();
         containerInfos.stream()
             .sorted(Comparator.comparing(GraphContainerInfo::getId))
@@ -74,11 +80,11 @@ public class JsonGraphRenderer implements GraphRenderer {
                 jsonGraphContainerInfoObject.put("graphs", graphInfoArray);
                 graphContainerJsonArray.put(jsonGraphContainerInfoObject);
         });
-        return graphContainerJsonArray.toString();
+        return graphContainerJsonArray.toString(identation);
     }
 
     @Override
-    public String render(ImmutableGraphContainer<?> graphContainer) {
+    public String render(int identation, ImmutableGraphContainer<?> graphContainer) {
         final JSONObject jsonContainer = new JSONObject();
         final JSONArray jsonGraphArray = new JSONArray();
         jsonContainer.put("graphs", jsonGraphArray);
@@ -93,13 +99,19 @@ public class JsonGraphRenderer implements GraphRenderer {
                jsonGraphArray.put(jsonGraph);
             }
         );
-        return jsonContainer.toString();
+        return jsonContainer.toString(identation);
     }
 
     @Override
-    public String render(ImmutableGraph<?, ?> graph) {
+    public String render(int identation, ImmutableGraph<?, ?> graph) {
         final JSONObject jsonGraph = convert(graph);
-        return jsonGraph.toString();
+        return jsonGraph.toString(identation);
+    }
+
+    @Override
+    public String render(int identation, Vertex vertex) {
+        final JSONObject jsonVertex = convert(vertex);
+        return jsonVertex.toString(identation);
     }
 
     public static JSONObject convert(ImmutableGraph<?, ?> graph) {
@@ -128,24 +140,7 @@ public class JsonGraphRenderer implements GraphRenderer {
             graph.getVertices().stream()
                 .sorted(Comparator.comparing(Vertex::getId))
                 .forEach(vertex -> {
-                    final JSONObject jsonVertex = new JSONObject();
-                    final GenericVertex genericVertex = vertex.asGenericVertex();
-                    final Map<String, Object> properties = genericVertex.getProperties();
-                    for (Map.Entry<String, Object> eachProperty : properties.entrySet()) {
-                        final Object value = eachProperty.getValue();
-                        // TODO MVR make this more generic (ConverterService, etc.) :)
-                        if (value != null) {
-                            if (value.getClass().isPrimitive() || value.getClass().isEnum() || value.getClass() == String.class) {
-                                jsonVertex.put(eachProperty.getKey(), value.toString());
-                            } else if (value.getClass() == NodeInfo.class) {
-                                jsonVertex.put(eachProperty.getKey(), convert((NodeInfo) value));
-                            } else if (value.getClass() == IpInfo.class) {
-                                jsonVertex.put(eachProperty.getKey(), convert((IpInfo) value));
-                            } else {
-                                jsonVertex.put(eachProperty.getKey(), value);
-                            }
-                        }
-                    }
+                    final JSONObject jsonVertex = convert(vertex);
                     jsonVerticesArray.put(jsonVertex);
             });
 
@@ -182,5 +177,27 @@ public class JsonGraphRenderer implements GraphRenderer {
         jsonObject.put("managed", ipInfo.isManaged());
         jsonObject.put("primary", ipInfo.isPrimary());
         return jsonObject;
+    }
+
+    private static JSONObject convert(Vertex vertex) {
+        final JSONObject jsonVertex = new JSONObject();
+        final GenericVertex genericVertex = vertex.asGenericVertex();
+        final Map<String, Object> properties = genericVertex.getProperties();
+        for (Map.Entry<String, Object> eachProperty : properties.entrySet()) {
+            final Object value = eachProperty.getValue();
+            // TODO MVR make this more generic (ConverterService, etc.) :)
+            if (value != null) {
+                if (value.getClass().isPrimitive() || value.getClass().isEnum() || value.getClass() == String.class) {
+                    jsonVertex.put(eachProperty.getKey(), value.toString());
+                } else if (value.getClass() == NodeInfo.class) {
+                    jsonVertex.put(eachProperty.getKey(), convert((NodeInfo) value));
+                } else if (value.getClass() == IpInfo.class) {
+                    jsonVertex.put(eachProperty.getKey(), convert((IpInfo) value));
+                } else {
+                    jsonVertex.put(eachProperty.getKey(), value);
+                }
+            }
+        }
+        return jsonVertex;
     }
 }

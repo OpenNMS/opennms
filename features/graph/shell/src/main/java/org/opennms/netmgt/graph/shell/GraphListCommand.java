@@ -41,8 +41,8 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
-@Command(scope = "graph", name = "list", description="List all available graph containers and its graphs")
 @Service
+@Command(scope = "graph", name = "list", description="List all available graph containers and its graphs")
 public class GraphListCommand implements Action {
 
     private static final int MAX_DESCRIPTION_LENGTH = 100;
