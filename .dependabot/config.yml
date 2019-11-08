@@ -1,16 +1,8 @@
 version: 1
-allowed_updates:
-  - match:
-    update_type: security
-ignored_updates:
-  - match:
-    dependency_name: "d3"
-  - match:
-    dependency_name: "ionicons"
 update_configs:
   - package_manager: "javascript"
     directory: "/core/web-assets/"
-    update_schedule: "weekly"
+    update_schedule: "daily"
     default_reviewers:
       - "rangerrick"
       - "j-white"
@@ -19,3 +11,12 @@ update_configs:
     commit_message:
       prefix: "build"
       include_scope: true
+    allowed_updates:
+      - match:
+          update_type: "security"
+    ignored_updates:
+      - match:
+          dependency_name: "d3"
+      - match:
+          dependency_name: "ionicons"
+    target_branch: "develop"
