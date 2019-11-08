@@ -48,5 +48,4 @@ public interface GraphService {
     GenericGraph getGraph(String containerId, String graphNamespace);
 
     GenericGraph getGraph(String namespace);
-
 }

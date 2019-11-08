@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO MVR rework this class
 public class ApplicationSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationSearchProvider.class);
@@ -84,6 +85,7 @@ public class ApplicationSearchProvider implements SearchProvider {
         for (OnmsApplication application : applicationDao.findMatching(dbQueryCriteria)) {
             SearchSuggestion suggestion = new SearchSuggestion(getProviderId(),
                     OnmsApplication.class.getSimpleName(),
+                    Integer.toString(application.getId()),
                     application.getName());
             suggestions.add(suggestion);
         }
@@ -93,7 +95,6 @@ public class ApplicationSearchProvider implements SearchProvider {
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-
         return getVerticesOfGraph(graphService, searchCriteria.getNamespace())
                 .stream()
                 .map(ApplicationVertex::new)
@@ -103,8 +104,8 @@ public class ApplicationSearchProvider implements SearchProvider {
     }
 
     private boolean filter(ApplicationVertex vertex, String input) {
-        if (vertex.getName() != null) {
-            return vertex.getName().contains(input);
+        if (vertex.getVertexType() == ApplicationVertexType.Application && vertex.getApplicationId() != null) {
+            return vertex.getApplicationId().contains(input);
         }
         return false;
     }

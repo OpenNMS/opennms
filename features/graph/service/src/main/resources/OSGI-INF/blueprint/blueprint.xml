@@ -9,6 +9,8 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
     <reference id="graphContainerDao" interface="org.opennms.netmgt.graph.dao.api.GraphContainerDao" availability="mandatory" />
+    <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
 
     <!-- Listen for GraphContainerProviders -->
@@ -43,7 +45,32 @@
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphSearchService" />
     </reference-list>
 
-    <!-- LabelSearchProvider -->
+    <!-- Search providers -->
     <bean id="labelSearchProvider" class="org.opennms.netmgt.graph.search.LabelSearchProvider" />
     <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="labelSearchProvider"/>
+    <bean id="nodeSearchProvider" class="org.opennms.netmgt.graph.search.NodeSearchProvider">
+        <argument ref="nodeDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="nodeSearchProvider"/>
+
+    <!-- Node Service -->
+    <bean id="defaultNodeService" class="org.opennms.netmgt.graph.DefaultNodeService">
+        <argument ref="genericPersistenceAccessor" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.NodeService" ref="defaultNodeService" />
+
+    <!-- Enrichment Service -->
+    <bean id="defaultEnrichmentService" class="org.opennms.netmgt.graph.enrichment.DefaultEnrichmentService">
+
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentService" ref="defaultEnrichmentService" />
+    <reference-list interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultEnrichmentService" />
+    </reference-list>
+
+    <!-- Default Enrichment Processors -->
+    <bean id="nodeEnrichmentProcessor" class="org.opennms.netmgt.graph.enrichment.NodeEnrichmentProcessor">
+        <argument ref="defaultNodeService" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="nodeEnrichmentProcessor" />
 </blueprint>

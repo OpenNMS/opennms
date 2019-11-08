@@ -70,7 +70,7 @@ public class DefaultGraphSearchServiceTest {
             public List<SearchSuggestion> getSuggestions(SearchContext searchContext, String namespace, String input) {
                 List<SearchSuggestion> suggestions = new ArrayList<>();
                 for(int i= 0; i < 3; i++){
-                    suggestions.add(new SearchSuggestion(providerId, "context", "label"+i));
+                    suggestions.add(new SearchSuggestion(providerId, "context", "id" + i, "label" + i));
                 }
                 return suggestions;
             }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,58 +28,66 @@
 
 package org.opennms.netmgt.graph.search;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.graph.api.NodeRef;
+import org.opennms.netmgt.graph.api.aware.NodeRefAware;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.api.search.SearchProvider;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.api.service.GraphService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.OnmsNode;
 
-public class LabelSearchProvider implements SearchProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(LabelSearchProvider.class);
+import com.google.common.collect.Lists;
+
+// TODO MVR write test
+public class NodeSearchProvider implements SearchProvider {
+
+    private final NodeDao nodeDao;
+
+    public NodeSearchProvider(final NodeDao nodeDao) {
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+    }
 
     @Override
     public boolean canSuggest(GraphService graphService, String namespace) {
-        return true; // every vertex has a label, therefore we can search any graph
+        return NodeRefAware.class.isAssignableFrom(graphService.getGraphInfo(namespace).getVertexType());
     }
 
     @Override
     public List<SearchSuggestion> getSuggestions(SearchContext searchContext, String namespace, String input) {
-        Objects.requireNonNull(input);
-        return getVerticesOfGraph(searchContext.getGraphService(), namespace)
-                .parallelStream()
-                .filter(v -> (v.getLabel() != null && v.getLabel().contains(input)))
-                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getId(), v.getLabel()))
-                .limit(searchContext.getSuggestionsLimit())
-                .collect(Collectors.toList());
+        final Criteria criteria = new CriteriaBuilder(OnmsNode.class)
+                .ilike("label", "%" + input + "%")
+                .orderBy("label", true)
+                .toCriteria();
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
+        final List<SearchSuggestion> suggestions = Lists.newArrayList();
+        for (OnmsNode eachNode : matchingNodes) {
+            final SearchSuggestion suggestion = new SearchSuggestion(
+                    getProviderId(),
+                    "Node",
+                    Integer.toString(eachNode.getId()),
+                    eachNode.getLabel()
+            );
+            suggestions.add(suggestion);
+        }
+        return suggestions;
     }
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-        final List<GenericVertex> vertices = getVerticesOfGraph(graphService, searchCriteria.getNamespace())
-                .stream()
-                .filter(v -> v.getLabel() != null && v.getLabel().contains(searchCriteria.getCriteria()))
-                .collect(Collectors.toList());
-        return vertices;
-    }
-
-    private List<GenericVertex> getVerticesOfGraph(GraphService graphService, String namespace) {
-        GenericGraph graph = graphService.getGraph(namespace);
-        List<GenericVertex> result;
-        if (graph != null) {
-            result = graph.getVertices();
-        } else {
-            LOG.warn("Could not find graph for namespace {}", namespace);
-            result = Collections.emptyList();
+        final OnmsNode node = nodeDao.get(searchCriteria.getCriteria());
+        final NodeRef nodeRef = NodeRef.from(node.getId(), node.getForeignSource(), node.getForeignId());
+        final GenericVertex vertex = graphService.getGraph(searchCriteria.getNamespace()).getVertex(nodeRef);
+        if (vertex != null) {
+            return Lists.newArrayList(vertex);
         }
-        return result;
+        return Lists.newArrayList();
     }
 }

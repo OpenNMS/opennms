@@ -42,7 +42,7 @@ public class SearchCriteria {
     // The namespace of the graph, the search was triggered for
     private String namespace;
 
-    // The search criteria, usually the label of the SearchSuggestion
+    // The search criteria, usually the id of the SearchSuggestion
     private String criteria;
 
     private String context;

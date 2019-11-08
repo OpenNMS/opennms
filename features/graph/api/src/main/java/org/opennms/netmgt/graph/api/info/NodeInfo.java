@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.netmgt.graph.api.NodeRef;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -46,7 +48,6 @@ public class NodeInfo {
     private final String label;
     private final Set<String> categories;
     private final List<IpInfo> ipInfos;
-
     
     public NodeInfo(final String location, final Integer id, final String foreignSource, final String foreignId,
             final String label, Set<String> categories, List<IpInfo> ipInfos) {
@@ -86,7 +87,11 @@ public class NodeInfo {
     public List<IpInfo> getIpInterfaces() {
         return ipInfos;
     }
-    
+
+    public NodeRef getNodeRef() {
+        return NodeRef.from(id, foreignSource, foreignId);
+    }
+
     public static NodeInfoBuilder builder() {
         return new NodeInfoBuilder();
     }

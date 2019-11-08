@@ -43,6 +43,8 @@ public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphI
 
     V getVertex(String id);
 
+    V getVertex(NodeRef nodeRef);
+
     E getEdge(String id);
 
     List<String> getVertexIds();

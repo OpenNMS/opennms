@@ -42,8 +42,11 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.info.IpInfo;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 public class JsonGraphRenderer implements GraphRenderer {
 
@@ -125,9 +128,26 @@ public class JsonGraphRenderer implements GraphRenderer {
             graph.getVertices().stream()
                 .sorted(Comparator.comparing(Vertex::getId))
                 .forEach(vertex -> {
-                    final JSONObject jsonVertex = new JSONObject(vertex.asGenericVertex().getProperties());
+                    final JSONObject jsonVertex = new JSONObject();
+                    final GenericVertex genericVertex = vertex.asGenericVertex();
+                    final Map<String, Object> properties = genericVertex.getProperties();
+                    for (Map.Entry<String, Object> eachProperty : properties.entrySet()) {
+                        final Object value = eachProperty.getValue();
+                        // TODO MVR make this more generic (ConverterService, etc.) :)
+                        if (value != null) {
+                            if (value.getClass().isPrimitive() || value.getClass().isEnum() || value.getClass() == String.class) {
+                                jsonVertex.put(eachProperty.getKey(), value.toString());
+                            } else if (value.getClass() == NodeInfo.class) {
+                                jsonVertex.put(eachProperty.getKey(), convert((NodeInfo) value));
+                            } else if (value.getClass() == IpInfo.class) {
+                                jsonVertex.put(eachProperty.getKey(), convert((IpInfo) value));
+                            } else {
+                                jsonVertex.put(eachProperty.getKey(), value);
+                            }
+                        }
+                    }
                     jsonVerticesArray.put(jsonVertex);
-                });
+            });
 
             // Convert the focus
             final Focus defaultFocus = graph.getDefaultFocus();
@@ -137,5 +157,30 @@ public class JsonGraphRenderer implements GraphRenderer {
             jsonGraph.put("defaultFocus", jsonFocus);
         }
         return jsonGraph;
+    }
+
+    private static JSONObject convert(NodeInfo nodeInfo) {
+        final JSONObject jsonNodeInfo = new JSONObject();
+        jsonNodeInfo.put("id", nodeInfo.getId());
+        jsonNodeInfo.put("label", nodeInfo.getLabel());
+        jsonNodeInfo.put("location", nodeInfo.getLocation());
+        jsonNodeInfo.put("foreignId", nodeInfo.getForeignId());
+        jsonNodeInfo.put("foreignSource", nodeInfo.getForeignSource());
+        jsonNodeInfo.put("categories", new JSONArray(nodeInfo.getCategories()));
+        jsonNodeInfo.put("ipInterfaces", new JSONArray());
+
+        for (IpInfo eachInterface : nodeInfo.getIpInterfaces()) {
+            final JSONObject jsonInterfaceInfo = convert(eachInterface);
+            jsonNodeInfo.getJSONArray("ipInterfaces").put(jsonInterfaceInfo);
+        }
+        return jsonNodeInfo;
+    }
+
+    private static JSONObject convert(IpInfo ipInfo) {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put("address", ipInfo.getIpAddress());
+        jsonObject.put("managed", ipInfo.isManaged());
+        jsonObject.put("primary", ipInfo.isPrimary());
+        return jsonObject;
     }
 }

@@ -51,4 +51,7 @@ public interface GenericProperties {
 
     String NODE_INFO = "nodeInfo";
 
+    String NODE_ID = "nodeID";
+    String FOREIGN_SOURCE = "foreignSource";
+    String FOREIGN_ID = "foreignID";
 }

@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphML;
@@ -65,18 +64,6 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     private GenericGraphContainer graphContainer;
     private HashMap<String, GraphMLGraph> vertexIdToGraphMapping;
 
-    public GraphmlGraphContainerProvider(InputStream inputStream) throws InvalidGraphException {
-        this(GraphMLReader.read(inputStream));
-    }
-
-    public GraphmlGraphContainerProvider(GraphML graphML) {
-        this.graphML = Objects.requireNonNull(graphML);
-        // This should not be invoked at this point, however it is static anyways and in order
-        // to know the graph infos we must read the data.
-        // Maybe we can just read it partially at some point, however this is how it is implemented for now
-        loadGraphContainer();
-    }
-
     public GraphmlGraphContainerProvider(String location) throws IOException, InvalidGraphException {
         if (!new File(location).exists()) {
             throw new FileNotFoundException(location);
@@ -84,13 +71,13 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         try (InputStream input = new FileInputStream(location)) {
             this.graphML = GraphMLReader.read(input);
         }
-        // TODO MVR duplicated comment
         // This should not be invoked at this point, however it is static anyways and in order
         // to know the graph infos we must read the data.
         // Maybe we can just read it partially at some point, however this is how it is implemented for now
         loadGraphContainer();
     }
 
+    // TODO MVR add notification capabilities
 //    @Override
 //    public void setNotificationService(GraphNotificationService notificationService) {
 //
@@ -134,7 +121,9 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     }
 
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
-        final GenericGraphBuilder graphBuilder = GenericGraph.builder().properties(graphMLGraph.getProperties());
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .properties(graphMLGraph.getProperties())
+                .property("enrichment.resolveNodes", true); // Enable Node Enrichment
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {
                     // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph

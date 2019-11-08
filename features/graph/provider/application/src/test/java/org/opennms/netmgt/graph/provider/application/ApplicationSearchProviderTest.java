@@ -68,7 +68,10 @@ public class ApplicationSearchProviderTest {
         List<OnmsApplication> applications = createOnmsApplications(3);
         List<SearchSuggestion> expectations = new ArrayList<>();
         for(OnmsApplication app : applications) {
-            SearchSuggestion suggestion = new SearchSuggestion(providerId, OnmsApplication.class.getSimpleName(),
+            SearchSuggestion suggestion = new SearchSuggestion(
+                    providerId,
+                    OnmsApplication.class.getSimpleName(),
+                    Integer.toString(app.getId()),
                     app.getName());
             expectations.add(suggestion);
         }
