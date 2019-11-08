@@ -53,6 +53,7 @@ public class NodeEnrichmentProcessor implements EnrichmentProcessor {
 
     @Override
     public boolean canEnrich(GenericGraph graph) {
+        // TODO MVR make it a constant
         final Boolean value = graph.getProperty("enrichment.resolveNodes", false);
         return value;
     }

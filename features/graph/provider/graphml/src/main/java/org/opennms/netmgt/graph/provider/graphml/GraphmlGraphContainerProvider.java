@@ -117,6 +117,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
         final GenericGraphBuilder graphBuilder = GenericGraph.builder()
                 .properties(graphMLGraph.getProperties())
+                // TODO MVR make it a constant?
                 .property("enrichment.resolveNodes", true); // Enable Node Enrichment
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {
