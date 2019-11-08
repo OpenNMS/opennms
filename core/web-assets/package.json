@@ -64,7 +64,7 @@
         "ts-jest": "^24.1.0",
         "typescript": "^3.6.3",
         "uglifyjs-webpack-plugin": "^2.2.0",
-        "webpack": "^4.41.0",
+        "webpack": "^4.41.2",
         "webpack-bundle-analyzer": "^3.5.2",
         "webpack-cli": "^3.3.9",
         "yargs": "^14.0.0"
