@@ -8,7 +8,7 @@
         "url": "http://github.com/OpenNMS/opennms.git"
     },
     "devDependencies": {
-        "@babel/cli": "^7.6.2",
+        "@babel/cli": "^7.6.4",
         "@babel/core": "^7.6.2",
         "@babel/plugin-proposal-async-generator-functions": "^7.0.0",
         "@babel/plugin-proposal-class-properties": "^7.5.5",
