@@ -19,3 +19,4 @@ update_configs:
           dependency_name: "d3"
       - match:
           dependency_name: "ionicons"
+    target_branch: "foundation-2019"
