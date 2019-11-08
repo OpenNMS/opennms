@@ -33,8 +33,7 @@ RUN groupadd -g 10001 minion && \
 # Create SSH Key-Pair to use with the Karaf Shell
 RUN mkdir /opt/minion/.ssh && \
     chmod 700 /opt/minion/.ssh && \
-    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N "" && \
-    chmod 600 /opt/minion/.ssh/id_rsa
+    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N ""
 
 ##
 # Install and setup OpenNMS Minion RPMS
@@ -64,7 +63,8 @@ RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y in
     echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties && \
     chown 10001:10001 -R /opt/minion && \
     chgrp -R 0 /opt/minion && \
-    chmod -R g=u /opt/minion
+    chmod -R g=u /opt/minion && \
+    chmod 600 /opt/minion/.ssh/id_rsa
 
 COPY ./assets/* /
 
