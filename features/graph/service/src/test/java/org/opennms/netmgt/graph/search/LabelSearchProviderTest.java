@@ -72,6 +72,7 @@ public class LabelSearchProviderTest {
         matchingVertices.add(createVertex("aa" + searchTerm + "bb"));
         matchingVertices.add(createVertex(searchTerm + "bb"));
         matchingVertices.add(createVertex("aa" + searchTerm + "bb"));
+        matchingVertices.add(createVertex("aa" + searchTerm.toUpperCase() + "bb"));
 
         List<GenericVertex> allVertices = new ArrayList<>(matchingVertices);
         allVertices.add(createVertex("not matching"));
@@ -81,7 +82,7 @@ public class LabelSearchProviderTest {
             SearchSuggestion suggestion = new SearchSuggestion(
                     providerId,
                     GenericVertex.class.getSimpleName(),
-                    vertex.getId(),
+                    vertex.getLabel(),
                     vertex.getLabel());
             expectations.add(suggestion);
         }

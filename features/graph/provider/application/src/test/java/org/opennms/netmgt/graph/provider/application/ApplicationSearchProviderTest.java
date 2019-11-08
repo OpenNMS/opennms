@@ -39,7 +39,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opennms.core.test.OnmsAssert;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchSuggestion;
@@ -55,12 +54,6 @@ public class ApplicationSearchProviderTest {
     public void shouldReturnEmptyListForEmptySearchResult() {
         assertSuggestions(new ArrayList<>(), "blah", new ArrayList<>());
         assertSuggestions(new ArrayList<>(), "", new ArrayList<>());
-    }
-
-    @Test
-    public void shouldThrowExceptionForNullSearchParameter() {
-        OnmsAssert.assertThrowsException(NullPointerException.class,
-                ()->assertSuggestions(new ArrayList<>(), null, new ArrayList<>()));
     }
 
     @Test

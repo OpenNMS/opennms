@@ -57,7 +57,7 @@ public class LabelSearchProvider implements SearchProvider {
         return getVerticesOfGraph(searchContext.getGraphService(), namespace)
                 .stream()
                 .filter(v -> v.getLabel() != null && v.getLabel().toLowerCase().contains(input.toLowerCase()))
-                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), input, v.getLabel()))
+                .map(v -> new SearchSuggestion(getProviderId(), GenericVertex.class.getSimpleName(), v.getLabel(), v.getLabel()))
                 .limit(searchContext.getSuggestionsLimit())
                 .collect(Collectors.toList());
     }

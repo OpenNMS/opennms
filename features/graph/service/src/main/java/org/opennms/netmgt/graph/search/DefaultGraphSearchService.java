@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.GraphSearchService;
@@ -63,18 +64,19 @@ public class DefaultGraphSearchService implements GraphSearchService {
 
     @Override
     public List<SearchSuggestion> getSuggestions(String namespace, String input) {
+        Objects.requireNonNull(namespace);
 
-        if(input == null || input.length() < MIN_CHAR_FOR_SEARCH) {
+        if (input == null || input.length() < MIN_CHAR_FOR_SEARCH) {
             return Collections.emptyList();
         }
 
-        SearchContext context = SearchContext.builder()
+        final SearchContext context = SearchContext.builder()
                 .graphService(graphService)
                 .suggestionsLimit(10)
                 .build();
 
         // Remove duplicates (same label and same context but different provider):
-        Set<SearchSuggestion> suggestions = new TreeSet<>(Comparator.comparing(SearchSuggestion::getLabel)
+        final Set<SearchSuggestion> suggestions = new TreeSet<>(Comparator.comparing(SearchSuggestion::getLabel)
                 .thenComparing(SearchSuggestion::getContext));
 
         for(SearchProvider provider : graphSearchProviders.values()){
@@ -83,7 +85,13 @@ public class DefaultGraphSearchService implements GraphSearchService {
                 if(suggestionsOfProvider == null) {
                     LOG.warn("Provider {} does not work properly, received null suggestion list.", provider.getProviderId());
                 } else {
-                    suggestions.addAll(suggestionsOfProvider);
+                    // If not implemented properly, the search provider may return a null value.
+                    // Those are removed here to prevent anny issues later
+                    List<SearchSuggestion> excludeNullResults = suggestionsOfProvider.stream().filter(Objects::nonNull).collect(Collectors.toList());
+                    if (excludeNullResults.size() != suggestionsOfProvider.size()) {
+                        LOG.warn("Provider {} returned a null value. Please ensure it is implemented correctly", provider.getProviderId());
+                    }
+                    suggestions.addAll(excludeNullResults);
                 }
             }
         }
