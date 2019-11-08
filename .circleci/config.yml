@@ -377,7 +377,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
-            ./makerpm.sh -a -d -S tools/packages/opennms/opennms.spec
+            .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -409,7 +409,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            ./makerpm.sh -a -d -S tools/packages/minion/minion.spec
+            .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -441,7 +441,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            ./makerpm.sh -a -d -S tools/packages/sentinel/sentinel.spec
+            .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
