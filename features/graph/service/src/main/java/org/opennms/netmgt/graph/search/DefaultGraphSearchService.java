@@ -102,6 +102,7 @@ public class DefaultGraphSearchService implements GraphSearchService {
     public List<GenericVertex> search(SearchCriteria searchCriteria) {
         SearchProvider provider = graphSearchProviders.get(searchCriteria.getProviderId());
         Objects.requireNonNull(provider, "Could not find provider with id=" + searchCriteria.getProviderId());
+        Objects.requireNonNull(searchCriteria.getCriteria());
         return provider.resolve(graphService, searchCriteria);
     }
 

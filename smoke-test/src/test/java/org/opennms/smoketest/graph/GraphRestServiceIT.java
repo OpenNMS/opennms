@@ -96,14 +96,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .content("[0].graphs.size()", Matchers.is(1))
                 .content("[0].graphs[0].namespace", Matchers.is("application"))
                 .content("[0].graphs[0].label", Matchers.is("Application Graph"))
-                .content("[0].graphs[0].description", Matchers.is("This Topology Provider displays all defined Applications and their calculated states."))
+                .content("[0].graphs[0].description", Matchers.is("Displays all defined applications and their calculated states."))
 
                 .content("[1].id", Matchers.is("bsm"))
                 .content("[1].label", Matchers.is("Business Service Graph"))
                 .content("[1].graphs.size()", Matchers.is(1))
                 .content("[1].graphs[0].namespace", Matchers.is("bsm"))
                 .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
-                .content("[1].graphs[0].description", Matchers.is("This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."))
+                .content("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
 
                 .content("[2].id", Matchers.is("nodes"))
                 .content("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))

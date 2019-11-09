@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest.graph;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
@@ -44,10 +46,16 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
     @Test
     public void canExposeGraphProvider() {
         try {
-            karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-bsm"));
             karafShell.runCommand("bsm:generate-hierarchies 5 2");
-            karafShell.runCommand("graph:get --container bsm --namespace bsm", output ->
-                    output.contains("label => Business Service Graph") && output.contains("Vertex Details (5)"));
+            karafShell.runCommand("graph:get --container bsm --namespace bsm", output -> {
+                final int startIndex = output.indexOf("{");
+                final int endIndex = output.lastIndexOf("log:display");
+                String json = output.substring(startIndex, endIndex);
+                json = json.substring(0, json.lastIndexOf("}") + 1);
+                final JSONObject jsonObject = new JSONObject(new JSONTokener(json));
+                return jsonObject.getString("label").equals("Business Service Graph")
+                        && jsonObject.getJSONArray("vertices").length() == 5;
+            });
         } finally {
             karafShell.runCommand("bsm:delete-generated-hierarchies");
         }
@@ -55,6 +63,7 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
 
     @Test
     @Ignore("The provider was removed")
+    // TODO MVR do we want to test this or do we ignore it for now?
     public void canImportGraphRepository() {
         karafShell.runCommand("feature:install opennms-graph-provider-dummy");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-dummy"));

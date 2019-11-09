@@ -66,7 +66,7 @@ public class LabelSearchProvider implements SearchProvider {
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
         final List<GenericVertex> vertices = getVerticesOfGraph(graphService, searchCriteria.getNamespace())
                 .stream()
-                .filter(v -> v.getLabel() != null && v.getLabel().toLowerCase().contains(searchCriteria.getCriteria()))
+                .filter(v -> v.getLabel() != null && v.getLabel().toLowerCase().contains(searchCriteria.getCriteria().toLowerCase()))
                 .collect(Collectors.toList());
         return vertices;
     }
