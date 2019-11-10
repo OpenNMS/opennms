@@ -6,7 +6,7 @@ ARG BASE_IMAGE_VERSION="11"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-sentinel-base
 
-ARG REQUIRED_RPMS="wget gettext"
+ARG REQUIRED_RPMS="wget gettext openssh-clients"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
@@ -30,6 +30,11 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 RUN groupadd -g 10001 sentinel && \
     adduser -u 10001 -g 10001 -d /opt/sentinel -s /usr/bin/bash sentinel
 
+# Create SSH Key-Pair to use with the Karaf Shell
+RUN mkdir /opt/sentinel/.ssh && \
+    chmod 700 /opt/sentinel/.ssh && \
+    ssh-keygen -t rsa -f /opt/sentinel/.ssh/id_rsa -q -N ""
+
 ##
 # Install and setup OpenNMS Sentinel RPMS
 ##
@@ -52,11 +57,14 @@ RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y in
     dnf clean all && \
     rm -rf /var/cache/yum && \
     mkdir -p /opt/sentinel/data/{log,tmp} && \
+    echo sentinel=$(cat /opt/sentinel/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/sentinel/etc/keys.properties && \
+    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/sentinel/etc/keys.properties && \
     chown 10001:10001 -R /opt/sentinel && \
     chgrp -R 0 /opt/sentinel && \
-    chmod -R g=u /opt/sentinel
+    chmod -R g=u /opt/sentinel && \
+    chmod 600 /opt/sentinel/.ssh/id_rsa
 
-COPY ./assets/entrypoint.sh /
+COPY ./assets/* /
 
 VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
 
