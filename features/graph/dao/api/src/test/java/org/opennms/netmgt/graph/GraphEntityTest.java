@@ -26,11 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * This package should be named <code>org.opennms.netmgt.graph.*</code>, but is named topology instead.
- * The main reason for this is to not change the applicationContext-dao.xml setting up the SessionFactory.
- * If the entities are all in this package, they will automatically detected without any changes.
- *
- * @author mvrueden
- */
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+public class GraphEntityTest {
+
+    @Test
+    public void verifyGetVertexByVertexId() {
+        final GraphEntity graph = new GraphEntity();
+        graph.setNamespace("dummy");
+
+        final VertexEntity vertex = new VertexEntity();
+        vertex.setNamespace(graph.getNamespace());
+        vertex.setId("v1");
+        graph.addVertex(vertex);
+
+        Assert.assertSame(vertex, graph.getVertexByVertexId("v1"));
+    }
+}

@@ -50,12 +50,12 @@ import org.opennms.netmgt.graph.persistence.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.mapper.GenericToEntityMapper;
 import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
-import org.opennms.netmgt.topology.EdgeEntity;
-import org.opennms.netmgt.topology.GraphContainerEntity;
-import org.opennms.netmgt.topology.GraphEntity;
-import org.opennms.netmgt.topology.PropertyEntity;
-import org.opennms.netmgt.topology.VertexEntity;
-import org.opennms.netmgt.topology.FocusEntity;
+import org.opennms.netmgt.graph.EdgeEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.GraphEntity;
+import org.opennms.netmgt.graph.PropertyEntity;
+import org.opennms.netmgt.graph.VertexEntity;
+import org.opennms.netmgt.graph.FocusEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

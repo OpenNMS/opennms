@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.graph.dao.api;
 
-import org.opennms.netmgt.topology.GraphContainerEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
 
 public interface GraphContainerDao {
     /**

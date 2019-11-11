@@ -26,7 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
+
+import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,24 +39,39 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.json.JSONArray;
+import org.json.JSONTokener;
+
+import com.google.common.collect.Lists;
+
 @Entity
-@Table(name = "graph_attributes")
-public class PropertyEntity {
+@Table(name="graph_focus")
+public class FocusEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "graphSequence")
     @SequenceGenerator(name = "graphSequence", sequenceName = "graphnxtid")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name="type", nullable = false)
+    private String type;
 
-    @Column(name = "type")
-    private Class type;
+    @Column(name = "selection")
+    private String selection;
 
-    @Column(name = "value")
-    private String value;
+    public FocusEntity() {
+
+    }
+
+    public FocusEntity(String type) {
+        this.type = Objects.requireNonNull(type);
+    }
+
+    public FocusEntity(String type, List<String> vertexIds) {
+        this(type);
+        setSelection(vertexIds);
+    }
 
     public Long getId() {
         return id;
@@ -63,27 +81,37 @@ public class PropertyEntity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Class getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Class type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public String getValue() {
-        return value;
+    public String getSelection() {
+        return selection;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setSelection(String selection) {
+        this.selection = selection;
+    }
+
+
+    public void setSelection(List<String> vertexIds) {
+        final JSONArray vertexIdArray = new JSONArray(vertexIds);
+        setSelection(vertexIdArray.toString());
+    }
+
+    public List<String> getVertexIds() {
+        final String jsonString = this.selection;
+        final JSONTokener tokener = new JSONTokener(jsonString);
+        final JSONArray jsonArray = new JSONArray(tokener);
+        final List<String> vertices = Lists.newArrayList();
+        for (int i=0; i<jsonArray.length(); i++) {
+            final String vertexId = jsonArray.getString(i);
+            vertices.add(vertexId);
+        }
+        return vertices;
     }
 }

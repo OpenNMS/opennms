@@ -27,7 +27,7 @@
  *******************************************************************************/
 
 // TODO MVR move to own package
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
 
 import java.util.Objects;
 

@@ -34,6 +34,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.graph.EdgeEntity;
+import org.opennms.netmgt.graph.FocusEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.GraphEntity;
+import org.opennms.netmgt.graph.PropertyEntity;
+import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -41,12 +47,6 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.persistence.converter.ConverterService;
-import org.opennms.netmgt.topology.EdgeEntity;
-import org.opennms.netmgt.topology.GraphContainerEntity;
-import org.opennms.netmgt.topology.GraphEntity;
-import org.opennms.netmgt.topology.PropertyEntity;
-import org.opennms.netmgt.topology.VertexEntity;
-import org.opennms.netmgt.topology.FocusEntity;
 
 // TODO MVR remove System.out.println
 public class GenericToEntityMapper {

@@ -26,24 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Objects;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import org.opennms.netmgt.graph.dao.api.EntityProperties;
 
-public class GraphEntityTest {
+@Entity
+@DiscriminatorValue("vertex")
+public class VertexEntity extends AbstractGraphEntity {
 
-    @Test
-    public void verifyGetVertexByVertexId() {
-        final GraphEntity graph = new GraphEntity();
-        graph.setNamespace("dummy");
-
-        final VertexEntity vertex = new VertexEntity();
-        vertex.setNamespace(graph.getNamespace());
-        vertex.setId("v1");
-        graph.addVertex(vertex);
-
-        Assert.assertSame(vertex, graph.getVertexByVertexId("v1"));
+    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
+    public String getId() {
+        return this.getPropertyValue(EntityProperties.ID);
     }
+
+    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
+    public void setId(String id) {
+        Objects.requireNonNull(id);
+        this.setProperty(EntityProperties.ID, String.class, id);
+    }
+
 }
