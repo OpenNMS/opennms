@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +53,14 @@ import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class GraphmlGraphContainerProvider implements GraphContainerProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GraphmlGraphContainerProvider.class);
 
     private static final String FOCUS_STRATEGY = "focus-strategy";
     private static final String FOCUS_IDS = "focus-ids";
@@ -75,6 +80,15 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         // to know the graph infos we must read the data.
         // Maybe we can just read it partially at some point, however this is how it is implemented for now
         loadGraphContainer();
+
+        // Verify that the container Id matches the graph's name.
+        // This is not critical but should be by convention
+        // Determine graph file name
+        final String filename = Paths.get(location).getFileName().toString();
+        final String graphName = filename.substring(0, filename.lastIndexOf("."));
+        if (!graphContainer.getId().equals(graphName)) {
+            LOG.warn("The GraphML file name and the container id do not match but should. GraphML file name: '{}', container id: '{}'.", graphName, graphContainer.getId());
+        }
     }
 
     @Override
@@ -101,6 +115,7 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
                 final GenericGraph convertedGraph = convert(eachGraph);
                 graphContainerBuilder.addGraph(convertedGraph);
             }
+            this.vertexIdToGraphMapping.clear(); // clear data as it was only needed while building the container
             this.graphContainer = graphContainerBuilder.build();
         }
         return this.graphContainer;
@@ -108,9 +123,8 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
     @Override
     public GraphContainerInfo getContainerInfo() {
-        // AS this is static content, the container info is already part of the graph, no extra setup required
-        // TODO MVR maybe we should partially read this while instantiating and then implement the full loading,
-        // But as this is already al lin memory anyways we can just do the conversion when instantiating. At least for now
+        // As this is static content, the container info is already part of the graph, no extra setup required
+        // The content is already in memory, so no further conversion is performed.
         return graphContainer;
     }
 
@@ -180,11 +194,11 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
     // The graphML specification does not allow for an id on the graphML object itself
     // As we always need a unique Id we check if a property called `containerId` is provided.
     // If so we use that, otherwise we concatenate the ids of the graphs
-    // TODO MVR when sending the topology/graphml/test-topology.xml the cntainer id is test instead of graphml :(
     protected static String determineGraphContainerId(GraphML graphML) {
         if (graphML.getProperty("containerId") != null) {
             return graphML.getProperty("containerId");
         }
+        LOG.warn("No property 'containerId' was provided. Calculating the container id using the graph's ids");
         final String calculatedId = graphML.getGraphs().stream().map(g -> g.getId()).collect(Collectors.joining("."));
         return calculatedId;
     }

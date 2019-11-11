@@ -1,3 +1,5 @@
+TODO MVR: ensure graphml name and container id match
+
 ## Namespace
 
  - namespace should be unique overall graphs. Best practise: prefix with <container-id>

@@ -40,7 +40,6 @@ import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ import com.google.common.collect.Maps;
 public class GraphMLContainerProviderServiceFactory implements ManagedServiceFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLContainerProviderServiceFactory.class);
-    private static final String TOPOLOGY_LOCATION = "topologyLocation";
+    private static final String GRAPH_LOCATION = "graphLocation";
 
     private final BundleContext bundleContext;
     private final Map<String, List<ServiceRegistration<?>>> containerRegistrations = Maps.newHashMap();
@@ -66,15 +65,15 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
     }
 
     @Override
-    public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
+    public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) {
         LOG.debug("updated(String, Dictionary) invoked");
-        String location = (String)properties.get(TOPOLOGY_LOCATION); // TODO MVR we re-use the topologyLocation label for now
         if (!containerRegistrations.containsKey(pid)) {
             LOG.debug("Service with pid '{}' is new. Register {}", pid, GraphmlGraphContainerProvider.class.getSimpleName());
             final Dictionary<String,Object> metaData = new Hashtable<>();
             metaData.put(Constants.SERVICE_PID, pid);
 
             // Expose the Container Provider
+            final String location = (String)properties.get(GRAPH_LOCATION);
             try {
                 final GraphmlGraphContainerProvider graphmlGraphContainerProvider = new GraphmlGraphContainerProvider(location);
                 registerService(pid, GraphContainerProvider.class, graphmlGraphContainerProvider, metaData);
@@ -95,10 +94,6 @@ public class GraphMLContainerProviderServiceFactory implements ManagedServiceFac
             serviceRegistrations.forEach(ServiceRegistration::unregister);
             containerRegistrations.remove(pid);
         }
-    }
-
-    private <T> void registerService(String pid, Class<T> serviceType, T serviceImpl) {
-        registerService(pid, serviceType, serviceImpl, new Hashtable<>());
     }
 
     private <T> void registerService(String pid, Class<T> serviceType, T serviceImpl, Dictionary<String, Object> serviceProperties) {

@@ -9,7 +9,6 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
     <!-- GraphMLContainerProviders are exposed by the factory, because they are dynamically created by the GraphmlRepository -->
-    <!-- TODO MVR probably need to change this -->
     <bean id="graphMLContainerProviderServiceFactory" class="org.opennms.netmgt.graph.provider.graphml.GraphMLContainerProviderServiceFactory">
         <argument ref="blueprintBundleContext" />
     </bean>

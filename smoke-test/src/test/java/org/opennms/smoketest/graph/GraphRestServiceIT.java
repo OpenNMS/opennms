@@ -365,6 +365,47 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .content("vertices[2].nodeInfo.categories", Matchers.hasItems("Test", "Node"));
     }
 
+    @Test
+    // Here we test, that the name of the file and the container id may be different
+    public void verifyContainerId() {
+        final String graphmlName = "test-graph";
+        final String containerId = CONTAINER_ID;
+        graphmlDocument = new GraphmlDocument(graphmlName, "/topology/graphml/test-topology.xml");
+        createGraphMLAndWaitUntilDone(graphmlDocument);
+
+        // Verify container can be fetched by container id
+        given().log().ifValidationFails()
+                .get(containerId)
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON);
+
+        // Verify container can not be fetched by graph name
+        given().log().ifValidationFails()
+                .get(graphmlName)
+                .then()
+                .log().ifValidationFails()
+                .statusCode(404);
+
+        // Verify graphml can be fetched by name
+        given().log().ifValidationFails()
+                .basePath("/opennms/rest")
+                .get("graphml/{name}", graphmlName)
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.XML);
+
+        // Verify graphml can not be fetched by container id
+        given().log().ifValidationFails()
+                .basePath("/opennms/rest")
+                .get("graphml/{name}", containerId)
+                .then()
+                .log().ifValidationFails()
+                .statusCode(404);
+    }
+
     private void createGraphMLAndWaitUntilDone(GraphmlDocument graphmlDocument) {
         graphmlDocument.create(restClient);
     	await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> {
