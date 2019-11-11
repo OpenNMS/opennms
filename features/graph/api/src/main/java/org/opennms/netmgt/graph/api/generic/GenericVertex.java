@@ -83,6 +83,12 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeR
             properties(vertex.getProperties());
             return this;
         }
+
+        public GenericVertexBuilder nodeRef(String foreignSource, String foreignId) {
+            property(GenericProperties.FOREIGN_SOURCE, foreignSource);
+            property(GenericProperties.FOREIGN_ID, foreignId);
+            return this;
+        }
     	
     	public GenericVertex build() {
     		return new GenericVertex(properties);

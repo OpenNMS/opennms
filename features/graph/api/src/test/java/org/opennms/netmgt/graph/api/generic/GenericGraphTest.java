@@ -37,6 +37,7 @@ import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
@@ -144,5 +145,22 @@ public class GenericGraphTest {
         assertThat(view.getVertices(), Matchers.hasSize(7));
         assertThat(view.getEdges(), Matchers.hasSize(6));
         assertThat(view.getVertexIds(), Matchers.hasItems("v1", "v1.1", "v1.2", "v1.1.1", "v1.1.2", "v1.2.1", "v1.2.2"));
+    }
+
+    @Test
+    public void shouldResolveVerticesWithNodeRef() {
+        final NodeRef nodeRef = NodeRef.from("test:node1");
+        final String namespace = "dummy";
+        final GenericGraph graph = GenericGraph.builder().namespace(namespace)
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v1").nodeRef("test", "node1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v2").nodeRef("test", "node1").build())
+                .addVertex(GenericVertex.builder().namespace(namespace).id("v3").build())
+                .build();
+        final List<GenericVertex> vertices = graph.resolveVertices(nodeRef);
+        assertThat(vertices, Matchers.hasSize(2));
+        assertThat(vertices, Matchers.hasItems(graph.getVertex("v1"), graph.getVertex("v2")));
+
+        final GenericGraph emptyGraph = GenericGraph.builder().namespace(namespace).build();
+        assertThat(emptyGraph.resolveVertices(nodeRef), Matchers.hasSize(0));
     }
 }

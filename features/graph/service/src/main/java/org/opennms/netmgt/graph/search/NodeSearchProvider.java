@@ -81,15 +81,11 @@ public class NodeSearchProvider implements SearchProvider {
         return suggestions;
     }
 
-    // TODO MVR technically multiple vertices could reference the same node. May not make much sense, but is possible
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
         final OnmsNode node = nodeDao.get(searchCriteria.getCriteria());
         final NodeRef nodeRef = NodeRef.from(node.getId(), node.getForeignSource(), node.getForeignId());
-        final GenericVertex vertex = graphService.getGraph(searchCriteria.getNamespace()).getVertex(nodeRef);
-        if (vertex != null) {
-            return Lists.newArrayList(vertex);
-        }
-        return Lists.newArrayList();
+        final List<GenericVertex> vertices = graphService.getGraph(searchCriteria.getNamespace()).resolveVertices(nodeRef);
+        return vertices;
     }
 }

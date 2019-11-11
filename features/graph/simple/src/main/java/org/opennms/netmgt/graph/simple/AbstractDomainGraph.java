@@ -83,12 +83,6 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     }
 
     @Override
-    public V getVertex(NodeRef nodeRef) {
-        Objects.requireNonNull(nodeRef);
-        return Optional.ofNullable(delegate.getVertex(nodeRef)).map(this::convert).orElse(null);
-    }
-
-    @Override
     public E getEdge(String id) {
         Objects.requireNonNull(id);
         return Optional.ofNullable(this.delegate.getEdge(id)).map(this::convert).orElse(null);
@@ -111,6 +105,12 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
                 .map(AbstractDomainVertex::asGenericVertex).collect(Collectors.toList());
         GenericGraph genericGraph = this.delegate.getView(genericVerticesInFocus, szl).asGenericGraph();
         return convert(genericGraph);
+    }
+
+    @Override
+    public List<V> resolveVertices(NodeRef nodeRef) {
+        Objects.requireNonNull(nodeRef);
+        return delegate.resolveVertices(nodeRef).stream().map(this::convert).collect(Collectors.toList());
     }
 
     @Override

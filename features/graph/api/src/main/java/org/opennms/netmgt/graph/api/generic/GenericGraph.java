@@ -62,7 +62,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph;
     private final Map<String, GenericVertex> vertexToIdMap;
     private final Map<String, GenericEdge> edgeToIdMap;
-    private final Map<NodeRef, GenericVertex> nodeRefToVertexMap;
+    private final Map<NodeRef, List<GenericVertex>> nodeRefToVertexMap;
 
     // A calculation of the focus
     private final Focus defaultFocus;
@@ -118,14 +118,15 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     }
 
     @Override
-    public GenericVertex getVertex(NodeRef nodeRef) {
+    public List<GenericVertex> resolveVertices(NodeRef nodeRef) {
         Objects.requireNonNull(nodeRef);
+        final List<GenericVertex> resolvedVertices = Lists.newArrayList();
         for (NodeRef eachVariant : nodeRef.getVariants()) {
             if (nodeRefToVertexMap.containsKey(eachVariant)) {
-                return nodeRefToVertexMap.get(eachVariant);
+                resolvedVertices.addAll(nodeRefToVertexMap.get(eachVariant));
             }
         }
-        return null;
+        return resolvedVertices;
     }
 
     @Override
@@ -226,7 +227,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
         private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
         private final Map<String, GenericEdge> edgeToIdMap = new HashMap<>();
-        private final Map<NodeRef, GenericVertex> nodeRefToVertexMap = new HashMap<>();
+        private final Map<NodeRef, List<GenericVertex>> nodeRefToVertexMap = new HashMap<>();
 
         // A calculation of the focus
         private Focus defaultFocus = new Focus(FocusStrategy.EMPTY);
@@ -286,7 +287,8 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             jungGraph.addVertex(vertex.getVertexRef());
             vertexToIdMap.put(vertex.getId(), vertex);
             if (vertex.getNodeRef() != null) {
-                nodeRefToVertexMap.put(vertex.getNodeRef(), vertex);
+                nodeRefToVertexMap.putIfAbsent(vertex.getNodeRef(), new ArrayList<>());
+                nodeRefToVertexMap.get(vertex.getNodeRef()).add(vertex);
             }
             return this; 
         }
@@ -337,14 +339,15 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             return vertexToIdMap.get(id);
         }
 
-        public GenericVertex getVertex(NodeRef nodeRef) {
+        public List<GenericVertex> resolveVertices(NodeRef nodeRef) {
             Objects.requireNonNull(nodeRef);
+            final List<GenericVertex> resolvedVertices = Lists.newArrayList();
             for (NodeRef eachVariant : nodeRef.getVariants()) {
                 if (nodeRefToVertexMap.containsKey(eachVariant)) {
-                    return nodeRefToVertexMap.get(eachVariant);
+                    resolvedVertices.addAll(nodeRefToVertexMap.get(eachVariant));
                 }
             }
-            return null;
+            return resolvedVertices;
         }
 
         public GenericGraphBuilder namespace(String namespace) {
