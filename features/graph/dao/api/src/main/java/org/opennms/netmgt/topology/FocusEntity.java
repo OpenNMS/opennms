@@ -34,6 +34,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -48,8 +49,8 @@ import com.google.common.collect.Lists;
 public class FocusEntity {
 
     @Id
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
-    @GeneratedValue(generator = "opennmsSequence")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "graphSequence")
+    @SequenceGenerator(name = "graphSequence", sequenceName = "graphnxtid")
     @Column(name = "id", nullable = false)
     private Long id;
 

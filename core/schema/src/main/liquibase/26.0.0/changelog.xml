@@ -5,6 +5,19 @@
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
+    <changeSet runOnChange="false" author="mvrueden" id="26.0.0-graphnxtid">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+                WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'graphnxtid'
+            </sqlCheck>
+        </preConditions>
+        <createSequence sequenceName="graphnxtid" />
+        <rollback>
+            <dropSequence sequenceName="graphnxtid" />
+        </rollback>
+    </changeSet>
+
     <changeSet author="mvrueden" id="26.0.0-graph-tables">
         <createTable tableName="graph_focus" remarks="focus for graph elements">
             <column name="id" type="bigint">

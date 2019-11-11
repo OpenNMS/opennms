@@ -2755,6 +2755,13 @@ CREATE TABLE graph_element_relations (
   CONSTRAINT graph_element_relations_pkey PRIMARY KEY (parent_id, child_id)
 );
 
+--# Sequence for the id column in graph_elements table
+--#          sequence, column, table
+--# install: graphnxtid id graph_elements
+--# install: graphnxtid id graph_focus
+--# install: graphnxtid id graph_attributes
+create sequence graphnxtid minvalue 1;
+
 --##################################################################
 --# User defined links
 --##################################################################
