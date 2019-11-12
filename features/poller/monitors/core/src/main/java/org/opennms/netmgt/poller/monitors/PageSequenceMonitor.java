@@ -64,6 +64,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -353,6 +354,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 if (m_parms.size() > 0) {
                     method.setQueryParameters(expandParms(svc));
+                }
+
+                for(final org.opennms.netmgt.config.pagesequence.Header header : m_page.getHeaders()) {
+                    method.setHeader(new BasicHeader(header.getName(), header.getValue()));
                 }
 
                 if (getUserInfo() != null) {
