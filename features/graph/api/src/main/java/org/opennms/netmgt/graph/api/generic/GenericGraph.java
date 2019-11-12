@@ -325,7 +325,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             final VertexRef targetRef = edge.getTarget();
 
             // neither source nor target share the same namespace => both unknown => not valid
-            if (!sourceRef.getNamespace().equalsIgnoreCase(getNamespace()) && targetRef.getNamespace().equalsIgnoreCase(getNamespace())) {
+            if (!sourceRef.getNamespace().equalsIgnoreCase(getNamespace()) && !targetRef.getNamespace().equalsIgnoreCase(getNamespace())) {
                 throw new IllegalArgumentException(
                         String.format("Adding an Edge with two vertices of unknown namespace. Either the source or target vertex must match the graph's namespace (%s). But got: (%s, %s)",
                                 getNamespace(), sourceRef.getNamespace(), targetRef.getNamespace()));
