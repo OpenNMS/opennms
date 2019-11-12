@@ -41,7 +41,7 @@ public class ClassConverter implements Converter<Class> {
 
     @Override
     public boolean canConvert(Class<?> type) {
-        return type != null;
+        return type == Class.class;
     }
 
     @Override
