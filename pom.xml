@@ -1645,6 +1645,30 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+       <id>create-license-list</id>
+       <build>
+          <plugins>
+             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <configuration>
+                   <useMissingFile>true</useMissingFile>
+                </configuration>
+                <executions>
+                   <execution>
+                      <id>create-license-list</id>
+                      <goals>
+                         <goal>aggregate-add-third-party</goal>
+                      </goals>
+                      <phase>generate-resources</phase>
+                   </execution>
+                </executions>
+             </plugin>
+          </plugins>
+       </build>
+    </profile>
   </profiles>
   <dependencyManagement>
     <dependencies>
