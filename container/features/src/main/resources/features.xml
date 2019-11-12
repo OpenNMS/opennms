@@ -1638,4 +1638,11 @@
         <feature>opennms-topology-api</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.legacy/${project.version}</bundle>
     </feature>
+    <!-- For now it is only used for test purposes -->
+    <feature name="opennms-graph-provider-persistence-test" description="OpenNMS :: Features :: Graph :: Provider :: Persistence Test" version="${project.version}">
+        <feature>opennms-model</feature>
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-graph-simple</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.persistence-test/${project.version}</bundle>
+    </feature>
 </features>
