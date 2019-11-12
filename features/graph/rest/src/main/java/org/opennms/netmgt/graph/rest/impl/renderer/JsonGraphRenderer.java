@@ -122,7 +122,9 @@ public class JsonGraphRenderer implements GraphRenderer {
         jsonGraph.put("vertices", jsonVerticesArray);
 
         if (graph != null) {
-            graph.asGenericGraph().getProperties().forEach((key, value) -> jsonGraph.put(key, value));
+            final Map<String, Object> properties = graph.asGenericGraph().getProperties();
+            final JSONObject convertedProperties = convert(properties);
+            convertedProperties.toMap().forEach(jsonGraph::put);
 
             // Convert Edges
             graph.getEdges().stream()
@@ -180,24 +182,31 @@ public class JsonGraphRenderer implements GraphRenderer {
     }
 
     private static JSONObject convert(Vertex vertex) {
-        final JSONObject jsonVertex = new JSONObject();
         final GenericVertex genericVertex = vertex.asGenericVertex();
         final Map<String, Object> properties = genericVertex.getProperties();
+        final JSONObject jsonVertex = convert(properties);
+        return jsonVertex;
+    }
+
+    private static JSONObject convert(Map<String, Object> properties) {
+        final JSONObject jsonObject = new JSONObject();
         for (Map.Entry<String, Object> eachProperty : properties.entrySet()) {
             final Object value = eachProperty.getValue();
             // TODO MVR make this more generic (ConverterService, etc.) :)
             if (value != null) {
                 if (value.getClass().isPrimitive() || value.getClass().isEnum() || value.getClass() == String.class) {
-                    jsonVertex.put(eachProperty.getKey(), value.toString());
+                    jsonObject.put(eachProperty.getKey(), value.toString());
                 } else if (value.getClass() == NodeInfo.class) {
-                    jsonVertex.put(eachProperty.getKey(), convert((NodeInfo) value));
+                    jsonObject.put(eachProperty.getKey(), convert((NodeInfo) value));
                 } else if (value.getClass() == IpInfo.class) {
-                    jsonVertex.put(eachProperty.getKey(), convert((IpInfo) value));
+                    jsonObject.put(eachProperty.getKey(), convert((IpInfo) value));
+                } else if (value.getClass() == Class.class) {
+                    jsonObject.put(eachProperty.getKey(), ((Class)value).getName());
                 } else {
-                    jsonVertex.put(eachProperty.getKey(), value);
+                    jsonObject.put(eachProperty.getKey(), value);
                 }
             }
         }
-        return jsonVertex;
+        return jsonObject;
     }
 }
