@@ -75,8 +75,10 @@ public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleE
     
     public final static class SimpleGraphBuilder extends AbstractDomainGraphBuilder<SimpleGraphBuilder, SimpleVertex, SimpleEdge> {
         
-        private SimpleGraphBuilder() {}
-        
+        private SimpleGraphBuilder() {
+            domainVertexType(SimpleVertex.class);
+        }
+
         public SimpleGraph build() {
             return new SimpleGraph(delegate.build());
         }

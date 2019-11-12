@@ -40,16 +40,19 @@ public class DefaultGraphInfo implements GraphInfo {
     private String description;
     private String label;
     private Class<? extends Vertex> vertexType;
+    private Class<? extends Vertex> domainVertexType;
 
     public DefaultGraphInfo(final String namespace, Class<? extends Vertex> vertexType) {
         this.namespace = Objects.requireNonNull(namespace);
         this.vertexType = Objects.requireNonNull(vertexType);
+        this.domainVertexType = Objects.requireNonNull(vertexType);
     }
 
     public DefaultGraphInfo(GraphInfo copy) {
         this(copy.getNamespace(), copy.getVertexType());
         setLabel(copy.getLabel());
         setDescription(copy.getDescription());
+        setDomainVertexType(copy.getDomainVertexType());
     }
 
     @Override
@@ -72,6 +75,11 @@ public class DefaultGraphInfo implements GraphInfo {
         return vertexType;
     }
 
+    @Override
+    public Class<? extends Vertex> getDomainVertexType() {
+        return domainVertexType;
+    }
+
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
@@ -82,6 +90,10 @@ public class DefaultGraphInfo implements GraphInfo {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public void setDomainVertexType(Class<? extends Vertex> domainVertexType) {
+        this.domainVertexType = domainVertexType;
     }
 
     public DefaultGraphInfo withLabel(String label) {

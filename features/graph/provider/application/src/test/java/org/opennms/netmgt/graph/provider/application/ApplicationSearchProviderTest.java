@@ -77,7 +77,7 @@ public class ApplicationSearchProviderTest {
         ApplicationSearchProvider provider = new ApplicationSearchProvider(dao);
         SearchContext context = SearchContext.builder().graphService(Mockito.mock(GraphService.class)).build();
         List<SearchSuggestion> results = provider.getSuggestions(context,
-                ApplicationGraph.TOPOLOGY_NAMESPACE, input);
+                ApplicationGraph.NAMESPACE, input);
         assertEquals(expectations, results);
     }
 

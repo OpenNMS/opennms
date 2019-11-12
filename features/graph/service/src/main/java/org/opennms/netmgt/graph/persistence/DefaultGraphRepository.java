@@ -32,7 +32,14 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.graph.EdgeEntity;
+import org.opennms.netmgt.graph.FocusEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.GraphEntity;
+import org.opennms.netmgt.graph.PropertyEntity;
+import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -48,14 +55,7 @@ import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.netmgt.graph.dao.api.GraphContainerDao;
 import org.opennms.netmgt.graph.persistence.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.mapper.GenericToEntityMapper;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
-import org.opennms.netmgt.graph.EdgeEntity;
-import org.opennms.netmgt.graph.GraphContainerEntity;
-import org.opennms.netmgt.graph.GraphEntity;
-import org.opennms.netmgt.graph.PropertyEntity;
-import org.opennms.netmgt.graph.VertexEntity;
-import org.opennms.netmgt.graph.FocusEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,10 @@ public class DefaultGraphRepository implements GraphRepository {
             containerInfo.setLabel(containerEntity.getLabel());
             containerInfo.setDescription(containerEntity.getDescription());
             containerEntity.getGraphs().forEach(graphEntity -> {
-                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), SimpleVertex.class /* TODO MVR this is not correct */);
+                final PropertyEntity property = graphEntity.getProperty(GenericProperties.DOMAIN_VERTEX_TYPE);
+                final Object value = entityToGenericMapper.convert(property);
+                final Class<Vertex> vertexType = (Class<Vertex>) value;
+                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), vertexType);
                 graphInfo.setLabel(graphEntity.getLabel());
                 graphInfo.setDescription(graphEntity.getDescription());
                 containerInfo.getGraphInfos().add(graphInfo);
@@ -152,6 +155,7 @@ public class DefaultGraphRepository implements GraphRepository {
                             graphEntity.setProperty(GenericProperties.NAMESPACE, String.class, graphInfo.getNamespace());
                             graphEntity.setProperty(GenericProperties.LABEL, String.class, graphInfo.getLabel());
                             graphEntity.setProperty(GenericProperties.DESCRIPTION, String.class, graphInfo.getDescription());
+                            graphEntity.setProperty(GenericProperties.DOMAIN_VERTEX_TYPE, Vertex.class, graphInfo.getDomainVertexType().toString());
                         }
 
                         // Update Focus
@@ -211,7 +215,8 @@ public class DefaultGraphRepository implements GraphRepository {
             final GenericGraph genericGraph = GenericGraph.builder()
                     .namespace(graphInfo.getNamespace())
                     .property(GenericProperties.LABEL, graphInfo.getLabel())
-                    .property(GenericProperties.DESCRIPTION, graphInfo.getDescription()).build();
+                    .property(GenericProperties.DESCRIPTION, graphInfo.getDescription())
+                    .property(GenericProperties.DOMAIN_VERTEX_TYPE, graphInfo.getVertexType()).build();
             genericGraphContainerBuilder.addGraph(genericGraph);
         });
         save(genericGraphContainerBuilder.build());

@@ -35,8 +35,9 @@ import org.opennms.netmgt.graph.api.Vertex;
  * This allows to fetch a minimal set of information (namespace, label, description) without loading the whole graph.
  *
  * @param <V> the vertex type
+ * @param <D> the domain vertex type
  */
-public interface GraphInfo<V extends Vertex> {
+public interface GraphInfo<V extends Vertex, D extends Vertex> {
 
     // TODO MVR ensure namespace does not contain spaces and weird characters (only a-z0-9-_.) should be allowed
     // TODO MVR same is true for vertex,edge and container (the same may be true for id of those elements)
@@ -61,4 +62,13 @@ public interface GraphInfo<V extends Vertex> {
      * @return The parent type of the vertices within the graph
      */
     Class<V> getVertexType();
+
+    /**
+     * If a concrete Graph is converted to its generic version, the vertex type is {@link org.opennms.netmgt.graph.api.generic.GenericVertex}.
+     * However the type of the vertex in its domain may differ. If dealing with a generic version, the {@link #getDomainVertexType()} should return
+     * the domains vertex type instead.
+     *
+     * @return The domain vertex type.
+     */
+    Class<D> getDomainVertexType();
 }

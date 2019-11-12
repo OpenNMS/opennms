@@ -26,39 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.generic;
+package org.opennms.netmgt.graph.persistence.converter;
 
-/**
- * These properties are generally supported and may be used to persist as values when building a {@link GenericElement}.
- *
- * @author mvrueden
- */
-public interface GenericProperties {
-    /** The id of the element */
-    String ID = "id";
+public class ClassConverter implements Converter<Class> {
 
-    /** The namespace of the element. */
-    String NAMESPACE = "namespace";
+    @Override
+    public Class toValue(Class<Class> type, String string) {
+        try {
+            return Class.forName(string);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Cannot load class with name '" + string + "'", e);
+        }
+    }
 
-    /** The description of the element */
-    String DESCRIPTION = "description";
+    @Override
+    public boolean canConvert(Class<?> type) {
+        return type != null;
+    }
 
-    /** The label of the element */
-    String LABEL = "label";
-
-    /** Reference to a node, either the id, or a <foreignSource>:<foreignId> statement */
-    String NODE_CRITERIA = "nodeCriteria";
-
-    String NODE_INFO = "nodeInfo";
-
-    String NODE_ID = "nodeID";
-    String FOREIGN_SOURCE = "foreignSource";
-    String FOREIGN_ID = "foreignID";
-
-    /**
-     * If a graph is converted to or from a generic type it most likely represents a certain type
-     * (e.g. Business Service Vertex). In order to determine the vertex type later on (when dealing with the generic version)
-     * the domain vertex type may be persisted in the generic version.
-     */
-    String DOMAIN_VERTEX_TYPE = "domainVertexType";
+    @Override
+    public String toStringRepresentation(Class value) {
+        return value.getName();
+    }
 }

@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.NodeRef;
+import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
@@ -66,7 +67,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 
     // A calculation of the focus
     private final Focus defaultFocus;
-    private final GraphInfo<GenericVertex> graphInfo;
+    private final GraphInfo<GenericVertex, Vertex> graphInfo;
 
     private GenericGraph(GenericGraphBuilder builder) {
         super(builder.properties);
@@ -110,6 +111,11 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     @Override
     public Class<GenericVertex> getVertexType() {
         return GenericVertex.class;
+    }
+
+    @Override
+    public Class<Vertex> getDomainVertexType() {
+        return graphInfo.getDomainVertexType();
     }
 
     @Override
@@ -458,7 +464,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
     }
     
-    private class GenericGraphInfo implements GraphInfo<GenericVertex> {
+    private class GenericGraphInfo implements GraphInfo<GenericVertex, Vertex> {
 
         @Override
         public String getNamespace() {
@@ -478,6 +484,11 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         @Override
         public Class<GenericVertex> getVertexType() {
             return GenericVertex.class;
+        }
+
+        @Override
+        public Class<Vertex> getDomainVertexType() {
+            return (Class<Vertex>) properties.get(GenericProperties.DOMAIN_VERTEX_TYPE);
         }
 
     }

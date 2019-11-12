@@ -108,7 +108,7 @@ public class EntityToGenericMapper {
         return genericGraphBuilder.build();
     }
 
-    private Object convert(final PropertyEntity propertyEntity) {
+    public Object convert(final PropertyEntity propertyEntity) {
         final Object value = converterService.toValue(propertyEntity.getType(), propertyEntity.getValue());
         return value;
     }

@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.application;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
@@ -41,14 +40,11 @@ import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.GraphSearchService;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
-import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +84,7 @@ public class LegacyApplicationSearchProvider extends AbstractSearchProvider impl
         // we skip the suggest phase since the old search doesn't distinguish between suggesting and searching.
 
         SearchCriteria searchCriteria = new SearchCriteria();
-        searchCriteria.setNamespace(ApplicationGraph.TOPOLOGY_NAMESPACE);
+        searchCriteria.setNamespace(ApplicationGraph.NAMESPACE);
         // context shouldn't matter: searchCriteria.setContext();
         searchCriteria.setCriteria(searchQuery.getQueryString());
         List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
