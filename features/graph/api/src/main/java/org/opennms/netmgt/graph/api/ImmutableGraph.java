@@ -43,8 +43,6 @@ public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphI
 
     V getVertex(String id);
 
-    V getVertex(NodeRef nodeRef);
-
     E getEdge(String id);
 
     List<String> getVertexIds();
@@ -54,6 +52,8 @@ public interface ImmutableGraph<V extends Vertex, E extends Edge> extends GraphI
     ImmutableGraph<V, E> getView(Collection<V> verticesInFocus, int szl);
 
     List<V> resolveVertices(Collection<String> vertexIds);
+
+    List<V> resolveVertices(NodeRef nodeRef);
 
     V resolveVertex(VertexRef vertexRef);
 

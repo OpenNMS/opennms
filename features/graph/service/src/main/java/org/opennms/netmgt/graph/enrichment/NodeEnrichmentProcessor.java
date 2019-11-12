@@ -64,13 +64,13 @@ public class NodeEnrichmentProcessor implements EnrichmentProcessor {
         final List<NodeInfo> nodeInfos = nodeService.resolveNodes(nodeRefs);
         final GenericGraph.GenericGraphBuilder enrichedGraphBuilder = GenericGraph.builder().graph(graph);
         nodeInfos.forEach(ni -> {
-            final GenericVertex vertex = enrichedGraphBuilder.getVertex(ni.getNodeRef());
-            if (vertex != null) {
+            final List<GenericVertex> vertices = enrichedGraphBuilder.resolveVertices(ni.getNodeRef());
+            for (GenericVertex eachVertex : vertices) {
                 GenericVertex enrichedVertex = GenericVertex.builder()
-                        .vertex(vertex)
+                        .vertex(eachVertex)
                         .property(GenericProperties.NODE_INFO, ni)
                         .build();
-                enrichedGraphBuilder.removeVertex(vertex);
+                enrichedGraphBuilder.removeVertex(eachVertex);
                 enrichedGraphBuilder.addVertex(enrichedVertex);
             }
         });
