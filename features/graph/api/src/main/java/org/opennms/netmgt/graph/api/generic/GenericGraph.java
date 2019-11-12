@@ -41,6 +41,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.Vertex;
@@ -310,14 +311,36 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
                         String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
                         edge.getNamespace(), this.getNamespace(), edge.toString()));
             }
-            assertVertexFromSameNamespaceIsKnown(edge.getSource());
-            assertVertexFromSameNamespaceIsKnown(edge.getTarget());
+            assertEdgeContainsAtLeastOneKnownVertex(edge);
             jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
             edgeToIdMap.put(edge.getId(), edge);
             return this;
         }
 
-        private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex){
+        // Verifies that either the source or target vertex are known by the graph
+        private void assertEdgeContainsAtLeastOneKnownVertex(Edge edge) {
+            Objects.requireNonNull(edge.getSource(), "Source vertex must be provided");
+            Objects.requireNonNull(edge.getTarget(), "Target vertex must be provided");
+            final VertexRef sourceRef = edge.getSource();
+            final VertexRef targetRef = edge.getTarget();
+
+            // neither source nor target share the same namespace => both unknown => not valid
+            if (!sourceRef.getNamespace().equalsIgnoreCase(getNamespace()) && targetRef.getNamespace().equalsIgnoreCase(getNamespace())) {
+                throw new IllegalArgumentException(
+                        String.format("Adding an Edge with two vertices of unknown namespace. Either the source or target vertex must match the graph's namespace (%s). But got: (%s, %s)",
+                                getNamespace(), sourceRef.getNamespace(), targetRef.getNamespace()));
+            }
+            // source vertex is shared -> check if known
+            if (sourceRef.getNamespace().equals(getNamespace())) {
+                assertVertexFromSameNamespaceIsKnown(sourceRef);
+            }
+            // target vertex is shared -> check if known
+            if (targetRef.getNamespace().equals(getNamespace())) {
+                assertVertexFromSameNamespaceIsKnown(targetRef);
+            }
+        }
+
+        private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex) {
             if (vertex.getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(vertex.getId()) == null) {
                 throw new IllegalArgumentException(
                         String.format("Adding a VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",

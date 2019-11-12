@@ -62,7 +62,7 @@ public class GenericGraphTest {
     }
 
     @Test
-    public void shouldRejectEdgesWithUnknownVertices(){
+    public void shouldRejectEdgeWhereBothVerticesAreUnknown(){
         GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
         GenericVertex vertex = TestObjectCreator.createVertex();
         final GenericEdge edge = TestObjectCreator.createEdge(vertex, vertex);
@@ -73,6 +73,25 @@ public class GenericGraphTest {
         // now add the vertex and the exception should be avoided:
         graphBuilder.addVertex(vertex);
         graphBuilder.addEdge(edge); // should throw no exception
+    }
+
+    @Test
+    public void shouldAcceptEdgeWhereOneVertexIsUnknown() {
+        GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
+        GenericVertex unknownVertex = TestObjectCreator.createVertex();
+        GenericVertex knownVertex = graphBuilder.getVertices().get(0);
+        final GenericEdge edge1 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
+        final GenericEdge edge2 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
+
+        // Should work
+        graphBuilder.addEdge(edge1);
+
+        // Should work
+        graphBuilder.removeEdge(edge1);
+        graphBuilder.addEdge(edge2);
+
+        // Should also work
+        graphBuilder.addEdge(edge1);
     }
     
     @Test

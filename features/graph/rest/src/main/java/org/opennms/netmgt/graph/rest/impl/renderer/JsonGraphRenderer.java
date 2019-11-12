@@ -39,6 +39,7 @@ import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.Vertex;
+import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
@@ -132,9 +133,9 @@ public class JsonGraphRenderer implements GraphRenderer {
                 .forEach(edge -> {
                     final GenericEdge genericEdge = edge.asGenericEdge();
                     final Map<String, Object> edgeProperties = new HashMap<>(genericEdge.getProperties());
-                    edgeProperties.put("source", genericEdge.getSource().getId());
-                    edgeProperties.put("target", genericEdge.getTarget().getId());
-                    final JSONObject jsonEdge = new JSONObject(edgeProperties);
+                    edgeProperties.put("source", genericEdge.getSource());
+                    edgeProperties.put("target", genericEdge.getTarget());
+                    final JSONObject jsonEdge = convert(edgeProperties);
                     jsonEdgesArray.put(jsonEdge);
                 });
 
@@ -188,6 +189,13 @@ public class JsonGraphRenderer implements GraphRenderer {
         return jsonVertex;
     }
 
+    private static JSONObject convert(VertexRef vertexRef) {
+        final JSONObject jsonObject = new JSONObject();
+        jsonObject.put("namespace", vertexRef.getNamespace());
+        jsonObject.put("id", vertexRef.getId());
+        return jsonObject;
+    }
+
     private static JSONObject convert(Map<String, Object> properties) {
         final JSONObject jsonObject = new JSONObject();
         for (Map.Entry<String, Object> eachProperty : properties.entrySet()) {
@@ -201,7 +209,9 @@ public class JsonGraphRenderer implements GraphRenderer {
                 } else if (value.getClass() == IpInfo.class) {
                     jsonObject.put(eachProperty.getKey(), convert((IpInfo) value));
                 } else if (value.getClass() == Class.class) {
-                    jsonObject.put(eachProperty.getKey(), ((Class)value).getName());
+                    jsonObject.put(eachProperty.getKey(), ((Class) value).getName());
+                } else if (value.getClass() == VertexRef.class) {
+                    jsonObject.put(eachProperty.getKey(), convert((VertexRef) value));
                 } else {
                     jsonObject.put(eachProperty.getKey(), value);
                 }

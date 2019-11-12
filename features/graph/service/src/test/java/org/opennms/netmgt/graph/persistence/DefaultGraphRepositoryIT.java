@@ -38,7 +38,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.graph.EdgeEntity;
 import org.opennms.netmgt.graph.FocusEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -52,6 +55,10 @@ import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.simple.AbstractDomainGraphContainer;
+import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.simple.SimpleGraph;
+import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
+import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -252,6 +259,35 @@ public class DefaultGraphRepositoryIT {
         final GraphInfo readGraphInfo = graphRepository.findContainerInfoById("test").getGraphInfo(ApplicationGraph.NAMESPACE);
         assertEquals(ApplicationVertex.class, readGraphInfo.getVertexType());
         assertEquals(ApplicationVertex.class, readGraphInfo.getDomainVertexType());
+    }
+
+    @Test
+    public void verifyPersistingEdgesOfDifferentNamespaces() {
+        final String namespace = "test-namespace";
+        final String containerId = "test-container-id";
+        final SimpleGraph graph = SimpleGraph.builder()
+                .namespace(namespace)
+                .addVertex(SimpleVertex.builder().namespace(namespace).id("v1").build())
+                .addEdge(SimpleEdge.builder()
+                        .namespace(namespace)
+                        .id("e1")
+                        .source(namespace, "v1")
+                        .target("other", "o1").build())
+                .build();
+        final SimpleGraphContainer container = SimpleGraphContainer.builder()
+                .id(containerId)
+                .addGraph(graph)
+                .build();
+        graphRepository.save(container);
+
+        // Verify that only one of each was persisted
+        assertThat(persistenceAccessor.findAll(GraphContainerEntity.class), Matchers.hasSize(1));
+        assertThat(persistenceAccessor.findAll(VertexEntity.class), Matchers.hasSize(1));
+        assertThat(persistenceAccessor.findAll(EdgeEntity.class), Matchers.hasSize(1));
+
+        // Verify persisted properly
+        final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById(containerId);
+        assertEquals(container, SimpleGraphContainer.from(genericGraphContainer));
     }
 
     private void verifyEquals(GenericGraphContainer originalContainer, GenericGraphContainer persistedContainer) {
