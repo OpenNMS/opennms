@@ -54,7 +54,7 @@
     <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="nodeSearchProvider"/>
 
     <!-- Node Service -->
-    <bean id="defaultNodeService" class="org.opennms.netmgt.graph.DefaultNodeService">
+    <bean id="defaultNodeService" class="org.opennms.netmgt.graph.service.DefaultNodeService">
         <argument ref="genericPersistenceAccessor" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.NodeService" ref="defaultNodeService" />

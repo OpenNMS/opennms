@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph;
+package org.opennms.netmgt.graph.service;
 
 import java.util.List;
 import java.util.Objects;
