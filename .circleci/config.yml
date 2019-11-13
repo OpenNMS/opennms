@@ -3,11 +3,12 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: opennms/build-env:jdk8-jdk11-3.6.2-b2874
+      - image: opennms/build-env:jdk8-jdk11-3.6.2-b2942
   integration-test-executor:
     machine: true
   smoke-test-executor:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
 
 commands:
   cached-checkout:
@@ -96,6 +97,15 @@ commands:
         type: boolean
     steps:
       - run:
+          name: Enable swap
+          command: |
+            sudo fallocate -l 8G /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            sudo sysctl vm.swappiness=5
+            cat /proc/sys/vm/swappiness
+      - run:
           name: Load Horizon OCI image
           command: |
             cd opennms-container/horizon
@@ -111,10 +121,15 @@ commands:
             cd opennms-container/sentinel
             docker image load -i images/container.oci
       - run:
-          name: Start our JVM process monitor
+          name: Monitor JVM processes
           background: true
           command: |
             .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
       - run:
           name: Smoke Tests
           no_output_timeout: 30m
@@ -364,7 +379,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
-            ./makerpm.sh -a -d -S tools/packages/opennms/opennms.spec
+            .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -396,7 +411,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            ./makerpm.sh -a -d -S tools/packages/minion/minion.spec
+            .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -428,7 +443,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
-            ./makerpm.sh -a -d -S tools/packages/sentinel/sentinel.spec
+            .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - setup_remote_docker:
           docker_layer_caching: true
       - run:

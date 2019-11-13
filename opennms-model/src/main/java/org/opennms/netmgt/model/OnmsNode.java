@@ -1238,6 +1238,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         return null;
     }
 
+    /**
+     * <p>getInterfacesWithService</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a List of {@link org.opennms.netmgt.model.OnmsIpInterface} objects.
+     */
+    @Transient
+    @JsonIgnore
+    public List<OnmsIpInterface> getInterfacesWithService(String svcName) {
+        List<OnmsIpInterface> ipInterfaces = new ArrayList<>();
+        for(OnmsIpInterface iface : getIpInterfaces()) {
+            if (iface.getMonitoredServiceByServiceType(svcName) != null) {
+                ipInterfaces.add(iface);
+            }
+        }
+        return ipInterfaces;
+    }
+
     @Transient
     @JsonIgnore
     public OnmsIpInterface getInterfaceWithAddress(final InetAddress addr) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.components.bundlerefresher;
+package org.opennms.features.karaf.health.bundle;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.features.karaf.health.service.KarafHealthService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.FrameworkWiring;
-
 
 public class Activator implements BundleActivator {
 
+    private ServiceRegistration karafHealthServiceSvcReg;
+
     @Override
     public void start(BundleContext context) throws Exception {
-        // Determine if any vaadin theme fragments are unresoled
+        // Determine if any vaadin theme fragments are unresolved
         final Set<Bundle> unresolvedVaadinThemeFragments = getUnresolvedVaadinThemeFragments(context);
         if (!unresolvedVaadinThemeFragments.isEmpty()) {
             // Get vaadin theme host bundle to initialize refresh
@@ -57,11 +64,18 @@ public class Activator implements BundleActivator {
             FrameworkWiring frameworkWiring = systemBundle.adapt(FrameworkWiring.class);
             frameworkWiring.refreshBundles(bundlesToRefresh);
         }
+
+        KarafHealthServiceImpl karafHealthService = new KarafHealthServiceImpl();
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put("registration.export", "true");
+        karafHealthServiceSvcReg = context.registerService(KarafHealthService.class, karafHealthService, props);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-
+        if (karafHealthServiceSvcReg != null) {
+            karafHealthServiceSvcReg.unregister();
+        }
     }
 
     private static Bundle getVaadinThemeHostbundle(BundleContext context) {

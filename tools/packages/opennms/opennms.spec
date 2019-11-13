@@ -64,8 +64,8 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 9.1
-Requires:		postgresql-server  >= 9.1
+Requires(pre):		postgresql-server  >= 10
+Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
 

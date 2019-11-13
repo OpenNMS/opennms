@@ -145,8 +145,8 @@ public class RangeChunker {
                                 .collect(Collectors.toList()),
                             entry.getKey().getForeignSource(),
                             entry.getKey().getLocation(),
-                            packetsPerSecond
-                        );
+                            packetsPerSecond,
+                                config);
                         // Reset the previousRange value
                         previousRange.set(null);
                         return retval;
