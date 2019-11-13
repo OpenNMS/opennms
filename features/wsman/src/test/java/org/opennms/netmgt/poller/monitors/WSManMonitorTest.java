@@ -121,6 +121,8 @@ public class WSManMonitorTest {
         MonitoredService svc = mock(MonitoredService.class);
         when(svc.getAddress()).thenReturn(localhost);
 
+        parameters.putAll(monitor.getRuntimeAttributes(svc, parameters));
+
         return monitor.poll(svc, parameters);
     }
 }
