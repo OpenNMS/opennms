@@ -76,10 +76,10 @@ public class GenericGraphTest {
     }
 
     @Test
-    public void shouldAcceptEdgeWhereOneVertexIsUnknown() {
-        GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
-        GenericVertex unknownVertex = TestObjectCreator.createVertex();
-        GenericVertex knownVertex = graphBuilder.getVertices().get(0);
+    public void shouldAcceptEdgeWhereOneVertexIsUnknownFromDifferentNamespace() {
+        final GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
+        final GenericVertex unknownVertex = GenericVertex.builder().namespace(TestObjectCreator.NAMESPACE + "2").id("V1000").label("Vertex 1000").build();
+        final GenericVertex knownVertex = graphBuilder.getVertices().get(0);
         final GenericEdge edge1 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
         final GenericEdge edge2 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
 
@@ -92,6 +92,17 @@ public class GenericGraphTest {
 
         // Should also work
         graphBuilder.addEdge(edge1);
+    }
+
+    @Test
+    public void shouldRejectEdgeWhereOneVertexIsUnknownFromSameNamespace() {
+        final GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
+        final GenericVertex unknownVertex = TestObjectCreator.createVertex();
+        final GenericVertex knownVertex = graphBuilder.getVertices().get(0);
+        final GenericEdge edge1 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
+
+        // add an edge with unknown vertex => throws exception
+        assertThrowsException(IllegalArgumentException.class, () -> graphBuilder.addEdge(edge1));
     }
     
     @Test

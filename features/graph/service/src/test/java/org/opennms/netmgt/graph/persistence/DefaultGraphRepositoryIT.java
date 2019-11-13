@@ -33,14 +33,17 @@ import static org.junit.Assert.assertEquals;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.graph.AbstractGraphEntity;
 import org.opennms.netmgt.graph.EdgeEntity;
 import org.opennms.netmgt.graph.FocusEntity;
 import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.PropertyEntity;
 import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
@@ -87,6 +90,15 @@ public class DefaultGraphRepositoryIT {
 
     private static final String NAMESPACE = "dummy";
     private static final String CONTAINER_ID = "unique-id";
+
+    @Before
+    public void setUp() {
+        // Clean up properly after each test
+        persistenceAccessor.findAll(GraphContainerEntity.class).forEach(e -> graphRepository.deleteContainer(e.getNamespace()));
+        assertThat("AbstractGraphEntity", persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(0));
+        assertThat("FocusEntity", persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(0));
+        assertThat("PropertyEntity", persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(0));
+    }
 
     @Test
     public void verifyCRUD() {
@@ -173,8 +185,7 @@ public class DefaultGraphRepositoryIT {
 
     @Test
     public void verifySavingCollections() {
-
-        GenericVertex vertex = GenericVertex.builder()
+        final GenericVertex vertex = GenericVertex.builder()
                 .namespace(NAMESPACE)
                 .id("v1")
                 .property("collectionProperty", ImmutableList.of("E", "F")).build();
@@ -185,7 +196,7 @@ public class DefaultGraphRepositoryIT {
                 .addVertex(vertex)
                 .build();
 
-        GenericGraphContainer originalContainer = GenericGraphContainer.builder()
+        final GenericGraphContainer originalContainer = GenericGraphContainer.builder()
             .id(CONTAINER_ID)
             .property("collectionProperty", ImmutableList.of("A", "B"))
             .addGraph(graph).build();
@@ -232,6 +243,34 @@ public class DefaultGraphRepositoryIT {
     }
 
     @Test
+    // Verifies that when deleting the graphcontainer all other entities are also deleted (properties, focus, etc)
+    public void verifyDeleteCascades() {
+        final GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder().id(CONTAINER_ID);
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .namespace(NAMESPACE)
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex((GenericVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build()));
+        final GenericGraphContainer container = containerBuilder.addGraph(graphBuilder.build()).build();
+        graphRepository.save(container);
+
+        // Verify creation of objects
+        // 1 container, 1 graph, 2 vertices
+        assertThat(persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(4));
+        // 1 Focus
+        assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(1));
+        // 1 container id, 1 graph namespace, 2 vertex namespace, 2 vertex ids, 2 vertex labels
+        assertThat(persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(8));
+
+        // Delete the container
+        graphRepository.deleteContainer(container.getId());
+
+        // Verify deletion of objects
+        assertThat(persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(0));
+        assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(0));
+        assertThat(persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(0));
+    }
+
+    @Test
     public void verifyVertexTypePersistence() {
         final ApplicationGraph applicationGraph = ApplicationGraph.builder()
                 .label("Application Graph")
@@ -253,9 +292,9 @@ public class DefaultGraphRepositoryIT {
         final ApplicationGraphContainer readContainer = new ApplicationGraphContainer(genericGraphContainer);
         assertEquals(readContainer.getGraph(ApplicationGraph.NAMESPACE).getVertexType(), ApplicationVertex.class);
 
-        // Verify that reading only the container info contains proper vertex types for the graph
+        // Verify that reading only the container info contains the generic vertex types for the graph
         final GraphInfo readGraphInfo = graphRepository.findContainerInfoById("test").getGraphInfo(ApplicationGraph.NAMESPACE);
-        assertEquals(ApplicationVertex.class, readGraphInfo.getVertexType());
+        assertEquals(GenericVertex.class, readGraphInfo.getVertexType());
     }
 
     @Test
