@@ -324,7 +324,12 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
             .then(function() {
               $scope.nodeForm.$setPristine(); // Ignore dirty state
               $scope.goBack();
-              growl.success('The node ' + node.nodeLabel + ' has been deleted.');
+              // If node was just created, it has no label yet
+              if (node.nodeLabel) {
+                growl.success('The node ' + node.nodeLabel + ' has been deleted.');
+              } else {
+                growl.success('The node has been deleted.');
+              }
             },
             $scope.errorHandler
         );
