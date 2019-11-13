@@ -10,11 +10,6 @@
   <artifactId>org.opennms.features.search.api</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: Search :: API</name>
-  <properties>
-    <bundle.symbolicName>org.opennms.features.search.api</bundle.symbolicName>
-    <bundle.namespace>org.opennms.features.search</bundle.namespace>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <build>
     <plugins>
       <plugin>
