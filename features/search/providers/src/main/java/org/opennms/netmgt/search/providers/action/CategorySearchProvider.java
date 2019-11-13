@@ -37,12 +37,13 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.search.api.Contexts;
+import org.opennms.netmgt.search.api.QueryUtils;
 import org.opennms.netmgt.search.api.SearchContext;
 import org.opennms.netmgt.search.api.SearchProvider;
 import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.api.QueryUtils;
+import org.opennms.netmgt.search.api.UrlUtils;
 
 public class CategorySearchProvider implements SearchProvider {
 
@@ -71,7 +72,7 @@ public class CategorySearchProvider implements SearchProvider {
             final SearchResultItem searchResultItem = new SearchResultItem();
             searchResultItem.setIdentifier(category.getId().toString());
             searchResultItem.setLabel("Show nodes in category '" + category.getName() + "'");
-            searchResultItem.setUrl("element/nodeList.htm?category1=" + category.getName());
+            searchResultItem.setUrl("element/nodeList.htm?category1=" + UrlUtils.encode(category.getName()));
             return searchResultItem;
         }).collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Action).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);

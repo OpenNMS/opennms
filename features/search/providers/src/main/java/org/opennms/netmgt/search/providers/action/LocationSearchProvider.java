@@ -43,6 +43,7 @@ import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
 import org.opennms.netmgt.search.api.QueryUtils;
+import org.opennms.netmgt.search.api.UrlUtils;
 
 public class LocationSearchProvider implements SearchProvider {
 
@@ -71,7 +72,7 @@ public class LocationSearchProvider implements SearchProvider {
             final SearchResultItem searchResultItem = new SearchResultItem();
             searchResultItem.setIdentifier(monitoringLocation.getLocationName());
             searchResultItem.setLabel("Show nodes in location '" + monitoringLocation.getLocationName() + "'");
-            searchResultItem.setUrl("element/nodeList.htm?monitoringLocation=" + monitoringLocation.getLocationName());
+            searchResultItem.setUrl("element/nodeList.htm?monitoringLocation=" + UrlUtils.encode(monitoringLocation.getLocationName()));
             return searchResultItem;
         }).collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Action).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);

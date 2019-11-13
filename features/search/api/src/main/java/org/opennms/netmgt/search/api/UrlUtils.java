@@ -28,46 +28,19 @@
 
 package org.opennms.netmgt.search.api;
 
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Objects;
 
-public abstract class QueryUtils {
+public abstract class UrlUtils {
+    private UrlUtils() {}
 
-    private QueryUtils() {}
-
-    public static Object ilike(String input) {
-        return String.format("%%%s%%", input);
-    }
-
-    public static boolean equals(Integer checkMe, String input) {
-        if (checkMe == null) {
-            return false;
+    public static String encode(String input) {
+        try {
+            Objects.requireNonNull(input);
+            return URLEncoder.encode(input, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
-        return checkMe.toString().equals(input);
-    }
-
-    public static boolean matches(String checkMe, String input) {
-        if (checkMe == null) {
-            return false;
-        }
-        return checkMe.toLowerCase().contains(input.toLowerCase());
-    }
-
-    public static boolean matches(List<String> checkMe, String input) {
-        if (checkMe != null) {
-            return checkMe.stream().anyMatch(it -> matches(it, input));
-        }
-        return false;
-    }
-
-    public static <T> List<T> shrink(List<T> input, int maxResults) {
-        Objects.requireNonNull(input);
-        final List<T> subList = input.subList(0, Math.min(maxResults, input.size()));
-        return subList;
-    }
-
-    public static String getFirstMatch(List<String> aliases, String input) {
-        return aliases.stream().filter(alias -> matches(alias, input)).findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find any match"));
     }
 }

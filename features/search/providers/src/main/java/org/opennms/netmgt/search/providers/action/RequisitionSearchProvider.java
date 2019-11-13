@@ -41,6 +41,7 @@ import org.opennms.netmgt.search.api.SearchQuery;
 import org.opennms.netmgt.search.api.SearchResult;
 import org.opennms.netmgt.search.api.SearchResultItem;
 import org.opennms.netmgt.search.api.QueryUtils;
+import org.opennms.netmgt.search.api.UrlUtils;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
 
 import com.google.common.collect.Lists;
@@ -69,7 +70,7 @@ public class RequisitionSearchProvider implements SearchProvider {
         final List<SearchResultItem> resultItems = requisitions.stream().map(r -> {
                 final SearchResultItem searchResultItem = new SearchResultItem();
                 searchResultItem.setIdentifier(r.getForeignSource());
-                searchResultItem.setUrl(String.format("admin/ng-requisitions/index.jsp#/requisitions/%s",r.getForeignSource()));
+                searchResultItem.setUrl(String.format("admin/ng-requisitions/index.jsp#/requisitions/%s", UrlUtils.encode(r.getForeignSource())));
                 searchResultItem.setLabel(String.format("Edit Requisition '%s'", r.getForeignSource()));
                 searchResultItem.setIcon("fa fa-pencil");
                 return searchResultItem;
