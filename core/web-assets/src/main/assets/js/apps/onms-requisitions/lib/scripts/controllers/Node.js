@@ -316,6 +316,22 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
       $scope.node.metaData.removeEntriesForMissingScopedEntities();
     };
 
+    $scope.deleteNode = function(node) {
+      bootbox.confirm('Are you sure you want to delete the current node?', function(ok) {
+      if (ok) {
+        RequisitionsService.startTiming();
+        RequisitionsService.deleteNode(node)
+            .then(function() {
+              $scope.nodeForm.$setPristine(); // Ignore dirty state
+              $scope.goBack();
+              growl.success('The node ' + node.nodeLabel + ' has been deleted.');
+            },
+            $scope.errorHandler
+        );
+      }
+      });
+    };
+
     /**
      * @description Shows the dialog for add/edit an metaData entry
      *
