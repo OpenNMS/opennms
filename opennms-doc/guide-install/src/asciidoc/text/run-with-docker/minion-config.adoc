@@ -1,0 +1,53 @@
+
+[[gi-docker-minion-config-reference]]
+==== _Minion_
+
+===== Startup Arguments
+
+[options="header, autowidth"]
+|===
+| Argument | Description
+| `-h`     | Display help with available arguments.
+| `-c`     | Start Minion and use environment credentials to register _Minion_ on _{opennms-product-name}_.
+| `-s`     | One-time command to initialze an encrypted keystore file with credentials in `/keystory/scv.jce`.
+| `-f`     | Initialize and start _Minion_ in foreground.
+|===
+
+===== Environment Variables
+
+.Generic _Minion_ settings
+[options="header, autowidth"]
+|===
+| Environment variable | Description                                     | Required | Default value
+| `MINION_ID`          | Unique _Minion_ identifier                      | optional | generated UUID
+| `MINION_LOCATION`    | Name of the location the _Minion_ is associated | required | -
+|===
+
+.Settings when _ActiveMQ_ is used
+[options="header, autowidth"]
+|===
+| Environment variable  | Description                              | Required | Default value
+| `OPENNMS_HTTP_URL`    | Web user interface base _URL_ for _REST_ | required | -
+| `OPENNMS_HTTP_USER`   | User name for the _ReST API_             | optional | `admin`
+| `OPENNMS_HTTP_PASS`   | Password for the _ReST API_              | optional | `admin`
+| `OPENNMS_BROKER_URL`  | _ActiveMQ_ broker URL                    | required | -
+| `OPENNMS_BROKER_USER` | Username for _ActiveMQ_ authentication   | optional | `admin`
+| `OPENNMS_BROKER_PASS` | Password for _ActiveMQ_ authentication   | optional | `admin`
+|===
+
+.Settings when _Apache Kafka_ is used
+[options="header, autowidth"]
+|===
+| Environment variable          | Description                                                                 | Required | Default value
+| `KAFKA_RPC_BOOTSTRAP_SERVERS` | Comma separated list with _Kafka_ nodes, e.g. `kafka-01:9092,kafka-02:9092` | required | -
+| `KAFKA_RPC_ACKS`              | Configure Kafka acknowledgements, recommendation is set to `1`              | required | -
+|===
+
+===== Directory Conventions
+
+[options="header, autowidth"]
+|===
+| Mountpoint                | Description
+| `/opt/minion-etc-overlay` | Allows to overwrite files relative to `/opt/minion/etc`
+| `/keystore`               | Directory with credentials for encrypted keystore file
+|===
