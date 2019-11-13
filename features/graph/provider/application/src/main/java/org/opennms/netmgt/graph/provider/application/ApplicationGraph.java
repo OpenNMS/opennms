@@ -73,7 +73,6 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
                
         private ApplicationGraphBuilder() {
             namespace(NAMESPACE);
-            domainVertexType(ApplicationVertex.class);
         }
         
         public ApplicationGraphBuilder description(String description) {

@@ -31,6 +31,7 @@ package org.opennms.netmgt.graph.provider.persistence;
 import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -54,12 +55,26 @@ public class PersistenceGraphContainerProvider implements GraphContainerProvider
 
     @Override
     public ImmutableGraphContainer loadGraphContainer() {
-        return graphRepository.findContainerById(CONTAINER_ID);
+        final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById(CONTAINER_ID);
+        // It is not required to wrap the generic graph container with the domain view. However for
+        // test purposes we do it here anyways.
+        return new CustomGraphContainer(genericGraphContainer);
     }
 
     @Override
     public GraphContainerInfo getContainerInfo() {
-        return graphRepository.findContainerInfoById(CONTAINER_ID);
+        final GraphContainerInfo containerInfoById = graphRepository.findContainerInfoById(CONTAINER_ID);
+
+        // As we provide a domain container above, we have to re-create each graphinfo to use the domain vertex type, instead of GenericVertex
+        final DefaultGraphContainerInfo defaultGraphContainerInfo = new DefaultGraphContainerInfo(containerInfoById.getId());
+        defaultGraphContainerInfo.setDescription(containerInfoById.getDescription());
+        defaultGraphContainerInfo.setLabel(containerInfoById.getLabel());
+        containerInfoById.getGraphInfos().forEach(gi -> {
+            // Override vertex type
+            final DefaultGraphInfo defaultGraphInfo = new DefaultGraphInfo(gi, CustomVertex.class);
+            defaultGraphContainerInfo.addGraphInfo(defaultGraphInfo);
+        });
+        return defaultGraphContainerInfo;
     }
 
     // This ensures that the container info is already present, even if nothing was persisted yet

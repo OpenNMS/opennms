@@ -57,7 +57,7 @@ public class ApplicationGraphProvider implements GraphProvider {
     }
 
     @Override
-    public GraphInfo<?, ?> getGraphInfo() {
+    public GraphInfo<?> getGraphInfo() {
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(ApplicationGraph.NAMESPACE, ApplicationVertex.class);
         graphInfo.setLabel(GRAPH_LABEL);
         graphInfo.setDescription(GRAPH_DESCRIPTION);

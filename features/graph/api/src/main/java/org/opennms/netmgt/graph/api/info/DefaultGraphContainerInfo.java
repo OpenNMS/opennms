@@ -65,10 +65,9 @@ public class DefaultGraphContainerInfo implements GraphContainerInfo {
         return graphInfos.stream().filter(gi -> namespace.equalsIgnoreCase(gi.getNamespace())).findFirst().orElse(null);
     }
 
-//    @Override
-//    public void addGraphInfo(GraphInfo graphInfo) {
-//        graphInfos.add(graphInfo);
-//    }
+    public void addGraphInfo(GraphInfo graphInfo) {
+        graphInfos.add(graphInfo);
+    }
 
     @Override
     public GraphInfo getPrimaryGraphInfo() {

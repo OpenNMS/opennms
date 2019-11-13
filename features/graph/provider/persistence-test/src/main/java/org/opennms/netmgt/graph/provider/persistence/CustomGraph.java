@@ -26,59 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.provider.persistence;
 
-import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
 
-/**
- * Acts as a domain specific view on a GenericGraph.
- * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
- * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
- */
-// TODO MVR rename to domain and this makes more sense
-public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
-
-    public SimpleGraph(GenericGraph graph) {
-        super(graph);
+public class CustomGraph extends AbstractDomainGraph<CustomVertex, CustomEdge> {
+    public CustomGraph(GenericGraph genericGraph) {
+        super(genericGraph);
     }
 
     @Override
-    public SimpleVertex convert(GenericVertex vertex) {
-        return new SimpleVertex(vertex);
+    protected CustomGraph convert(GenericGraph graph) {
+        return new CustomGraph(graph);
     }
 
     @Override
-    public SimpleEdge convert(GenericEdge edge) {
-        return new SimpleEdge(edge);
+    protected CustomVertex convert(GenericVertex vertex) {
+        return new CustomVertex(vertex);
     }
 
     @Override
-    protected ImmutableGraph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
-        return new SimpleGraph(graph);
+    protected CustomEdge convert(GenericEdge edge) {
+        return new CustomEdge(edge);
     }
 
     @Override
     public Class getVertexType() {
-        return SimpleVertex.class;
-    }
-    
-    public static SimpleGraphBuilder builder() {
-        return new SimpleGraphBuilder();
-    }
-    
-    public static SimpleGraph from(GenericGraph genericGraph) {
-        return new SimpleGraph(genericGraph);
-    }
-    
-    public final static class SimpleGraphBuilder extends AbstractDomainGraphBuilder<SimpleGraphBuilder, SimpleVertex, SimpleEdge> {
-        
-        private SimpleGraphBuilder() {}
-
-        public SimpleGraph build() {
-            return new SimpleGraph(delegate.build());
-        }
+        return CustomVertex.class;
     }
 }

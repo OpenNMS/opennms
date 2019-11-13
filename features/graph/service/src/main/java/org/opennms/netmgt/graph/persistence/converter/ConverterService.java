@@ -45,7 +45,6 @@ public class ConverterService {
         converterRegistry.add(new PrimitiveConverter<>(Short.class, Short::valueOf));
         converterRegistry.add(new PrimitiveConverter<>(Byte.class, Byte::valueOf));
         converterRegistry.add(new EnumConverter());
-        converterRegistry.add(new ClassConverter());
         converterRegistry.add(new CollectionConverter(this));
     }
 

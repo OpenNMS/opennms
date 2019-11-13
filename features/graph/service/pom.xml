@@ -21,7 +21,6 @@
                     <instructions>
                         <Private-Package>{local-packages}</Private-Package>
                         <Export-Package></Export-Package>
-                        <DynamicImport-Package>org.opennms.netmgt.graph.*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

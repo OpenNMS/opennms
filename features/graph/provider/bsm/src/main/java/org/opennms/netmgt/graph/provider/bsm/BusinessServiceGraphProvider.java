@@ -83,7 +83,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     @Override
-    public GraphInfo<?, ?> getGraphInfo() {
+    public GraphInfo<?> getGraphInfo() {
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(BusinessServiceGraph.NAMESPACE, AbstractBusinessServiceVertex.class);
         graphInfo.setLabel("Business Service Graph"); // Business Services
         graphInfo.setDescription("Displays the hierarchy of the defined Business Services and their computed operational states.");

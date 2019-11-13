@@ -26,26 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.persistence.converter;
+package org.opennms.netmgt.graph.provider.persistence;
 
-public class ClassConverter implements Converter<Class> {
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
 
-    @Override
-    public Class toValue(Class<Class> type, String string) {
-        try {
-            return Class.forName(string);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Cannot load class with name '" + string + "'", e);
-        }
-    }
-
-    @Override
-    public boolean canConvert(Class<?> type) {
-        return type == Class.class;
-    }
-
-    @Override
-    public String toStringRepresentation(Class value) {
-        return value.getName();
+public class CustomEdge extends AbstractDomainEdge {
+    public CustomEdge(GenericEdge genericEdge) {
+        super(genericEdge);
     }
 }

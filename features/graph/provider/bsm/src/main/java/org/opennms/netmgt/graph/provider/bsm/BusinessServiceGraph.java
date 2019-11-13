@@ -78,7 +78,6 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
         
         private BusinessServiceGraphBuilder() {
             namespace(NAMESPACE);
-            domainVertexType(AbstractBusinessServiceVertex.class);
         }
  
         public BusinessServiceGraph build() {

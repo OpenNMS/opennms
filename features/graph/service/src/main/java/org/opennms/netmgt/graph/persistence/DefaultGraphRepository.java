@@ -39,7 +39,6 @@ import org.opennms.netmgt.graph.GraphEntity;
 import org.opennms.netmgt.graph.PropertyEntity;
 import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -98,10 +97,9 @@ public class DefaultGraphRepository implements GraphRepository {
             containerInfo.setLabel(containerEntity.getLabel());
             containerInfo.setDescription(containerEntity.getDescription());
             containerEntity.getGraphs().forEach(graphEntity -> {
-                final PropertyEntity property = graphEntity.getProperty(GenericProperties.DOMAIN_VERTEX_TYPE);
-                final Object value = entityToGenericMapper.convert(property);
-                final Class<Vertex> vertexType = (Class<Vertex>) value;
-                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), vertexType);
+                // We don't know the vertex type anymore. When loading the container, the type of the vertex will be GenericVertex
+                // If another type is required, the loading instance should wrap the info accordingly
+                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), GenericVertex.class);
                 graphInfo.setLabel(graphEntity.getLabel());
                 graphInfo.setDescription(graphEntity.getDescription());
                 containerInfo.getGraphInfos().add(graphInfo);
@@ -155,7 +153,6 @@ public class DefaultGraphRepository implements GraphRepository {
                             graphEntity.setProperty(GenericProperties.NAMESPACE, String.class, graphInfo.getNamespace());
                             graphEntity.setProperty(GenericProperties.LABEL, String.class, graphInfo.getLabel());
                             graphEntity.setProperty(GenericProperties.DESCRIPTION, String.class, graphInfo.getDescription());
-                            graphEntity.setProperty(GenericProperties.DOMAIN_VERTEX_TYPE, Vertex.class, graphInfo.getDomainVertexType().toString());
                         }
 
                         // Update Focus
@@ -216,7 +213,7 @@ public class DefaultGraphRepository implements GraphRepository {
                     .namespace(graphInfo.getNamespace())
                     .property(GenericProperties.LABEL, graphInfo.getLabel())
                     .property(GenericProperties.DESCRIPTION, graphInfo.getDescription())
-                    .property(GenericProperties.DOMAIN_VERTEX_TYPE, graphInfo.getVertexType()).build();
+                    .build();
             genericGraphContainerBuilder.addGraph(genericGraph);
         });
         save(genericGraphContainerBuilder.build());

@@ -73,7 +73,7 @@ public class LegacyGraphProvider implements GraphProvider {
     }
 
     @Override
-    public GraphInfo<?, ?> getGraphInfo() {
+    public GraphInfo<?> getGraphInfo() {
         final org.opennms.features.topology.api.topo.GraphProvider defaultGraphProvider = delegate.getDefaultGraphProvider();
         final TopologyProviderInfo delegateInfo = defaultGraphProvider.getTopologyProviderInfo();
         final DefaultGraphInfo graphInfo = new DefaultGraphInfo(defaultGraphProvider.getNamespace(), LegacyVertex.class);

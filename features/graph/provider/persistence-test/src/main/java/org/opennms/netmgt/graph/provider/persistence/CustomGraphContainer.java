@@ -26,32 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.generic;
+package org.opennms.netmgt.graph.provider.persistence;
 
-/**
- * These properties are generally supported and may be used to persist as values when building a {@link GenericElement}.
- *
- * @author mvrueden
- */
-public interface GenericProperties {
-    /** The id of the element */
-    String ID = "id";
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.simple.AbstractDomainGraphContainer;
 
-    /** The namespace of the element. */
-    String NAMESPACE = "namespace";
+public class CustomGraphContainer extends AbstractDomainGraphContainer<CustomGraph> {
+    protected CustomGraphContainer(GenericGraphContainer delegate) {
+        super(delegate);
+    }
 
-    /** The description of the element */
-    String DESCRIPTION = "description";
+    @Override
+    protected CustomGraph convert(GenericGraph graph) {
+        return new CustomGraph(graph);
+    }
 
-    /** The label of the element */
-    String LABEL = "label";
-
-    /** Reference to a node, either the id, or a <foreignSource>:<foreignId> statement */
-    String NODE_CRITERIA = "nodeCriteria";
-
-    String NODE_INFO = "nodeInfo";
-
-    String NODE_ID = "nodeID";
-    String FOREIGN_SOURCE = "foreignSource";
-    String FOREIGN_ID = "foreignID";
 }

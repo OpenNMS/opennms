@@ -248,17 +248,14 @@ public class DefaultGraphRepositoryIT {
         final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById("test");
         final GraphInfo genericGraphInfo = genericGraphContainer.getGraphInfo(ApplicationGraph.NAMESPACE);
         assertEquals(GenericVertex.class, genericGraphInfo.getVertexType());
-        assertEquals(ApplicationVertex.class, genericGraphInfo.getDomainVertexType());
 
         // Convert to domain container and verify types again
         final ApplicationGraphContainer readContainer = new ApplicationGraphContainer(genericGraphContainer);
         assertEquals(readContainer.getGraph(ApplicationGraph.NAMESPACE).getVertexType(), ApplicationVertex.class);
-        assertEquals(readContainer.getGraph(ApplicationGraph.NAMESPACE).getDomainVertexType(), ApplicationVertex.class);
 
         // Verify that reading only the container info contains proper vertex types for the graph
         final GraphInfo readGraphInfo = graphRepository.findContainerInfoById("test").getGraphInfo(ApplicationGraph.NAMESPACE);
         assertEquals(ApplicationVertex.class, readGraphInfo.getVertexType());
-        assertEquals(ApplicationVertex.class, readGraphInfo.getDomainVertexType());
     }
 
     @Test

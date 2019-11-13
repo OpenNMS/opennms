@@ -41,7 +41,6 @@ import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
@@ -173,11 +172,6 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     }
 
     @Override
-    public Class getDomainVertexType() {
-        return getVertexType();
-    }
-
-    @Override
     public abstract Class getVertexType();
 
     @Override
@@ -277,13 +271,6 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
                 .label(graphInfo.getLabel())
                 .description(graphInfo.getDescription())
                 .build();
-            return (T) this;
-        }
-
-        // Should be identically to getVertexType()
-        public T domainVertexType(Class<V> wrappedVertexType) {
-            Objects.requireNonNull(wrappedVertexType);
-            delegate.property(GenericProperties.DOMAIN_VERTEX_TYPE, wrappedVertexType);
             return (T) this;
         }
 

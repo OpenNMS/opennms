@@ -30,7 +30,6 @@ package org.opennms.smoketest.graph;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.KarafShell;
@@ -64,7 +63,6 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
         karafShell.runCommand("graph:get --container persistence-example --namespace persistence-example.graph", output -> {
             final JSONObject jsonGraph = readGraph(output);
             return jsonGraph.getString("label").equals("Graph")
-                    && jsonGraph.getString("domainVertexType").equals("org.opennms.netmgt.graph.provider.persistence.CustomVertex")
                     && jsonGraph.getString("namespace").equals("persistence-example.graph");
         });
     }
