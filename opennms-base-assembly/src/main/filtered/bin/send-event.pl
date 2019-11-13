@@ -164,6 +164,7 @@ if (defined $SERVICE) {
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
 $year += 1900;
 my $month = $mon;
+$hour = sprintf("%02d", $hour);
 $min = sprintf("%02d", $min);
 $sec = sprintf("%02d", $sec);
 my @week = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
