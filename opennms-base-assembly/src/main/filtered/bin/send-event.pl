@@ -56,7 +56,7 @@ if ($version)  { print "$0 version $VERSION\n"; exit; }
 if ($help)     { print get_help(); exit; }
 
 # parm array is numerically referenced in OpenNMS' templates
-@PARMS = map { parse_parm($_) } @PARMS;
+@PARMS = reverse map { parse_parm($_) } @PARMS;
 
 my $hostname = hostname;
 
@@ -163,11 +163,11 @@ if (defined $SERVICE) {
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
 $year += 1900;
-my $month = sprintf("%02d", $mon + 1);
-$mday     = sprintf("%02d", $mday);
-$min      = sprintf("%02d", $min);
-$sec      = sprintf("%02d", $sec);
-
+my $month = $mon;
+$min = sprintf("%02d", $min);
+$sec = sprintf("%02d", $sec);
+my @week = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+my @month = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 my $uuidattribute;
 if (defined $UUID) {
 	$uuidattribute = "uuid=\"$UUID\"";
@@ -187,7 +187,7 @@ END
 $event .= "   <nodeid>$NODEID</nodeid>\n"          if (defined $NODEID);
 
 $event .= <<END;
-   <time>${year}-${month}-${mday}T${hour}:${min}:${sec}+00:00</time>
+   <time>$week[$wday], $mday $month[$month] $year $hour:$min:$sec o'clock $ZONE</time>
    <host>$HOSTNAME</host>
 END
 
@@ -263,6 +263,7 @@ Options:
          --verbose, -v     print the raw XML that's generated
          --help, -h        this help message
 
+         --timezone, -t    the time zone you are in
          --service, -s     service name
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
