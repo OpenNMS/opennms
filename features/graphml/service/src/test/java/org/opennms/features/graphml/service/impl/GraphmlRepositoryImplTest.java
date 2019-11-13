@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.graphml.service.impl;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
