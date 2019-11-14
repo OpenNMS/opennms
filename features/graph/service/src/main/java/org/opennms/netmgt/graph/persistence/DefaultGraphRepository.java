@@ -91,20 +91,22 @@ public class DefaultGraphRepository implements GraphRepository {
             // Fetch the whole container but only the relevant properties
             // Should avoid getVertices to not make it too slow
             final GraphContainerEntity containerEntity =  graphContainerDao.findContainerInfoById(containerId);
-
-            // Now convert
-            final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(containerEntity.getNamespace());
-            containerInfo.setLabel(containerEntity.getLabel());
-            containerInfo.setDescription(containerEntity.getDescription());
-            containerEntity.getGraphs().forEach(graphEntity -> {
-                // We don't know the vertex type anymore. When loading the container, the type of the vertex will be GenericVertex
-                // If another type is required, the loading instance should wrap the info accordingly
-                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), GenericVertex.class);
-                graphInfo.setLabel(graphEntity.getLabel());
-                graphInfo.setDescription(graphEntity.getDescription());
-                containerInfo.getGraphInfos().add(graphInfo);
-            });
-            return containerInfo;
+            if (containerEntity != null) {
+                // Now convert
+                final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(containerEntity.getNamespace());
+                containerInfo.setLabel(containerEntity.getLabel());
+                containerInfo.setDescription(containerEntity.getDescription());
+                containerEntity.getGraphs().forEach(graphEntity -> {
+                    // We don't know the vertex type anymore. When loading the container, the type of the vertex will be GenericVertex
+                    // If another type is required, the loading instance should wrap the info accordingly
+                    final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), GenericVertex.class);
+                    graphInfo.setLabel(graphEntity.getLabel());
+                    graphInfo.setDescription(graphEntity.getDescription());
+                    containerInfo.getGraphInfos().add(graphInfo);
+                });
+                return containerInfo;
+            }
+            return null;
         });
     }
 
