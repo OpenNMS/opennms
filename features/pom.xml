@@ -113,6 +113,9 @@
     <module>newts</module>
     <module>newts-repository-converter</module>
 
+    <!-- timescale -->
+    <module>timescale</module>
+
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
