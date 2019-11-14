@@ -3,7 +3,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: opennms/build-env:jdk8-jdk11-3.6.2-b2942
+      - image: opennms/build-env:1.8.0.232.b09-3.6.2-b3291
   integration-test-executor:
     machine: true
   smoke-test-executor:
