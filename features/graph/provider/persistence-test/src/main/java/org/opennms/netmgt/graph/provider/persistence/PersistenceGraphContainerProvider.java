@@ -79,8 +79,10 @@ public class PersistenceGraphContainerProvider implements GraphContainerProvider
 
     // This ensures that the container info is already present, even if nothing was persisted yet
     public void init() {
-        this.graphRepository.deleteContainer(CONTAINER_ID);
-        this.graphRepository.save(createContainerInfo());
+        if (graphRepository.findContainerInfoById(CONTAINER_ID) != null) {
+            graphRepository.deleteContainer(CONTAINER_ID);
+        }
+        graphRepository.save(createContainerInfo());
     }
 
     protected static GraphContainerInfo createContainerInfo() {
