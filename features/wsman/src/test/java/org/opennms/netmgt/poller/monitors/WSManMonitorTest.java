@@ -133,9 +133,6 @@ public class WSManMonitorTest {
             parameters.put(k, v);
         });
 
-
-        parameters.putAll(monitor.getRuntimeAttributes(svc, parameters));
-
         return monitor.poll(svc, parameters);
     }
 }

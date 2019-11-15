@@ -80,7 +80,7 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
 
     @Override
     public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
-        final Map<String, Object> runtimeAttributes = new HashMap<>();
+        final Map<String, Object> runtimeAttributes = super.getRuntimeAttributes(svc, parameters);
 
         if (m_wsManConfigDao == null) {
             m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
