@@ -363,12 +363,39 @@ workflows:
       - horizon-deb-build:
           requires:
             - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
       - minion-deb-build:
           requires:
             - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
       - sentinel-deb-build:
           requires:
             - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
 
 jobs:
   build:
