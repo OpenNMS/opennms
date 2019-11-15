@@ -50,7 +50,6 @@ import org.w3c.dom.Node;
 import com.google.common.collect.Maps;
 import com.mycila.xmltool.XMLDoc;
 
-@org.junit.Ignore
 public class WSManMonitorTest {
     private final static Node EXAMPLE_NODE = XMLDoc.newDocument(true).addRoot("body")
             .addTag("DCIM_ComputerSystem")
