@@ -35,7 +35,7 @@ rule "possibleCauses"
 	then
 		Long $parentNode = nodeService.getParentNode( $cause );
 		if ( $parentNode != null ) {
-			Cause $parent = possibleCause( engine, $parentNode, $e, POLL_INTERVAL );
+			Cause $parent = createPossibleCause( engine, $parentNode, $e, POLL_INTERVAL );
 			$parent.addImpacted( $c );
 			println( "No Cause for parent. Asserting: " + $parent );
 			insert( $parent );
@@ -66,7 +66,7 @@ rule "resolveIssue"
 		retract( $up );
 end
 
-function Cause possibleCause( DroolsCorrelationEngine engine, Long nodeId, Event symptom, Long POLL_INTERVAL ) {
+function Cause createPossibleCause( DroolsCorrelationEngine engine, Long nodeId, Event symptom, Long POLL_INTERVAL ) {
 	return new Cause( Type.POSSIBLE, nodeId, symptom, engine.setTimer( POLL_INTERVAL ) );
 }
 
