@@ -26,28 +26,64 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
 
-import java.util.Objects;
-
-import javax.persistence.DiscriminatorValue;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import org.opennms.netmgt.graph.dao.api.EntityProperties;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
-@DiscriminatorValue("vertex")
-public class VertexEntity extends AbstractGraphEntity {
+@Table(name = "graph_attributes")
+public class PropertyEntity {
 
-    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
-    public String getId() {
-        return this.getPropertyValue(EntityProperties.ID);
+    @Id
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "graphSequence")
+    @SequenceGenerator(name = "graphSequence", sequenceName = "graphnxtid")
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "type")
+    private Class type;
+
+    @Column(name = "value")
+    private String value;
+
+    public Long getId() {
+        return id;
     }
 
-    /** returns the business id of the VertexEntity. For the database id call VertexEntity#getDbId. */
-    public void setId(String id) {
-        Objects.requireNonNull(id);
-        this.setProperty(EntityProperties.ID, String.class, id);
+    public void setId(Long id) {
+        this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Class getType() {
+        return type;
+    }
+
+    public void setType(Class type) {
+        this.type = type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

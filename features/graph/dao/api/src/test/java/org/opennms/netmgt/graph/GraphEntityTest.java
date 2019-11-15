@@ -26,63 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import org.junit.Assert;
+import org.junit.Test;
 
-@Entity
-@Table(name = "graph_attributes")
-public class PropertyEntity {
+public class GraphEntityTest {
 
-    @Id
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
-    @GeneratedValue(generator = "opennmsSequence")
-    @Column(name = "id")
-    private Long id;
+    @Test
+    public void verifyGetVertexByVertexId() {
+        final GraphEntity graph = new GraphEntity();
+        graph.setNamespace("dummy");
 
-    @Column(name = "name")
-    private String name;
+        final VertexEntity vertex = new VertexEntity();
+        vertex.setNamespace(graph.getNamespace());
+        vertex.setId("v1");
+        graph.addVertex(vertex);
 
-    @Column(name = "type")
-    private Class type;
-
-    @Column(name = "value")
-    private String value;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Class getType() {
-        return type;
-    }
-
-    public void setType(Class type) {
-        this.type = type;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+        Assert.assertSame(vertex, graph.getVertexByVertexId("v1"));
     }
 }

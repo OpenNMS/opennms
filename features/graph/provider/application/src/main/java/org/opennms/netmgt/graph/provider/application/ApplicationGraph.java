@@ -38,7 +38,7 @@ import org.opennms.netmgt.graph.simple.SimpleEdge;
 
 public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
 
-    public static final String TOPOLOGY_NAMESPACE = "application";
+    public static final String NAMESPACE = "application";
 
     public ApplicationGraph(GenericGraph graph) {
         super(graph);
@@ -72,7 +72,7 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
     public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleEdge> {
                
         private ApplicationGraphBuilder() {
-            namespace(TOPOLOGY_NAMESPACE);
+            namespace(NAMESPACE);
         }
         
         public ApplicationGraphBuilder description(String description) {
@@ -81,7 +81,7 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         }
         
         public ApplicationGraph build() {
-            namespace(TOPOLOGY_NAMESPACE); // namespace is fixed, cannot be changed.
+            namespace(NAMESPACE); // namespace is fixed, cannot be changed.
             return new ApplicationGraph(delegate.build());
         }
     }

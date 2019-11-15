@@ -62,7 +62,7 @@ public class GenericGraphTest {
     }
 
     @Test
-    public void shouldRejectEdgesWithUnknownVertices(){
+    public void shouldRejectEdgeWhereBothVerticesAreUnknown(){
         GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
         GenericVertex vertex = TestObjectCreator.createVertex();
         final GenericEdge edge = TestObjectCreator.createEdge(vertex, vertex);
@@ -73,6 +73,36 @@ public class GenericGraphTest {
         // now add the vertex and the exception should be avoided:
         graphBuilder.addVertex(vertex);
         graphBuilder.addEdge(edge); // should throw no exception
+    }
+
+    @Test
+    public void shouldAcceptEdgeWhereOneVertexIsUnknownFromDifferentNamespace() {
+        final GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
+        final GenericVertex unknownVertex = GenericVertex.builder().namespace(TestObjectCreator.NAMESPACE + "2").id("V1000").label("Vertex 1000").build();
+        final GenericVertex knownVertex = graphBuilder.getVertices().get(0);
+        final GenericEdge edge1 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
+        final GenericEdge edge2 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
+
+        // Should work
+        graphBuilder.addEdge(edge1);
+
+        // Should work
+        graphBuilder.removeEdge(edge1);
+        graphBuilder.addEdge(edge2);
+
+        // Should also work
+        graphBuilder.addEdge(edge1);
+    }
+
+    @Test
+    public void shouldRejectEdgeWhereOneVertexIsUnknownFromSameNamespace() {
+        final GenericGraphBuilder graphBuilder = TestObjectCreator.createGraphBuilder();
+        final GenericVertex unknownVertex = TestObjectCreator.createVertex();
+        final GenericVertex knownVertex = graphBuilder.getVertices().get(0);
+        final GenericEdge edge1 = TestObjectCreator.createEdge(knownVertex, unknownVertex);
+
+        // add an edge with unknown vertex => throws exception
+        assertThrowsException(IllegalArgumentException.class, () -> graphBuilder.addEdge(edge1));
     }
     
     @Test

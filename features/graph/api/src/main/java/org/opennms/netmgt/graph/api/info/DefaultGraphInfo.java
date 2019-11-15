@@ -47,7 +47,14 @@ public class DefaultGraphInfo implements GraphInfo {
     }
 
     public DefaultGraphInfo(GraphInfo copy) {
-        this(copy.getNamespace(), copy.getVertexType());
+        this(copy, copy.getVertexType());
+    }
+
+    /**
+     * Constructor to change the vertex Type of the given GraphInfo.
+     */
+    public DefaultGraphInfo(GraphInfo copy, Class<? extends Vertex> vertexType) {
+        this(copy.getNamespace(), vertexType);
         setLabel(copy.getLabel());
         setDescription(copy.getDescription());
     }

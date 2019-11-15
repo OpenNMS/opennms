@@ -16,5 +16,6 @@
         <module>bsm</module>
         <module>graphml</module>
         <module>legacy</module>
+        <module>persistence-test</module>
     </modules>
 </project>

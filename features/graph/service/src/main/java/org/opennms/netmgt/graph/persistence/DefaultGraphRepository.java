@@ -32,6 +32,12 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.graph.EdgeEntity;
+import org.opennms.netmgt.graph.FocusEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.GraphEntity;
+import org.opennms.netmgt.graph.PropertyEntity;
+import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -48,14 +54,7 @@ import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.netmgt.graph.dao.api.GraphContainerDao;
 import org.opennms.netmgt.graph.persistence.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.mapper.GenericToEntityMapper;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
-import org.opennms.netmgt.topology.EdgeEntity;
-import org.opennms.netmgt.topology.GraphContainerEntity;
-import org.opennms.netmgt.topology.GraphEntity;
-import org.opennms.netmgt.topology.PropertyEntity;
-import org.opennms.netmgt.topology.VertexEntity;
-import org.opennms.netmgt.topology.FocusEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,18 +91,22 @@ public class DefaultGraphRepository implements GraphRepository {
             // Fetch the whole container but only the relevant properties
             // Should avoid getVertices to not make it too slow
             final GraphContainerEntity containerEntity =  graphContainerDao.findContainerInfoById(containerId);
-
-            // Now convert
-            final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(containerEntity.getNamespace());
-            containerInfo.setLabel(containerEntity.getLabel());
-            containerInfo.setDescription(containerEntity.getDescription());
-            containerEntity.getGraphs().forEach(graphEntity -> {
-                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), SimpleVertex.class /* TODO MVR this is not correct */);
-                graphInfo.setLabel(graphEntity.getLabel());
-                graphInfo.setDescription(graphEntity.getDescription());
-                containerInfo.getGraphInfos().add(graphInfo);
-            });
-            return containerInfo;
+            if (containerEntity != null) {
+                // Now convert
+                final DefaultGraphContainerInfo containerInfo = new DefaultGraphContainerInfo(containerEntity.getNamespace());
+                containerInfo.setLabel(containerEntity.getLabel());
+                containerInfo.setDescription(containerEntity.getDescription());
+                containerEntity.getGraphs().forEach(graphEntity -> {
+                    // We don't know the vertex type anymore. When loading the container, the type of the vertex will be GenericVertex
+                    // If another type is required, the loading instance should wrap the info accordingly
+                    final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), GenericVertex.class);
+                    graphInfo.setLabel(graphEntity.getLabel());
+                    graphInfo.setDescription(graphEntity.getDescription());
+                    containerInfo.getGraphInfos().add(graphInfo);
+                });
+                return containerInfo;
+            }
+            return null;
         });
     }
 
@@ -211,7 +214,8 @@ public class DefaultGraphRepository implements GraphRepository {
             final GenericGraph genericGraph = GenericGraph.builder()
                     .namespace(graphInfo.getNamespace())
                     .property(GenericProperties.LABEL, graphInfo.getLabel())
-                    .property(GenericProperties.DESCRIPTION, graphInfo.getDescription()).build();
+                    .property(GenericProperties.DESCRIPTION, graphInfo.getDescription())
+                    .build();
             genericGraphContainerBuilder.addGraph(genericGraph);
         });
         save(genericGraphContainerBuilder.build());

@@ -60,7 +60,7 @@ public class ApplicationSearchProvider implements SearchProvider {
 
     @Override
     public boolean canSuggest(GraphService graphService, String namespace) {
-        return ApplicationGraph.TOPOLOGY_NAMESPACE.equals(namespace);
+        return ApplicationGraph.NAMESPACE.equals(namespace);
     }
 
     @Override

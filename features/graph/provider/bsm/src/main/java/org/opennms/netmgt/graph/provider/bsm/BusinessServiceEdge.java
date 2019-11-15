@@ -79,7 +79,7 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
         
         public BusinessServiceEdge build() {
             return new BusinessServiceEdge(GenericEdge.builder()
-                    .namespace(BusinessServiceGraphProvider.NAMESPACE) // default but can still be changed by properties
+                    .namespace(BusinessServiceGraph.NAMESPACE) // default but can still be changed by properties
                     .properties(properties).source(source).target(target).build());
         }
     }

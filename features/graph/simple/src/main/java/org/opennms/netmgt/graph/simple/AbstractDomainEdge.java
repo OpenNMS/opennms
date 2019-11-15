@@ -101,10 +101,18 @@ public abstract class AbstractDomainEdge implements Edge {
             this.source = source;
             return (T)this;
         }
-        
+
+        public T source(String namespace, String vertexId) {
+            return source(new VertexRef(namespace, vertexId));
+        }
+
         public T target(VertexRef target) {
             this.target = target;
             return (T)this;
+        }
+
+        public T target(String namespace, String vertexId) {
+            return target(new VertexRef(namespace, vertexId));
         }
         
         public T id(String id) {

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph;
 
 
 import java.util.ArrayList;
@@ -56,10 +56,9 @@ import org.hibernate.annotations.BatchSize;
 @DiscriminatorColumn(name="type", discriminatorType = DiscriminatorType.STRING)
 public class AbstractGraphEntity {
 
-    // TODO MVR define own sequence for this
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "opennmsSequence")
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "graphSequence")
+    @SequenceGenerator(name = "graphSequence", sequenceName = "graphnxtid")
     @Column(name = "id", nullable = false)
     private Long dbId;
 

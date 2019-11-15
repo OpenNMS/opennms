@@ -33,11 +33,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.graph.AbstractGraphEntity;
+import org.opennms.netmgt.graph.EdgeEntity;
+import org.opennms.netmgt.graph.FocusEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
+import org.opennms.netmgt.graph.PropertyEntity;
+import org.opennms.netmgt.graph.VertexEntity;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -46,8 +53,15 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
-import org.opennms.netmgt.topology.FocusEntity;
+import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
+import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainGraphContainer;
+import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.simple.SimpleGraph;
+import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
+import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -76,6 +90,15 @@ public class DefaultGraphRepositoryIT {
 
     private static final String NAMESPACE = "dummy";
     private static final String CONTAINER_ID = "unique-id";
+
+    @Before
+    public void setUp() {
+        // Clean up properly after each test
+        persistenceAccessor.findAll(GraphContainerEntity.class).forEach(e -> graphRepository.deleteContainer(e.getNamespace()));
+        assertThat("AbstractGraphEntity", persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(0));
+        assertThat("FocusEntity", persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(0));
+        assertThat("PropertyEntity", persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(0));
+    }
 
     @Test
     public void verifyCRUD() {
@@ -162,8 +185,7 @@ public class DefaultGraphRepositoryIT {
 
     @Test
     public void verifySavingCollections() {
-
-        GenericVertex vertex = GenericVertex.builder()
+        final GenericVertex vertex = GenericVertex.builder()
                 .namespace(NAMESPACE)
                 .id("v1")
                 .property("collectionProperty", ImmutableList.of("E", "F")).build();
@@ -174,7 +196,7 @@ public class DefaultGraphRepositoryIT {
                 .addVertex(vertex)
                 .build();
 
-        GenericGraphContainer originalContainer = GenericGraphContainer.builder()
+        final GenericGraphContainer originalContainer = GenericGraphContainer.builder()
             .id(CONTAINER_ID)
             .property("collectionProperty", ImmutableList.of("A", "B"))
             .addGraph(graph).build();
@@ -220,11 +242,127 @@ public class DefaultGraphRepositoryIT {
         assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(1)); // only one focus entity should be present
     }
 
+    @Test
+    // Verifies that when deleting the graphcontainer all other entities are also deleted (properties, focus, etc)
+    public void verifyDeleteCascades() {
+        final GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder().id(CONTAINER_ID);
+        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .namespace(NAMESPACE)
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex((GenericVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build()));
+        final GenericGraphContainer container = containerBuilder.addGraph(graphBuilder.build()).build();
+        graphRepository.save(container);
+
+        // Verify creation of objects
+        // 1 container, 1 graph, 2 vertices
+        assertThat(persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(4));
+        // 1 Focus
+        assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(1));
+        // 1 container id, 1 graph namespace, 2 vertex namespace, 2 vertex ids, 2 vertex labels
+        assertThat(persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(8));
+
+        // Delete the container
+        graphRepository.deleteContainer(container.getId());
+
+        // Verify deletion of objects
+        assertThat(persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(0));
+        assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(0));
+        assertThat(persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(0));
+    }
+
+    @Test
+    public void verifyVertexTypePersistence() {
+        final ApplicationGraph applicationGraph = ApplicationGraph.builder()
+                .label("Application Graph")
+                .description("The Application Graph")
+                .build();
+        final ApplicationGraphContainer applicationGraphContainer= ApplicationGraphContainer.builder()
+                .id("test")
+                .description("Test Container")
+                .addGraph(applicationGraph)
+                .build();
+        graphRepository.save(applicationGraphContainer);
+
+        // Verify that generic info contains proper domain vertex type
+        final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById("test");
+        final GraphInfo genericGraphInfo = genericGraphContainer.getGraphInfo(ApplicationGraph.NAMESPACE);
+        assertEquals(GenericVertex.class, genericGraphInfo.getVertexType());
+
+        // Convert to domain container and verify types again
+        final ApplicationGraphContainer readContainer = new ApplicationGraphContainer(genericGraphContainer);
+        assertEquals(readContainer.getGraph(ApplicationGraph.NAMESPACE).getVertexType(), ApplicationVertex.class);
+
+        // Verify that reading only the container info contains the generic vertex types for the graph
+        final GraphInfo readGraphInfo = graphRepository.findContainerInfoById("test").getGraphInfo(ApplicationGraph.NAMESPACE);
+        assertEquals(GenericVertex.class, readGraphInfo.getVertexType());
+    }
+
+    @Test
+    public void verifyPersistingEdgesOfDifferentNamespaces() {
+        final String namespace = "test-namespace";
+        final String containerId = "test-container-id";
+        final SimpleGraph graph = SimpleGraph.builder()
+                .namespace(namespace)
+                .addVertex(SimpleVertex.builder().namespace(namespace).id("v1").build())
+                .addEdge(SimpleEdge.builder()
+                        .namespace(namespace)
+                        .id("e1")
+                        .source(namespace, "v1")
+                        .target("other", "o1").build())
+                .build();
+        final SimpleGraphContainer container = SimpleGraphContainer.builder()
+                .id(containerId)
+                .addGraph(graph)
+                .build();
+        graphRepository.save(container);
+
+        // Verify that only one of each was persisted
+        assertThat(persistenceAccessor.findAll(GraphContainerEntity.class), Matchers.hasSize(1));
+        assertThat(persistenceAccessor.findAll(VertexEntity.class), Matchers.hasSize(1));
+        assertThat(persistenceAccessor.findAll(EdgeEntity.class), Matchers.hasSize(1));
+
+        // Verify persisted properly
+        final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById(containerId);
+        assertEquals(container, SimpleGraphContainer.from(genericGraphContainer));
+    }
+
     private void verifyEquals(GenericGraphContainer originalContainer, GenericGraphContainer persistedContainer) {
         Assert.assertEquals(originalContainer.getId(), persistedContainer.getId());
         Assert.assertEquals(originalContainer.getDescription(), persistedContainer.getDescription());
         Assert.assertEquals(originalContainer.getLabel(), persistedContainer.getLabel());
         Assert.assertEquals(originalContainer.getGraphs().size(), persistedContainer.getGraphs().size());
         Assert.assertEquals(originalContainer, persistedContainer);
+    }
+
+    /**
+     * Helper container for test purposes.
+     */
+    private static class ApplicationGraphContainer extends AbstractDomainGraphContainer<ApplicationGraph> {
+
+        private ApplicationGraphContainer(GenericGraphContainer genericGraphContainer){
+            super(genericGraphContainer);
+        }
+
+        @Override
+        protected ApplicationGraph convert(GenericGraph graph) {
+            return new ApplicationGraph(graph);
+        }
+
+        public static ApplicationGraphContainer.ApplicationGraphContainerBuilder builder() {
+            return new ApplicationGraphContainer.ApplicationGraphContainerBuilder();
+        }
+
+        public static ApplicationGraphContainer from(GenericGraphContainer genericGraphContainer) {
+            return new ApplicationGraphContainer(genericGraphContainer);
+        }
+
+        public final static class ApplicationGraphContainerBuilder extends AbstractDomainGraphContainerBuilder<ApplicationGraphContainerBuilder, ApplicationGraph> {
+
+            private ApplicationGraphContainerBuilder() {}
+
+            public ApplicationGraphContainer build() {
+                return new ApplicationGraphContainer(this.builder.build());
+            }
+        }
     }
 }

@@ -85,7 +85,7 @@ public final class BusinessServiceVertex extends AbstractBusinessServiceVertex {
         public BusinessServiceVertex build() {
             this.type(Type.BusinessService);
             return new BusinessServiceVertex(GenericVertex.builder()
-                    .namespace(BusinessServiceGraphProvider.NAMESPACE)
+                    .namespace(BusinessServiceGraph.NAMESPACE)
                     .properties(properties).build());
         }
     }

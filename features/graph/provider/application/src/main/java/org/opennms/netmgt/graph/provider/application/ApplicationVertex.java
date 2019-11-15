@@ -135,7 +135,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         }
         
         public ApplicationVertex build() {
-            namespace(ApplicationGraph.TOPOLOGY_NAMESPACE); // namespace is fixed => cannot be changed
+            namespace(ApplicationGraph.NAMESPACE); // namespace is fixed => cannot be changed
             return new ApplicationVertex(GenericVertex.builder().properties(properties).build());
         }
     }

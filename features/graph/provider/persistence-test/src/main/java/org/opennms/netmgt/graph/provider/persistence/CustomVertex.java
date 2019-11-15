@@ -26,24 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph.provider.persistence;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.netmgt.graph.dao.api.EntityProperties;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
 
-public class GraphEntityTest {
+// Test vertex type to use a different type
+public class CustomVertex extends AbstractDomainVertex {
 
-    @Test
-    public void verifyGetVertexByVertexId() {
-        final GraphEntity graph = new GraphEntity();
-        graph.setNamespace("dummy");
-
-        final VertexEntity vertex = new VertexEntity();
-        vertex.setNamespace(graph.getNamespace());
-        vertex.setId("v1");
-        graph.addVertex(vertex);
-
-        Assert.assertSame(vertex, graph.getVertexByVertexId("v1"));
+    public CustomVertex(GenericVertex genericVertex) {
+        super(genericVertex);
     }
 }

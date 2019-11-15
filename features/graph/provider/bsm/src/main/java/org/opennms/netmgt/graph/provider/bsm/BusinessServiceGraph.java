@@ -38,7 +38,9 @@ import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
 // TODO: Patrick: I am not sure we need such a complicated object structure since we only build the objects and then give them
 // as AbstractDomain* to the outside. Evaluate if the builders wouldn't be enough?
 public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusinessServiceVertex, BusinessServiceEdge> {
-    
+
+    public static final String NAMESPACE = "bsm";
+
     public BusinessServiceGraph(GenericGraph graph) {
         super(graph);
     }
@@ -74,7 +76,9 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
     public final static class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder,
         AbstractBusinessServiceVertex, BusinessServiceEdge> {
         
-        private BusinessServiceGraphBuilder() {}
+        private BusinessServiceGraphBuilder() {
+            namespace(NAMESPACE);
+        }
  
         public BusinessServiceGraph build() {
             return new BusinessServiceGraph(delegate.build());

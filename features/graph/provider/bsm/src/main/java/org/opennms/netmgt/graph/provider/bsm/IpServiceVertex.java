@@ -84,7 +84,7 @@ public final class IpServiceVertex extends AbstractBusinessServiceVertex {
         public IpServiceVertex build() {
             this.type(Type.IpService);
             return new IpServiceVertex(GenericVertex.builder()
-                    .namespace(BusinessServiceGraphProvider.NAMESPACE) // default but can still be changed by properties
+                    .namespace(BusinessServiceGraph.NAMESPACE) // default but can still be changed by properties
                     .properties(properties).build());
         }
     }

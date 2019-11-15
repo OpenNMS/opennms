@@ -46,7 +46,6 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
 import org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraph.BusinessServiceGraphBuilder;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -55,8 +54,6 @@ import com.google.common.collect.Lists;
 
 // TODO MVR this looks like a copy of BusinessServiceTopologyProvider
 public class BusinessServiceGraphProvider implements GraphProvider, EventListener {
-
-    protected static final String NAMESPACE = "bsm";
 
     // The UEIs this listener is interested in
     private static final List<String> UEI_LIST = Lists.newArrayList(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI);
@@ -87,7 +84,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
 
     @Override
     public GraphInfo<?> getGraphInfo() {
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(NAMESPACE, SimpleVertex.class);
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(BusinessServiceGraph.NAMESPACE, AbstractBusinessServiceVertex.class);
         graphInfo.setLabel("Business Service Graph"); // Business Services
         graphInfo.setDescription("Displays the hierarchy of the defined Business Services and their computed operational states.");
         return graphInfo;

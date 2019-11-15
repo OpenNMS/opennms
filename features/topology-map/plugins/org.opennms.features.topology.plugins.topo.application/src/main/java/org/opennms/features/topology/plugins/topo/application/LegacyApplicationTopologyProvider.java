@@ -68,7 +68,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
     private void load() {
         graph.resetContainer();
 
-        final GenericGraph genericGraph = graphService.getGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
+        final GenericGraph genericGraph = graphService.getGraph(ApplicationGraph.NAMESPACE);
         final ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph);
         for (ApplicationVertex eachApplicationVertex : applicationGraph.getVertices()) {
             LegacyApplicationVertex applicationVertex = new LegacyApplicationVertex(eachApplicationVertex);
@@ -117,7 +117,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
                 .withPreferredLayout("Hierarchy Layout")
                 .withCriteria(() -> {
                     // Only show the first application by default
-                	GenericGraph genericGraph = graphService.getGraph(ApplicationGraph.TOPOLOGY_NAMESPACE);
+                	GenericGraph genericGraph = graphService.getGraph(ApplicationGraph.NAMESPACE);
                     ApplicationGraph applicationGraph = new ApplicationGraph(genericGraph.asGenericGraph());
                     Optional<ApplicationVertex> firstVertex = applicationGraph.getVertices().stream()
                             .filter( v -> v.getVertexType() == ApplicationVertexType.Application)

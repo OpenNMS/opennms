@@ -26,11 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * This package should be named <code>org.opennms.netmgt.graph.*</code>, but is named topology instead.
- * The main reason for this is to not change the applicationContext-dao.xml setting up the SessionFactory.
- * If the entities are all in this package, they will automatically detected without any changes.
- *
- * @author mvrueden
- */
-package org.opennms.netmgt.topology;
+package org.opennms.netmgt.graph.provider.persistence;
+
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
+
+public class CustomEdge extends AbstractDomainEdge {
+    public CustomEdge(GenericEdge genericEdge) {
+        super(genericEdge);
+    }
+}

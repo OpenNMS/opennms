@@ -58,7 +58,7 @@ public class ApplicationGraphProvider implements GraphProvider {
 
     @Override
     public GraphInfo<?> getGraphInfo() {
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(ApplicationGraph.TOPOLOGY_NAMESPACE, ApplicationVertex.class);
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(ApplicationGraph.NAMESPACE, ApplicationVertex.class);
         graphInfo.setLabel(GRAPH_LABEL);
         graphInfo.setDescription(GRAPH_DESCRIPTION);
         return graphInfo;
@@ -83,7 +83,7 @@ public class ApplicationGraphProvider implements GraphProvider {
 
                     // connect with application
                     final SimpleEdge edge = SimpleEdge.builder()
-                            .namespace(ApplicationGraph.TOPOLOGY_NAMESPACE)
+                            .namespace(ApplicationGraph.NAMESPACE)
                             .source(applicationVertex.getVertexRef())
                             .target(serviceVertex.getVertexRef())
                             .build();

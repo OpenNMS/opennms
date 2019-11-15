@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.opennms.netmgt.graph.dao.api.GraphContainerDao;
-import org.opennms.netmgt.topology.GraphContainerEntity;
+import org.opennms.netmgt.graph.GraphContainerEntity;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 

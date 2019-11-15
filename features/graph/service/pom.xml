@@ -52,11 +52,6 @@
             <artifactId>gson</artifactId>
             <version>${gsonVersion}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features.graph</groupId>
-            <artifactId>org.opennms.features.graph.simple</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.opennms.features.graph.dao</groupId>
@@ -112,6 +107,18 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.graph.provider</groupId>
+            <artifactId>org.opennms.features.graph.provider.application</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.graph</groupId>
+            <artifactId>org.opennms.features.graph.simple</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
