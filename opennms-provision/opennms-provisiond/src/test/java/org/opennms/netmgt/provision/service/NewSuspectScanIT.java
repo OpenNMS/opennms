@@ -191,8 +191,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
     @After
     public void tearDown() throws InterruptedException {
-        m_populator.resetDatabase();
         waitForEverything();
+        m_populator.resetDatabase();
     }
 
     @Test(timeout=300000)
@@ -703,8 +703,6 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
     })
     public void testNewSuspectScanBeingSequential() throws Exception {
 
-        // Set rescanThreads=10 same as default config.
-        m_provisioner.setScheduledExecutor(Executors.newScheduledThreadPool(10));
         final int nextNodeId = m_nodeDao.getNextNodeId();
         //Verify empty database
         assertEquals(1, getDistPollerDao().countAll());

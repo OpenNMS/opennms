@@ -945,4 +945,7 @@ public class Provisioner implements SpringServiceDaemon {
         }
     }
 
+    public ExecutorService getNewSuspectExecutor() {
+        return m_newSuspectExecutor;
+    }
 }
