@@ -26,13 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml;
+package org.opennms.features.graphml.service.impl;
+
+import static org.opennms.features.graphml.service.impl.GraphmlRepositoryImpl.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.graphdrawing.graphml.GraphmlType;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,13 +64,16 @@ public class GraphmlRepositoryImplTest {
         // Verify that xml was generated
         Assert.assertEquals(true, graphmlRepository.exists(NAME));
 
-        // Verify cfg
+        // Verify Topology cfg
         Properties properties = new Properties();
-        properties.load(new FileInputStream(GraphmlRepositoryImpl.buildTopologyCfgFilepath(NAME)));
-        Assert.assertEquals("Label *yay*", properties.get(GraphmlRepositoryImpl.LABEL));
-        Assert.assertEquals(GraphmlRepositoryImpl.buildGraphmlFilepath(NAME), properties.get(GraphmlRepositoryImpl.TOPOLOGY_LOCATION));
+        properties.load(new FileInputStream(buildTopologyCfgFilepath(NAME)));
+        Assert.assertEquals("Label *yay*", properties.get(LABEL));
+        Assert.assertEquals(buildGraphmlFilepath(NAME), properties.get(TOPOLOGY_LOCATION));
 
-        // TODO MVR verify graph service cfg as well?
+        // Verify Graph API 2.0 cfg
+        properties.load(new FileInputStream(buildGraphCfgFilepath(NAME)));
+        Assert.assertEquals("Label *yay*", properties.get(LABEL));
+        Assert.assertEquals(buildGraphmlFilepath(NAME), properties.get(GRAPH_LOCATION));
 
         // Read
         GraphmlType byName = graphmlRepository.findByName(NAME);
@@ -83,6 +91,8 @@ public class GraphmlRepositoryImplTest {
         // Delete
         graphmlRepository.delete(NAME);
         Assert.assertEquals(false, graphmlRepository.exists(NAME));
-        Assert.assertEquals(false, graphmlRepository.exists(NAME));
+        Assert.assertThat(Files.exists(Paths.get(buildGraphmlFilepath(NAME))), Matchers.is(false));
+        Assert.assertThat(Files.exists(Paths.get(buildTopologyCfgFilepath(NAME))), Matchers.is(false));
+        Assert.assertThat(Files.exists(Paths.get(buildGraphCfgFilepath(NAME))), Matchers.is(false));
     }
 }
