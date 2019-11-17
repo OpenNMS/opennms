@@ -31,6 +31,7 @@ package org.opennms.netmgt.config.discovery;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,6 +41,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+
+import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "exclude-range")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -91,8 +94,8 @@ public class ExcludeRange implements Serializable {
         m_end = ConfigUtils.assertNotEmpty(end, "end");
     }
 
-    public String getLocation() {
-        return m_location;
+    public Optional<String> getLocation() {
+        return Optional.ofNullable(m_location);
     }
 
     public void setLocation(String location) {
@@ -124,11 +127,11 @@ public class ExcludeRange implements Serializable {
 
     @Override
     public String toString() {
-        return "ExcludeRange{" +
-                "m_begin='" + m_begin + '\'' +
-                ", m_end='" + m_end + '\'' +
-                ", m_location='" + m_location + '\'' +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("begin", m_begin)
+                .add("end", m_end)
+                .add("location", m_location)
+                .toString();
     }
 
 

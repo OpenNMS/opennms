@@ -244,9 +244,14 @@ public class ActionDiscoveryServlet extends HttpServlet {
             LOG.debug("Adding Exclude Range");
             String ipAddrBegin = request.getParameter("erbegin");
             String ipAddrEnd = request.getParameter("erend");
+            String location = request.getParameter("erlocation");
             ExcludeRange newER = new ExcludeRange();
             newER.setBegin(ipAddrBegin);
             newER.setEnd(ipAddrEnd);
+            if(location!=null && !"".equals(location.trim()) &&
+                    !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
+                newER.setLocation(location);
+            }
             config.addExcludeRange(newER);
         }
 

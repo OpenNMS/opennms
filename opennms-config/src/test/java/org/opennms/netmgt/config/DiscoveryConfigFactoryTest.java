@@ -117,6 +117,7 @@ public class DiscoveryConfigFactoryTest {
         conf.addExcludeRange(er);
 
         final DiscoveryConfigFactory factory = new DiscoveryConfigFactory(conf);
+        factory.initializeExcludeRanges();
 
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1"), null));
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2"), null));
@@ -175,6 +176,7 @@ public class DiscoveryConfigFactoryTest {
         conf.addDefinition(definition2);
 
         final DiscoveryConfigFactory factory = new DiscoveryConfigFactory(conf);
+        factory.initializeExcludeRanges();
 
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1"), "MINION"));
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2"), "MINION"));
@@ -215,6 +217,7 @@ public class DiscoveryConfigFactoryTest {
         conf.addExcludeRange(er);
 
         DiscoveryConfigFactory factory = new DiscoveryConfigFactory(conf);
+        factory.initializeExcludeRanges();
 
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.1"), null));
         assertFalse(factory.isExcluded(InetAddressUtils.addr("192.168.0.2"), null));

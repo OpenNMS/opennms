@@ -93,6 +93,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
     private Map<String, List<String>> m_urlSpecifics = new HashMap<>();
+    private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
 
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
@@ -152,6 +153,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
             try {
                 clearUrlSpecifics();
+                clearExcludeRanges();
                 getInitialSleepTime();
                 getRestartSleepTime();
                 getIntraPacketDelay();
@@ -375,6 +377,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private void clearUrlSpecifics() {
         m_urlSpecifics.clear();
     }
+    private void clearExcludeRanges() {
+        m_excludeRanges.clear();
+    }
 
     /**
      * <p>getRanges</p>
@@ -531,52 +536,54 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      */
     @Override
     public boolean isExcluded(final InetAddress address, String location) {
-        getReadLock().lock();
-        try {
-            final List<ExcludeRange> excludeRanges = getConfiguration().getExcludeRanges();
-            // Get exclude ranges from definitions. Assign location from definition.
-            getConfiguration().getDefinitions().forEach(def -> {
-                setLocationFromDefinition(def);
-                excludeRanges.addAll(def.getExcludeRanges());
-            });
-            if (!excludeRanges.isEmpty()) {
 
-                final byte[] laddr = address.getAddress();
-                for (final ExcludeRange range : excludeRanges) {
+        String defaultLocation = LocationUtils.DEFAULT_LOCATION_NAME;
 
-                    if(!isLocationMatched(range.getLocation(), location)) {
-                        continue;
-                    }
+        if (!m_excludeRanges.isEmpty()) {
 
-                    if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
-                        return true;
-                    }
+            final byte[] laddr = address.getAddress();
+            for (final ExcludeRange range : m_excludeRanges) {
+
+                if (!isLocationMatched(range.getLocation().orElse(defaultLocation), location)) {
+                    continue;
+                }
+
+                if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
+                    return true;
                 }
             }
-            return false;
+        }
+        return false;
+    }
+
+    void initializeExcludeRanges() {
+        getReadLock().lock();
+        try {
+            m_excludeRanges.addAll(getConfiguration().getExcludeRanges());
+            // Add exclude ranges from definitions. Assign location from definition.
+            getConfiguration().getDefinitions().forEach(def -> {
+                setLocationFromDefinition(def);
+                m_excludeRanges.addAll(def.getExcludeRanges());
+            });
         } finally {
             getReadLock().unlock();
         }
     }
 
     private void setLocationFromDefinition(Definition definition) {
-        if (!definition.getExcludeRanges().isEmpty()) {
-            List<ExcludeRange> excludeRangesFromDef = definition.getExcludeRanges();
-            excludeRangesFromDef.forEach(exRange -> {
-                if (Strings.isNullOrEmpty(exRange.getLocation())) {
-                    exRange.setLocation(definition.getLocation().orElse(null));
-                }
-            });
-        }
+        List<ExcludeRange> excludeRangesFromDef = definition.getExcludeRanges();
+        excludeRangesFromDef.forEach(exRange -> {
+            if (!exRange.getLocation().isPresent()) {
+                exRange.setLocation(definition.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME));
+            }
+        });
     }
 
     private boolean isLocationMatched(String locationFromRange, String location) {
-        if (Strings.isNullOrEmpty(locationFromRange) && Strings.isNullOrEmpty(location)) {
-            return true;
-        } else if (!Strings.isNullOrEmpty(locationFromRange)) {
-            return locationFromRange.equals(location);
+        if (Strings.isNullOrEmpty(location)) {
+            location = LocationUtils.DEFAULT_LOCATION_NAME;
         }
-        return false;
+        return locationFromRange.equals(location);
     }
 
     @Override
@@ -741,6 +748,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             final List<IPPollAddress> specifics = getSpecifics();
             final List<IPPollRange> ranges = getRanges();
             specifics.addAll(getURLSpecifics());
+            initializeExcludeRanges();
 
             final List<Iterator<IPPollAddress>> iters = new ArrayList<Iterator<IPPollAddress>>();
             iters.add(specifics.iterator());
