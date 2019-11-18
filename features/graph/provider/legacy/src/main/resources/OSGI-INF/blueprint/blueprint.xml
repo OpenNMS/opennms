@@ -16,12 +16,21 @@
     <bean id="vmwareGraphProvider" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphProvider">
         <argument ref="vmwareMetaTopologyProvider"/>
     </bean>
-    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="vmwareGraphProvider"/>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="vmwareGraphProvider">
+        <service-properties>
+            <entry key="periodicallyReload" value="300" /> <!-- Seconds -->
+        </service-properties>
+    </service>
+
 
     <!-- Enhanced Linkd Adapter -->
     <bean id="enlinkdGraphProvider" class="org.opennms.netmgt.graph.provider.legacy.LegacyGraphProvider">
         <argument ref="enlinkdMetaTopologyProvider"/>
     </bean>
-    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="enlinkdGraphProvider"/>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="enlinkdGraphProvider">
+        <service-properties>
+            <entry key="periodicallyReload" value="300" /> <!-- Seconds -->
+        </service-properties>
+    </service>
     
 </blueprint>

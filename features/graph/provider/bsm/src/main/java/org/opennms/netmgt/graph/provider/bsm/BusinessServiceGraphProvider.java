@@ -43,6 +43,7 @@ import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.service.GraphContainerCache;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
 import org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraph.BusinessServiceGraphBuilder;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.xml.event.Event;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-// TODO MVR this looks like a copy of BusinessServiceTopologyProvider
 public class BusinessServiceGraphProvider implements GraphProvider, EventListener {
 
     // The UEIs this listener is interested in
@@ -62,23 +62,17 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
 
     private final BusinessServiceManager businessServiceManager;
 
-    private boolean initialized = false;
+    private final GraphContainerCache graphContainerCache;
 
-    private ImmutableGraph graph;
-
-    public BusinessServiceGraphProvider(BusinessServiceManager businessServiceManager, EventIpcManager eventIpcManager) {
+    public BusinessServiceGraphProvider(GraphContainerCache graphContainerCache, BusinessServiceManager businessServiceManager, EventIpcManager eventIpcManager) {
         this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
         this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
+        this.graphContainerCache = Objects.requireNonNull(graphContainerCache);
     }
 
-    // TODO MVR We may need some kind of caching strategy implementation allowing each provider to deal with reloads individually if they so choose
     @Override
     public ImmutableGraph<?, ?> loadGraph() {
-        // TODO MVR this is not thread safe
-        if (!initialized) {
-            graph = createGraph();
-            initialized = true;
-        }
+        final ImmutableGraph<?, ?> graph = createGraph();
         return graph;
     }
 
@@ -161,14 +155,13 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         return getClass().getSimpleName();
     }
 
-    // TODO MVR We may need some kind of caching strategy implementation allowing each provider to deal with reloads individually if they so choose
     @Override
     public void onEvent(Event e) {
         // BSM has been reloaded, force reload
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
             String daemonName = EventUtils.getParm(e, EventConstants.PARM_DAEMON_NAME);
             if (daemonName != null && "bsmd".equalsIgnoreCase(daemonName)) {
-                graph = createGraph();
+                graphContainerCache.invalidate(BusinessServiceGraph.NAMESPACE);
             }
         }
     }
