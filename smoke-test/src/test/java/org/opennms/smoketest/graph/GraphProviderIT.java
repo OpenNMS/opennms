@@ -29,17 +29,20 @@
 package org.opennms.smoketest.graph;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.preemptive;
 
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.utils.KarafShell;
 import org.rnorth.ducttape.unreliables.Unreliables;
 
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 /**
@@ -48,6 +51,15 @@ import io.restassured.http.ContentType;
 public class GraphProviderIT extends OpenNMSSeleniumIT {
 
     private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+
+    @Before
+    public void setUp() {
+        // Configure rest
+        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
+        RestAssured.port = stack.opennms().getWebPort();
+        RestAssured.basePath = "/opennms/api/v2/graphs";
+        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+    }
 
     // Here we verify that the graph provider is exposed correctly
     @Test
