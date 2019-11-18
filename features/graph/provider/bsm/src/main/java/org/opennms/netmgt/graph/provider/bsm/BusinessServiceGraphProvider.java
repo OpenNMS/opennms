@@ -168,7 +168,6 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
             String daemonName = EventUtils.getParm(e, EventConstants.PARM_DAEMON_NAME);
             if (daemonName != null && "bsmd".equalsIgnoreCase(daemonName)) {
-                // TODO MVR reloading of this does not work :'(
                 graph = createGraph();
             }
         }
