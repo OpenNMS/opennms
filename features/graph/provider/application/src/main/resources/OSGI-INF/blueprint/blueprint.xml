@@ -9,6 +9,12 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
+    <cm:property-placeholder id="applicationConfiguration" persistent-id="org.opennms.features.graph.provider.application" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="cacheInvalidateInterval" value="300" /> <!-- Seconds -->
+        </cm:default-properties>
+    </cm:property-placeholder>
+
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
     <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
 
@@ -18,8 +24,7 @@
     </bean>
     <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider">
         <service-properties>
-            <!-- TODO MVR make configurable -->
-            <entry key="cacheInvalidateInterval" value="300" /> <!-- Seconds -->
+            <entry key="cacheInvalidateInterval" value="${cacheInvalidateInterval}" />
         </service-properties>
     </service>
 

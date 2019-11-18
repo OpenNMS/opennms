@@ -102,7 +102,7 @@ public class CachingGraphService implements GraphService {
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         final String containerId = graphContainerProvider.getContainerInfo().getId();
         final int cacheInvalidateInterval = Integer.valueOf(props.getOrDefault("cacheInvalidateInterval", "0"));
-        if (cacheInvalidateInterval != 0) {
+        if (cacheInvalidateInterval > 0) {
             graphContainerCache.periodicallyInvalidate(containerId, cacheInvalidateInterval, TimeUnit.SECONDS);
         }
     }

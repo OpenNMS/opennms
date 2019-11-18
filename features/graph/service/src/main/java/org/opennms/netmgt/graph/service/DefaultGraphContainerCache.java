@@ -80,7 +80,7 @@ public class DefaultGraphContainerCache implements GraphContainerCache {
             if (!Thread.currentThread().isInterrupted()) {
                 invalidate(containerId);
             }
-        }, reloadUnit.toMillis(reloadInterval), reloadInterval, reloadUnit);
+        }, reloadInterval, reloadInterval, reloadUnit);
         futureHandles.put(containerId, scheduledFuture);
     }
 
