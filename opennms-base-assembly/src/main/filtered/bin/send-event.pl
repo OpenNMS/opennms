@@ -164,6 +164,7 @@ if (defined $SERVICE) {
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
 $year += 1900;
 my $month = sprintf("%02d", $mon + 1);
+$hour     = sprintf("%02d", $hour);
 $mday     = sprintf("%02d", $mday);
 $min      = sprintf("%02d", $min);
 $sec      = sprintf("%02d", $sec);
