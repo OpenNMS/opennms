@@ -66,6 +66,10 @@
       <artifactId>drools-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>com.swrve</groupId>
+      <artifactId>rate-limited-logger</artifactId>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
