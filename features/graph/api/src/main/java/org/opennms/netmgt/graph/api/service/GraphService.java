@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.api.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
@@ -41,11 +42,20 @@ public interface GraphService {
 
     GraphContainerInfo getGraphContainerInfo(String containerId);
 
+    GraphContainerInfo getGraphContainerInfoByNamespace(String namespace);
+
     GraphInfo getGraphInfo(String graphNamespace);
 
     GenericGraphContainer getGraphContainer(String containerId);
 
     GenericGraph getGraph(String containerId, String graphNamespace);
 
-    GenericGraph getGraph(String namespace);
+    default GenericGraph getGraph(String namespace) {
+        final GraphContainerInfo graphContainerInfo = getGraphContainerInfoByNamespace(namespace);
+        if (graphContainerInfo != null) {
+            final GenericGraph graph = getGraphContainer(graphContainerInfo.getId()).getGraph(namespace);
+            return graph;
+        }
+        throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
+    }
 }

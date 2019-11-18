@@ -18,7 +18,8 @@
     </bean>
     <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="vmwareGraphProvider">
         <service-properties>
-            <entry key="periodicallyReload" value="300" /> <!-- Seconds -->
+            <!-- TODO MVR make configurable -->
+            <entry key="cacheInvalidateInterval" value="300" /> <!-- Seconds -->
         </service-properties>
     </service>
 
@@ -29,7 +30,8 @@
     </bean>
     <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="enlinkdGraphProvider">
         <service-properties>
-            <entry key="periodicallyReload" value="300" /> <!-- Seconds -->
+            <!-- TODO MVR make configurable -->
+            <entry key="cacheInvalidateInterval" value="300" /> <!-- Seconds -->
         </service-properties>
     </service>
     

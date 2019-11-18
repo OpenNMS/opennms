@@ -30,28 +30,24 @@ package org.opennms.netmgt.graph.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
-import org.opennms.netmgt.graph.api.service.GraphContainerCache;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
-public class CachingGraphService implements GraphService, GraphContainerCache {
+public class CachingGraphService implements GraphService {
 
     private final GraphService delegate;
-    private final DefaultGraphContainerCache cache;
+    private final DefaultGraphContainerCache graphContainerCache;
 
-    public CachingGraphService(GraphService delegate) {
+    public CachingGraphService(GraphService delegate, DefaultGraphContainerCache graphContainerCache) {
         this.delegate = Objects.requireNonNull(delegate);
-        this.cache = new DefaultGraphContainerCache(delegate::getGraphContainer);
+        this.graphContainerCache = Objects.requireNonNull(graphContainerCache);
     }
 
     @Override
@@ -65,18 +61,23 @@ public class CachingGraphService implements GraphService, GraphContainerCache {
     }
 
     @Override
+    public GraphContainerInfo getGraphContainerInfoByNamespace(String namespace) {
+        return delegate.getGraphContainerInfoByNamespace(namespace);
+    }
+
+    @Override
     public GraphInfo getGraphInfo(String graphNamespace) {
         return delegate.getGraphInfo(graphNamespace);
     }
 
     @Override
     public GenericGraphContainer getGraphContainer(String containerId) {
-        if (cache.has(containerId)) {
-            return cache.get(containerId).asGenericGraphContainer();
+        if (graphContainerCache.has(containerId)) {
+            return graphContainerCache.get(containerId).asGenericGraphContainer();
         }
         final GenericGraphContainer graphContainer = delegate.getGraphContainer(containerId);
         if (graphContainer != null) {
-            cache.put(graphContainer);
+            graphContainerCache.put(graphContainer);
         }
         return graphContainer;
     }
@@ -90,52 +91,23 @@ public class CachingGraphService implements GraphService, GraphContainerCache {
         return null;
     }
 
-    @Override
-    public GenericGraph getGraph(String namespace) {
-        // TODO MVR this is a duplicate or DefaultGraphService.getGraph(String)
-        final Optional<GraphContainerInfo> anyContainer = getGraphContainerInfos().stream().filter(container -> container.getNamespaces().contains(namespace)).findAny();
-        if (anyContainer.isPresent()) {
-            final GenericGraph graph = getGraphContainer(anyContainer.get().getId()).getGraph(namespace);
-            return graph;
-        }
-        throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
-    }
-
-    // TODO MVR this may not be the best approach of doing this
-    @Override
-    public boolean has(String containerId) {
-        return cache.has(containerId);
-    }
-
-    // TODO MVR this may not be the best approach of doing this
-    @Override
-    public void invalidate(String containerId) {
-        cache.invalidate(containerId);
-    }
-
-    // TODO MVR this may not be the best approach of doing this
-    @Override
-    public ImmutableGraphContainer get(String containerId) {
-        return cache.get(containerId);
-    }
-
     public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         if (graphContainerProvider != null) {
             final String containerId = graphContainerProvider.getContainerInfo().getId();
-            cache.cancel(containerId);
-            cache.invalidate(containerId);
+            graphContainerCache.cancel(containerId);
+            graphContainerCache.invalidate(containerId);
         }
     }
 
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         final String containerId = graphContainerProvider.getContainerInfo().getId();
-        final int periodicallyReload = Integer.valueOf(props.getOrDefault("periodicallyReload", "0"));
-        if (periodicallyReload != 0) {
-            cache.periodicallyReload(containerId, periodicallyReload, TimeUnit.SECONDS);
+        final int cacheInvalidateInterval = Integer.valueOf(props.getOrDefault("cacheInvalidateInterval", "0"));
+        if (cacheInvalidateInterval != 0) {
+            graphContainerCache.periodicallyInvalidate(containerId, cacheInvalidateInterval, TimeUnit.SECONDS);
         }
     }
 
     public void shutdown() {
-        cache.shutdown();
+        graphContainerCache.shutdown();
     }
 }

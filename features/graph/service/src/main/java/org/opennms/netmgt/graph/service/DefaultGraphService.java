@@ -30,7 +30,6 @@ package org.opennms.netmgt.graph.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -59,20 +58,26 @@ public class DefaultGraphService implements GraphService {
     }
 
     @Override
+    public GraphContainerInfo getGraphContainerInfoByNamespace(String namespace) {
+        // TODO MVR this is not equalsIgnoreCase which is used everywhere else
+        final Optional<GraphContainerInfo> any = getGraphContainerInfos().stream().filter(ci -> ci.getNamespaces().contains(namespace)).findAny();
+        return any.orElse(null);
+    }
+
+    @Override
     public GenericGraphContainer getGraphContainer(String containerId) {
         final Optional<GraphContainerProvider> any = graphContainerProviders.stream().filter(cp -> cp.getContainerInfo().getId().equalsIgnoreCase(containerId)).findAny();
         if (any.isPresent()) {
-            return any.get().loadGraphContainer().asGenericGraphContainer(); // TODO MVR implement lazy loading of graphs
+            return any.get().loadGraphContainer().asGenericGraphContainer();
         }
         return null;
     }
 
     @Override
     public GraphInfo getGraphInfo(String graphNamespace) {
-        // TODO MVR this is not equalsIgnoreCase which is used everywhere else
-        final Optional<GraphContainerInfo> any = getGraphContainerInfos().stream().filter(ci -> ci.getNamespaces().contains(graphNamespace)).findAny();
-        if (any.isPresent()) {
-            return getGraphContainerInfo(any.get().getId()).getGraphInfo(graphNamespace);
+        final GraphContainerInfo graphContainerInfo = getGraphContainerInfoByNamespace(graphNamespace);
+        if (graphContainerInfo != null) {
+            graphContainerInfo.getGraphInfo(graphNamespace);
         }
         return null;
     }
@@ -88,16 +93,6 @@ public class DefaultGraphService implements GraphService {
             return null;
         }
         return null;
-    }
-
-    @Override
-    public GenericGraph getGraph(String namespace) {
-        final Optional<GraphContainerInfo> anyContainer = getGraphContainerInfos().stream().filter(container -> container.getNamespaces().contains(namespace)).findAny();
-        if (anyContainer.isPresent()) {
-            final GenericGraph graph = getGraphContainer(anyContainer.get().getId()).getGraph(namespace);
-            return graph;
-        }
-        throw new NoSuchElementException("Could not find a Graph with namespace '" + namespace + "'.");
     }
 
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {

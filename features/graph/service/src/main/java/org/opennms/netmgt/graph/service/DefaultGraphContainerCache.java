@@ -35,7 +35,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.service.GraphContainerCache;
@@ -47,11 +46,6 @@ public class DefaultGraphContainerCache implements GraphContainerCache {
     private final Map<String, ImmutableGraphContainer> cache = new HashMap<>();
     private final Map<String, ScheduledFuture<?>> futureHandles = new HashMap<>();
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5, new ThreadFactoryBuilder().setNameFormat("graph-cache-%d").build());
-    private final Function<String, ImmutableGraphContainer> containerLoadFunction;
-
-    public DefaultGraphContainerCache(Function<String, ImmutableGraphContainer> containerLoadFunction) {
-        this.containerLoadFunction = Objects.requireNonNull(containerLoadFunction);
-    }
 
     @Override
     public boolean has(String containerId) {
@@ -80,15 +74,13 @@ public class DefaultGraphContainerCache implements GraphContainerCache {
         cache.put(graphContainer.getId(), graphContainer);
     }
 
-    public void periodicallyReload(String containerId, int reloadInterval, TimeUnit reloadUnit) {
+    public void periodicallyInvalidate(String containerId, int reloadInterval, TimeUnit reloadUnit) {
         cancel(containerId);
-        invalidate(containerId);
         final ScheduledFuture<?> scheduledFuture = executorService.scheduleWithFixedDelay(() -> {
-            final ImmutableGraphContainer immutableGraphContainer = containerLoadFunction.apply(containerId);
             if (!Thread.currentThread().isInterrupted()) {
-                put(immutableGraphContainer);
+                invalidate(containerId);
             }
-        }, 100, reloadInterval, reloadUnit);
+        }, reloadUnit.toMillis(reloadInterval), reloadInterval, reloadUnit);
         futureHandles.put(containerId, scheduledFuture);
     }
 

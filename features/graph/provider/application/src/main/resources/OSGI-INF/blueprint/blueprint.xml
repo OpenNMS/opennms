@@ -18,7 +18,8 @@
     </bean>
     <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider">
         <service-properties>
-            <entry key="periodicallyReload" value="300" /> <!-- Seconds -->
+            <!-- TODO MVR make configurable -->
+            <entry key="cacheInvalidateInterval" value="300" /> <!-- Seconds -->
         </service-properties>
     </service>
 
