@@ -99,7 +99,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
     @Override
     public GraphInfo getGraphInfo(String namespace) {
         Objects.requireNonNull(namespace);
-        return graphs.stream().filter(g -> g.getNamespace().equalsIgnoreCase(namespace)).findAny().orElse(null);
+        return graphs.stream().filter(g -> g.getNamespace().equals(namespace)).findAny().orElse(null);
     }
 
     @Override

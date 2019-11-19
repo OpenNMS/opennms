@@ -66,7 +66,7 @@ public class GraphContainerEntity extends AbstractGraphEntity {
 
     public GraphEntity getGraph(String namespace) {
         return graphs.stream()
-                .filter(graphEntity -> graphEntity.getNamespace().equalsIgnoreCase(namespace))
+                .filter(graphEntity -> graphEntity.getNamespace().equals(namespace))
                 .findAny().orElseThrow(() -> new NoSuchElementException("No graph with namespace '" + namespace + "' found"));
     }
 

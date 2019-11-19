@@ -54,19 +54,18 @@ public class DefaultGraphService implements GraphService {
 
     @Override
     public GraphContainerInfo getGraphContainerInfo(String containerId) {
-        return getGraphContainerInfos().stream().filter(ci -> ci.getId().equalsIgnoreCase(containerId)).findAny().orElse(null);
+        return getGraphContainerInfos().stream().filter(ci -> ci.getId().equals(containerId)).findAny().orElse(null);
     }
 
     @Override
     public GraphContainerInfo getGraphContainerInfoByNamespace(String namespace) {
-        // TODO MVR this is not equalsIgnoreCase which is used everywhere else
         final Optional<GraphContainerInfo> any = getGraphContainerInfos().stream().filter(ci -> ci.getNamespaces().contains(namespace)).findAny();
         return any.orElse(null);
     }
 
     @Override
     public GenericGraphContainer getGraphContainer(String containerId) {
-        final Optional<GraphContainerProvider> any = graphContainerProviders.stream().filter(cp -> cp.getContainerInfo().getId().equalsIgnoreCase(containerId)).findAny();
+        final Optional<GraphContainerProvider> any = graphContainerProviders.stream().filter(cp -> cp.getContainerInfo().getId().equals(containerId)).findAny();
         if (any.isPresent()) {
             return any.get().loadGraphContainer().asGenericGraphContainer();
         }

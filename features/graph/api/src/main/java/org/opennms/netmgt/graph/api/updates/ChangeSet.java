@@ -187,7 +187,7 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
             // Before changes can be calculated, ensure the graphs share the same namespace, otherwise
             // we should bail, as this is theoretical/technical possible, but does not make sense from the
             // domain view the namespace reflects.
-            if (!oldGraph.getNamespace().equalsIgnoreCase(newGraph.getNamespace())) {
+            if (!oldGraph.getNamespace().equals(newGraph.getNamespace())) {
                 throw new IllegalStateException("Cannot detect changes between different namespaces");
             }
             detectFocusChange(oldGraph, newGraph);

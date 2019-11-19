@@ -159,7 +159,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     @Override
     public GenericVertex resolveVertex(VertexRef vertexRef) {
         Objects.requireNonNull(vertexRef);
-        if (getNamespace().equalsIgnoreCase(vertexRef.getNamespace())) {
+        if (getNamespace().equals(vertexRef.getNamespace())) {
             final GenericVertex resolvedVertex = resolveVertices(Lists.newArrayList(vertexRef.getId())).stream().findAny().orElse(null);
             return resolvedVertex;
         }
@@ -169,7 +169,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     public List<GenericVertex> resolveVertexRefs(Collection<VertexRef> vertexRefs) {
         // Determine all vertexId for all vertices with the same namespace as the current graph
         List<String> vertexIds = vertexRefs.stream()
-                .filter(ref -> getNamespace().equalsIgnoreCase(ref.getNamespace()))
+                .filter(ref -> getNamespace().equals(ref.getNamespace()))
                 .map(ref -> ref.getId())
                 .collect(Collectors.toList());
         return resolveVertices(vertexIds);
@@ -328,7 +328,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             final VertexRef targetRef = edge.getTarget();
 
             // neither source nor target share the same namespace => both unknown => not valid
-            if (!sourceRef.getNamespace().equalsIgnoreCase(getNamespace()) && !targetRef.getNamespace().equalsIgnoreCase(getNamespace())) {
+            if (!sourceRef.getNamespace().equals(getNamespace()) && !targetRef.getNamespace().equals(getNamespace())) {
                 throw new IllegalArgumentException(
                         String.format("Adding an Edge with two vertices of unknown namespace. Either the source or target vertex must match the graph's namespace (%s). But got: (%s, %s)",
                                 getNamespace(), sourceRef.getNamespace(), targetRef.getNamespace()));
@@ -344,7 +344,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
 
         private void assertVertexFromSameNamespaceIsKnown(VertexRef vertex) {
-            if (vertex.getNamespace().equalsIgnoreCase(getNamespace()) && getVertex(vertex.getId()) == null) {
+            if (vertex.getNamespace().equals(getNamespace()) && getVertex(vertex.getId()) == null) {
                 throw new IllegalArgumentException(
                         String.format("Adding a VertexRef to an unknown Vertex with id=%s in our namespace (%s). Please add the Vertex first to the graph",
                                 vertex.getId(), this.getNamespace()));
