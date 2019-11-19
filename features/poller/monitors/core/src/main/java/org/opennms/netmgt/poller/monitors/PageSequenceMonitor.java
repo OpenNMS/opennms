@@ -358,6 +358,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 for(final org.opennms.netmgt.config.pagesequence.Header header : m_page.getHeaders()) {
                     method.setHeader(new BasicHeader(header.getName(), header.getValue()));
+                    LOG.debug("Using header '{}'", header.getName() + ": " + header.getValue());
                 }
 
                 if (getUserInfo() != null) {
