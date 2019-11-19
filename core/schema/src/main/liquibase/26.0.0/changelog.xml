@@ -69,7 +69,6 @@
                                  baseTableName="graph_attributes" baseColumnNames="element_id"
                                  referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
         <!-- attributes are (key,value)-pairs. This means the attribute name is unique for each element_id. -->
-        <!-- TODO MVR define unique constraint for this also in hibernate -->
         <addUniqueConstraint tableName="graph_attributes" columnNames="name,element_id" />
 
         <createTable tableName="graph_element_relations" remarks="Association for graph -> vertices/edge and container -> graph relation">
