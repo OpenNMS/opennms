@@ -208,7 +208,13 @@ final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
 
                 for (final String key : parameters.keySet()) {
                     if (HEADER_PATTERN.matcher(key).matches()) {
-                        final Header header = getHeader(ParameterMap.getKeyedString(parameters, key, null))
+                        final Header header = getHeader(ParameterMap.getKeyedString(parameters, key, null));
+
+                        if (Strings.isNullOrEmpty(header.getName())) {
+                            LOG.debug("Ignoring header with empty name (value='{}')", header.getValue());
+                            continue;
+                        }
+
                         post.setHeader(header);
                         LOG.debug("Using header '{}'", header.getName() + ": " + header.getValue());
                     }
