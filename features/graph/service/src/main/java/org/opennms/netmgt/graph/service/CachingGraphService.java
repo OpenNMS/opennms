@@ -71,7 +71,7 @@ public class CachingGraphService implements GraphService {
     }
 
     @Override
-    public GenericGraphContainer getGraphContainer(String containerId) {
+    public synchronized GenericGraphContainer getGraphContainer(String containerId) {
         if (graphContainerCache.has(containerId)) {
             return graphContainerCache.get(containerId).asGenericGraphContainer();
         }

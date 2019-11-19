@@ -35,6 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.service.GraphContainerCache;
@@ -46,48 +48,84 @@ public class DefaultGraphContainerCache implements GraphContainerCache {
     private final Map<String, ImmutableGraphContainer> cache = new HashMap<>();
     private final Map<String, ScheduledFuture<?>> futureHandles = new HashMap<>();
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5, new ThreadFactoryBuilder().setNameFormat("graph-cache-%d").build());
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public boolean has(String containerId) {
-        return cache.containsKey(containerId);
+        lock.readLock().lock();
+        try {
+            return cache.containsKey(containerId);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public void invalidate(String containerId) {
-        cache.remove(containerId);
+        lock.writeLock().lock();
+        try {
+            cache.remove(containerId);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public ImmutableGraphContainer get(String containerId) {
-        return cache.get(containerId);
+        lock.readLock().lock();
+        try {
+            return cache.get(containerId);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void cancel(String containerId) {
-        final ScheduledFuture<?> remove = futureHandles.remove(containerId);
-        if (remove != null) {
-            remove.cancel(true);
+        lock.writeLock().lock();
+        try {
+            final ScheduledFuture<?> remove = futureHandles.remove(containerId);
+            if (remove != null) {
+                remove.cancel(true);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public void put(ImmutableGraphContainer graphContainer) {
         Objects.requireNonNull(graphContainer);
-        cache.put(graphContainer.getId(), graphContainer);
+        lock.writeLock().lock();
+        try {
+            cache.put(graphContainer.getId(), graphContainer);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public void periodicallyInvalidate(String containerId, int reloadInterval, TimeUnit reloadUnit) {
-        cancel(containerId);
-        final ScheduledFuture<?> scheduledFuture = executorService.scheduleWithFixedDelay(() -> {
-            if (!Thread.currentThread().isInterrupted()) {
-                invalidate(containerId);
-            }
-        }, reloadInterval, reloadInterval, reloadUnit);
-        futureHandles.put(containerId, scheduledFuture);
+        lock.writeLock().lock();
+        try {
+            cancel(containerId);
+            final ScheduledFuture<?> scheduledFuture = executorService.scheduleWithFixedDelay(() -> {
+                if (!Thread.currentThread().isInterrupted()) {
+                    invalidate(containerId);
+                }
+            }, reloadInterval, reloadInterval, reloadUnit);
+            futureHandles.put(containerId, scheduledFuture);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public void shutdown() {
-        executorService.shutdown();
-        futureHandles.values().forEach(handle -> handle.cancel(true));
-        futureHandles.clear();
-        cache.clear();
+        lock.writeLock().lock();
+        try {
+            executorService.shutdown();
+            futureHandles.values().forEach(handle -> handle.cancel(true));
+            futureHandles.clear();
+            cache.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 }
