@@ -95,6 +95,16 @@ public class DefaultGraphService implements GraphService {
     }
 
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+        // Ensure id and namespace is unique
+        final GraphContainerInfo containerInfo = graphContainerProvider.getContainerInfo();
+        if (getGraphContainerInfo(containerInfo.getId()) != null) {
+            throw new IllegalArgumentException("A GraphContainerProvider with id '" + containerInfo.getId() + "' already exists. Ignoring container");
+        }
+        for (String eachNamespace : containerInfo.getNamespaces()) {
+            if (getGraphInfo(eachNamespace) != null) {
+                throw new IllegalArgumentException("A Graph with namespace '" + eachNamespace + "' already exists. Ignoring container.");
+            }
+        }
         graphContainerProviders.add(graphContainerProvider);
     }
 
