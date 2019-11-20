@@ -65,7 +65,7 @@ public class JMXCollectorIT {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // Perform an adhoc collection from against the Minion JVM
             final PrintStream pipe = sshClient.openShell();
-            pipe.println("collection:collect -l MINION org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
+            pipe.println("opennms-collection:collect -l MINION org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
