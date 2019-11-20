@@ -124,6 +124,7 @@ The following example shows how to monitor the _OpenNMS_ web application using s
 It first does an _HTTP GET_ of `${ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
 Next, a login is attempted using _HTTP POST_ to the relative _URL_ for submitting form data (usually, the _URL_ which the form action points to).
 The parameters (`_j_username_` and `_j_password_`) indicate the form's data and values to be submitted.
+Furthermore a custom header (`foo`) is set for demonstration purposes.
 After getting the resulting page, first the expression specified in the page's `failureMatch` attribute is verified, which when found anywhere on the page indicates that the page has failed.
 If the `failureMatch` expression is not found in the resulting page, then the expression specified in the page's `successMatch` attribute is checked to ensure it matches the resulting page.
 If the `successMatch` expression is not found on the page, then the page fails.
@@ -152,6 +153,7 @@ NOTE: Each page is checked to ensure its _HTTP_ response code fits into the `res
             method="POST">
         <parameter key="j_username" value="admin"/>
         <parameter key="j_password" value="admin"/>
+        <header name="foo" value="bar"/>
       </page>
       <page path="/opennms/index.jsp"
             port="8980"
