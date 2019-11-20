@@ -87,4 +87,5 @@ testPrint() {
   assertEquals "8.0.215" "$output"
 }
 
+# shellcheck disable=SC1090,SC1091
 . "$SHUNITDIR/shunit2"

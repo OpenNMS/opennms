@@ -133,7 +133,6 @@ public class WSManMonitorTest {
             parameters.put(k, v);
         });
 
-
         return monitor.poll(svc, parameters);
     }
 }
