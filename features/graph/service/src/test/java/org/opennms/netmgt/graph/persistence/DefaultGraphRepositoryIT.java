@@ -57,11 +57,11 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
-import org.opennms.netmgt.graph.simple.AbstractDomainGraphContainer;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
-import org.opennms.netmgt.graph.simple.SimpleGraph;
-import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.graph.domain.AbstractDomainGraphContainer;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraphContainer;
+import org.opennms.netmgt.graph.simple.SimpleDomainVertex;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -301,16 +301,16 @@ public class DefaultGraphRepositoryIT {
     public void verifyPersistingEdgesOfDifferentNamespaces() {
         final String namespace = "test-namespace";
         final String containerId = "test-container-id";
-        final SimpleGraph graph = SimpleGraph.builder()
+        final SimpleDomainGraph graph = SimpleDomainGraph.builder()
                 .namespace(namespace)
-                .addVertex(SimpleVertex.builder().namespace(namespace).id("v1").build())
-                .addEdge(SimpleEdge.builder()
+                .addVertex(SimpleDomainVertex.builder().namespace(namespace).id("v1").build())
+                .addEdge(SimpleDomainEdge.builder()
                         .namespace(namespace)
                         .id("e1")
                         .source(namespace, "v1")
                         .target("other", "o1").build())
                 .build();
-        final SimpleGraphContainer container = SimpleGraphContainer.builder()
+        final SimpleDomainGraphContainer container = SimpleDomainGraphContainer.builder()
                 .id(containerId)
                 .addGraph(graph)
                 .build();
@@ -323,7 +323,7 @@ public class DefaultGraphRepositoryIT {
 
         // Verify persisted properly
         final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById(containerId);
-        assertEquals(container, SimpleGraphContainer.from(genericGraphContainer));
+        assertEquals(container, SimpleDomainGraphContainer.from(genericGraphContainer));
     }
 
     private void verifyEquals(GenericGraphContainer originalContainer, GenericGraphContainer persistedContainer) {

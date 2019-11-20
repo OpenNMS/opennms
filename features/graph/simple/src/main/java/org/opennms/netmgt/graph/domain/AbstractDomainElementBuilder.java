@@ -26,37 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.domain;
 
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import java.util.HashMap;
+import java.util.Map;
 
-public class SimpleGraphContainer extends AbstractDomainGraphContainer<SimpleGraph> {
-    
-    private SimpleGraphContainer(GenericGraphContainer genericGraphContainer){
-        super(genericGraphContainer);
-    }
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 
-    @Override
-    protected SimpleGraph convert(GenericGraph graph) {
-        return new SimpleGraph(graph);
-    }
-     
-    public static SimpleGraphContainerBuilder builder() {
-        return new SimpleGraphContainerBuilder();
-    }
-    
-    public static SimpleGraphContainer from(GenericGraphContainer genericGraphContainer) {
-        return new SimpleGraphContainer(genericGraphContainer);
-    }
-
-    public final static class SimpleGraphContainerBuilder extends AbstractDomainGraphContainerBuilder<SimpleGraphContainerBuilder, SimpleGraph> {
+public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
+        protected final Map<String, Object> properties = new HashMap<>();
         
-        private SimpleGraphContainerBuilder() {}
+        protected AbstractDomainElementBuilder() {}
         
-        public SimpleGraphContainer build() {
-            return new SimpleGraphContainer(this.builder.build());
+        public T id(String id) {
+            properties.put(GenericProperties.ID, id);
+            return (T) this;
         }
-    }
-    
+        
+        public T label(String label){
+            properties.put(GenericProperties.LABEL, label);
+            return (T) this;
+        }
+        
+        public T namespace(String namespace){
+            properties.put(GenericProperties.NAMESPACE, namespace);
+            return (T) this;
+        }
+        
+        public T property(String name, String value){
+            properties.put(name, value);
+            return (T) this;
+        }
 }

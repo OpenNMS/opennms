@@ -30,7 +30,7 @@ package org.opennms.netmgt.graph.provider.legacy;
 
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
+import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 
 public class LegacyVertex extends AbstractDomainVertex {
 

@@ -33,7 +33,7 @@ import java.util.Objects;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
+import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 

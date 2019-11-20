@@ -26,35 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.provider.persistence;
+package org.opennms.netmgt.graph.domain.simple;
 
-import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.domain.AbstractDomainGraphContainer;
 
-public class CustomGraph extends AbstractDomainGraph<CustomVertex, CustomEdge> {
-    public CustomGraph(GenericGraph genericGraph) {
-        super(genericGraph);
+public class SimpleDomainGraphContainer extends AbstractDomainGraphContainer<SimpleDomainGraph> {
+    
+    private SimpleDomainGraphContainer(GenericGraphContainer genericGraphContainer){
+        super(genericGraphContainer);
     }
 
     @Override
-    protected CustomGraph convert(GenericGraph graph) {
-        return new CustomGraph(graph);
+    protected SimpleDomainGraph convert(GenericGraph graph) {
+        return new SimpleDomainGraph(graph);
+    }
+     
+    public static SimpleDomainGraphContainerBuilder builder() {
+        return new SimpleDomainGraphContainerBuilder();
+    }
+    
+    public static SimpleDomainGraphContainer from(GenericGraphContainer genericGraphContainer) {
+        return new SimpleDomainGraphContainer(genericGraphContainer);
     }
 
-    @Override
-    protected CustomVertex convert(GenericVertex vertex) {
-        return new CustomVertex(vertex);
+    public final static class SimpleDomainGraphContainerBuilder extends AbstractDomainGraphContainerBuilder<SimpleDomainGraphContainerBuilder, SimpleDomainGraph> {
+        
+        private SimpleDomainGraphContainerBuilder() {}
+        
+        public SimpleDomainGraphContainer build() {
+            return new SimpleDomainGraphContainer(this.builder.build());
+        }
     }
-
-    @Override
-    protected CustomEdge convert(GenericEdge edge) {
-        return new CustomEdge(edge);
-    }
-
-    @Override
-    public Class getVertexType() {
-        return CustomVertex.class;
-    }
+    
 }

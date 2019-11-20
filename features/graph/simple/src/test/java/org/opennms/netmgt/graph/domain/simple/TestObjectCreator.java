@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.domain.simple;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,11 +38,11 @@ public class TestObjectCreator {
     public final static String NAMESPACE = TestObjectCreator.class.getSimpleName();
     private final static AtomicInteger ID_SUPPLIER = new AtomicInteger(1);
 
-    public static SimpleVertex createVertex() {
+    public static SimpleDomainVertex createVertex() {
         return createVertex(NAMESPACE, Integer.toString(ID_SUPPLIER.getAndIncrement()));
     }
 
-    public static SimpleVertex createVertex(String namespace, String id) {
+    public static SimpleDomainVertex createVertex(String namespace, String id) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(id);
 
@@ -53,11 +53,11 @@ public class TestObjectCreator {
         return createVertex(namespace, id, nodeInfo);
     }
 
-    public static SimpleVertex createVertex(String namespace, String id, NodeInfo nodeInfo) {
+    public static SimpleDomainVertex createVertex(String namespace, String id, NodeInfo nodeInfo) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(id);
         Objects.requireNonNull(nodeInfo);
-        return SimpleVertex.builder()
+        return SimpleDomainVertex.builder()
                 .namespace(namespace)
                 .id(id)
                 .label("SimpleVertex-" + namespace + "-" + id)
@@ -65,17 +65,17 @@ public class TestObjectCreator {
                 .build();
     }
 
-    public static SimpleEdge createEdge(SimpleVertex sourceVertex, SimpleVertex targetVertex) {
+    public static SimpleDomainEdge createEdge(SimpleDomainVertex sourceVertex, SimpleDomainVertex targetVertex) {
         Objects.requireNonNull(sourceVertex);
         Objects.requireNonNull(targetVertex);
         return createEdge(NAMESPACE, sourceVertex, targetVertex);
     }
 
-    public static SimpleEdge createEdge(String namespace, SimpleVertex sourceVertex, SimpleVertex targetVertex) {
+    public static SimpleDomainEdge createEdge(String namespace, SimpleDomainVertex sourceVertex, SimpleDomainVertex targetVertex) {
         Objects.requireNonNull(namespace);
         Objects.requireNonNull(sourceVertex);
         Objects.requireNonNull(targetVertex);
-        return SimpleEdge.builder()
+        return SimpleDomainEdge.builder()
                 .namespace(namespace)
                 .source(sourceVertex.getVertexRef())
                 .target(targetVertex.getVertexRef())

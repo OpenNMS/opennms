@@ -46,7 +46,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -62,7 +62,7 @@ public class ApplicationGraphProviderTest {
         when(dao.findAll()).thenReturn(applications);
 
         final ApplicationGraphProvider provider = new ApplicationGraphProvider(new MockSessionUtils(), dao);
-        final ImmutableGraph<ApplicationVertex, SimpleEdge> graph = provider.loadGraph();
+        final ImmutableGraph<ApplicationVertex, SimpleDomainEdge> graph = provider.loadGraph();
         assertEquals(30, graph.getVertices().size());
         assertEquals(25, graph.getEdges().size());
 
@@ -111,14 +111,14 @@ public class ApplicationGraphProviderTest {
         return service;
     }
 
-    private static void verifyLinkingBetweenNodes(ImmutableGraph<ApplicationVertex, SimpleEdge>  graph, ApplicationVertex left, ApplicationVertex right) {
-        final Collection<SimpleEdge> edgesLeft = graph.getConnectingEdges(left);
-        final Collection<SimpleEdge> edgesRight = graph.getConnectingEdges(right);
+    private static void verifyLinkingBetweenNodes(ImmutableGraph<ApplicationVertex, SimpleDomainEdge>  graph, ApplicationVertex left, ApplicationVertex right) {
+        final Collection<SimpleDomainEdge> edgesLeft = graph.getConnectingEdges(left);
+        final Collection<SimpleDomainEdge> edgesRight = graph.getConnectingEdges(right);
 
         // 1. get the EdgeRef that connects the 2 vertices
-        final Set<SimpleEdge> intersection = intersect(edgesLeft, edgesRight);
+        final Set<SimpleDomainEdge> intersection = intersect(edgesLeft, edgesRight);
         assertEquals(1, intersection.size());
-        SimpleEdge edge = intersection.iterator().next();
+        SimpleDomainEdge edge = intersection.iterator().next();
 
         // 2. get the Edge and check if it really connects the 2 Vertices
         // we don't know the direction it is connected so we have to test both ways:

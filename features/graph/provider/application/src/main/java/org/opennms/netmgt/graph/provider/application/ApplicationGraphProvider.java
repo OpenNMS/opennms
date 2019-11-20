@@ -37,7 +37,7 @@ import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph.ApplicationGraphBuilder;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -65,7 +65,7 @@ public class ApplicationGraphProvider implements GraphProvider {
     }
 
     @Override
-    public ImmutableGraph<ApplicationVertex, SimpleEdge> loadGraph() {
+    public ImmutableGraph<ApplicationVertex, SimpleDomainEdge> loadGraph() {
         return sessionUtils.withReadOnlyTransaction(() -> {
             final ApplicationGraphBuilder graphBuilder = ApplicationGraph.builder()
                     .label(GRAPH_LABEL)
@@ -82,7 +82,7 @@ public class ApplicationGraphProvider implements GraphProvider {
                     graphBuilder.addVertex(serviceVertex);
 
                     // connect with application
-                    final SimpleEdge edge = SimpleEdge.builder()
+                    final SimpleDomainEdge edge = SimpleDomainEdge.builder()
                             .namespace(ApplicationGraph.NAMESPACE)
                             .source(applicationVertex.getVertexRef())
                             .target(serviceVertex.getVertexRef())

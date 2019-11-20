@@ -37,9 +37,9 @@ import java.util.Date;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
-import org.opennms.netmgt.graph.simple.SimpleGraph;
-import org.opennms.netmgt.graph.simple.SimpleGraphContainer;
-import org.opennms.netmgt.graph.simple.SimpleVertex;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraphContainer;
+import org.opennms.netmgt.graph.simple.SimpleDomainVertex;
 
 public class ContainerChangeSetTest {
 
@@ -50,18 +50,18 @@ public class ContainerChangeSetTest {
     public void verifyDetectChanges() {
         // Define two graphs
         // Graph with vertices (1,2,3)
-        final SimpleGraph graph1 = SimpleGraph.builder().namespace(NAMESPACE)
-                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("1").build())
-                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("2").build())
-                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("3").build())
+        final SimpleDomainGraph graph1 = SimpleDomainGraph.builder().namespace(NAMESPACE)
+                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("1").build())
+                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("2").build())
+                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("3").build())
                 .build();
 
         // Graph with vertices (3,4)
-        final SimpleGraph graph2 = SimpleGraph.builder().namespace(NAMESPACE)
+        final SimpleDomainGraph graph2 = SimpleDomainGraph.builder().namespace(NAMESPACE)
                 .description("Some Description")
                 .label("Some Label")
-                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
-                .addVertex(SimpleVertex.builder().namespace(NAMESPACE).id("4").build())
+                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
+                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("4").build())
                 .build();
 
         /*
@@ -69,8 +69,8 @@ public class ContainerChangeSetTest {
          */
         final Date changeSetDate = new Date();
         ContainerChangeSet changeSet = new ContainerChangeSet(
-                SimpleGraphContainer.builder().id(CONTAINER_ID).build(),
-                SimpleGraphContainer.builder().id(CONTAINER_ID).build(),
+                SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build(),
+                SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build(),
                 changeSetDate);
         assertEquals(Boolean.FALSE, changeSet.hasChanges());
         assertEquals(changeSetDate, changeSet.getChangeSetDate());
@@ -78,10 +78,10 @@ public class ContainerChangeSetTest {
         /*
          * Verify adding a graph
          */
-        final SimpleGraphContainer containerWithGraph2 = SimpleGraphContainer.builder().id(CONTAINER_ID)
+        final SimpleDomainGraphContainer containerWithGraph2 = SimpleDomainGraphContainer.builder().id(CONTAINER_ID)
                 .addGraph(graph2)
                 .build();
-        changeSet = new ContainerChangeSet(SimpleGraphContainer.builder().id(CONTAINER_ID).build(), containerWithGraph2);
+        changeSet = new ContainerChangeSet(SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build(), containerWithGraph2);
         assertThat(changeSet.hasChanges(), Matchers.is(true));
         assertThat(changeSet.getGraphsUpdated(), Matchers.hasSize(0));
         assertThat(changeSet.getGraphsRemoved(), Matchers.hasSize(0));
@@ -90,8 +90,8 @@ public class ContainerChangeSetTest {
         /*
          * Verify removing a graph
          */
-        final SimpleGraph graph3 = SimpleGraph.builder().namespace(NAMESPACE + ".old").build();
-        final SimpleGraphContainer containerWithGraph3 = SimpleGraphContainer.builder()
+        final SimpleDomainGraph graph3 = SimpleDomainGraph.builder().namespace(NAMESPACE + ".old").build();
+        final SimpleDomainGraphContainer containerWithGraph3 = SimpleDomainGraphContainer.builder()
                 .id(CONTAINER_ID)
                 .addGraph(graph3)
                 .build();
@@ -104,7 +104,7 @@ public class ContainerChangeSetTest {
         /*
          * Verify updating a graph
          */
-        final SimpleGraphContainer containerWithGraph1 = SimpleGraphContainer.builder()
+        final SimpleDomainGraphContainer containerWithGraph1 = SimpleDomainGraphContainer.builder()
                 .id(CONTAINER_ID)
                 .addGraph(graph1)
                 .build();
@@ -133,7 +133,7 @@ public class ContainerChangeSetTest {
         assertEquals("1", graphChangeSet.getVerticesRemoved().get(0).getId());
         assertEquals("2", graphChangeSet.getVerticesRemoved().get(1).getId());
         assertEquals("3", graphChangeSet.getVerticesUpdated().get(0).getId());
-        assertEquals(new DefaultGraphInfo(NAMESPACE, SimpleVertex.class)
+        assertEquals(new DefaultGraphInfo(NAMESPACE, SimpleDomainVertex.class)
                 .withDescription("Some Description")
                 .withLabel("Some Label"), graphChangeSet.getGraphInfo());
     }
@@ -142,8 +142,8 @@ public class ContainerChangeSetTest {
     // In theory this might be possible, but it does not make sense from a domain point.
     @Test
     public void verifyContainerIdCannotChange() {
-        final SimpleGraphContainer oldContainer = SimpleGraphContainer.builder().id(CONTAINER_ID).build();
-        final SimpleGraphContainer newContainer = SimpleGraphContainer.builder().id(CONTAINER_ID + ".opennms").build();
+        final SimpleDomainGraphContainer oldContainer = SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build();
+        final SimpleDomainGraphContainer newContainer = SimpleDomainGraphContainer.builder().id(CONTAINER_ID + ".opennms").build();
         try {
             new ContainerChangeSet(oldContainer, newContainer);
             fail("Expected an exception to be thrown, but succeeded. Bailing");

@@ -26,59 +26,59 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.domain.simple;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
 
 /**
  * Acts as a domain specific view on a GenericGraph.
  * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
  * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
  */
-// TODO MVR rename to domain and this makes more sense
-public final class SimpleGraph extends AbstractDomainGraph<SimpleVertex, SimpleEdge> {
+public final class SimpleDomainGraph extends AbstractDomainGraph<SimpleDomainVertex, SimpleDomainEdge> {
 
-    public SimpleGraph(GenericGraph graph) {
+    public SimpleDomainGraph(GenericGraph graph) {
         super(graph);
     }
 
     @Override
-    public SimpleVertex convert(GenericVertex vertex) {
-        return new SimpleVertex(vertex);
+    public SimpleDomainVertex convert(GenericVertex vertex) {
+        return new SimpleDomainVertex(vertex);
     }
 
     @Override
-    public SimpleEdge convert(GenericEdge edge) {
-        return new SimpleEdge(edge);
+    public SimpleDomainEdge convert(GenericEdge edge) {
+        return new SimpleDomainEdge(edge);
     }
 
     @Override
-    protected ImmutableGraph<SimpleVertex, SimpleEdge> convert(GenericGraph graph) {
-        return new SimpleGraph(graph);
+    protected ImmutableGraph<SimpleDomainVertex, SimpleDomainEdge> convert(GenericGraph graph) {
+        return new SimpleDomainGraph(graph);
     }
 
     @Override
     public Class getVertexType() {
-        return SimpleVertex.class;
+        return SimpleDomainVertex.class;
     }
     
-    public static SimpleGraphBuilder builder() {
-        return new SimpleGraphBuilder();
+    public static SimpleDomainGraphBuilder builder() {
+        return new SimpleDomainGraphBuilder();
     }
     
-    public static SimpleGraph from(GenericGraph genericGraph) {
-        return new SimpleGraph(genericGraph);
+    public static SimpleDomainGraph from(GenericGraph genericGraph) {
+        return new SimpleDomainGraph(genericGraph);
     }
     
-    public final static class SimpleGraphBuilder extends AbstractDomainGraphBuilder<SimpleGraphBuilder, SimpleVertex, SimpleEdge> {
+    public final static class SimpleDomainGraphBuilder extends AbstractDomainGraphBuilder<SimpleDomainGraphBuilder, SimpleDomainVertex, SimpleDomainEdge> {
         
-        private SimpleGraphBuilder() {}
+        private SimpleDomainGraphBuilder() {}
 
-        public SimpleGraph build() {
-            return new SimpleGraph(delegate.build());
+        public SimpleDomainGraph build() {
+            return new SimpleDomainGraph(delegate.build());
         }
     }
 }

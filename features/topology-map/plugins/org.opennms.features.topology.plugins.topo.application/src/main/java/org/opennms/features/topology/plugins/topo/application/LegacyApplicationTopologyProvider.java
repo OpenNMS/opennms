@@ -49,7 +49,7 @@ import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertexType;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -74,7 +74,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
             LegacyApplicationVertex applicationVertex = new LegacyApplicationVertex(eachApplicationVertex);
             graph.addVertices(applicationVertex);
         }
-        for (SimpleEdge edge : applicationGraph.getEdges()) {
+        for (SimpleDomainEdge edge : applicationGraph.getEdges()) {
             final VertexRef sourceRef = new DefaultVertexRef(edge.getSource().getNamespace(), edge.getSource().getId());
             final VertexRef targetRef = new DefaultVertexRef(edge.getTarget().getNamespace(), edge.getTarget().getId());
             final String id = String.format("connection:%s:%s", edge.getSource().getId(), edge.getTarget().getId());
@@ -88,7 +88,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
             if(serviceVertex.getVertexType() == ApplicationVertexType.Service) {
                 // this should return exactly one edge:
                 // the one connecting the service to its application
-                final SimpleEdge edge = applicationGraph.getConnectingEdges(serviceVertex).stream().findFirst()
+                final SimpleDomainEdge edge = applicationGraph.getConnectingEdges(serviceVertex).stream().findFirst()
                         .orElseThrow(()-> new IllegalStateException("corrupt graph, each service should be connected to an application"));
                 // find the other side of the edge:
                 org.opennms.netmgt.graph.api.VertexRef parentRef = Stream.of(edge.getSource(), edge.getTarget())

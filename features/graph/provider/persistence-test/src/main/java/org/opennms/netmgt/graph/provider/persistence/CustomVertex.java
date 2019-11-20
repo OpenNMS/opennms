@@ -29,7 +29,7 @@
 package org.opennms.netmgt.graph.provider.persistence;
 
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
+import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 
 // Test vertex type to use a different type
 public class CustomVertex extends AbstractDomainVertex {

@@ -31,7 +31,7 @@ package org.opennms.netmgt.graph.provider.legacy;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
+import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 public class LegacyEdge extends AbstractDomainEdge {
     public LegacyEdge(GenericEdge genericEdge) {

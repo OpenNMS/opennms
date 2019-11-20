@@ -30,7 +30,7 @@ package org.opennms.netmgt.graph.provider.bsm;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
+import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 public final class BusinessServiceEdge extends AbstractDomainEdge {
 

@@ -30,7 +30,7 @@ package org.opennms.netmgt.graph.provider.persistence;
 
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.simple.AbstractDomainGraphContainer;
+import org.opennms.netmgt.graph.domain.AbstractDomainGraphContainer;
 
 public class CustomGraphContainer extends AbstractDomainGraphContainer<CustomGraph> {
     protected CustomGraphContainer(GenericGraphContainer delegate) {

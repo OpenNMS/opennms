@@ -33,10 +33,10 @@ import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.simple.AbstractDomainGraph;
-import org.opennms.netmgt.graph.simple.SimpleEdge;
+import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 
-public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleEdge> {
+public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVertex, SimpleDomainEdge> {
 
     public static final String NAMESPACE = "application";
 
@@ -48,11 +48,11 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         return new ApplicationVertex(vertex);
     }
 
-    protected SimpleEdge convert(GenericEdge edge){
-        return new SimpleEdge(edge);
+    protected SimpleDomainEdge convert(GenericEdge edge){
+        return new SimpleDomainEdge(edge);
     }
 
-    protected ImmutableGraph<ApplicationVertex, SimpleEdge> convert(GenericGraph graph){
+    protected ImmutableGraph<ApplicationVertex, SimpleDomainEdge> convert(GenericGraph graph){
         return new ApplicationGraph(graph);
     }
 
@@ -69,7 +69,7 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         return new ApplicationGraph(genericGraph);
     }
     
-    public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleEdge> {
+    public final static class ApplicationGraphBuilder extends AbstractDomainGraphBuilder<ApplicationGraphBuilder, ApplicationVertex, SimpleDomainEdge> {
                
         private ApplicationGraphBuilder() {
             namespace(NAMESPACE);

@@ -34,7 +34,7 @@ import java.util.Set;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
-import org.opennms.netmgt.graph.simple.AbstractDomainVertex;
+import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 
 import com.google.common.collect.ImmutableSet;
 

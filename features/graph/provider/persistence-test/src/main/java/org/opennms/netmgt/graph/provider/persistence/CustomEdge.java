@@ -29,7 +29,7 @@
 package org.opennms.netmgt.graph.provider.persistence;
 
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.simple.AbstractDomainEdge;
+import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 public class CustomEdge extends AbstractDomainEdge {
     public CustomEdge(GenericEdge genericEdge) {

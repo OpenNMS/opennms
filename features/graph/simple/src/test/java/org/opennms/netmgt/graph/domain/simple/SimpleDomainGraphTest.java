@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.domain.simple;
 
 import static org.junit.Assert.assertEquals;
-import static org.opennms.netmgt.graph.simple.TestObjectCreator.createEdge;
-import static org.opennms.netmgt.graph.simple.TestObjectCreator.createVertex;
+import static org.opennms.netmgt.graph.domain.simple.TestObjectCreator.createEdge;
+import static org.opennms.netmgt.graph.domain.simple.TestObjectCreator.createVertex;
 
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 
-public class SimpleGraphTest {
+public class SimpleDomainGraphTest {
 
     /**
      * Convert a SimpleGraph into a GenericGraph and back. All properties should be kept but we should have copies
@@ -48,13 +48,13 @@ public class SimpleGraphTest {
     public void simpleGraphShouldBeAbleToBeConvertedIntoAGenericGraphAndBack() {
 
         // set up:
-        SimpleVertex vertex1 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
-        SimpleVertex vertex2 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
-        SimpleVertex vertex3 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
-        SimpleEdge edge1 = createEdge(vertex1, vertex2);
-        SimpleEdge edge2 = createEdge(vertex1, vertex3);
+        SimpleDomainVertex vertex1 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
+        SimpleDomainVertex vertex2 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
+        SimpleDomainVertex vertex3 = createVertex(TestObjectCreator.NAMESPACE, UUID.randomUUID().toString());
+        SimpleDomainEdge edge1 = createEdge(vertex1, vertex2);
+        SimpleDomainEdge edge2 = createEdge(vertex1, vertex3);
         
-        SimpleGraph originalGraph = SimpleGraph.builder()
+        SimpleDomainGraph originalGraph = SimpleDomainGraph.builder()
             .namespace(TestObjectCreator.NAMESPACE)
             .label("labelGraph")
             .addVertex(vertex1)
@@ -65,7 +65,7 @@ public class SimpleGraphTest {
 
         // convert:
         GenericGraph genericGraph = originalGraph.asGenericGraph();
-        SimpleGraph copyGraph = new SimpleGraph(genericGraph); // copy constructor
+        SimpleDomainGraph copyGraph = new SimpleDomainGraph(genericGraph); // copy constructor
 
         // test:
         assertEquals(originalGraph.getLabel(), copyGraph.getLabel());
@@ -86,10 +86,10 @@ public class SimpleGraphTest {
 
     @Test
     public void simpleGraphShouldBeConstructedFromGraphInfo() {
-        DefaultGraphInfo info = new DefaultGraphInfo(TestObjectCreator.NAMESPACE, SimpleVertex.class);
+        DefaultGraphInfo info = new DefaultGraphInfo(TestObjectCreator.NAMESPACE, SimpleDomainVertex.class);
         info.setDescription("description");
         info.setLabel("label");
-        SimpleGraph graph = SimpleGraph.builder().graphInfo(info).build();
+        SimpleDomainGraph graph = SimpleDomainGraph.builder().graphInfo(info).build();
         assertEquals(info.getNamespace(), graph.getNamespace());
         assertEquals(info.getLabel(), graph.getLabel());
         assertEquals(info.getDescription(), graph.getDescription());

@@ -26,35 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.domain.simple;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 /**
- * Acts as a domain specific view on a GenericVertex.
- * This is the most basic concrete subclass of {@link AbstractDomainVertex} and can be used as a reference for your own
- * domain vertex. It is a final class. If you need more functionality please extend AbstractDomainVertex.
+ * Acts as a domain specific view on a GenericEdge.
+ * This is the most basic concrete subclass of {@link AbstractDomainEdge} and can be used as a reference for your own
+ * domain edge. It is a final class. If you need more functionality please extend AbstractDomainGraph.
  * Since it's delegate is immutable and this class holds no data of it's own it is immutable as well.
  */
-public final class SimpleVertex extends AbstractDomainVertex {
+public final class SimpleDomainEdge extends AbstractDomainEdge {
 
-    public SimpleVertex(GenericVertex genericVertex) {
-        super(genericVertex);
-    }
-
-    @Override
-    public String toString() {
-        return delegate.toString();
+    public SimpleDomainEdge(GenericEdge genericEdge) {
+        super(genericEdge);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleVertex that = (SimpleVertex) o;
-        return Objects.equals(this.delegate, that.delegate);
+        SimpleDomainEdge that = (SimpleDomainEdge) o;
+        return Objects.equals(delegate, that.delegate);
     }
 
     @Override
@@ -62,20 +58,20 @@ public final class SimpleVertex extends AbstractDomainVertex {
         return Objects.hash(delegate);
     }
     
-    public static SimpleVertexBuilder builder() {
-        return new SimpleVertexBuilder();
+    public static SimpleDomainEdgeBuilder builder() {
+        return new SimpleDomainEdgeBuilder();
     }
     
-    public static SimpleVertex from(GenericVertex genericVertex) {
-        return new SimpleVertex(genericVertex);
+    public static SimpleDomainEdge from(GenericEdge genericEdge) {
+        return new SimpleDomainEdge(genericEdge);
     }
     
-    public final static class SimpleVertexBuilder extends AbstractDomainVertexBuilder<SimpleVertexBuilder> {
-                
-        private SimpleVertexBuilder() {}
+    public final static class SimpleDomainEdgeBuilder extends AbstractDomainEdgeBuilder<SimpleDomainEdgeBuilder> {
+               
+        private SimpleDomainEdgeBuilder() {}
         
-        public SimpleVertex build() {
-            return new SimpleVertex(GenericVertex.builder().properties(properties).build());
+        public SimpleDomainEdge build() {
+            return new SimpleDomainEdge(GenericEdge.builder().properties(properties).source(source).target(target).build());
         }
     }
 }

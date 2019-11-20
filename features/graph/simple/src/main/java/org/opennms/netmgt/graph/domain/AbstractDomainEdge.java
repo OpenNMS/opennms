@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.simple;
+package org.opennms.netmgt.graph.domain;
 
 import java.util.Objects;
 
@@ -34,6 +34,7 @@ import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 
 /**
 * Acts as a domain specific view on a GenericEdge.
@@ -81,7 +82,7 @@ public abstract class AbstractDomainEdge implements Edge {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleEdge that = (SimpleEdge) o;
+        SimpleDomainEdge that = (SimpleDomainEdge) o;
         return Objects.equals(delegate, that.delegate);
     }
 
