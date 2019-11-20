@@ -35,9 +35,9 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
 
 /**
- * Acts as a domain specific view on a GenericGraph.
+ * Acts as a domain specific view on a {@link GenericGraph}.
  * This is the most basic concrete subclass of {@link AbstractDomainGraph} and can be used as a reference for your own
- * domain graph. It is a final class. If you need more functionality please extend AbstractDomainGraph.
+ * domain graph. It is a final class. If you need more functionality please extend {@link AbstractDomainGraph}.
  */
 public final class SimpleDomainGraph extends AbstractDomainGraph<SimpleDomainVertex, SimpleDomainEdge> {
 

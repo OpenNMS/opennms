@@ -40,6 +40,11 @@ import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphCo
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 
+/**
+ * Acts as a domain specific view on a {@link GenericGraphContainer}.
+ * Can be extended by a domain specific graph container class.
+ * It contains no data of it's own but operates on the data of it's wrapped {@link GenericGraphContainer}.
+ **/
 public abstract class AbstractDomainGraphContainer<G extends AbstractDomainGraph<? extends AbstractDomainVertex, ? extends AbstractDomainEdge>>
     implements ImmutableGraphContainer<G> {
     

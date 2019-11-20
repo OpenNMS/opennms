@@ -8,8 +8,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graph</groupId>
-    <artifactId>org.opennms.features.graph.simple</artifactId>
-    <name>OpenNMS :: Features :: Graph :: Simple</name>
+    <artifactId>org.opennms.features.graph.domain</artifactId>
+    <name>OpenNMS :: Features :: Graph :: Domain</name>
+    <description>Contains classes to help define a domain specific view on the generic model, including a simple default implementation</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

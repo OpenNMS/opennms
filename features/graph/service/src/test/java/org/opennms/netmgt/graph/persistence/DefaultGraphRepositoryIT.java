@@ -61,7 +61,7 @@ import org.opennms.netmgt.graph.domain.AbstractDomainGraphContainer;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraphContainer;
-import org.opennms.netmgt.graph.simple.SimpleDomainVertex;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainVertex;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

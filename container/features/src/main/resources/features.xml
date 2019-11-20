@@ -1578,7 +1578,7 @@
         <feature>opennms-graph-api</feature>
         <feature>opennms-graph-updates</feature>
         <feature>opennms-graph-service</feature>
-        <feature>opennms-graph-simple</feature>
+        <feature>opennms-graph-domain</feature>
         <feature>opennms-graph-persistence</feature>
         <feature>opennms-graph-shell</feature>
         <feature>opennms-graph-rest</feature>
@@ -1599,7 +1599,7 @@
     <feature name="opennms-graph-service" description="OpenNMS :: Features :: Graph :: Service" version="${project.version}">
         <feature>opennms-graph-api</feature>
         <feature>opennms-graph-updates</feature>
-        <feature>opennms-graph-simple</feature>
+        <feature>opennms-graph-domain</feature>
         <bundle>wrap:mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.service/${project.version}</bundle>
     </feature>
@@ -1617,9 +1617,9 @@
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.rest/${project.version}</bundle>
     </feature>
-    <feature name="opennms-graph-simple" description="OpenNMS :: Features :: Graph :: Simple" version="${project.version}">
+    <feature name="opennms-graph-domain" description="OpenNMS :: Features :: Graph :: Domain" version="${project.version}">
         <feature>opennms-graph-api</feature>
-        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.simple/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.domain/${project.version}</bundle>
     </feature>
     <feature name="opennms-graph-shell" description="OpenNMS :: Features :: Graph :: Shell" version="${project.version}">
         <feature>opennms-graph-service</feature>
@@ -1652,7 +1652,7 @@
     <feature name="opennms-graph-provider-persistence-test" description="OpenNMS :: Features :: Graph :: Provider :: Persistence Test" version="${project.version}">
         <feature>opennms-model</feature>
         <feature>opennms-graph-service</feature>
-        <feature>opennms-graph-simple</feature>
+        <feature>opennms-graph-domain</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.persistence-test/${project.version}</bundle>
     </feature>
 </features>

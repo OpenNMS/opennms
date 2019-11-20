@@ -47,9 +47,9 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 import com.google.common.base.MoreObjects;
 
 /**
-* Acts as a domain specific view on a GenericGraph.
+* Acts as a domain specific view on a {@link GenericGraph}.
 * Can be extended by a domain specific graph class.
-* It contains no data of it's own but operates on the data of it's wrapped GenericGraph.
+* It contains no data of it's own but operates on the data of it's wrapped {@link GenericGraph}.
 **/
 // TODO MVR implement duplication detection (e.g. adding same vertex twice
 // and as well as adding different edges with different source/target vertices, should add each vertex only once,

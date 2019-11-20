@@ -38,7 +38,7 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
-import org.opennms.netmgt.graph.simple.SimpleDomainVertex;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainVertex;
 
 // TODO MVR add test for focus change
 // TODO MVR add test for edge changes

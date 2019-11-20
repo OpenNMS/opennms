@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
-            <artifactId>org.opennms.features.graph.simple</artifactId>
+            <artifactId>org.opennms.features.graph.domain</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

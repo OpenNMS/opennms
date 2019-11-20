@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraphContainer;
-import org.opennms.netmgt.graph.simple.SimpleDomainVertex;
+import org.opennms.netmgt.graph.domain.simple.SimpleDomainVertex;
 
 public class ContainerChangeSetTest {
 

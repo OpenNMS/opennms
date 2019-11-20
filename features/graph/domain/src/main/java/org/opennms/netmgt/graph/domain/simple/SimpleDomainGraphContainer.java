@@ -32,7 +32,12 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraphContainer;
 
-public class SimpleDomainGraphContainer extends AbstractDomainGraphContainer<SimpleDomainGraph> {
+/**
+ * Acts as a domain specific view on a {@link GenericGraphContainer}.
+ * This is the most basic concrete subclass of {@link AbstractDomainGraphContainer} and can be used as a reference for your own
+ * domain graph container. It is a final class. If you need more functionality please extend {@link AbstractDomainGraphContainer}.
+ */
+public final class SimpleDomainGraphContainer extends AbstractDomainGraphContainer<SimpleDomainGraph> {
     
     private SimpleDomainGraphContainer(GenericGraphContainer genericGraphContainer){
         super(genericGraphContainer);

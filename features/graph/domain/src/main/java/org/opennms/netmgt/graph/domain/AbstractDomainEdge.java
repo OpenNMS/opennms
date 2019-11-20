@@ -37,9 +37,9 @@ import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 
 /**
-* Acts as a domain specific view on a GenericEdge.
+* Acts as a domain specific view on a {@link GenericEdge}.
 * Can be extended by a domain specific edge class.
-* It contains no data of it's own but operates on the data of it's wrapped GenericEdge.
+* It contains no data of it's own but operates on the data of it's wrapped {@link GenericEdge}.
 **/
 public abstract class AbstractDomainEdge implements Edge {
 
