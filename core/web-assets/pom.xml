@@ -163,6 +163,15 @@
         <skipNodeJSBuild>true</skipNodeJSBuild>
       </properties>
     </profile>
+    <profile>
+      <id>forceCompile</id>
+      <activation>
+        <file><missing>target/dist/assets/opennms.js</missing></file>
+      </activation>
+      <properties>
+        <skipNodeJSBuild>false</skipNodeJSBuild>
+      </properties>
+    </profile>
   </profiles>
   <dependencies>
     <dependency>
