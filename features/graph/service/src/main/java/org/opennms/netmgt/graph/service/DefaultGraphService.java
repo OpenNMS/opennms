@@ -77,7 +77,7 @@ public class DefaultGraphService implements GraphService {
     public GraphInfo getGraphInfo(String graphNamespace) {
         final GraphContainerInfo graphContainerInfo = getGraphContainerInfoByNamespace(graphNamespace);
         if (graphContainerInfo != null) {
-            graphContainerInfo.getGraphInfo(graphNamespace);
+            return graphContainerInfo.getGraphInfo(graphNamespace);
         }
         return null;
     }

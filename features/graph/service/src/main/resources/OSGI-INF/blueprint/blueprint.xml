@@ -48,7 +48,7 @@
 
     <!-- Listen for GraphSearchProviders -->
     <bean id="defaultGraphSearchService" class="org.opennms.netmgt.graph.search.DefaultGraphSearchService" >
-        <argument ref="defaultGraphService" />
+        <argument ref="cachingGraphService" />
     </bean>
     <service ref="defaultGraphSearchService" interface="org.opennms.netmgt.graph.api.search.GraphSearchService" />
     <reference-list interface="org.opennms.netmgt.graph.api.search.SearchProvider" availability="optional">
