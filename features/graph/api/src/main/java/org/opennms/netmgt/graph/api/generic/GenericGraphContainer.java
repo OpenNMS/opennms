@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.validation.GraphContainerIdValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
     private GenericGraphContainer(GenericGraphContainerBuilder builder) {
         this.properties = ImmutableMap.copyOf(builder.properties);
         this.graphs = ImmutableList.copyOf(builder.graphs.values().stream().sorted(Comparator.comparing(GenericGraph::getNamespace)).collect(Collectors.toList()));
-        Objects.requireNonNull(getId(), "id cannot be null.");
+        new GraphContainerIdValidator().validate(getId());
     }
     
     @Override
@@ -162,6 +163,9 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
             if(name == null || value == null) {
                 LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
                 return this;
+            }
+            if (GenericProperties.ID.equals(name)) {
+                new GraphContainerIdValidator().validate((String) value);
             }
             properties.put(name, value);
             return this;

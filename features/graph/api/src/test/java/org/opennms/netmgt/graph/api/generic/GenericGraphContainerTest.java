@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -31,20 +31,14 @@ package org.opennms.netmgt.graph.api.generic;
 import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import org.junit.Test;
-import org.opennms.netmgt.graph.api.validation.exception.InvalidNamespaceException;
+import org.opennms.netmgt.graph.api.validation.exception.InvalidGraphContainerIdException;
 
-public class GenericVertexTest {
-
+public class GenericGraphContainerTest {
     @Test
-    public void genericVertexMustHaveANamespaceAndId() {
-        GenericVertex.builder().namespace("not-null").id("not-null"); // should throw no exception
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id(null).build());
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace("not-null").id(null).build());
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id("not-null").build());
-    }
-
-    @Test
-    public void verifyCannotSetInvalidNamespace() {
-        assertThrowsException(InvalidNamespaceException.class, () -> GenericVertex.builder().namespace("$invalid$").build());
+    public void verifyCannotSetInvalidContainerId() {
+        final String containerId = "$invalid$";
+        assertThrowsException(InvalidGraphContainerIdException.class, () -> GenericGraphContainer.builder()
+                .id(containerId)
+                .build());
     }
 }

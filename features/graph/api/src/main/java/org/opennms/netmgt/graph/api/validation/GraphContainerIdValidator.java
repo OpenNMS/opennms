@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,25 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api.generic;
+package org.opennms.netmgt.graph.api.validation;
 
-import static org.opennms.core.test.OnmsAssert.assertThrowsException;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.junit.Test;
-import org.opennms.netmgt.graph.api.validation.exception.InvalidNamespaceException;
+import org.opennms.netmgt.graph.api.validation.exception.InvalidGraphContainerIdException;
 
-public class GenericVertexTest {
+import com.google.common.base.Strings;
 
-    @Test
-    public void genericVertexMustHaveANamespaceAndId() {
-        GenericVertex.builder().namespace("not-null").id("not-null"); // should throw no exception
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id(null).build());
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace("not-null").id(null).build());
-        assertThrowsException(NullPointerException.class, ()-> GenericVertex.builder().namespace(null).id("not-null").build());
-    }
+public class GraphContainerIdValidator {
 
-    @Test
-    public void verifyCannotSetInvalidNamespace() {
-        assertThrowsException(InvalidNamespaceException.class, () -> GenericVertex.builder().namespace("$invalid$").build());
+    private static final Pattern PATTERN = Pattern.compile(NamespaceValidator.REG_EXP);
+
+    public void validate(String containerId) {
+        Objects.requireNonNull(containerId);
+        if (Strings.isNullOrEmpty(containerId)) {
+            throw new InvalidGraphContainerIdException("Id of container must nut be empty or null");
+        }
+        final Matcher matcher = PATTERN.matcher(containerId);
+        if (!matcher.matches()) {
+            throw new InvalidGraphContainerIdException(NamespaceValidator.REG_EXP, containerId);
+        }
     }
 }

@@ -224,7 +224,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     }
     
     public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
-         
+
         private final DirectedSparseGraph<VertexRef, GenericEdge> jungGraph = new DirectedSparseGraph<>();
         private final Map<String, GenericVertex> vertexToIdMap = new HashMap<>();
         private final Map<String, GenericEdge> edgeToIdMap = new HashMap<>();
@@ -237,7 +237,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         private GenericGraphBuilder() {}
      
         public GenericGraphBuilder graph(GenericGraph graph) {
-            this.properties.putAll(graph.getProperties());
+            this.properties(graph.getProperties());
             this.addVertices(graph.getVertices());
             this.addEdges(graph.getEdges());
             this.defaultFocus = graph.defaultFocus;
@@ -281,10 +281,15 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
 
         public GenericGraphBuilder addVertex(GenericVertex vertex) {
-            Objects.requireNonNull(vertex, "Vertex can not be null");
+            Objects.requireNonNull(getNamespace(), "Please set a namespace before adding elements to this graph.");
+            Objects.requireNonNull(vertex, "GenericVertex can not be null");
             checkArgument(!Strings.isNullOrEmpty(vertex.getId()) , "GenericVertex.getId() can not be empty or null. Vertex= %s", vertex);
-            Objects.requireNonNull(vertex.getId(), "Vertex id can not be null");
-            if (jungGraph.containsVertex(vertex.getVertexRef())) return this; // already added
+            if (!this.getNamespace().equals(vertex.getNamespace())) {
+                throw new IllegalArgumentException(
+                    String.format("The namespace of the vertex (%s) doesn't match the namespace of this graph (%s). Vertex: %s ",
+                        vertex.getNamespace(), this.getNamespace(), vertex.toString()));
+            }
+            if (vertexToIdMap.containsKey(vertex.getId())) return this; // already added
             jungGraph.addVertex(vertex.getVertexRef());
             vertexToIdMap.put(vertex.getId(), vertex);
             if (vertex.getNodeRef() != null) {
@@ -298,14 +303,13 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
             Objects.requireNonNull(getNamespace(), "Please set a namespace before adding elements to this graph.");
             Objects.requireNonNull(edge, "GenericEdge cannot be null");
             checkArgument(!Strings.isNullOrEmpty(edge.getId()) , "GenericEdge.getId() can not be empty or null. Vertex= %s", edge);
-            Objects.requireNonNull(edge.getId());
-            if (jungGraph.containsEdge(edge)) return this; // already added
             if(!this.getNamespace().equals(edge.getNamespace())){
                 throw new IllegalArgumentException(
                         String.format("The namespace of the edge (%s) doesn't match the namespace of this graph (%s). Edge: %s ",
                         edge.getNamespace(), this.getNamespace(), edge.toString()));
             }
             assertEdgeContainsAtLeastOneKnownVertex(edge);
+            if (edgeToIdMap.containsKey(edge.getId())) return this; // already added
             jungGraph.addEdge(edge, edge.getSource(), edge.getTarget());
             edgeToIdMap.put(edge.getId(), edge);
             return this;
@@ -393,7 +397,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
         
         private void checkIfNamespaceChangeIsAllowed(String newNamespace) {
-            if(!this.edgeToIdMap.isEmpty() && !Objects.equals(getNamespace(), newNamespace)) {
+            if(!this.vertexToIdMap.isEmpty() && !this.edgeToIdMap.isEmpty() && !Objects.equals(getNamespace(), newNamespace)) {
                 throw new IllegalStateException("Cannot change namespace after adding Elements to Graph.");
             }
         }
