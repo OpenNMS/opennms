@@ -35,6 +35,7 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.function.Function;
 
 import org.opennms.core.utils.InetAddressUtils;
 
@@ -43,7 +44,11 @@ import com.google.common.base.MoreObjects;
 public class PeerFlags {
     public enum AddressVersion {
         IP_V4,
-        IP_V6,
+        IP_V6;
+
+        public <R> R map(final Function<AddressVersion, R> mapper) {
+            return mapper.apply(this);
+        }
     }
 
     public final AddressVersion addressVersion;  // uint8 x0000000
@@ -66,40 +71,26 @@ public class PeerFlags {
     }
 
     public InetAddress parsePaddedAddress(final ByteBuffer buffer) {
-        final byte[] bytes;
-        switch (this.addressVersion) {
+        return InetAddressUtils.getInetAddress(this.addressVersion.<byte[]>map(v -> {switch (v) {
             case IP_V4:
                 skip(buffer, 12);
-                bytes = bytes(buffer, 4);
-                break;
-
+                return bytes(buffer, 4);
             case IP_V6:
-                bytes = bytes(buffer, 16);
-                break;
-
+                return bytes(buffer, 16);
             default:
                 throw new IllegalStateException();
-        }
-
-        return InetAddressUtils.getInetAddress(bytes);
+        }}));
     }
 
     public InetAddress parseAddress(final ByteBuffer buffer) {
-        final byte[] bytes;
-        switch (this.addressVersion) {
+        return InetAddressUtils.getInetAddress(this.addressVersion.<byte[]>map(v -> {switch (v) {
             case IP_V4:
-                bytes = bytes(buffer, 4);
-                break;
-
+                return bytes(buffer, 4);
             case IP_V6:
-                bytes = bytes(buffer, 16);
-                break;
-
+                return bytes(buffer, 16);
             default:
                 throw new IllegalStateException();
-        }
-
-        return InetAddressUtils.getInetAddress(bytes);
+        }}));
     }
 
     public long parseAS(final ByteBuffer buffer) {

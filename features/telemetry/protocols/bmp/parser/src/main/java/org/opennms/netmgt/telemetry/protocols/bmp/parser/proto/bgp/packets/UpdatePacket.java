@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatRemaining;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.io.BaseEncoding;
 
 public class UpdatePacket implements Packet {
     public final Header header;
@@ -64,9 +64,9 @@ public class UpdatePacket implements Packet {
     public UpdatePacket(final Header header, final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        this.withdrawRoutes = repeatRemaining(slice(buffer, uint16(buffer)), Prefix::new);
+        this.withdrawRoutes = repeatRemaining(slice(buffer, uint16(buffer)), prefixBuffer -> new Prefix(prefixBuffer, flags));
         this.pathAttributes = repeatRemaining(slice(buffer, uint16(buffer)), pathAttributeBuffer -> new PathAttribute(pathAttributeBuffer, flags));
-        this.reachableRoutes = repeatRemaining(buffer, Prefix::new);
+        this.reachableRoutes = repeatRemaining(buffer, prefixBuffer -> new Prefix(prefixBuffer, flags));
     }
 
     @Override
@@ -75,19 +75,28 @@ public class UpdatePacket implements Packet {
     }
 
     public static class Prefix {
-        public final int length;    // uint8
-        public final byte[] prefix; // byte[length padded to 8 bits]
+        public final int length;         // uint8
+        public final InetAddress prefix; // byte[length padded to 8 bits]
 
-        public Prefix(final ByteBuffer buffer) {
+        public Prefix(final ByteBuffer buffer, final PeerFlags flags) {
             this.length = uint8(buffer);
-            this.prefix = bytes(buffer, (this.length + (8-1)) / 8); // Read n bits padded to the next full byte
+
+            // Create a buffer for the address with the size required to hold the full address (depending on the
+            // version) but fill ony the first n bytes. Remaining bytes will be initialized all zero.
+            final byte[] prefix = new byte[flags.addressVersion.map(v -> {switch (v) {
+                case IP_V4: return 4;
+                case IP_V6: return 16;
+                default: throw new IllegalStateException();
+            }})];
+            buffer.get(prefix, 0, (this.length + (8-1)) / 8); // Read n bits padded to the next full byte
+            this.prefix = InetAddressUtils.getInetAddress(prefix);
         }
 
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
                     .add("length", this.length)
-                    .add("prefix", BaseEncoding.base16().encode(this.prefix))
+                    .add("prefix", this.prefix)
                     .toString();
         }
     }

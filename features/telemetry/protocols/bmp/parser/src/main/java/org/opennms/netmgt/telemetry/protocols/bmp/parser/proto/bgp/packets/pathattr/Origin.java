@@ -32,7 +32,6 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;

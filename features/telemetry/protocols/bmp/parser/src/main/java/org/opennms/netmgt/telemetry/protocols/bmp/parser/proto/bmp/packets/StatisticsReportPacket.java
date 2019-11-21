@@ -32,7 +32,6 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatCount;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -65,13 +64,13 @@ public class StatisticsReportPacket implements Packet {
     public final Header header;
     public final PeerHeader peerHeader;
 
-    public final List<Element> statistics;
+    public final TLV.List<Element, Element.Type, Metric> statistics;
 
     public StatisticsReportPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
-        this.statistics = repeatCount(buffer, (int) uint32(buffer), Element::new);
+        this.statistics = TLV.List.wrap(repeatCount(buffer, (int) uint32(buffer), Element::new));
     }
 
     @Override

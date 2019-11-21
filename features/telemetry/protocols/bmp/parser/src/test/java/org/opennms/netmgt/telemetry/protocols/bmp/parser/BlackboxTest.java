@@ -138,7 +138,7 @@ public class BlackboxTest implements Packet.Visitor {
 
     private static class MetricVisitorAdapter implements org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Metric.Visitor {
         @Override
-        public void visit(DuplicatePrefix duplicatePrefixAdvertisements) {
+        public void visit(DuplicatePrefix duplicatePrefix) {
             fail("Wrong Metric DuplicatePrefix");
         }
 
@@ -287,7 +287,7 @@ public class BlackboxTest implements Packet.Visitor {
             }
 
             @Override
-            public void visit(LocalNoNotification localUnexpected) {
+            public void visit(LocalNoNotification localNoNotification) {
                 fail("Wrong Reason LocalNoNotification");
             }
 
@@ -299,12 +299,12 @@ public class BlackboxTest implements Packet.Visitor {
             }
 
             @Override
-            public void visit(RemoteNoNotification localUnexpected) {
+            public void visit(RemoteNoNotification remoteNoNotification) {
                 fail("Wrong Reason RemoteNoNotification");
             }
 
             @Override
-            public void visit(Unknown deconfigured) {
+            public void visit(Unknown unknown) {
                 fail("Wrong Reason Unknown");
             }
         });
@@ -357,11 +357,11 @@ public class BlackboxTest implements Packet.Visitor {
         if (!packet.updateMessage.withdrawRoutes.isEmpty()) {
             assertThat(packet.updateMessage.reachableRoutes, is(empty()));
             assertThat(packet.updateMessage.withdrawRoutes.get(0).length, is(24));
-            assertThat(packet.updateMessage.withdrawRoutes.get(0).prefix, is(new byte[] { (byte) 0xC0, (byte) 0xA8, (byte)  0xFE } ));
+            assertThat(packet.updateMessage.withdrawRoutes.get(0).prefix, is(InetAddressUtils.addr("192.168.254.0")));
         } else {
             assertThat(packet.updateMessage.withdrawRoutes, is(empty()));
             assertThat(packet.updateMessage.reachableRoutes.get(0).length, is(24));
-            assertThat(packet.updateMessage.reachableRoutes.get(0).prefix, is(new byte[] { (byte) 0xC0, (byte) 0xA8, (byte)  0xFF } ));
+            assertThat(packet.updateMessage.reachableRoutes.get(0).prefix, is(InetAddressUtils.addr("192.168.255.0")));
         }
 
         assertThat(packet.updateMessage.pathAttributes.size(), either(is(0)).or(is(3)));

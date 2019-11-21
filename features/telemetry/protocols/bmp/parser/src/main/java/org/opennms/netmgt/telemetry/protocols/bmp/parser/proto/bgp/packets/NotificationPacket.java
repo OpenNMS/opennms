@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.skip;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;

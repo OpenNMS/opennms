@@ -30,8 +30,6 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stat
 
 import java.nio.ByteBuffer;
 
-import com.google.common.base.MoreObjects;
-
 public class InvalidUpdateDueToAsPathLoop extends Counter {
     public InvalidUpdateDueToAsPathLoop(final ByteBuffer buffer) {
         super(buffer);

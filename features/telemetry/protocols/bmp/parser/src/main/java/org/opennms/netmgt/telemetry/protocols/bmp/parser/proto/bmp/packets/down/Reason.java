@@ -33,9 +33,9 @@ public interface Reason {
 
     interface Visitor {
         void visit(final LocalBgpNotification localNotification);
-        void visit(final LocalNoNotification localUnexpected);
+        void visit(final LocalNoNotification localNoNotification);
         void visit(final RemoteBgpNotification remoteNotification);
-        void visit(final RemoteNoNotification localUnexpected);
-        void visit(final Unknown deconfigured);
+        void visit(final RemoteNoNotification remoteNoNotification);
+        void visit(final Unknown unknown);
     }
 }

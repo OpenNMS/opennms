@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatRemaining;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -50,13 +49,13 @@ public class RouteMirroringPacket implements Packet {
 
     public final Header header;
     public final PeerHeader peerHeader;
-    public final List<Element> elements;
+    public final TLV.List<Element, Element.Type, Mirroring> elements;
 
     public RouteMirroringPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
-        this.elements = repeatRemaining(buffer, elementBuffer -> new Element(elementBuffer, this.peerHeader.flags));
+        this.elements = TLV.List.wrap(repeatRemaining(buffer, elementBuffer -> new Element(elementBuffer, this.peerHeader.flags)));
     }
 
     @Override

@@ -32,7 +32,7 @@ public interface Metric {
     void visit(final Visitor visitor);
 
     interface Visitor {
-        void visit(final DuplicatePrefix duplicatePrefixAdvertisements);
+        void visit(final DuplicatePrefix duplicatePrefix);
         void visit(final DuplicateWithdraws duplicateWithdraws);
         void visit(final AdjRibIn adjRibIn);
         void visit(final AdjRibOut adjRibOut);

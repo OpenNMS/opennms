@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.skip;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
@@ -39,9 +38,9 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 

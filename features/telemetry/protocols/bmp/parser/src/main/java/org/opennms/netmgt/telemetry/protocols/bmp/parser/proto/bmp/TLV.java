@@ -33,12 +33,15 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import java.util.function.IntFunction;
+import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ForwardingList;
 
 public class TLV<T extends TLV.Type<V, P>, V, P> {
     public final T type;     // uint16
@@ -76,5 +79,35 @@ public class TLV<T extends TLV.Type<V, P>, V, P> {
                 .add("length", this.length)
                 .add("value", this.value)
                 .toString();
+    }
+
+    public static class List<E extends TLV<T, V, ?>, T extends TLV.Type<V, ?>, V> extends ForwardingList<E> {
+        private final java.util.List<E> elements;
+
+        private List(final java.util.List<E> elements) {
+            this.elements = elements;
+        }
+
+        public static <E extends TLV<T, V, ?>, T extends TLV.Type<V, ?>, V> List<E, T, V> wrap(final java.util.List<E> list) {
+            return new List<>(list);
+        }
+
+        @Override
+        protected java.util.List<E> delegate() {
+            return this.elements;
+        }
+
+        public Stream<V> all(final T type) {
+            return this.elements.stream()
+                    .filter(e -> e.type == type)
+                    .map(e -> e.value);
+        }
+
+        public Optional<V> first(final T type) {
+            return  this.elements.stream()
+                    .filter(e -> e.type == type)
+                    .findFirst()
+                    .map(e -> e.value);
+        }
     }
 }

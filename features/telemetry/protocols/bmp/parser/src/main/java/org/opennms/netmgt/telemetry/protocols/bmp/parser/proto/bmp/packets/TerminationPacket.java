@@ -34,7 +34,6 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -46,12 +45,12 @@ import com.google.common.base.MoreObjects;
 
 public class TerminationPacket implements Packet {
     public final Header header;
-    public final List<Element> terminations;
+    public final TLV.List<Element, Element.Type, String> information;
 
     public TerminationPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        this.terminations = repeatRemaining(buffer, Element::new);
+        this.information = TLV.List.wrap(repeatRemaining(buffer, Element::new));
     }
 
     @Override
@@ -111,7 +110,7 @@ public class TerminationPacket implements Packet {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", this.header)
-                .add("terminations", this.terminations)
+                .add("terminations", this.information)
                 .toString();
     }
 }
