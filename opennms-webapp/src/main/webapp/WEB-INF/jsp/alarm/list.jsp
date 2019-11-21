@@ -68,7 +68,10 @@
 --%>
 
 <%
-	urlBase = (String) request.getAttribute("relativeRequestPath");
+    // We have to use the absolute URL as in IE the relative URL or partial URL is not working
+    // See NMS-12379 for more details
+	urlBase = Util.calculateUrlBase(request);
+	urlBase += (String) request.getAttribute("relativeRequestPath");
 
     XssRequestWrapper req = new XssRequestWrapper(request);
 
