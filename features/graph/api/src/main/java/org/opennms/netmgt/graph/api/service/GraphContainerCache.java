@@ -31,7 +31,6 @@ package org.opennms.netmgt.graph.api.service;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 
 public interface GraphContainerCache {
-    boolean has(String containerId);
     void invalidate(String containerId);
     ImmutableGraphContainer get(String containerId);
 }

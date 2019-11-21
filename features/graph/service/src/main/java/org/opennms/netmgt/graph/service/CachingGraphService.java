@@ -31,55 +31,82 @@ package org.opennms.netmgt.graph.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.netmgt.graph.api.service.GraphContainerCache;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
-public class CachingGraphService implements GraphService {
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Expiry;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+
+public class CachingGraphService implements GraphService, GraphContainerCache {
 
     private final GraphService delegate;
-    private final DefaultGraphContainerCache graphContainerCache;
+    private final LoadingCache<String, ImmutableGraphContainer> cache;
+    private final Map<String, Long> expireMap = new ConcurrentHashMap<>();
 
-    public CachingGraphService(GraphService delegate, DefaultGraphContainerCache graphContainerCache) {
+    public CachingGraphService(final GraphService delegate) {
         this.delegate = Objects.requireNonNull(delegate);
-        this.graphContainerCache = Objects.requireNonNull(graphContainerCache);
+        this.cache = Caffeine.newBuilder()
+            .expireAfter(new Expiry<String, ImmutableGraphContainer>() {
+                @Override
+                public long expireAfterCreate(String key, ImmutableGraphContainer value, long currentTime) {
+                    final Long expireInMs = expireMap.getOrDefault(key, Long.MAX_VALUE / 1000000);
+                    return expireInMs * 1000000;
+                }
+
+                @Override
+                public long expireAfterUpdate(String key, ImmutableGraphContainer value, long currentTime, long currentDuration) {
+                   return currentDuration;
+                }
+
+                @Override
+                public long expireAfterRead(String key, ImmutableGraphContainer value, long currentTime, long currentDuration) {
+                    return currentDuration;
+                }
+            })
+            .recordStats()
+            .build(delegate::getGraphContainer);
     }
 
     @Override
     public List<GraphContainerInfo> getGraphContainerInfos() {
+        // no need to cache info calls
         return delegate.getGraphContainerInfos();
     }
 
     @Override
     public GraphContainerInfo getGraphContainerInfo(String containerId) {
+        // no need to cache info calls
         return delegate.getGraphContainerInfo(containerId);
     }
 
     @Override
     public GraphContainerInfo getGraphContainerInfoByNamespace(String namespace) {
+        // no need to cache info calls
         return delegate.getGraphContainerInfoByNamespace(namespace);
     }
 
     @Override
     public GraphInfo getGraphInfo(String graphNamespace) {
+        // no need to cache info calls
         return delegate.getGraphInfo(graphNamespace);
     }
 
     @Override
-    public synchronized GenericGraphContainer getGraphContainer(String containerId) {
-        if (graphContainerCache.has(containerId)) {
-            return graphContainerCache.get(containerId).asGenericGraphContainer();
+    public GenericGraphContainer getGraphContainer(String containerId) {
+        final ImmutableGraphContainer immutableGraphContainer = get(containerId);
+        if (immutableGraphContainer != null) {
+            return immutableGraphContainer.asGenericGraphContainer();
         }
-        final GenericGraphContainer graphContainer = delegate.getGraphContainer(containerId);
-        if (graphContainer != null) {
-            graphContainerCache.put(graphContainer);
-        }
-        return graphContainer;
+        return null;
     }
 
     @Override
@@ -91,23 +118,30 @@ public class CachingGraphService implements GraphService {
         return null;
     }
 
-    public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+    @Override
+    public void invalidate(String containerId) {
+        cache.invalidate(containerId);
+    }
+
+    @Override
+    public ImmutableGraphContainer get(String containerId) {
+        return cache.get(containerId);
+    }
+
+    public synchronized void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         if (graphContainerProvider != null) {
             final String containerId = graphContainerProvider.getContainerInfo().getId();
-            graphContainerCache.cancel(containerId);
-            graphContainerCache.invalidate(containerId);
+            cache.invalidate(containerId);
+            expireMap.remove(containerId);
         }
     }
 
     public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         final String containerId = graphContainerProvider.getContainerInfo().getId();
-        final int cacheInvalidateInterval = Integer.valueOf(props.getOrDefault("cacheInvalidateInterval", "0"));
-        if (cacheInvalidateInterval > 0) {
-            graphContainerCache.periodicallyInvalidate(containerId, cacheInvalidateInterval, TimeUnit.SECONDS);
+        final long cacheInvalidateIntervalInSeconds = Long.valueOf(props.getOrDefault("cacheInvalidateInterval", "0"));
+        if (cacheInvalidateIntervalInSeconds > 0) {
+            final long cacheInvalidateIntervalInMilliseconds = cacheInvalidateIntervalInSeconds * 1000;
+            expireMap.put(containerId, cacheInvalidateIntervalInMilliseconds);
         }
-    }
-
-    public void shutdown() {
-        graphContainerCache.shutdown();
     }
 }

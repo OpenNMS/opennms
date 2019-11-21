@@ -52,6 +52,10 @@
             <artifactId>gson</artifactId>
             <version>${gsonVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.opennms.features.graph.dao</groupId>

@@ -18,18 +18,14 @@
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphService" />
     </reference-list>
-    <bean id="cachingGraphService" class="org.opennms.netmgt.graph.service.CachingGraphService" destroy-method="shutdown">
+    <bean id="cachingGraphService" class="org.opennms.netmgt.graph.service.CachingGraphService">
         <argument ref="defaultGraphService"/>
-        <argument ref="graphContainerCache"/>
     </bean>
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="cachingGraphService" />
     </reference-list>
     <service ref="cachingGraphService" interface="org.opennms.netmgt.graph.api.service.GraphService" />
-
-    <!-- Expose GraphContainerCache -->
-    <bean id="graphContainerCache" class="org.opennms.netmgt.graph.service.DefaultGraphContainerCache" />
-    <service ref="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" />
+    <service ref="cachingGraphService" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" />
 
     <!-- Listen for GraphProviders and expose them as GraphContainerProvider -->
     <bean id="graphProviderManager" class="org.opennms.netmgt.graph.service.GraphProviderManager" >
