@@ -44,6 +44,8 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -106,6 +108,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -277,6 +282,14 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     }
 
     private SearchResults searchFor(ResourcePath path, int depth, boolean fetchMetrics) {
+        final Query q = findResourcesWithMetricsAtDepth(path, depth);
+        LOG.trace("Searching for '{}'.", q);
+        final SearchResults results = m_searcher.search(m_context, q, fetchMetrics);
+        LOG.trace("Found {} results.", results.size());
+        return results;
+    }
+
+    private SearchResults searchForTimescale(ResourcePath path, int depth, boolean fetchMetrics) {
         final Query q = findResourcesWithMetricsAtDepth(path, depth);
         LOG.trace("Searching for '{}'.", q);
         final SearchResults results = m_searcher.search(m_context, q, fetchMetrics);

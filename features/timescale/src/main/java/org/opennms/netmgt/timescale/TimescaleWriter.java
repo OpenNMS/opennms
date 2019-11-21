@@ -89,6 +89,9 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
     @Autowired
     private Indexer m_indexer;
 
+    @Autowired
+    private DataSource dataSource;
+
     private WorkerPool<SampleBatchEvent> m_workerPool;
 
     private RingBuffer<SampleBatchEvent> m_ringBuffer;
@@ -211,15 +214,38 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
 
+        // TODO: Patrick do database stuff properly
+        // CREATE TABLE timeseries (
+        //    'time'       TIMESTAMPTZ      NOT NULL,
+        //    'context'    TEXT              NOT NULL,
+        //    'resource'   TEXT              NOT  NULL,
+        //    'name'       TEXT              NOT  NULL,
+        //    'type'       TEXT              NOT  NULL,
+        //    'value'      DOUBLE PRECISION  NULL,
+        // );
+        // create_hypertable('timeseries', 'time');
+        String sql = "INSERT INTO timeseries('time', 'context', 'resource', 'name', 'type', 'value')  values (?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = this.dataSource.getConnection().prepareStatement(sql);
+
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
             try {
                 if (event.isIndexOnly() && !TimescaleUtils.DISABLE_INDEXING) {
                     LOG.debug("Indexing {} samples", batch.size());
-                    m_indexer.update(batch);
+                    // m_indexer.update(batch);
                 } else {
                     LOG.debug("Inserting {} samples", batch.size());
-                    m_sampleRepository.insert(batch);
+                    // m_sampleRepository.insert(batch);
+                    for (Sample sample: batch) {
+                        ps.setDate(1, new Date(sample.getTimestamp().asMillis()));
+                        ps.setString(2, sample.getContext().getId());
+                        ps.setString(3, sample.getResource().getId());
+                        ps.setString(3, sample.getName());
+                        ps.setByte(4, sample.getType().getCode());
+                        ps.setDouble(5, sample.getValue().doubleValue());
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
                 }
 
                 if (LOG.isDebugEnabled()) {
@@ -233,6 +259,7 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
                 RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
             }
         }
+        ps.close();
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

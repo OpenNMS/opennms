@@ -16,11 +16,11 @@ time       TIMESTAMPTZ      NOT NULL,
                 value      DOUBLE PRECISION  NULL)``
                 
 * turn table into a timescale table:
-  ``create_hypertable('timeseries', 'time');``
+  ``SELECT create_hypertable('timeseries', 'time');``
 
 ## Newts / cassandra
-* set ```org.opennms.timeseries.strategy=newts``` in opennms.properties
-* start cassandra docker container:
+* set ```org.opennms.timeseries.strategy=timescale``` in opennms.properties
+* start cassandra docker container: ```sudo docker run -p 7199:7199 -p 7000:7000 -p 7001:7001 -p 9160:9160 -p 9042:9042 cassandra:3```
 * init newts: ``sudo ./bin/newts init``
 
 

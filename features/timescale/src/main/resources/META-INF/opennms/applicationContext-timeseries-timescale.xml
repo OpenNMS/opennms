@@ -55,7 +55,7 @@
   </bean>
 
   <!-- This bean provides the pool configuration beans which are used to wire up the Newts context -->
-  <bean id="cassandraPoolConfiguration" class="org.opennms.netmgt.newts.support.CassandraPoolConfiguration"/>
+  <bean id="cassandraPoolConfiguration" class="org.opennms.netmgt.timescale.support.CassandraPoolConfiguration"/>
 
   <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31540000}" />
@@ -89,9 +89,9 @@
     </bean>
   -->
 
-  <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.newts.support.NewtsUtils.TTL" />
+  <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.timescale.support.TimescaleUtils.TTL" />
 
-  <util:constant id="cassandraIndexingOptions" static-field="org.opennms.netmgt.newts.support.NewtsUtils.INDEXING_OPTIONS" />
+  <util:constant id="cassandraIndexingOptions" static-field="org.opennms.netmgt.timescale.support.TimescaleUtils.INDEXING_OPTIONS" />
 
   <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
         <!-- This options should always match the number of writer threads. See NMS-8439. -->
@@ -113,7 +113,7 @@
   <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
 
   <bean id="contextConfigurations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod" value="org.opennms.netmgt.newts.support.ContextConfigurationFactory.getContextConfigurations"/>
+    <property name="staticMethod" value="org.opennms.netmgt.timescale.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
 
   <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -138,9 +138,9 @@
 
   <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />
 
-  <bean id="resourceMetadataCache" class="${org.opennms.newts.config.cache.strategy:org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache}" />
+  <bean id="resourceMetadataCache" class="${org.opennms.timescale.config.cache.strategy:org.opennms.netmgt.timescale.support.GuavaSearchableResourceMetadataCache}" />
 
-  <bean id="cachePrimer" class="org.opennms.netmgt.newts.support.CachePrimer"/>
+  <bean id="cachePrimer" class="org.opennms.netmgt.timescale.support.CachePrimer"/>
 
   <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" depends-on="search.cassandra.time-to-live,search.resourceMetadata.maxCacheEntries" />
 
@@ -150,7 +150,7 @@
     <constructor-arg index="0" ref="cassandraIndexerSampleProcessor" />
   </bean>
 
-  <bean id="sampleProcessorService" class="org.opennms.netmgt.newts.support.SimpleSampleProcessorService" >
+  <bean id="sampleProcessorService" class="org.opennms.netmgt.timescale.support.SimpleSampleProcessorService" >
     <constructor-arg index="0" ref="sampleProcessors" />
   </bean>
 
@@ -158,18 +158,18 @@
 
   <onmsgi:service interface="org.opennms.newts.api.SampleRepository" ref="cassandraSampleRepository" />
 
-  <bean id="newtsWriter" class="org.opennms.netmgt.newts.NewtsWriter" />
+  <bean id="newtsWriter" class="org.opennms.netmgt.timescale.TimescaleWriter" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.TimescaleResourceStorageDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-  <bean id="newtsPersisterFactory" class="org.opennms.netmgt.collection.persistence.newts.NewtsPersisterFactory" />
+  <bean id="timescalePersisterFactory" class="org.opennms.netmgt.collection.persistence.timescale.TimescalePersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 
   <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
-    <constructor-arg index="0" ref="newtsPersisterFactory"/>
+    <constructor-arg index="0" ref="timescalePersisterFactory"/>
     <constructor-arg index="1" ref="osgiPersisterFactory"/>
   </bean>
 

@@ -42,11 +42,14 @@ public abstract class TimeSeries {
 
     private static final String TCP_TIME_SERIES_STRATEGY_NAME = "tcp";
 
+    private static final String TIMESCALE_TIME_SERIES_STRATEGY_NAME = "timescale";
+
     public static enum Strategy {
         RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
         NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
         EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
-        TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)");
+        TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)"),
+        TIMESCALE(TIMESCALE_TIME_SERIES_STRATEGY_NAME, "Timescale");
 
         private final String m_name;
         private final String m_descr;

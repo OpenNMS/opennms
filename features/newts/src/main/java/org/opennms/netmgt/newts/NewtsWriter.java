@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.newts;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.sql.DataSource;
 
 import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
@@ -104,6 +107,9 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
      */
     private final AtomicLong m_numEntriesOnRingBuffer = new AtomicLong();
+
+    @Autowired
+    private DataSource dataSource;
 
     @Inject
     public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize,
@@ -209,15 +215,29 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
 
+        String sql = "INSERT INTO timeseries(time, context, resource, name, type, value)  values (?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = this.dataSource.getConnection().prepareStatement(sql);
+
+
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
             try {
                 if (event.isIndexOnly() && !NewtsUtils.DISABLE_INDEXING) {
                     LOG.debug("Indexing {} samples", batch.size());
-                    m_indexer.update(batch);
+                    // m_indexer.update(batch);
                 } else {
                     LOG.debug("Inserting {} samples", batch.size());
-                    m_sampleRepository.insert(batch);
+                    // m_sampleRepository.insert(batch);
+                    for (Sample sample: batch) {
+                        ps.setDate(1, new Date(sample.getTimestamp().asMillis()));
+                        ps.setString(2, sample.getContext().getId());
+                        ps.setString(3, sample.getResource().getId());
+                        ps.setString(4, sample.getName());
+                        ps.setByte(5, sample.getType().getCode());
+                        ps.setDouble(6, sample.getValue().doubleValue());
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
                 }
 
                 if (LOG.isDebugEnabled()) {
@@ -231,6 +251,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                 RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
             }
         }
+        ps.close();
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =
