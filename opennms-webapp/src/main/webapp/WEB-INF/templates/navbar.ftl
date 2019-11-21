@@ -31,6 +31,9 @@
                 </li>
             </ul>
         </#if>
+
+        <onms-central-search class="ml-auto"></onms-central-search>
+
         <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
 		  <#list model.entryList as entry>
@@ -118,7 +121,7 @@
                 </div>
             </li>
             </ul>
-            <ul class="navbar-nav mr-4">
+            <ul class="navbar-nav">
             <#if isAdmin || isProvision >
                 <li class="nav-item">
                     <a class="nav-link" style="font-size: 1.25rem" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" title="Quick-Add Node">

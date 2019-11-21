@@ -316,6 +316,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^mvr.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -330,6 +331,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^mvr.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
