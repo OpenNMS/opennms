@@ -6,7 +6,7 @@ ARG BASE_IMAGE_VERSION="11"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as minion-base
 
-ARG REQUIRED_RPMS="wget gettext jicmp jicmp6"
+ARG REQUIRED_RPMS="wget gettext jicmp jicmp6 openssh-clients"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
@@ -29,6 +29,11 @@ RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
 # Create Minion user with a specific group ID
 RUN groupadd -g 10001 minion && \
     adduser -u 10001 -g 10001 -d /opt/minion -s /usr/bin/bash minion
+
+# Create SSH Key-Pair to use with the Karaf Shell
+RUN mkdir /opt/minion/.ssh && \
+    chmod 700 /opt/minion/.ssh && \
+    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N ""
 
 ##
 # Install and setup OpenNMS Minion RPMS
@@ -54,11 +59,14 @@ RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y in
     dnf clean all && \
     rm -rf /var/cache/yum && \
     sed -r -i '/RUNAS/s/.*/export RUNAS=${USER}/' /etc/sysconfig/minion && \
+    echo minion=$(cat /opt/minion/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/minion/etc/keys.properties && \
+    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties && \
     chown 10001:10001 -R /opt/minion && \
     chgrp -R 0 /opt/minion && \
-    chmod -R g=u /opt/minion
+    chmod -R g=u /opt/minion && \
+    chmod 600 /opt/minion/.ssh/id_rsa
 
-COPY ./assets/entrypoint.sh /
+COPY ./assets/* /
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"

@@ -431,12 +431,14 @@ doStart(){
 	CMD=("${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$BACKGROUND" = 1 ]; then
 		# shellcheck disable=SC2129
-		echo "------------------------------------------------------------------------------" >> "$REDIRECT"
-		date >> "$REDIRECT"
-		echo "begin ulimit settings:" >> "$REDIRECT"
-		ulimit -a >> "$REDIRECT"
-		echo "end ulimit settings" >> "$REDIRECT"
-		echo "Executing command:" "${CMD[@]}" >> "$REDIRECT"
+		{
+			echo "------------------------------------------------------------------------------"
+			date
+			echo "begin ulimit settings:"
+			ulimit -a
+			echo "end ulimit settings"
+			echo "Executing command:" "${CMD[@]}"
+		} >> "$REDIRECT"
 
 		# NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
 		# To avoid this spawn the command directly so the $! is the PID of java.
@@ -445,8 +447,8 @@ doStart(){
 		else
 			echo "Skipping execution: ${CMD[*]}"
 		fi
-		OPENNMS_PID=$!
-		echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
+		OPENNMS_PID="$!"
+		echo "$OPENNMS_PID" > "$OPENNMS_PIDFILE"
 	else
 		echo "running ulimit -a"
 		ulimit -a
@@ -965,7 +967,8 @@ case "$COMMAND" in
 			rc_status -v
 		else
 			doStatus "$@"
-			case $? in
+			__ret="$?"
+			case "$__ret" in
 				0)
 					echo "${NAME} is running"
 					;;
@@ -979,7 +982,7 @@ case "$COMMAND" in
 					;;
 
 				*)
-					echo "Unknown return code from doStatus: $ret" >&2
+					echo "Unknown return code from doStatus: $__ret" >&2
 			esac
 		fi
 		;;

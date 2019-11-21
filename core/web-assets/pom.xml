@@ -73,7 +73,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>--prefer-offline --no-progress clean-install</arguments>
+              <arguments>--prefer-offline --no-progress install</arguments>
             </configuration>
           </execution>
           <execution>
@@ -161,6 +161,15 @@
       <id>skipCompile</id>
       <properties>
         <skipNodeJSBuild>true</skipNodeJSBuild>
+      </properties>
+    </profile>
+    <profile>
+      <id>forceCompile</id>
+      <activation>
+        <file><missing>target/dist/assets/opennms.js</missing></file>
+      </activation>
+      <properties>
+        <skipNodeJSBuild>false</skipNodeJSBuild>
       </properties>
     </profile>
   </profiles>

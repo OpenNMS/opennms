@@ -41,6 +41,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public abstract class ProvisioningITCase {
     @Autowired
+    private Provisioner m_provisioner;
+
+    @Autowired
     @Qualifier("scanExecutor")
     private PausibleScheduledThreadPoolExecutor m_scanExecutor;
 
@@ -76,7 +79,7 @@ public abstract class ProvisioningITCase {
     }
 
     protected void waitForEverything() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(4);
+        final CountDownLatch latch = new CountDownLatch(5);
         final Runnable runnable = new Runnable() {
             @Override public void run() {
                 latch.countDown();
@@ -86,11 +89,12 @@ public abstract class ProvisioningITCase {
         m_scanExecutor.execute(runnable);
         m_importExecutor.execute(runnable);
         m_writeExecutor.execute(runnable);
+        m_provisioner.getNewSuspectExecutor().execute(runnable);
         latch.await(5, TimeUnit.MINUTES);
     }
 
     protected void waitForImport() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(3);
+        final CountDownLatch latch = new CountDownLatch(4);
         final Runnable runnable = new Runnable() {
             @Override public void run() {
                 latch.countDown();
@@ -99,6 +103,7 @@ public abstract class ProvisioningITCase {
         m_scanExecutor.execute(runnable);
         m_importExecutor.execute(runnable);
         m_writeExecutor.execute(runnable);
+        m_provisioner.getNewSuspectExecutor().execute(runnable);
         latch.await(5, TimeUnit.MINUTES);
     }
 

@@ -196,4 +196,5 @@ testDpkgDistFailure() {
 	assertEquals '"opennms start" should have failed' 1 "$?"
 }
 
+# shellcheck disable=SC1090,SC1091
 . "$SHUNITDIR/shunit2"
