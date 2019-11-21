@@ -159,8 +159,7 @@ final class NodeInfoScan implements RunInBatch {
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
                 boolean succeeded = false;
-                if ((e.getCause() instanceof SnmpAgentTimeoutException ||
-                         e.getCause() instanceof SnmpException)) {
+                if (isSnmpRelatedException(e)) {
                     succeeded = peformScanWithMatchingProfile(agentConfig, primaryAddress);
                 }
                 if(!succeeded) {
@@ -202,6 +201,16 @@ final class NodeInfoScan implements RunInBatch {
             Thread.currentThread().interrupt();
         }
     }
+
+    static boolean isSnmpRelatedException(Exception e) {
+        // All the exceptions are converted to messages with
+        // RemoteExecutionException.toErrorMessage(Throwable e)
+        return e.getCause() instanceof SnmpException ||
+                e.getCause() instanceof SnmpAgentTimeoutException ||
+                e.getMessage().contains(SnmpException.class.getSimpleName()) ||
+                e.getMessage().contains(SnmpAgentTimeoutException.class.getSimpleName());
+    }
+
 
     private boolean isConfigValid(SnmpAgentConfig currentConfig, InetAddress address) {
         String profileLabel = currentConfig.getProfileLabel();
