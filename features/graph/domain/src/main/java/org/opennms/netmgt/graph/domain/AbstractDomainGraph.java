@@ -51,9 +51,6 @@ import com.google.common.base.MoreObjects;
 * Can be extended by a domain specific graph class.
 * It contains no data of it's own but operates on the data of it's wrapped {@link GenericGraph}.
 **/
-// TODO MVR implement duplication detection (e.g. adding same vertex twice
-// and as well as adding different edges with different source/target vertices, should add each vertex only once,
-// maybe not here, but at some point that check should be implemented)
 public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E extends AbstractDomainEdge> implements ImmutableGraph<V, E> {
 
     private final GenericGraph delegate;
@@ -184,7 +181,6 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
 
     @Override
     public int hashCode() {
-
         return Objects.hash(delegate);
     }
 
@@ -194,7 +190,7 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
                 .add("delegate", delegate)
                 .toString();
     }
-    
+
     public static class AbstractDomainGraphBuilder<
         T extends AbstractDomainGraphBuilder,
         V extends AbstractDomainVertex,
@@ -203,7 +199,7 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
         protected GenericGraphBuilder delegate = GenericGraph.builder();
         
         protected AbstractDomainGraphBuilder() {}
-        
+
         public T id(String id) {
             delegate.id(id);
             return (T) this;

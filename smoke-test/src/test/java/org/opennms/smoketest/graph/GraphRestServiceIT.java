@@ -221,8 +221,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .contentType(ContentType.JSON)
                .content("[0].namespace", Matchers.is("acme:regions"))
                .content("[0].id", Matchers.is("north"))
-                // TODO MVR at the moment search returns the VertexRef therefore no label available
-//               .content("[0].label", Matchers.is("North Region"))
                .content("", Matchers.hasSize(1));
     }
 

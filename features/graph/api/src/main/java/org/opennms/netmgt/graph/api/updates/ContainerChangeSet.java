@@ -35,12 +35,10 @@ import java.util.List;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 
-// TODO MVR enforce graph type
 public class ContainerChangeSet {
 
     private final Date changeSetDate;
     private final String containerId;
-    // TODO MVR adding and removing may be sufficient to just persist the namespace
     private List<ImmutableGraph<?, ?>> addedGraphs = new ArrayList<>();
     private List<ImmutableGraph<?, ?>> removedGraphs = new ArrayList<>();
     private List<ChangeSet<?, ?, ?>> graphChanges = new ArrayList<>();

@@ -39,12 +39,9 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NodeEnrichmentProcessor implements EnrichmentProcessor {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final NodeService nodeService;
 
     public NodeEnrichmentProcessor(NodeService nodeService) {
