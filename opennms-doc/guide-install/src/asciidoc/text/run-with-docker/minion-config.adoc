@@ -35,13 +35,28 @@
 | `OPENNMS_BROKER_PASS` | Password for _ActiveMQ_ authentication   | optional | `admin`
 |===
 
-.Settings when _Apache Kafka_ is used
-[options="header, autowidth"]
-|===
-| Environment variable          | Description                                                                 | Required | Default value
-| `KAFKA_RPC_BOOTSTRAP_SERVERS` | Comma separated list with _Kafka_ nodes, e.g. `kafka-01:9092,kafka-02:9092` | required | -
-| `KAFKA_RPC_ACKS`              | Configure Kafka acknowledgements, recommendation is set to `1`              | required | -
-|===
+.Apache Kafka Configuration
+
+If you want to use _Apache Kafka_ the environment variable names are converted with a prefix convention:
+
+* Prefix `KAFKA_RPC_` will be written to `org.opennms.core.ipc.rpc.kafka.cfg`
+* Prefix `KAFKA_SINK_` will be written to `org.opennms.core.ipc.sink.kafka.cfg`
+* Everything behind will be converted to lower case and `_` is replaced with `.`
+
+As an example:
+
+[source, shell]
+----
+environment:
+  - KAFKA_RPC_BOOTSTRAP_SERVERS=192.168.1.1,192.168.1.2
+----
+
+This will create the file `org.opennms.core.ipc.rpc.kafka.cfg` with the content:
+
+[source, shell]
+----
+bootstrap.servers=192.168.1.1,192.168.1.2
+----
 
 ===== Directory Conventions
 
