@@ -27,3 +27,8 @@ image:minion-custom-messaging-system/setup-minion-kafka.png[]
 
 NOTE: The example is used to describe how the components need to be configured.
       IP addresses and hostnames need to be adjusted accordingly.
+
+NOTE: You can add more than one Kafka server to the configuration.
+      The driver will attempt to connect to the first entry.
+      If that is successful the whole broker topology will be discovered and will be known by the client.
+      The other entries are only used if the connection to the first entry fails.
