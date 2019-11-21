@@ -1601,6 +1601,7 @@
         <feature>opennms-graph-updates</feature>
         <feature>opennms-graph-domain</feature>
         <bundle>wrap:mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
+        <bundle>mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.service/${project.version}</bundle>
     </feature>
     <feature name="opennms-graph-persistence" description="OpenNMS :: Features :: Graph :: Persistence" version="${project.version}">

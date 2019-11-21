@@ -34,52 +34,30 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.opennms.features.graphml.model.GraphML;
-import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLReader;
 import org.opennms.features.graphml.model.InvalidGraphException;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.api.generic.GenericEdge;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
-import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphmlGraphContainerProvider.class);
-
-    private static final String FOCUS_STRATEGY = "focus-strategy";
-    private static final String FOCUS_IDS = "focus-ids";
-
-    private final GraphML graphML;
     private GenericGraphContainer graphContainer;
-    private HashMap<String, GraphMLGraph> vertexIdToGraphMapping;
 
     public GraphmlGraphContainerProvider(String location) throws IOException, InvalidGraphException {
         if (!new File(location).exists()) {
             throw new FileNotFoundException(location);
         }
         try (InputStream input = new FileInputStream(location)) {
-            this.graphML = GraphMLReader.read(input);
+            final GraphML graphML = GraphMLReader.read(input);
+            this.graphContainer = new GraphmlToGraphConverter().convert(graphML);
         }
-        // This should not be invoked at this point, however it is static anyways and in order
-        // to know the graph infos we must read the data.
-        // Maybe we can just read it partially at some point, however this is how it is implemented for now
-        loadGraphContainer();
 
         // Verify that the container Id matches the graph's name.
         // This is not critical but should be by convention
@@ -93,32 +71,10 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
 
     @Override
     public ImmutableGraphContainer loadGraphContainer() {
-        if (graphContainer == null) {
-            vertexIdToGraphMapping = new HashMap<>();
-            // Index vertex id to graph mapping
-            graphML.getGraphs().stream().forEach(
-                    g -> g.getNodes().stream().forEach(n -> {
-                        if (vertexIdToGraphMapping.containsKey(n.getId())) {
-                            throw new IllegalStateException("GraphML graph contains vertices with same id. Bailing");
-                        }
-                        vertexIdToGraphMapping.put(n.getId(), g);
-                    })
-            );
-
-            // Convert graph
-            final String graphContainerId = determineGraphContainerId(graphML);
-            final GenericGraphContainerBuilder graphContainerBuilder = GenericGraphContainer.builder()
-                .id(graphContainerId)
-                .label(graphML.getProperty(GenericProperties.LABEL))
-                .description(graphML.getProperty(GenericProperties.DESCRIPTION));
-            for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                final GenericGraph convertedGraph = convert(eachGraph);
-                graphContainerBuilder.addGraph(convertedGraph);
-            }
-            this.vertexIdToGraphMapping.clear(); // clear data as it was only needed while building the container
-            this.graphContainer = graphContainerBuilder.build();
-        }
-        return this.graphContainer;
+        // The container does not support manual file changes.
+        // Any change must be Pushed again through the rest-service.
+        // Therefore we always return the same instance after the container has been loaded.
+        return graphContainer;
     }
 
     @Override
@@ -126,81 +82,6 @@ public class GraphmlGraphContainerProvider implements GraphContainerProvider {
         // As this is static content, the container info is already part of the graph, no extra setup required
         // The content is already in memory, so no further conversion is performed.
         return graphContainer;
-    }
-
-    private final GenericGraph convert(GraphMLGraph graphMLGraph) {
-        final GenericGraphBuilder graphBuilder = GenericGraph.builder()
-                .properties(graphMLGraph.getProperties())
-                // TODO MVR make it a constant?
-                .property("enrichment.resolveNodes", true); // Enable Node Enrichment
-        final List<GenericVertex> vertices = graphMLGraph.getNodes()
-                .stream().map(n -> {
-                    // In case of GraphML each vertex does not have a namespace, but it is inherited from the graph
-                    // Therefore here we have to manually set it
-                    return GenericVertex.builder()
-                            .namespace(graphBuilder.getNamespace())
-                            .id(n.getId())
-                            .properties(n.getProperties()).build();
-                })
-                .collect(Collectors.toList());
-        graphBuilder.addVertices(vertices);
-
-        final List<GenericEdge> edges = graphMLGraph.getEdges().stream().map(e -> {
-            final String sourceNamespace = vertexIdToGraphMapping.get(e.getSource().getId()).getProperty(GenericProperties.NAMESPACE);
-            final String targetNamespace = vertexIdToGraphMapping.get(e.getTarget().getId()).getProperty(GenericProperties.NAMESPACE);
-            final GenericVertex source = GenericVertex.builder().namespace(sourceNamespace).id(e.getSource().getId()).build();
-            final GenericVertex target = GenericVertex.builder().namespace(targetNamespace).id(e.getTarget().getId()).build();
-            // In case of GraphML each edge does not have a namespace, but it is inherited from the graph
-            // Therefore here we have to manually set it
-            final GenericEdge edge = GenericEdge.builder()
-                    .namespace(graphBuilder.getNamespace())
-                    .source(source.getVertexRef())
-                    .target(target.getVertexRef())
-                    .properties(e.getProperties()).build();
-            return edge;
-        }).collect(Collectors.toList());
-        graphBuilder.addEdges(edges);
-
-        applyFocus(graphMLGraph, graphBuilder);
-        return graphBuilder.build();
-    }
-
-    private static void applyFocus(final GraphMLGraph graphMLGraph, final GenericGraphBuilder graphBuilder) {
-        final String strategy = graphMLGraph.getProperty(FOCUS_STRATEGY);
-        if (strategy == null || "empty".equalsIgnoreCase(strategy)) {
-            graphBuilder.focus().empty().apply();
-        } else if ("all".equalsIgnoreCase(strategy)) {
-            graphBuilder.focus().all().apply();
-        } else if ("first".equalsIgnoreCase(strategy)) {
-            graphBuilder.focus().first().apply();
-        } else if ("specific".equalsIgnoreCase(strategy) || "selection".equalsIgnoreCase(strategy)) {
-            final List<String> focusIds = getFocusIds(graphMLGraph);
-            graphBuilder.focus().selection(graphBuilder.getNamespace(), focusIds).apply();
-        } else {
-            final String[] supportedStrategies = new String[]{"empty", "all", "first", "specific"};
-            throw new IllegalStateException("Provided focus strategy '" + strategy + "' is not supported. Supported values are: " + Arrays.toString(supportedStrategies));
-        }
-    }
-
-    private static List<String> getFocusIds(GraphMLGraph inputGraph) {
-        final String property = inputGraph.getProperty(FOCUS_IDS);
-        if (property != null) {
-            String[] split = property.split(",");
-            return Lists.newArrayList(split);
-        }
-        return Lists.newArrayList();
-    }
-
-    // The graphML specification does not allow for an id on the graphML object itself
-    // As we always need a unique Id we check if a property called `containerId` is provided.
-    // If so we use that, otherwise we concatenate the ids of the graphs
-    protected static String determineGraphContainerId(GraphML graphML) {
-        if (graphML.getProperty("containerId") != null) {
-            return graphML.getProperty("containerId");
-        }
-        LOG.warn("No property 'containerId' was provided. Calculating the container id using the graph's ids");
-        final String calculatedId = graphML.getGraphs().stream().map(g -> g.getId()).collect(Collectors.joining("."));
-        return calculatedId;
     }
 
 }

@@ -72,8 +72,9 @@ public class GraphProviderManager {
         containerInfo.setLabel(label);
 
         // Expose the ContainerProvider
+        final Map<String, String> actualProperties = getActualProperties(properties); // forward service properties to container service
         final SingleGraphContainerProvider singleGraphContainerProvider = new SingleGraphContainerProvider(graphProvider, containerInfo);
-        final ServiceRegistration<GraphContainerProvider> serviceRegistration = bundleContext.registerService(GraphContainerProvider.class, singleGraphContainerProvider, new Hashtable<>());
+        final ServiceRegistration<GraphContainerProvider> serviceRegistration = bundleContext.registerService(GraphContainerProvider.class, singleGraphContainerProvider, new Hashtable<>(actualProperties));
         graphProviderServices.put(graphProvider, serviceRegistration);
     }
 
@@ -82,5 +83,13 @@ public class GraphProviderManager {
         if (removedService != null) {
             removedService.unregister();
         }
+    }
+
+    private static Map<String, String> getActualProperties(Map<String, String> properties) {
+        final Map<String, String> actualProperties = new HashMap<>();
+        properties.keySet().stream()
+                .filter(key -> !key.startsWith("service") && !key.startsWith("osgi") && !key.equals("objectClass"))
+                .forEach(key -> actualProperties.put(key, properties.get(key)));
+        return actualProperties;
     }
 }

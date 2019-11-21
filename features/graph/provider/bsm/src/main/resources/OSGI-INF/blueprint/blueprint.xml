@@ -11,8 +11,10 @@
 
     <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
     <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+    <reference id="graphContainerCache" interface="org.opennms.netmgt.graph.api.service.GraphContainerCache" availability="mandatory" />
 
     <bean id="bsmGraphProvider" class="org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraphProvider" init-method="init" destroy-method="destroy">
+        <argument ref="graphContainerCache" />
         <argument ref="businessServiceManager" />
         <argument ref="eventIpcManager" />
     </bean>
