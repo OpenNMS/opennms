@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.timescale;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -69,7 +70,7 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
 /**
  * Used to write samples to the {@link org.opennms.newts.api.SampleRepository}.
  *
- * Calls to {@link #insert()} publish the samples to a ring buffer so
+ * Calls to  publish the samples to a ring buffer so
  * that they don't block while the data is being persisted.
  *
  * @author jwhite
@@ -82,12 +83,6 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
-
-    @Autowired
-    private SampleRepository m_sampleRepository;
-
-    @Autowired
-    private Indexer m_indexer;
 
     @Autowired
     private DataSource dataSource;
@@ -103,6 +98,8 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
     private final int m_numWriterThreads;
 
     private final Meter m_droppedSamples;
+
+    private Connection connection;
 
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
@@ -209,6 +206,9 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
     public void onEvent(SampleBatchEvent event) throws Exception {
         // We'd expect the logs from this thread to be in collectd.log
         Logging.putPrefix("collectd");
+        if(this.connection == null) {
+            this.connection = this.dataSource.getConnection();
+        }
 
         List<Sample> samples = event.getSamples();
         // Decrement our entry counter
@@ -224,8 +224,8 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
         //    'value'      DOUBLE PRECISION  NULL,
         // );
         // create_hypertable('timeseries', 'time');
-        String sql = "INSERT INTO timeseries('time', 'context', 'resource', 'name', 'type', 'value')  values (?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = this.dataSource.getConnection().prepareStatement(sql);
+        String sql = "INSERT INTO timeseries(time, context, resource, name, type, value)  values (?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = connection.prepareStatement(sql);
 
         // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
@@ -240,9 +240,9 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
                         ps.setDate(1, new Date(sample.getTimestamp().asMillis()));
                         ps.setString(2, sample.getContext().getId());
                         ps.setString(3, sample.getResource().getId());
-                        ps.setString(3, sample.getName());
-                        ps.setByte(4, sample.getType().getCode());
-                        ps.setDouble(5, sample.getValue().doubleValue());
+                        ps.setString(4, sample.getName());
+                        ps.setByte(5, sample.getType().getCode());
+                        ps.setDouble(6, sample.getValue().doubleValue());
                         ps.addBatch();
                     }
                     ps.executeBatch();
@@ -279,10 +279,10 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
             };
 
     public void setSampleRepository(SampleRepository sampleRepository) {
-        m_sampleRepository = sampleRepository;
+        // TODO: Patrick: remove me
     }
 
     public void setIndexer(Indexer indexer) {
-        m_indexer = indexer;
+        // TODO: Patrick: remove me
     }
 }

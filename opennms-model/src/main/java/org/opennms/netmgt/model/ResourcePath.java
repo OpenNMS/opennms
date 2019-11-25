@@ -141,6 +141,17 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         return numChildEls - numParentEls;
     }
 
+    public ResourcePath getParent() {
+        if(!hasParent()){
+            throw new UnsupportedOperationException("I am on the root level already");
+        }
+        return new ResourcePath(this.m_elements.subList(0, this.m_elements.size()-1));
+    }
+
+    public boolean hasParent() {
+        return this.m_elements.size()>1;
+    }
+
     @Override
     public Iterator<String> iterator() {
         return m_elements.iterator();

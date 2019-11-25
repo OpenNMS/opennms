@@ -33,6 +33,7 @@ import static org.opennms.netmgt.timescale.support.TimescaleUtils.toMetricName;
 import static org.opennms.netmgt.timescale.support.TimescaleUtils.toResourceId;
 import static org.opennms.netmgt.timescale.support.TimescaleUtils.toResourcePath;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,10 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.dao.support.SearchResults.Result;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -57,8 +61,6 @@ import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.search.Query;
-import org.opennms.newts.api.search.SearchResults;
-import org.opennms.newts.api.search.SearchResults.Result;
 import org.opennms.newts.cassandra.search.CassandraIndexer;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
 import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
@@ -93,7 +95,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
     private Context m_context;
 
     @Autowired
-    private CassandraSearcher m_searcher;
+    private TimescaleSearcher m_searcher;
 
     @Autowired
     private CassandraSampleRepository m_sampleRepository;
@@ -106,6 +108,9 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -190,7 +195,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
                         .collect(Collectors.toList())
                         .equals(Arrays.asList(resultPath.elements()))) {
                     // This shouldn't happen
-                    LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. " +
+                    LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. " + // TODO Patrick: breakpoint
                                     "Ignoring resource.", result.getResource(), path, 0);
                     continue;
                 }
@@ -278,9 +283,16 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
 
     private SearchResults searchFor(ResourcePath path, int depth, boolean fetchMetrics) {
         final Query q = findResourcesWithMetricsAtDepth(path, depth);
-        LOG.trace("Searching for '{}'.", q);
-        final SearchResults results = m_searcher.search(m_context, q, fetchMetrics);
-        LOG.trace("Found {} results.", results.size());
+        // LOG.trace("Searching for '{}'.", q);
+        final SearchResults results;
+        try {
+            results = m_searcher.search(path, depth, fetchMetrics);
+            LOG.trace("Found {} results.", results.size());
+        } catch (SQLException e) {
+            // TODO Patrick
+            throw new RuntimeException(e);
+        }
+
         return results;
     }
 
@@ -306,7 +318,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
     }
 
     public void setSearcher(CassandraSearcher searcher) {
-        m_searcher = searcher;
+        // m_searcher = searcher;
     }
 
     public void setContext(Context context) {
