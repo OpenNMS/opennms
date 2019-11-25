@@ -42,12 +42,13 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpAgentTimeoutException;
 import org.opennms.netmgt.snmp.SnmpException;
 
-public class SnmpExceptionVaidatorTest {
+public class SnmpExceptionValidatorTest {
 
 
     @Test
-    public void testSnmpException() {
+    public void testSnmpRelatedException() {
 
+        // Any SnmpException and SnmpAgentTimeoutException are valid.
         SnmpException snmpException = new SnmpException(new IOException("Invalid config"));
         String errorMessage = RemoteExecutionException.toErrorMessage(snmpException);
         RemoteExecutionException remoteException = new RemoteExecutionException(errorMessage);
@@ -59,6 +60,10 @@ public class SnmpExceptionVaidatorTest {
         errorMessage = RemoteExecutionException.toErrorMessage(snmpAgentTimeoutException);
         remoteException = new RemoteExecutionException(errorMessage);
         executionException = new ExecutionException(remoteException);
+        assertTrue(NodeInfoScan.isSnmpRelatedException(executionException));
+
+        //Nested Snmp Exceptions are also valid.
+        executionException = new ExecutionException(snmpException);
         assertTrue(NodeInfoScan.isSnmpRelatedException(executionException));
 
         executionException = new ExecutionException(snmpException);
