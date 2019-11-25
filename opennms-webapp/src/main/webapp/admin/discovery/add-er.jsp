@@ -36,7 +36,7 @@
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils,
   org.opennms.netmgt.config.DiscoveryConfigFactory,
-  org.opennms.netmgt.config.discovery.*,
+  org.opennms.netmgt.config.discovery.DiscoveryConfiguration,
   org.opennms.web.admin.discovery.DiscoveryServletConstants,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet,
   org.opennms.web.admin.discovery.DiscoveryScanServlet
