@@ -195,7 +195,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
     @Autowired
-    private SnmpProfileMapper snmpProfileMapper;
+    private SnmpProfileMapper m_snmpProfileMapper;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -1405,7 +1405,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     public SnmpProfileMapper getSnmpProfileMapper() {
-        return snmpProfileMapper;
+        return m_snmpProfileMapper;
+    }
+
+    public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper) {
+        m_snmpProfileMapper = snmpProfileMapper;
     }
 
     @Override

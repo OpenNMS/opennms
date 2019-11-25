@@ -244,4 +244,6 @@ public interface ProvisionService {
     LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
 
     SnmpProfileMapper getSnmpProfileMapper();
+
+    public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper);
 }
