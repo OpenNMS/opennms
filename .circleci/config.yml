@@ -279,7 +279,7 @@ workflows:
     triggers:
       - schedule:
           # Saturday at 12:00 AM
-          cron: "0 0 * * 5"
+          cron: "0 0 * * 6"
           filters:
             branches:
               only:
