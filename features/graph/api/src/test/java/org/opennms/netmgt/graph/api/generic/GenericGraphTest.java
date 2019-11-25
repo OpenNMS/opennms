@@ -42,6 +42,7 @@ import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
+import org.opennms.netmgt.graph.api.validation.exception.InvalidNamespaceException;
 
 import com.google.common.collect.Lists;
 
@@ -110,7 +111,7 @@ public class GenericGraphTest {
         GenericGraphBuilder graphBuilder = GenericGraph.builder();
         
         // 1.) set namespace on "empty graph" => shouldn't be a problem
-        graphBuilder.namespace("some namespace");
+        graphBuilder.namespace("some-namespace");
         graphBuilder.namespace(TestObjectCreator.NAMESPACE); // should be ok as long as we haven't added an edge
         
         // 2.) set same namespace on a filled graph => should be possible
@@ -192,5 +193,10 @@ public class GenericGraphTest {
 
         final GenericGraph emptyGraph = GenericGraph.builder().namespace(namespace).build();
         assertThat(emptyGraph.resolveVertices(nodeRef), Matchers.hasSize(0));
+    }
+
+    @Test
+    public void verifyCannotSetInvalidNamespace() {
+        assertThrowsException(InvalidNamespaceException.class, () -> GenericVertex.builder().namespace("$invalid$").build());
     }
 }

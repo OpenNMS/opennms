@@ -32,6 +32,7 @@ import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import org.junit.Test;
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.validation.exception.InvalidNamespaceException;
 
 public class GenericEdgeTest {
 
@@ -50,5 +51,15 @@ public class GenericEdgeTest {
         GenericEdge.builder().namespace(NAMESPACE).source(refWithOurNamespace1).target(refWithForeignNamespace1); // should throw no Exception
         GenericEdge.builder().namespace(NAMESPACE).source(refWithForeignNamespace1).target(refWithOurNamespace1); // should throw no Exception
         assertThrowsException(IllegalArgumentException.class, () -> GenericEdge.builder().namespace(NAMESPACE).source(refWithForeignNamespace1).target(refWithForeignNamespace2).build());
+    }
+
+    @Test
+    public void verifyCannotSetInvalidNamespace() {
+        final String namespace = "$invalid$";
+        assertThrowsException(InvalidNamespaceException.class, () -> GenericEdge.builder()
+                .namespace(namespace)
+                .source(new VertexRef(namespace,"v1"))
+                .target(new VertexRef(namespace, "v2"))
+                .build());
     }
 }

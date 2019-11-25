@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.netmgt.graph.api.validation.NamespaceValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public abstract class GenericElement {
     protected GenericElement (Map<String, Object> properties) {
         Objects.requireNonNull(properties);
         this.properties = ImmutableMap.copyOf(properties);
-        Objects.requireNonNull(getNamespace(), "namespace cannot be null");
+        new NamespaceValidator().validate(getNamespace());
     }
 
     public <T> T getProperty(String key) {
@@ -100,6 +101,7 @@ public abstract class GenericElement {
     
     public static abstract class GenericElementBuilder<T extends GenericElementBuilder> {
     	protected final Map<String, Object> properties = new HashMap<>();
+    	protected final NamespaceValidator namespaceValidator = new NamespaceValidator();
     	
         protected GenericElementBuilder() {}
     	
@@ -123,6 +125,10 @@ public abstract class GenericElement {
             if(name == null || value == null) {
                 LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
                 return (T) this;
+            }
+            // Ensure the namespace is valid before changing it
+            if (GenericProperties.NAMESPACE.equals(name)) {
+                namespaceValidator.validate((String) value);
             }
             properties.put(name, value);
             return (T) this;
