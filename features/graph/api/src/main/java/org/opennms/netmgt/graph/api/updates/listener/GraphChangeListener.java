@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.listener;
+package org.opennms.netmgt.graph.api.updates.listener;
 
 import java.util.List;
 

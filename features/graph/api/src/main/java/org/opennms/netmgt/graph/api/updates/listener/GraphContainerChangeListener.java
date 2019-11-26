@@ -26,10 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.listener;
+package org.opennms.netmgt.graph.api.updates.listener;
 
-import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
+import org.opennms.netmgt.graph.api.ImmutableGraph;
+import org.opennms.netmgt.graph.api.updates.ChangeSet;
 
-public interface GraphContainerChangeSetListener {
-    void graphContainerChanged(ContainerChangeSet changeSet);
+public interface GraphContainerChangeListener {
+    void handleGraphAdded(ImmutableGraph addedGraph);
+    void handleGraphRemoved(ImmutableGraph removedGraph);
+    void handleGraphUpdated(ChangeSet changeSet);
 }

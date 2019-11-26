@@ -222,6 +222,11 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     public static GenericGraphBuilder builder() {
         return new GenericGraphBuilder();
     }
+
+    public static GenericGraphBuilder from(GenericGraph graph) {
+        Objects.requireNonNull(graph);
+        return new GenericGraphBuilder().graph(graph);
+    }
     
     public final static class GenericGraphBuilder extends GenericElementBuilder<GenericGraphBuilder> {
          

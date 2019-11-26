@@ -26,22 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.change;
+package org.opennms.netmgt.graph.api.updates;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
-import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeListener;
-import org.opennms.netmgt.graph.updates.listener.GraphContainerChangeSetListener;
 
 // TODO MVR enforce graph type
 public class ContainerChangeSet {
 
     private final Date changeSetDate;
+    private final String containerId;
     // TODO MVR adding and removing may be sufficient to just persist the namespace
     private List<ImmutableGraph<?, ?>> addedGraphs = new ArrayList<>();
     private List<ImmutableGraph<?, ?>> removedGraphs = new ArrayList<>();
@@ -50,11 +48,13 @@ public class ContainerChangeSet {
     public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer) {
         this(oldGraphContainer, newGraphContainer, new Date());
     }
+
     public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer, Date changeSetDate) {
         this.changeSetDate = changeSetDate;
         if (oldGraphContainer == null && newGraphContainer == null) {
             throw new IllegalArgumentException("Cannot detect changes if both containers are null.");
         }
+        this.containerId = oldGraphContainer == null ? newGraphContainer.getId() : oldGraphContainer.getId();
         detectChanges(oldGraphContainer, newGraphContainer);
     }
 
@@ -74,21 +74,12 @@ public class ContainerChangeSet {
         return new ArrayList<>(graphChanges);
     }
 
-    public void accept(GraphContainerChangeSetListener listener) {
-        Objects.requireNonNull(listener);
-        listener.graphContainerChanged(this);
-    }
-
-    public void accept(GraphContainerChangeListener listener) {
-        if (hasChanges()) {
-            addedGraphs.forEach(graph -> listener.handleGraphAdded(graph));
-            removedGraphs.forEach(graph -> listener.handleGraphRemoved(graph));
-            graphChanges.forEach(changeSet -> listener.handleGraphUpdated(changeSet));
-        }
-    }
-
     public boolean hasChanges() {
         return !addedGraphs.isEmpty() || !removedGraphs.isEmpty() || !graphChanges.isEmpty();
+    }
+
+    public String getContainerId() {
+        return containerId;
     }
 
     protected void detectChanges(ImmutableGraphContainer<?> oldGraphContainer, ImmutableGraphContainer<?> newGraphContainer) {

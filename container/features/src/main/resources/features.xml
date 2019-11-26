@@ -1576,7 +1576,6 @@
     <!-- Convenient feature to install all graph related features-->
     <feature name="opennms-graphs" description="OpenNMS :: Features :: Graph" version="${project.version}">
         <feature>opennms-graph-api</feature>
-        <feature>opennms-graph-updates</feature>
         <feature>opennms-graph-service</feature>
         <feature>opennms-graph-domain</feature>
         <feature>opennms-graph-persistence</feature>
@@ -1592,13 +1591,8 @@
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
     </feature>
-    <feature name="opennms-graph-updates"  description="OpenNMS :: Features :: Graph :: Updates" version="${project.version}">
-        <feature>opennms-graph-api</feature>
-        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.updates/${project.version}</bundle>
-    </feature>
     <feature name="opennms-graph-service" description="OpenNMS :: Features :: Graph :: Service" version="${project.version}">
         <feature>opennms-graph-api</feature>
-        <feature>opennms-graph-updates</feature>
         <feature>opennms-graph-domain</feature>
         <bundle>wrap:mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
         <bundle>mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>

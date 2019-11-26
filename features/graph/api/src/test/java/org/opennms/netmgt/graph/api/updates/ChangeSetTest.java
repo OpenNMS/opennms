@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.change;
+package org.opennms.netmgt.graph.api.updates;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -35,10 +35,10 @@ import static org.junit.Assert.fail;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opennms.netmgt.graph.api.VertexRef;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainVertex;
 
 // TODO MVR add test for focus change
 // TODO MVR add test for edge changes
@@ -48,15 +48,15 @@ public class ChangeSetTest {
 
     @Test
     public void verifyNoChanges() {
-        final SimpleDomainGraph graph = SimpleDomainGraph.builder()
+        final GenericGraph graph = GenericGraph.builder()
                 .namespace(NAMESPACE)
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
                 .build();
         ChangeSet changeSet = new ChangeSet(graph, graph);
         assertThat(changeSet.hasChanges(), Matchers.is(false));
 
-        changeSet = new ChangeSet(graph, SimpleDomainGraph.from(graph.asGenericGraph()));
+        changeSet = new ChangeSet(graph, GenericGraph.from(graph).build());
         assertThat(changeSet.hasChanges(), Matchers.is(false));
     }
 
@@ -64,16 +64,16 @@ public class ChangeSetTest {
     // everything from the new graph is the change
     @Test
     public void verifyNoOldGraph() {
-        final SimpleDomainGraph graph = SimpleDomainGraph.builder()
+        final GenericGraph graph = GenericGraph.builder()
                 .namespace(NAMESPACE)
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
-                .addEdge(SimpleDomainEdge.builder().namespace(NAMESPACE).id("e1")
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
+                .addEdge(GenericEdge.builder().namespace(NAMESPACE).id("e1")
                         .source(new VertexRef(NAMESPACE, "v1"))
                         .target(new VertexRef(NAMESPACE, "v2"))
                         .build())
                 .build();
-        final ChangeSet<SimpleDomainGraph, SimpleDomainVertex, SimpleDomainEdge> changeSet = new ChangeSet(null, graph);
+        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet(null, graph);
         assertThat(changeSet.getNamespace(), Matchers.is(NAMESPACE));
         assertThat(changeSet.hasGraphInfoChanged(), Matchers.is(true));
         assertThat(changeSet.getVerticesAdded(), Matchers.hasSize(2));
@@ -89,25 +89,25 @@ public class ChangeSetTest {
     @Test
     public void verifyUpdate() {
         // Graph with vertices (1,2,3)
-        final SimpleDomainGraph oldGraph = SimpleDomainGraph.builder()
+        final GenericGraph oldGraph = GenericGraph.builder()
                 .namespace(NAMESPACE)
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("1").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("2").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("3").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("1").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("2").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("3").build())
                 .build();
 
         // Graph with vertices (3,4)
-        final SimpleDomainGraph newGraph = SimpleDomainGraph.builder()
+        final GenericGraph newGraph = GenericGraph.builder()
                 .namespace(NAMESPACE)
                 .label("Some Label")
                 .description("Some Description")
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("4").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("4").build())
                 .build();
 
         // Detect changes
         // Changes are (removed vertices: 1, 2. Added Vertices: 4, Updated Vertices: 3
-        final ChangeSet<SimpleDomainGraph, SimpleDomainVertex, SimpleDomainEdge> changeSet = new ChangeSet(oldGraph, newGraph);
+        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet(oldGraph, newGraph);
         assertThat(changeSet.getNamespace(), Matchers.is(NAMESPACE)); // Ensure the namespace was detected successful
 
         // Verify change Flags
@@ -124,7 +124,7 @@ public class ChangeSetTest {
         assertEquals("1", changeSet.getVerticesRemoved().get(0).getId());
         assertEquals("2", changeSet.getVerticesRemoved().get(1).getId());
         assertEquals("3", changeSet.getVerticesUpdated().get(0).getId());
-        assertEquals(new DefaultGraphInfo(NAMESPACE, SimpleDomainVertex.class)
+        assertEquals(new DefaultGraphInfo(NAMESPACE, GenericVertex.class)
                 .withDescription("Some Description")
                 .withLabel("Some Label"), changeSet.getGraphInfo());
     }
@@ -133,8 +133,8 @@ public class ChangeSetTest {
     // In theory this might be possible, but it does not make sense from a domain point.
     @Test
     public void verifyNamespaceCannotChange() {
-        final SimpleDomainGraph oldGraph = SimpleDomainGraph.builder().namespace(NAMESPACE).build();
-        final SimpleDomainGraph newGraph = SimpleDomainGraph.builder().namespace(NAMESPACE + ".opennms").build();
+        final GenericGraph oldGraph = GenericGraph.builder().namespace(NAMESPACE).build();
+        final GenericGraph newGraph = GenericGraph.builder().namespace(NAMESPACE + ".opennms").build();
         try {
             new ChangeSet(oldGraph, newGraph);
             fail("Expected an exception to be thrown, but succeeded. Bailing");
