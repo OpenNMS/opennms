@@ -35,31 +35,57 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         init-method="start"
         destroy-method="stop" />
 
-    <bean id="topologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+	<!-- linkd Topology Provider -->
+    <bean id="linkdTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
         <argument ref="metricRegistry" />
         <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
         <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
     </bean>
 
-    <bean id="topologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
-        <argument ref="topologyProvider"/>
+    <bean id="linkdTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+        <argument ref="linkdTopologyProvider"/>
     </bean>
 
-    <!-- Search topology provider -->
     <bean id="linkdSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
-        <argument ref="topologyProvider" />
+        <argument ref="linkdTopologyProvider" />
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
-    <!-- Meta topology provider -->
     <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
-        <argument ref="topologyHopProvider" />
+        <argument ref="linkdTopologyHopProvider" />
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="linkdMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
+        </service-properties>
+    </service>
+
+	<!-- Cdp Topology Provider -->
+    <bean id="cdpTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.CdpTopologyProvider">
+        <argument ref="metricRegistry" />
+        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
+    </bean>
+
+    <bean id="cdpTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+        <argument ref="cdpTopologyProvider"/>
+    </bean>
+
+    <bean id="cdpSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
+        <argument ref="cdpTopologyProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
+
+    <bean id="cdpMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="cdpTopologyHopProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="cdpMetaTopologyProvider">
+        <service-properties>
+            <entry key="label" value="Cdp Protocol" />
         </service-properties>
     </service>
 
