@@ -93,6 +93,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
     private Map<String, List<String>> m_urlSpecifics = new HashMap<>();
+    private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
 
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
@@ -152,6 +153,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
             try {
                 clearUrlSpecifics();
+                clearExcludeRanges();
                 getInitialSleepTime();
                 getRestartSleepTime();
                 getIntraPacketDelay();
@@ -375,6 +377,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private void clearUrlSpecifics() {
         m_urlSpecifics.clear();
     }
+    private void clearExcludeRanges() {
+        m_excludeRanges.clear();
+    }
 
     /**
      * <p>getRanges</p>
@@ -525,27 +530,60 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     /**
      * <p>isExcluded</p>
      *
-     * @param address a {@link java.net.InetAddress} object.
+     * @param address a {@link InetAddress} object.
+     * @param location
      * @return a boolean.
      */
     @Override
-    public boolean isExcluded(final InetAddress address) {
-        getReadLock().lock();
-        try {
-            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRanges();
-            if (excludeRange != null) {
-                final byte[] laddr = address.getAddress();
+    public boolean isExcluded(final InetAddress address, String location) {
 
-                for (final ExcludeRange range : excludeRange) {
-                    if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
-                        return true;
-                    }
+        String defaultLocation = LocationUtils.DEFAULT_LOCATION_NAME;
+
+        if (!m_excludeRanges.isEmpty()) {
+
+            final byte[] laddr = address.getAddress();
+            for (final ExcludeRange range : m_excludeRanges) {
+
+                if (!isLocationMatched(range.getLocation().orElse(defaultLocation), location)) {
+                    continue;
+                }
+
+                if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
+                    return true;
                 }
             }
-            return false;
+        }
+        return false;
+    }
+
+    void initializeExcludeRanges() {
+        getReadLock().lock();
+        try {
+            m_excludeRanges.addAll(getConfiguration().getExcludeRanges());
+            // Add exclude ranges from definitions. Assign location from definition.
+            getConfiguration().getDefinitions().forEach(def -> {
+                setLocationFromDefinition(def);
+                m_excludeRanges.addAll(def.getExcludeRanges());
+            });
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    private void setLocationFromDefinition(Definition definition) {
+        List<ExcludeRange> excludeRangesFromDef = definition.getExcludeRanges();
+        excludeRangesFromDef.forEach(exRange -> {
+            if (!exRange.getLocation().isPresent()) {
+                exRange.setLocation(definition.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME));
+            }
+        });
+    }
+
+    private boolean isLocationMatched(String locationFromRange, String location) {
+        if (Strings.isNullOrEmpty(location)) {
+            location = LocationUtils.DEFAULT_LOCATION_NAME;
+        }
+        return locationFromRange.equals(location);
     }
 
     @Override
@@ -690,7 +728,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 Spliterators.spliteratorUnknownSize(it, ORDERED | IMMUTABLE), false
             )
             // Filter out excluded addresses
-            .filter(item -> !isExcluded(item.getAddress()))
+            .filter(item -> !isExcluded(item.getAddress(), item.getLocation()))
             .iterator();
     }
 
@@ -710,6 +748,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             final List<IPPollAddress> specifics = getSpecifics();
             final List<IPPollRange> ranges = getRanges();
             specifics.addAll(getURLSpecifics());
+            initializeExcludeRanges();
 
             final List<Iterator<IPPollAddress>> iters = new ArrayList<Iterator<IPPollAddress>>();
             iters.add(specifics.iterator());
