@@ -42,6 +42,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,21 +118,26 @@ public final class PollerConfigFactory extends PollerConfigManager {
             IOUtils.closeQuietly(stream);
         }
 
-        for (final org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackages()) {
+        validate(config.getConfiguration());
+
+        setInstance(config);
+    }
+
+    private static void validate(PollerConfiguration config) {
+        for (final org.opennms.netmgt.config.poller.Package pollerPackage : config.getPackages()) {
+            FilterDaoFactory.getInstance().validateRule(pollerPackage.getFilter().getContent());
             for (final org.opennms.netmgt.config.poller.Service service : pollerPackage.getServices()) {
                 for (final org.opennms.netmgt.config.poller.Parameter parm : service.getParameters()) {
                     if (parm.getKey().equals("ds-name")) {
                         if (parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
                             throw new IllegalStateException(String.format("ds-name '%s' in service '%s' (poller package '%s') is greater than %d characters",
-                                parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
+                                    parm.getValue(), service.getName(), pollerPackage.getName(), ConfigFileConstants.RRD_DS_MAX_SIZE)
                             );
                         }
                     }
                 }
             }
         }
-
-        setInstance(config);
     }
 
     /**
@@ -209,7 +215,11 @@ public final class PollerConfigFactory extends PollerConfigManager {
                 try {
                     stream = new FileInputStream(cfgFile);
                     sr = new InputStreamReader(stream);
-                    m_config = JaxbUtils.unmarshal(PollerConfiguration.class, sr);
+                    final PollerConfiguration config = JaxbUtils.unmarshal(PollerConfiguration.class, sr);
+
+                    validate(config);
+
+                    m_config = config;
                 } finally {
                     IOUtils.closeQuietly(sr);
                     IOUtils.closeQuietly(stream);

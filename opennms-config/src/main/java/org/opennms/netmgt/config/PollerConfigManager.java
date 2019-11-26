@@ -77,6 +77,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -468,6 +469,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     
                 } catch (final Throwable t) {
                     LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
+                    Throwables.propagate(t);
                 }
                 
             }

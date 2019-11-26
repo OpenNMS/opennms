@@ -28,20 +28,29 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -49,10 +58,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
+
+import com.google.common.collect.Lists;
 
 public class PollerConfigReloadIT {
 
@@ -130,5 +143,94 @@ public class PollerConfigReloadIT {
         String marshalledString = IOUtils.toString(configUrl, Charset.defaultCharset());
         String modifiedString = marshalledString.replace("${INCLUDE_URL_FILE}", includeUrlFile.getAbsolutePath());
         return IOUtils.toInputStream(modifiedString, Charset.defaultCharset());
+    }
+
+    static void setFinalStatic(Field field, Object newValue) throws Exception {
+        field.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+        field.set(null, newValue);
+    }
+
+    @Test
+    public void testPollerConfigReloadFail() throws Exception {
+        final File temporaryFile = File.createTempFile("poller-configuration-", ".xml", new File(PollerConfigReloadIT.class.getResource("/etc").getFile()));
+        System.setProperty("opennms.home", temporaryFile.toPath().getParent().getParent().toString());
+
+        final AtomicBoolean invalid = new AtomicBoolean(false);
+        FilterDaoFactory.setInstance(new FilterDao() {
+            @Override
+            public SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException {
+                return null;
+            }
+
+            @Override
+            public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException {
+                return null;
+            }
+
+            @Override
+            public void flushActiveIpAddressListCache() {
+            }
+
+            @Override
+            public List<InetAddress> getIPAddressList(String rule) throws FilterParseException {
+                return null;
+            }
+
+            @Override
+            public boolean isValid(String addr, String rule) throws FilterParseException {
+                return false;
+            }
+
+            @Override
+            public boolean isRuleMatching(String rule) throws FilterParseException {
+                return false;
+            }
+
+            @Override
+            public void validateRule(String rule) throws FilterParseException {
+                if (invalid.get()) {
+                    throw new FilterParseException("Something fishy");
+                }
+            }
+
+            @Override
+            public List<InetAddress> getActiveIPAddressList(String rule) throws FilterParseException {
+                return Lists.newArrayList();
+            }
+        });
+
+        final String fileIdToName[] = new String[83];
+        fileIdToName[8] = temporaryFile.getName();
+        setFinalStatic(ConfigFileConstants.class.getDeclaredField("FILE_ID_TO_NAME"), fileIdToName);
+
+        IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid1.xml").getFile()), new FileOutputStream(temporaryFile));
+        PollerConfigFactory.init();
+
+        assertEquals("IPADDR IPLIKE 1.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
+
+        Thread.sleep(1000);
+        IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid2.xml").getFile()), new FileOutputStream(temporaryFile));
+
+        invalid.set(true);
+        try {
+            PollerConfigFactory.getInstance().update();
+        } catch (FilterParseException e) {
+            // we expect this
+        }
+
+        assertEquals("IPADDR IPLIKE 1.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
+
+        Thread.sleep(1000);
+        IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid2.xml").getFile()), new FileOutputStream(temporaryFile));
+        invalid.set(false);
+
+        PollerConfigFactory.getInstance().update();
+
+        assertEquals("IPADDR IPLIKE 2.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
     }
 }
