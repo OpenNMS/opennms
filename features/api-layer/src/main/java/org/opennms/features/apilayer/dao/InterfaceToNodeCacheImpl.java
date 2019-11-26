@@ -26,13 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.apilayer.model.mappers;
+package org.opennms.features.apilayer.dao;
 
-import org.mapstruct.Mapper;
-import org.opennms.integration.api.v1.model.immutables.ImmutableIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import java.net.InetAddress;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-@Mapper(uses = {MetaDataMapper.class, SnmpInterfaceMapper.class})
-public interface IpInterfaceMapper {
-    ImmutableIpInterface map(OnmsIpInterface onmsIpInterface);
+import org.opennms.integration.api.v1.dao.InterfaceToNodeCache;
+
+public class InterfaceToNodeCacheImpl implements InterfaceToNodeCache {
+
+    private final org.opennms.netmgt.dao.api.InterfaceToNodeCache cache;
+
+    public InterfaceToNodeCacheImpl(org.opennms.netmgt.dao.api.InterfaceToNodeCache cache) {
+        this.cache = Objects.requireNonNull(cache);
+    }
+
+    @Override
+    public Stream<Integer> getNodeIds(String location, InetAddress ipAddr) {
+        return StreamSupport.stream(cache.getNodeId(location, ipAddr).spliterator(), false);
+    }
+
+    @Override
+    public Optional<Integer> getFirstNodeId(String location, InetAddress ipAddr) {
+        return getNodeIds(location, ipAddr).findFirst();
+    }
+
+    @Override
+    public void refresh() {
+        cache.dataSourceSync();
+    }
 }
