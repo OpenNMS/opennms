@@ -64,7 +64,7 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     }
 
     @Override
-    public boolean isExcluded(InetAddress address) {
+    public boolean isExcluded(InetAddress address, String location) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
