@@ -31,14 +31,13 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
     public static LinkdEdge create(String id,
             LinkdPort sourceport, LinkdPort targetport,
-            ProtocolSupported discoveredBy) {
+            String discoveredBy) {
         
         SimpleConnector source = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
         SimpleConnector target = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
@@ -50,9 +49,9 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     
     private final LinkdPort m_sourcePort;
     private final LinkdPort m_targetPort;
-    private final ProtocolSupported m_discoveredBy;
+    private final String m_discoveredBy;
     
-    public LinkdEdge(String id, LinkdPort source, LinkdPort target, ProtocolSupported discoveredBy) {
+    public LinkdEdge(String id, LinkdPort source, LinkdPort target, String discoveredBy) {
         super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
         m_discoveredBy = discoveredBy;
         m_sourcePort = source;
@@ -60,7 +59,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     }
 
     public LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
-            SimpleConnector target, ProtocolSupported discoveredBy) {
+            SimpleConnector target, String discoveredBy) {
         super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_sourcePort = sourcePort;
         m_targetPort = targetPort;
@@ -105,7 +104,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     }
 
     
-    public ProtocolSupported getDiscoveredBy() {
+    public String  getDiscoveredBy() {
         return m_discoveredBy;
     }
 

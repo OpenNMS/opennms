@@ -34,6 +34,7 @@ import java.util.Set;
 public interface OnmsTopologyDao {
 
     OnmsTopology getTopology(String protocol);
+    OnmsTopologyProtocol getTopologyProtocol(String protocol);
 
     Map<OnmsTopologyProtocol, OnmsTopology> getTopologies();
 

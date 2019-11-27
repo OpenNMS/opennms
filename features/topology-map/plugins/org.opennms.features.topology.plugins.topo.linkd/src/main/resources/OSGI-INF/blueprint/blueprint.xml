@@ -12,12 +12,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
-    <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
-        <property name="name" value="Enhanced Linkd Topology Provider"/>
-        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
-        <property name="supportsCategorySearch" value="true"/>
-    </bean>
-
     <!-- Metrics -->
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
@@ -35,11 +29,27 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         init-method="start"
         destroy-method="stop" />
 
-	<!-- linkd Topology Provider -->
+    <bean id="linkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="Enhanced Linkd Topology Provider"/>
+        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
     <bean id="linkdTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
-        <argument ref="metricRegistry" />
+        <argument index="0" value="enlinkd" />
+        <argument index="1" ref="metricRegistry" />
+        <argument index="2"> 
+        	<list>
+        <value>LLDP</value>
+        <value>OSPF</value>
+        <value>ISIS</value>
+        <value>BRIDGE</value>
+        <value>CDP</value>
+        <value>USERDEFINED</value>
+        	</list>
+        	</argument>
         <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
-        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
+        <property name="topologyProviderInfo" ref="linkdTopologyProviderInfo"/>
     </bean>
 
     <bean id="linkdTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
@@ -63,10 +73,25 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     </service>
 
 	<!-- Cdp Topology Provider -->
+    <bean id="cdpTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="Cisco Discovery Protocol Topology Provider"/>
+        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information CDP protocol to generate an overall topology."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
     <bean id="cdpTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.CdpTopologyProvider">
-        <argument ref="metricRegistry" />
+        <argument index="0" value="cdp" />
+        <argument index="1" ref="metricRegistry" />
+        <argument index="2"> 
+   	    	<list>
+		        <value>CDP</value>
+        	</list>
+       	</argument>
         <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
-        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
+        <property name="topologyProviderInfo" ref="linkdTopologyProviderInfo"/>
+
+        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <property name="topologyProviderInfo" ref="cdpTopologyProviderInfo"/>
     </bean>
 
     <bean id="cdpTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
@@ -85,7 +110,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="cdpMetaTopologyProvider">
         <service-properties>
-            <entry key="label" value="Cdp Protocol" />
+            <entry key="label" value="Cdp Topology" />
         </service-properties>
     </service>
 

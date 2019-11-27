@@ -28,11 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
@@ -48,7 +47,7 @@ public class LinkdVertex extends SimpleLeafVertex {
         return vertex;
     }
 
-    private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
+    private Set<String> m_protocolSupported = new HashSet<>();
 
     public LinkdVertex(String id) {
         super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, 0, 0);
@@ -69,7 +68,7 @@ public class LinkdVertex extends SimpleLeafVertex {
         return tooltipText.toString();
     }
 
-    public Set<ProtocolSupported> getProtocolSupported() {
+    public Set<String> getProtocolSupported() {
         return m_protocolSupported;
     }
 

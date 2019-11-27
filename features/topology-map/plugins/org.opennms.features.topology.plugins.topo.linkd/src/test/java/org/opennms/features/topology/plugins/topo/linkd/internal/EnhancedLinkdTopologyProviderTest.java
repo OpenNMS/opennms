@@ -62,7 +62,6 @@ import org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,23 +293,23 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(9, m_topologyProvider.getEdges().size());
 
         LinkdVertex v1 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "1");
-        assertEquals(true,v1.getProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertEquals(true,v1.getProtocolSupported().contains(ProtocolSupported.OSPF));
-        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.CDP));
-        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertEquals(true,v1.getProtocolSupported().contains("LLDP"));
+        assertEquals(true,v1.getProtocolSupported().contains("OSPF"));
+        assertEquals(false,v1.getProtocolSupported().contains("CDP"));
+        assertEquals(false,v1.getProtocolSupported().contains("ISIS"));
+        assertEquals(false,v1.getProtocolSupported().contains("BRIDGE"));
         LinkdVertex v2 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "2");
-        assertEquals(true,v2.getProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertEquals(true,v2.getProtocolSupported().contains(ProtocolSupported.OSPF));
-        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.CDP));
-        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertEquals(true,v2.getProtocolSupported().contains("LLDP"));
+        assertEquals(true,v2.getProtocolSupported().contains("OSPF"));
+        assertEquals(false,v2.getProtocolSupported().contains("CDP"));
+        assertEquals(false,v2.getProtocolSupported().contains("ISIS"));
+        assertEquals(false,v2.getProtocolSupported().contains("BRIDGE"));
         LinkdVertex v3 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "3");
-        assertEquals(true,v3.getProtocolSupported().contains(ProtocolSupported.LLDP));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.OSPF));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.CDP));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.ISIS));
-        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        assertEquals(true,v3.getProtocolSupported().contains("LLDP"));
+        assertEquals(false,v3.getProtocolSupported().contains("OSPF"));
+        assertEquals(false,v3.getProtocolSupported().contains("CDP"));
+        assertEquals(false,v3.getProtocolSupported().contains("ISIS"));
+        assertEquals(false,v3.getProtocolSupported().contains("BRIDGE"));
         LinkdVertex v4 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "4");
         LinkdVertex v5 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "5");
         LinkdVertex v6 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "6");
@@ -350,12 +349,12 @@ public class EnhancedLinkdTopologyProviderTest {
         for (Edge edge : m_topologyProvider.getEdges()) {
             LinkdEdge linkdedge = (LinkdEdge) edge;
             switch (linkdedge.getDiscoveredBy()) {
-                case NODES: countNODES++;break;
-                case LLDP: countLLDP++;break;
-                case OSPF: countOSPF++;break;
-                case CDP: countCDP++;break;
-                case ISIS: countISIS++;break;
-                case BRIDGE: countBRIDGE++;break;
+                case "NODES": countNODES++;break;
+                case "LLDP": countLLDP++;break;
+                case "OSPF": countOSPF++;break;
+                case "CDP": countCDP++;break;
+                case "ISIS": countISIS++;break;
+                case "BRIDGE": countBRIDGE++;break;
             }
         }
         assertEquals(8, countLLDP);

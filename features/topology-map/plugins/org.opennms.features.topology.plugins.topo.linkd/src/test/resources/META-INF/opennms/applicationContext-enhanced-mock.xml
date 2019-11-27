@@ -58,7 +58,18 @@
     <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
 
     <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
-        <constructor-arg ref="metricRegistry"/>
+        <constructor-arg index="0" type="String" value="enlinkd" />
+        <constructor-arg index="1" ref="metricRegistry" />
+        <constructor-arg index="2"> 
+        	<list>
+        <value>LLDP</value>
+        <value>OSPF</value>
+        <value>ISIS</value>
+        <value>BRIDGE</value>
+        <value>CDP</value>
+        <value>USERDEFINED</value>
+        	</list>
+        	</constructor-arg>
         <property name="onmsTopologyDao" ref="onmsTopologyDao" />
     </bean>
 </beans>

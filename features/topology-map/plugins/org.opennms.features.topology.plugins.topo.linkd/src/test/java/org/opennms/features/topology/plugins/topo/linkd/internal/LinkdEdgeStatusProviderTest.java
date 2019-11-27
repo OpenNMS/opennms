@@ -48,7 +48,6 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
-import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
@@ -129,9 +128,9 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort bpnode2port24 = new LinkdPort(node2Vertex,24);
         LinkdPort iptm3 = new LinkdPort(node3Vertex,-1);
         iptm3.setToolTipText("a8d0e5a0a467/[10.10.1.1]");
-        m_edges.add(LinkdEdge.create("s:1:48|1:48", segmentPort, bpnode1port48, ProtocolSupported.BRIDGE));
-        m_edges.add(LinkdEdge.create("s:1:48|2:24", segmentPort, bpnode2port24, ProtocolSupported.BRIDGE));
-        m_edges.add(LinkdEdge.create("s:1:48|3",segmentPort,iptm3,ProtocolSupported.BRIDGE));
+        m_edges.add(LinkdEdge.create("s:1:48|1:48", segmentPort, bpnode1port48, "BRIDGE"));
+        m_edges.add(LinkdEdge.create("s:1:48|2:24", segmentPort, bpnode2port24, "BRIDGE"));
+        m_edges.add(LinkdEdge.create("s:1:48|3",segmentPort,iptm3,"BRIDGE"));
 
         
         // node4 and node5 connected via cdp isis ospf and lldp
@@ -145,17 +144,17 @@ public class LinkdEdgeStatusProviderTest {
         LinkdPort node5port10100 = new LinkdPort(node5Vertex, 10100);
         LinkdPort node4port101 = new LinkdPort(node4Vertex, 101);
         LinkdPort node5port100 = new LinkdPort(node5Vertex, 100);
-        m_edges.add(LinkdEdge.create("104|105", node4port599, node5port578,ProtocolSupported.ISIS));
-        m_edges.add(LinkdEdge.create("204|205", node4port1, node5port21,ProtocolSupported.LLDP));
-        m_edges.add(LinkdEdge.create("404|405", node4port10101, node5port10100, ProtocolSupported.OSPF));
-        m_edges.add(LinkdEdge.create("504|505", node4port101, node5port100, ProtocolSupported.CDP));
+        m_edges.add(LinkdEdge.create("104|105", node4port599, node5port578,"ISIS"));
+        m_edges.add(LinkdEdge.create("204|205", node4port1, node5port21,"LLDP"));
+        m_edges.add(LinkdEdge.create("404|405", node4port10101, node5port10100, "OSPF"));
+        m_edges.add(LinkdEdge.create("504|505", node4port101, node5port100, "CDP"));
 
         // dehli and chennai connected via ospf
         LinkdVertex dehliVertex = getVertexFromNode(m_nodeDehli);
         LinkdVertex chennaiVertex = getVertexFromNode(m_nodeChennai);
         LinkdPort dehliport12 = new LinkdPort(dehliVertex, 12); 
         LinkdPort chennaiport13 = new LinkdPort(chennaiVertex, 13);
-        m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF));
+        m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, "OSPF"));
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_edgeProvider = EasyMock.createMock(EdgeProvider.class);
