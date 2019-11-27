@@ -159,8 +159,7 @@ final class NodeInfoScan implements RunInBatch {
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
                 boolean succeeded = false;
-                if ((e.getCause() instanceof SnmpAgentTimeoutException ||
-                         e.getCause() instanceof SnmpException)) {
+                if (isSnmpRelatedException(e) && !isAgentConfigValid(agentConfig, primaryAddress)) {
                     succeeded = peformScanWithMatchingProfile(agentConfig, primaryAddress);
                 }
                 if(!succeeded) {
@@ -203,9 +202,24 @@ final class NodeInfoScan implements RunInBatch {
         }
     }
 
-    private boolean isConfigValid(SnmpAgentConfig currentConfig, InetAddress address) {
+    static boolean isSnmpRelatedException(Exception e) {
+        // All the exceptions are converted to messages with
+        // RemoteExecutionException.toErrorMessage(Throwable e)
+        return e.getCause() instanceof SnmpException ||
+                e.getCause() instanceof SnmpAgentTimeoutException ||
+                e.getMessage().contains(SnmpException.class.getSimpleName()) ||
+                e.getMessage().contains(SnmpAgentTimeoutException.class.getSimpleName());
+    }
+
+
+    /**
+     * Validates if agent config is still valid.
+     * Agent config is valid if it is derived from definitions and matches with config from profile.
+     * Also valid if it is derived definitions but there is no associated profile.
+     */
+    private boolean isAgentConfigValid(SnmpAgentConfig currentConfig, InetAddress address) {
         String profileLabel = currentConfig.getProfileLabel();
-        // If this config is default, we should check if any of snmp profile matches.
+        // If this config is default, it may not be valid config.
         if(currentConfig.isDefault()) {
             return  false;
         }
@@ -229,9 +243,6 @@ final class NodeInfoScan implements RunInBatch {
 
     private boolean peformScanWithMatchingProfile(SnmpAgentConfig currentConfig, InetAddress primaryAddress) throws InterruptedException {
 
-        if (isConfigValid(currentConfig, primaryAddress)) {
-            return false;
-        }
         try {
             Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
                                                         .getAgentConfigFromProfiles(primaryAddress, getLocationName())
