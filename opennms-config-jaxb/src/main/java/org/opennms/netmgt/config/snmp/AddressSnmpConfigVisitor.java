@@ -58,6 +58,8 @@ import org.opennms.core.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implements SnmpConfigVisitor {
     private static final Logger LOG = LoggerFactory.getLogger(AddressSnmpConfigVisitor.class);
     private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
@@ -75,6 +77,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private boolean m_isMatchingDefault = true;
     private Definition m_generatedDefinition = null;
     private SnmpProfile m_snmpProfile;
+    private String profileLabel;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         this(addr, null);
@@ -92,9 +95,11 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     @Override
     public void visitDefinition(final Definition definition) {
-        //LOG.debug("visitDefinition: {}", definition);
         m_currentDefinition = definition;
         m_currentLocation = LocationUtils.getEffectiveLocationName(definition.getLocation());
+        if(!Strings.isNullOrEmpty(definition.getProfileLabel())) {
+            profileLabel = definition.getProfileLabel();
+        }
     }
 
     private void handleMatch() {
@@ -375,6 +380,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
             definition.setTTL(sourceConfig.getTTL());
         } else if (m_currentConfig.hasTTL()) {
             definition.setTTL(m_currentConfig.getTTL());
+        }
+        if(profileLabel != null) {
+            definition.setProfileLabel(profileLabel);
         }
         return definition;
     }
