@@ -30,8 +30,8 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stat
 
 import java.nio.ByteBuffer;
 
-public class DuplicateWithdraws extends Counter {
-    public DuplicateWithdraws(final ByteBuffer buffer) {
+public class DuplicateWithdraw extends Counter {
+    public DuplicateWithdraw(final ByteBuffer buffer) {
         super(buffer);
     }
 

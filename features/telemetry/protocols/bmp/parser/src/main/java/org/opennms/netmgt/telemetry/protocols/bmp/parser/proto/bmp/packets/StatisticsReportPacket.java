@@ -44,7 +44,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.AdjRibOut;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicatePrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateUpdate;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateWithdraws;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.ExportRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsConfedLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
@@ -87,7 +87,7 @@ public class StatisticsReportPacket implements Packet {
         public enum Type implements TLV.Type<Metric, Void> {
             REJECTED(Rejected::new),
             DUPLICATE_PREFIX(DuplicatePrefix::new),
-            DUPLICATE_WITHDRAW(DuplicateWithdraws::new),
+            DUPLICATE_WITHDRAW(DuplicateWithdraw::new),
             INVALID_UPDATE_DUE_TO_CLUSTER_LIST_LOOP(InvalidUpdateDueToClusterListLoop::new),
             INVALID_UPDATE_DUE_TO_AS_PATH_LOOP(InvalidUpdateDueToAsPathLoop::new),
             INVALID_UPDATE_DUE_TO_ORIGINATOR_ID(InvalidUpdateDueToOriginatorId::new),

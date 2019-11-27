@@ -47,7 +47,7 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractPersistingAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedPersistingAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
+public class SFlowTelemetryAdapter extends AbstractScriptedPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowTelemetryAdapter.class);
 

@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractPersistingAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedPersistingAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 import org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis;
@@ -62,7 +62,7 @@ import com.google.common.collect.Iterables;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-public class NxosGpbAdapter extends AbstractPersistingAdapter {
+public class NxosGpbAdapter extends AbstractScriptedPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(NxosGpbAdapter.class);
 
