@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,21 +31,14 @@ package org.opennms.netmgt.telemetry.protocols.collection;
 import static com.codahale.metrics.MetricRegistry.name;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import javax.script.ScriptException;
-
-import org.opennms.core.fileutils.FileUpdateCallback;
-import org.opennms.core.fileutils.FileUpdateWatcher;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -70,16 +63,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public abstract class AbstractPersistingAdapter implements Adapter {
-    private final Logger LOG = LoggerFactory.getLogger(AbstractPersistingAdapter.class);
-
     private static final ServiceParameters EMPTY_SERVICE_PARAMETERS = new ServiceParameters(Collections.emptyMap());
+
+    protected final Logger LOG = LoggerFactory.getLogger(AbstractPersistingAdapter.class);
+
+    /**
+     * Time taken to handle a log
+     */
+    protected final Timer logParsingTimer;
+
+    /**
+     * Number of message per log
+     */
+    protected final Histogram packetsPerLogHistogram;
+
+    private final LoadingCache<CacheKey, Optional<PackageDefinition>> cache = CacheBuilder.newBuilder()
+            .maximumSize(SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
+            .expireAfterWrite(
+                    SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
+                    TimeUnit.SECONDS)
+                                                                                          .build(new CacheLoader<CacheKey, Optional<PackageDefinition>>() {
+                @Override
+                public Optional<PackageDefinition> load(CacheKey key) {
+                    for (PackageDefinition pkg : adapterConfig.getPackages()) {
+                        final String filterRule = pkg.getFilterRule();
+                        if (filterRule == null) {
+                            // No filter specified, always match
+                            return Optional.of(pkg);
+                        }
+                        // NOTE: The location of the host address is not taken into account.
+                        if (filterDao.isValid(key.getHostAddress(), pkg.getFilterRule())) {
+                            return Optional.of(pkg);
+                        }
+                    }
+                    return Optional.empty();
+                }
+            });
+
+    protected BundleContext bundleContext;
 
     @Autowired
     private FilterDao filterDao;
@@ -99,83 +126,6 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     private Cache<String, ThresholdingSession> agentThresholdingSessions = CacheBuilder.newBuilder().expireAfterAccess(thresholdingSessionTtlMinutes, TimeUnit.MINUTES).build();
 
     private AdapterDefinition adapterConfig;
-
-    private FileUpdateWatcher scriptUpdateWatcher;
-
-    private BundleContext bundleContext;
-
-    private String script;
-
-    /*
-     * Since ScriptCollectionSetBuilder is not thread safe , loading of script
-     * is handled in ThreadLocal.
-     */
-    private final ThreadLocal<ScriptedCollectionSetBuilder> scriptedCollectionSetBuilders = new ThreadLocal<ScriptedCollectionSetBuilder>() {
-        @Override
-        protected ScriptedCollectionSetBuilder initialValue() {
-            try {
-                return loadCollectionBuilder(bundleContext, script);
-            } catch (Exception e) {
-                LOG.error("Failed to create builder for script '{}'.", script, e);
-                return null;
-            }
-        }
-    };
-
-    /*
-     * Flag to reload script if script didn't compile in earlier invocation,
-     * need to be ThreadLocal as script itself loads in ThreadLocal.
-     */
-    private ThreadLocal<Boolean> scriptCompiled = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return true;
-        }
-
-    };
-
-    /*
-     * This map is needed since loading of script happens in a ThreadLocal and
-     * status of script update needs to be propagated to each thread. This map
-     * collects ScriptedCollectionSetBuilder and set it's value as false
-     * initially. Whenever script updates and callback reload() gets called, all
-     * values will be set to true to trigger reload of script in corresponding
-     * thread, see getCollectionBuilder().
-     */
-    private Map<ScriptedCollectionSetBuilder, Boolean> scriptUpdateMap = new ConcurrentHashMap<>();
-
-    private final LoadingCache<CacheKey, Optional<PackageDefinition>> cache = CacheBuilder.newBuilder()
-            .maximumSize(SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
-            .expireAfterWrite(
-                    SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
-                    TimeUnit.SECONDS)
-            .build(new CacheLoader<CacheKey, Optional<PackageDefinition>>() {
-                @Override
-                public Optional<PackageDefinition> load(CacheKey key) {
-                    for (PackageDefinition pkg : adapterConfig.getPackages()) {
-                        final String filterRule = pkg.getFilterRule();
-                        if (filterRule == null) {
-                            // No filter specified, always match
-                            return Optional.of(pkg);
-                        }
-                        // NOTE: The location of the host address is not taken into account.
-                        if (filterDao.isValid(key.getHostAddress(), pkg.getFilterRule())) {
-                            return Optional.of(pkg);
-                        }
-                    }
-                    return Optional.empty();
-                }
-            });
-
-    /**
-     * Time taken to handle a log
-     */
-    private final Timer logParsingTimer;
-
-    /**
-     * Number of message per log
-     */
-    private final Histogram packetsPerLogHistogram;
 
     public AbstractPersistingAdapter(String name, MetricRegistry metricRegistry) {
         Objects.requireNonNull(name);
@@ -301,6 +251,10 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         this.thresholdingService = thresholdingService;
     }
 
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
     private static class CacheKey {
         private String protocol;
         private String hostAddress;
@@ -336,95 +290,7 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         }
     }
 
-    /*
-     * This method checks and reloads script if there is an update else returns
-     * existing builder
-     */
-    protected ScriptedCollectionSetBuilder getCollectionBuilder() {
-        ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
-        // Reload script if reload() happened or earlier invocation of script didn't compile
-        if ((builder != null && scriptUpdateMap.get(builder)) || !scriptCompiled.get()) {
-            scriptedCollectionSetBuilders.remove();
-            builder = scriptedCollectionSetBuilders.get();
-        }
-        if (builder == null) {
-            // script didn't compile, set flag to false
-            scriptCompiled.set(false);
-            return null;
-        } else if (!scriptCompiled.get()) {
-            scriptCompiled.set(true);
-        }
-        return builder;
-    }
-
-    private ScriptedCollectionSetBuilder loadCollectionBuilder(BundleContext bundleContext, String script)
-            throws IOException, ScriptException {
-        ScriptedCollectionSetBuilder builder;
-        if (bundleContext != null) {
-            builder = new ScriptedCollectionSetBuilder(new File(script), bundleContext);
-            scriptUpdateMap.put(builder, false);
-            return builder;
-        } else {
-            builder = new ScriptedCollectionSetBuilder(new File(script));
-            scriptUpdateMap.put(builder, false);
-            return builder;
-        }
-    }
-
-    private ScriptedCollectionSetBuilder checkScript(BundleContext bundleContext, String script)
-            throws IOException, ScriptException {
-        if (bundleContext != null) {
-            return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
-        } else {
-            return new ScriptedCollectionSetBuilder(new File(script));
-        }
-    }
-
-    private void setFileUpdateCallback(String script) {
-        if (!Strings.isNullOrEmpty(script)) {
-            try {
-                scriptUpdateWatcher = new FileUpdateWatcher(script, reloadScript());
-            } catch (Exception e) {
-                LOG.info("Script reload Utils is not registered", e);
-            }
-        }
-    }
-
-    private FileUpdateCallback reloadScript() {
-
-        return new FileUpdateCallback() {
-            /* Callback method for script update */
-            @Override
-            public void reload() {
-                try {
-                    checkScript(bundleContext, script);
-                    LOG.debug("Updated script compiled");
-                    // Set all the values in Map to true to trigger reload of script in all threads
-                    scriptUpdateMap.replaceAll((builder, Boolean) -> true);
-                } catch (Exception e) {
-                    LOG.error("Updated script failed to build, using existing script'{}'.", script, e);
-                }
-            }
-
-        };
-    }
-
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public String getScript() {
-        return script;
-    }
-
-    public void setScript(String script) {
-        this.script = script;
-        setFileUpdateCallback(script);
-    }
-
+    @Override
     public void destroy() {
-        if (scriptUpdateWatcher != null) {
-            scriptUpdateWatcher.destroy();
-        }
     }
 }

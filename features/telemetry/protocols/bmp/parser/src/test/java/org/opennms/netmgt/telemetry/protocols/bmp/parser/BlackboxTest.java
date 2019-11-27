@@ -81,7 +81,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.AdjRibOut;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicatePrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateUpdate;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateWithdraws;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.ExportRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsConfedLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
@@ -143,7 +143,7 @@ public class BlackboxTest implements Packet.Visitor {
         }
 
         @Override
-        public void visit(DuplicateWithdraws duplicateWithdraws) {
+        public void visit(DuplicateWithdraw duplicateWithdraw) {
             fail("Wrong Metric DuplicateWithdraws");
         }
 

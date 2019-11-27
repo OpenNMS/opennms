@@ -71,7 +71,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.AdjRibOut;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicatePrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateUpdate;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateWithdraws;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.DuplicateWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.ExportRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsConfedLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
@@ -93,6 +93,23 @@ import com.google.common.primitives.UnsignedLong;
 
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
+
+    public static final String METRIC_DUPLICATE_PREFIX = "duplicate_prefix";
+    public static final String METRIC_ADJ_RIB_IN = "adj_rib_in";
+    public static final String METRIC_DUPLICATE_WITHDRAW = "duplicate_withdraw";
+    public static final String METRIC_ADJ_RIB_OUT = "adj_rib_out";
+    public static final String METRIC_EXPORT_RIB = "export_rib";
+    public static final String METRIC_INVALID_UPDATE_DUE_TO_AS_CONFED_LOOP = "invalid_update_due_to_as_confed_loop";
+    public static final String METRIC_INVALID_UPDATE_DUE_TO_AS_PATH_LOOP = "invalid_update_due_to_as_path_loop";
+    public static final String METRIC_INVALID_UPDATE_DUE_TO_CLUSTER_LIST_LOOP = "invalid_update_due_to_cluster_list_loop";
+    public static final String METRIC_INVALID_UPDATE_DUE_TO_ORIGINATOR_ID = "invalid_update_due_to_originator_id";
+    public static final String METRIC_PER_AFI_ADJ_RIB_IN = "per_afi_adj_rib_in";
+    public static final String METRIC_PER_AFI_LOC_RIB = "per_afi_loc_rib";
+    public static final String METRIC_PREFIX_TREAT_AS_WITHDRAW = "prefix_treat_as_withdraw";
+    public static final String METRIC_UPDATE_TREAT_AS_WITHDRAW = "update_treat_as_withdraw";
+    public static final String METRIC_LOC_RIB = "loc_rib";
+    public static final String METRIC_DUPLICATE_UPDATE = "duplicate_update";
+    public static final String METRIC_REJECTED = "rejected";
 
     private final String name;
 
@@ -335,57 +352,58 @@ public class BmpParser implements TcpParser {
         public void visit(final StatisticsReportPacket packet) {
             this.writePeerHeader(packet.peerHeader);
 
+            this.writer.writeStartDocument("stats");
             for (final StatisticsReportPacket.Element statistic : packet.statistics) {
                 statistic.value.accept(new Metric.Visitor() {
                     @Override
                     public void visit(final DuplicatePrefix duplicatePrefix) {
-                        this.writeCounter("duplicate_prefix", duplicatePrefix.counter);
+                        this.writeCounter(BmpParser.METRIC_DUPLICATE_PREFIX, duplicatePrefix.counter);
                     }
 
                     @Override
-                    public void visit(final DuplicateWithdraws duplicateWithdraws) {
-                        this.writeCounter("duplicate_withdraws", duplicateWithdraws.counter);
+                    public void visit(final DuplicateWithdraw duplicateWithdraw) {
+                        this.writeCounter(BmpParser.METRIC_DUPLICATE_WITHDRAW, duplicateWithdraw.counter);
                     }
 
                     @Override
                     public void visit(final AdjRibIn adjRibIn) {
-                        this.writeGauge("adj_rib_in", adjRibIn.gauge);
+                        this.writeGauge(BmpParser.METRIC_ADJ_RIB_IN, adjRibIn.gauge);
                     }
 
                     @Override
                     public void visit(final AdjRibOut adjRibOut) {
-                        this.writeGauge("adj_rib_out", adjRibOut.gauge);
+                        this.writeGauge(BmpParser.METRIC_ADJ_RIB_OUT, adjRibOut.gauge);
                     }
 
                     @Override
                     public void visit(final ExportRib exportRib) {
-                        this.writeGauge("export_rib", exportRib.gauge);
+                        this.writeGauge(BmpParser.METRIC_EXPORT_RIB, exportRib.gauge);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToAsConfedLoop invalidUpdateDueToAsConfedLoop) {
-                        this.writeCounter("invalid_update_due_to_as_confed_loop", invalidUpdateDueToAsConfedLoop.counter);
+                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_AS_CONFED_LOOP, invalidUpdateDueToAsConfedLoop.counter);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToAsPathLoop invalidUpdateDueToAsPathLoop) {
-                        this.writeCounter("invalid_update_due_to_as_path_loop", invalidUpdateDueToAsPathLoop.counter);
+                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_AS_PATH_LOOP, invalidUpdateDueToAsPathLoop.counter);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToClusterListLoop invalidUpdateDueToClusterListLoop) {
-                        this.writeCounter("invalid_update_due_to_cluster_list_loop", invalidUpdateDueToClusterListLoop.counter);
+                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_CLUSTER_LIST_LOOP, invalidUpdateDueToClusterListLoop.counter);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToOriginatorId invalidUpdateDueToOriginatorId) {
-                        this.writeCounter("invalid_update_due_to_originator_id", invalidUpdateDueToOriginatorId.counter);
+                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_ORIGINATOR_ID, invalidUpdateDueToOriginatorId.counter);
                     }
 
                     @Override
                     public void visit(final PerAfiAdjRibIn perAfiAdjRibIn) {
                         final String name = new StringJoiner(":")
-                                .add("per_afi_adj_rib_in")
+                                .add(BmpParser.METRIC_PER_AFI_ADJ_RIB_IN)
                                 .add(Integer.toString(perAfiAdjRibIn.afi))
                                 .add(Integer.toString(perAfiAdjRibIn.safi))
                                 .toString();
@@ -395,7 +413,7 @@ public class BmpParser implements TcpParser {
                     @Override
                     public void visit(final PerAfiLocRib perAfiLocRib) {
                         final String name = new StringJoiner(":")
-                            .add("per_afi_loc_rib")
+                            .add(BmpParser.METRIC_PER_AFI_LOC_RIB)
                                 .add(Integer.toString(perAfiLocRib.afi))
                                 .add(Integer.toString(perAfiLocRib.safi))
                                 .toString();
@@ -404,27 +422,27 @@ public class BmpParser implements TcpParser {
 
                     @Override
                     public void visit(final PrefixTreatAsWithdraw prefixTreatAsWithdraw) {
-                        this.writeCounter("prefix_treat_as_withdraw", prefixTreatAsWithdraw.counter);
+                        this.writeCounter(BmpParser.METRIC_PREFIX_TREAT_AS_WITHDRAW, prefixTreatAsWithdraw.counter);
                     }
 
                     @Override
                     public void visit(final UpdateTreatAsWithdraw updateTreatAsWithdraw) {
-                        this.writeCounter("update_treat_as_withdraw", updateTreatAsWithdraw.counter);
+                        this.writeCounter(BmpParser.METRIC_UPDATE_TREAT_AS_WITHDRAW, updateTreatAsWithdraw.counter);
                     }
 
                     @Override
                     public void visit(final LocRib locRib) {
-                        this.writeGauge("loc_rib", locRib.gauge);
+                        this.writeGauge(BmpParser.METRIC_LOC_RIB, locRib.gauge);
                     }
 
                     @Override
                     public void visit(final DuplicateUpdate duplicateUpdate) {
-                        this.writeCounter("duplicate_update", duplicateUpdate.counter);
+                        this.writeCounter(BmpParser.METRIC_DUPLICATE_UPDATE, duplicateUpdate.counter);
                     }
 
                     @Override
                     public void visit(final Rejected rejected) {
-                        this.writeCounter("rejected", rejected.counter);
+                        this.writeCounter(BmpParser.METRIC_REJECTED, rejected.counter);
                     }
 
                     private void writeCounter(final String name, final long counter) {
@@ -440,6 +458,7 @@ public class BmpParser implements TcpParser {
                     }
                 });
             }
+            this.writer.writeEndDocument();
         }
 
         @Override
