@@ -178,7 +178,7 @@ public class NodeInfoScanIT {
     }
 
 
-    class MockScanProgress implements ScanProgress {
+    public static class MockScanProgress implements ScanProgress {
 
         @Override
         public void abort(String message) {
@@ -193,7 +193,7 @@ public class NodeInfoScanIT {
     /**
      * This returns wrong read-community so that default snmp walk fails
      **/
-    class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
+    static class ProxySnmpAgentConfigFactoryExtension extends ProxySnmpAgentConfigFactory {
 
         ProxySnmpAgentConfigFactoryExtension(InputStream config) throws FileNotFoundException {
             super(config);
