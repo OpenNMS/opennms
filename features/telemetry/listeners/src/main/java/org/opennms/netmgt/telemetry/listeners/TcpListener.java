@@ -118,7 +118,7 @@ public class TcpListener implements Listener {
                                                         ctx.fireExceptionCaught(ex);
                                                     }
                                                     return result;
-                                                });;
+                                                });
                                     }
                                 })
                                 .addLast(new ChannelInboundHandlerAdapter() {

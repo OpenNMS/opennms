@@ -11,6 +11,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Telemetry :: Protocols</name>
   <modules>
+    <module>bmp</module>
     <module>common</module>
     <module>collection</module>
     <module>flows</module>
