@@ -73,7 +73,7 @@ public class PeerUpPacket implements Packet {
     }
 
     @Override
-    public void visit(final Visitor visitor) {
+    public void accept(final Visitor visitor) {
         visitor.visit(this);
     }
 

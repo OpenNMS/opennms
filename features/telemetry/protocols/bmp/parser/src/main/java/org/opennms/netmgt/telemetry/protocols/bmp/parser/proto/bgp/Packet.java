@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.Updat
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 public interface Packet {
-    void visit(final Visitor visitor);
+    void accept(final Visitor visitor);
 
     interface Parser {
         Packet parse(final Header header, final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException;

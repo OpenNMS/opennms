@@ -127,7 +127,7 @@ public class BmpParser implements TcpParser {
             final Header header = new Header(slice(buffer, Header.SIZE));
             final Packet packet = header.parsePayload(slice(buffer, header.length - Header.SIZE));
 
-            System.out.println(packet);
+            LOG.trace("Got packet: {}", packet);
 
             final BasicOutputBuffer output = new BasicOutputBuffer();
             try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
@@ -136,7 +136,7 @@ public class BmpParser implements TcpParser {
                 writer.writeInt32("@version", header.version);
                 writer.writeString("@type", header.type.name());
 
-                packet.visit(new Serializer(writer));
+                packet.accept(new Serializer(writer));
 
                 writer.writeEndDocument();
             }
@@ -217,7 +217,7 @@ public class BmpParser implements TcpParser {
 
             this.writer.writeString("type", packet.type.name());
 
-            packet.reason.visit(new Reason.Visitor() {
+            packet.reason.accept(new Reason.Visitor() {
                 @Override
                 public void visit(final LocalBgpNotification localNotification) {
                     Serializer.this.writer.writeString("error", localNotification.notification.error.name());
@@ -277,7 +277,7 @@ public class BmpParser implements TcpParser {
 
                 this.writer.writeString("type", attribute.type.name());
 
-                attribute.attribute.visit(new Attribute.Visitor() {
+                attribute.attribute.accept(new Attribute.Visitor() {
                     @Override
                     public void visit(final Aggregator aggregator) {
                         Serializer.this.writer.writeInt64("as", aggregator.as);
@@ -336,7 +336,7 @@ public class BmpParser implements TcpParser {
             this.writePeerHeader(packet.peerHeader);
 
             for (final StatisticsReportPacket.Element statistic : packet.statistics) {
-                statistic.value.visit(new Metric.Visitor() {
+                statistic.value.accept(new Metric.Visitor() {
                     @Override
                     public void visit(final DuplicatePrefix duplicatePrefix) {
                         this.writeCounter("duplicate_prefix", duplicatePrefix.counter);

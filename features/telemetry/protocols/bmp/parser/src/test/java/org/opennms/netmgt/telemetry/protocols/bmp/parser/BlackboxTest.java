@@ -251,7 +251,7 @@ public class BlackboxTest implements Packet.Visitor {
             final Packet packet = header.parsePayload(buffer);
             assertThat(packet, isA(clazz));
             assertThat((long) header.length, is(channel.size()));
-            packet.visit(this);
+            packet.accept(this);
         }
     }
 
@@ -280,7 +280,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.id, is(3232238085L));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257076L)));
         assertThat(packet.type, is(PeerDownPacket.Type.REMOTE_BGP_NOTIFICATION));
-        packet.reason.visit(new Reason.Visitor(){
+        packet.reason.accept(new Reason.Visitor(){
             @Override
             public void visit(LocalBgpNotification localNotification) {
                 fail("Wrong Reason LocalBgpNotification");
@@ -373,7 +373,7 @@ public class BlackboxTest implements Packet.Visitor {
             assertThat(packet.updateMessage.pathAttributes.get(0).extended, is(false));
             assertThat(packet.updateMessage.pathAttributes.get(0).type, is(UpdatePacket.PathAttribute.Type.ORIGIN));
             assertThat(packet.updateMessage.pathAttributes.get(0).length, is(1));
-            packet.updateMessage.pathAttributes.get(0).attribute.visit(new AttributeVisitorAdapter() {
+            packet.updateMessage.pathAttributes.get(0).attribute.accept(new AttributeVisitorAdapter() {
                 @Override
                 public void visit(Origin origin) {
                     assertThat(origin.value, is(Origin.Value.INCOMPLETE));
@@ -386,7 +386,7 @@ public class BlackboxTest implements Packet.Visitor {
             assertThat(packet.updateMessage.pathAttributes.get(1).extended, is(false));
             assertThat(packet.updateMessage.pathAttributes.get(1).type, is(UpdatePacket.PathAttribute.Type.AS_PATH));
             assertThat(packet.updateMessage.pathAttributes.get(1).length, is(6));
-            packet.updateMessage.pathAttributes.get(1).attribute.visit(new AttributeVisitorAdapter() {
+            packet.updateMessage.pathAttributes.get(1).attribute.accept(new AttributeVisitorAdapter() {
                 @Override
                 public void visit(AsPath asPath) {
                     assertThat(asPath.segments.size(), is(1));
@@ -401,7 +401,7 @@ public class BlackboxTest implements Packet.Visitor {
             assertThat(packet.updateMessage.pathAttributes.get(2).extended, is(false));
             assertThat(packet.updateMessage.pathAttributes.get(2).type, is(UpdatePacket.PathAttribute.Type.NEXT_HOP));
             assertThat(packet.updateMessage.pathAttributes.get(2).length, is(4));
-            packet.updateMessage.pathAttributes.get(2).attribute.visit(new AttributeVisitorAdapter() {
+            packet.updateMessage.pathAttributes.get(2).attribute.accept(new AttributeVisitorAdapter() {
                 @Override
                 public void visit(NextHop nextHop) {
                     assertThat(nextHop.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -425,7 +425,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.statistics.size(), is(4));
         assertThat(packet.statistics.get(0).length, is(8));
         assertThat(packet.statistics.get(0).type, is(StatisticsReportPacket.Element.Type.ADJ_RIB_IN));
-        packet.statistics.get(0).value.visit(new MetricVisitorAdapter() {
+        packet.statistics.get(0).value.accept(new MetricVisitorAdapter() {
             @Override
             public void visit(AdjRibIn adjRibIn) {
                 assertThat(adjRibIn.gauge, is(UnsignedLong.ONE));
@@ -433,7 +433,7 @@ public class BlackboxTest implements Packet.Visitor {
         });
         assertThat(packet.statistics.get(1).length, is(8));
         assertThat(packet.statistics.get(1).type, is(StatisticsReportPacket.Element.Type.LOC_RIB));
-        packet.statistics.get(1).value.visit(new MetricVisitorAdapter() {
+        packet.statistics.get(1).value.accept(new MetricVisitorAdapter() {
             @Override
             public void visit(LocRib locRib) {
                 assertThat(locRib.gauge, is(UnsignedLong.ONE));
@@ -441,7 +441,7 @@ public class BlackboxTest implements Packet.Visitor {
         });
         assertThat(packet.statistics.get(2).length, is(4));
         assertThat(packet.statistics.get(2).type, is(StatisticsReportPacket.Element.Type.UPDATE_TREAT_AS_WITHDRAW));
-        packet.statistics.get(2).value.visit(new MetricVisitorAdapter() {
+        packet.statistics.get(2).value.accept(new MetricVisitorAdapter() {
             @Override
             public void visit(UpdateTreatAsWithdraw updateTreatAsWithdraw) {
                 assertThat(updateTreatAsWithdraw.counter, is(0L));
@@ -449,7 +449,7 @@ public class BlackboxTest implements Packet.Visitor {
         });
         assertThat(packet.statistics.get(3).length, is(4));
         assertThat(packet.statistics.get(3).type, is(StatisticsReportPacket.Element.Type.PREFIX_TREAT_AS_WITHDRAW));
-        packet.statistics.get(3).value.visit(new MetricVisitorAdapter() {
+        packet.statistics.get(3).value.accept(new MetricVisitorAdapter() {
             @Override
             public void visit(PrefixTreatAsWithdraw prefixTreatAsWithdraw) {
                 assertThat(prefixTreatAsWithdraw.counter, is(0L));

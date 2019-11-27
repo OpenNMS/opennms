@@ -29,7 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
 public interface Attribute {
-    void visit(final Visitor visitor);
+    void accept(final Visitor visitor);
 
     interface Visitor {
         void visit(final Aggregator aggregator);

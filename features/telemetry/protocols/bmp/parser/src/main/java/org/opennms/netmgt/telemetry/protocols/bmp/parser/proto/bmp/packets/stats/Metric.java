@@ -29,7 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
 public interface Metric {
-    void visit(final Visitor visitor);
+    void accept(final Visitor visitor);
 
     interface Visitor {
         void visit(final DuplicatePrefix duplicatePrefix);
