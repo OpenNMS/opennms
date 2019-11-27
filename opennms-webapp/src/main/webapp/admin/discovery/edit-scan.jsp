@@ -182,6 +182,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
+<input type="hidden" id="erlocation" name="erlocation" value=""/>
 
 <button type="submit" class="btn btn-secondary mt-2 mb-4">Start Discovery Scan</button>
 
@@ -333,7 +334,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					      <%for(int i=0; i<irange.length; i++){
 
 					      %>
-						 <tr class="text-center">
+						 <tr>
 						  <td><%=irange[i].getBegin()%></td>
 						  <td><%=irange[i].getEnd()%></td>
 						  <td><%=irange[i].getTimeout().isPresent() ? "" + irange[i].getTimeout().get() : "<i>Use Default</i>" %></td>
@@ -369,14 +370,16 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				      <tr>
 					<th>Begin</th>
 					<th>End</th>
+					<th>Location</th>
 					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){
 
 				      %>
-					 <tr class="text-center">
+					 <tr>
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
+				      <td><%=irange[i].getLocation().isPresent() ? irange[i].getLocation().get() : "<i>Use Default</i>" %></td>
 					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteER(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
