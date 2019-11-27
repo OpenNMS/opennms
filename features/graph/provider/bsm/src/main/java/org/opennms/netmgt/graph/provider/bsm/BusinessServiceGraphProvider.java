@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.*;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +47,6 @@ import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerCache;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
-import org.opennms.netmgt.graph.provider.bsm.AbstractBusinessServiceVertex.AbstractBusinessServiceVertexBuilder;
 import org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraph.BusinessServiceGraphBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -72,19 +73,6 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
 
     @Override
     public ImmutableGraph<?, ?> loadGraph() {
-        final ImmutableGraph<?, ?> graph = createGraph();
-        return graph;
-    }
-
-    @Override
-    public GraphInfo<?> getGraphInfo() {
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(BusinessServiceGraph.NAMESPACE, AbstractBusinessServiceVertex.class);
-        graphInfo.setLabel("Business Service Graph"); // Business Services
-        graphInfo.setDescription("Displays the hierarchy of the defined Business Services and their computed operational states.");
-        return graphInfo;
-    }
-
-    private ImmutableGraph<?, ?> createGraph() {
         final BusinessServiceGraphBuilder bsmGraph = BusinessServiceGraph.builder().graphInfo(getGraphInfo());
         final org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph = businessServiceManager.getGraph();
         for (GraphVertex topLevelBusinessService : sourceGraph.getVerticesByLevel(0)) {
@@ -100,6 +88,14 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         return bsmGraph.build();
     }
 
+    @Override
+    public GraphInfo<?> getGraphInfo() {
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(BusinessServiceGraph.NAMESPACE, BusinessServiceVertex.class);
+        graphInfo.setLabel("Business Service Graph"); // Business Services
+        graphInfo.setDescription("Displays the hierarchy of the defined Business Services and their computed operational states.");
+        return graphInfo;
+    }
+
     private VertexRef getDefaultFocusVertex(BusinessServiceGraphBuilder graphBuilder) {
         // Grab the business service with the smallest id
         final List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
@@ -107,47 +103,11 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
             final BusinessService businessService = businessServices.iterator().next();
-            final String vertexId = AbstractBusinessServiceVertex.Type.BusinessService + ":" + businessService.getId();
+            final String vertexId = BusinessServiceVertex.Type.BusinessService + ":" + businessService.getId();
             final VertexRef vertexRef = graphBuilder.getVertexRef(vertexId);
             return vertexRef;
         }
         return null;
-    }
-
-    private void addVertex(BusinessServiceGraphBuilder targetGraphBuilder, org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
-        if (topologyVertex == null) {
-            // Create a topology vertex for the current vertex
-            topologyVertex = createTopologyVertex(graphVertex);
-            targetGraphBuilder.addVertex(topologyVertex);
-        }
-
-        for (GraphEdge graphEdge : sourceGraph.getOutEdges(graphVertex)) {
-            GraphVertex childVertex = sourceGraph.getOpposite(graphVertex, graphEdge);
-
-            // Create a topology vertex for the child vertex
-            AbstractBusinessServiceVertexBuilder<?,?> childTopologyVertexBuilder = GraphVertexToTopologyVertexConverter.createTopologyVertexBuilder(childVertex);
-            sourceGraph.getInEdges(childVertex).stream()
-                    .map(GraphEdge::getFriendlyName)
-                    .filter(s -> !Strings.isNullOrEmpty(s))
-                    .findFirst()
-                    .ifPresent(childTopologyVertexBuilder::label);
-            AbstractBusinessServiceVertex childTopologyVertex = childTopologyVertexBuilder.build();
-            targetGraphBuilder.addVertex(childTopologyVertex);
-
-            // Connect the two
-            final BusinessServiceEdge edge = BusinessServiceEdge.builder()
-                    .graphEdge(graphEdge)
-                    .source(topologyVertex.getVertexRef())
-                    .target(childTopologyVertex.getVertexRef()).build();
-            targetGraphBuilder.addEdge(edge);
-
-            // Recurse
-            addVertex(targetGraphBuilder, sourceGraph, childVertex, childTopologyVertex);
-        }
-    }
-
-    private AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
-        return GraphVertexToTopologyVertexConverter.createTopologyVertexBuilder(graphVertex).build();
     }
 
     @Override
@@ -172,5 +132,37 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
 
     public void destroy() {
         eventIpcManager.removeEventListener(this, UEI_LIST);
+    }
+
+    private static void addVertex(BusinessServiceGraphBuilder targetGraphBuilder, org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph sourceGraph, GraphVertex graphVertex, BusinessServiceVertex topologyVertex) {
+        if (topologyVertex == null) {
+            // Create a topology vertex for the current vertex
+            topologyVertex = builder().graphVertex(graphVertex).build();
+            targetGraphBuilder.addVertex(topologyVertex);
+        }
+
+        for (GraphEdge graphEdge : sourceGraph.getOutEdges(graphVertex)) {
+            final GraphVertex childVertex = sourceGraph.getOpposite(graphVertex, graphEdge);
+
+            // Create a topology vertex for the child vertex
+            final BusinessServiceVertexBuilder childTopologyVertexBuilder = builder().graphVertex(childVertex);
+            sourceGraph.getInEdges(childVertex).stream()
+                    .map(GraphEdge::getFriendlyName)
+                    .filter(s -> !Strings.isNullOrEmpty(s))
+                    .findFirst()
+                    .ifPresent(childTopologyVertexBuilder::label);
+            final BusinessServiceVertex childTopologyVertex = childTopologyVertexBuilder.build();
+            targetGraphBuilder.addVertex(childTopologyVertex);
+
+            // Connect the two
+            final BusinessServiceEdge edge = BusinessServiceEdge.builder()
+                    .graphEdge(graphEdge)
+                    .source(topologyVertex.getVertexRef())
+                    .target(childTopologyVertex.getVertexRef()).build();
+            targetGraphBuilder.addEdge(edge);
+
+            // Recurse
+            addVertex(targetGraphBuilder, sourceGraph, childVertex, childTopologyVertex);
+        }
     }
 }
