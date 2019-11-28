@@ -483,6 +483,10 @@
          <mbean name="drools.alarmd.actions" objectname="org.opennms.features.drools.alarmd:name=atomicActionsInFlight">
             <attrib name="Value" alias="DroolsAlarmdActions" type="gauge"/>
          </mbean>
+         <mbean name="drools.alarmd.actions.queued" objectname="org.opennms.features.drools.alarmd:name=atomicActionsQueued">
+            <attrib name="OneMinuteRate" alias="DroolsAlarmdActQu1m" type="gauge"/>
+            <attrib name="Count" alias="DroolsAlarmdActQu" type="counter"/>
+         </mbean>
          <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot">
             <attrib name="Value" alias="DroolsAlarmdAlarms" type="gauge"/>
          </mbean>
