@@ -18,6 +18,12 @@
 
 ===== Environment Variables
 
+.Java options
+|===
+| Environment variable  | Description                           | Required | Default value
+| `JAVA_OPTS`           | Allows to add additional Java options | optional | `-`
+|===
+
 .PostgreSQL connection configuration in opennms-datasources.xml
 [options="header, autowidth"]
 |===
