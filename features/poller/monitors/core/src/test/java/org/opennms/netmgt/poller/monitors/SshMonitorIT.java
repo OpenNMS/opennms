@@ -51,8 +51,8 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {"classpath:/META-INF/opennms/emptyContext.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-		"classpath:/META-INF/opennms/applicationContext-soa.xml"})
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml"})
 @JUnitConfigurationEnvironment
 public class SshMonitorIT {
     public static final String HOST_TO_TEST = "127.0.0.1";

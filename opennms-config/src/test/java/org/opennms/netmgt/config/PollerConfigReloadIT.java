@@ -39,8 +39,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -58,7 +56,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -145,20 +142,10 @@ public class PollerConfigReloadIT {
         return IOUtils.toInputStream(modifiedString, Charset.defaultCharset());
     }
 
-    static void setFinalStatic(Field field, Object newValue) throws Exception {
-        field.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-        field.set(null, newValue);
-    }
-
     @Test
     public void testPollerConfigReloadFail() throws Exception {
         final File temporaryFile = File.createTempFile("poller-configuration-", ".xml", new File(PollerConfigReloadIT.class.getResource("/etc").getFile()));
-        System.setProperty("opennms.home", temporaryFile.toPath().getParent().getParent().toString());
+        PollerConfigFactory.setPollerConfigFile(temporaryFile);
 
         final AtomicBoolean invalid = new AtomicBoolean(false);
         FilterDaoFactory.setInstance(new FilterDao() {
@@ -204,17 +191,15 @@ public class PollerConfigReloadIT {
             }
         });
 
-        final String fileIdToName[] = new String[83];
-        fileIdToName[8] = temporaryFile.getName();
-        setFinalStatic(ConfigFileConstants.class.getDeclaredField("FILE_ID_TO_NAME"), fileIdToName);
-
         IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid1.xml").getFile()), new FileOutputStream(temporaryFile));
+        long lastModified = temporaryFile.lastModified();
+
         PollerConfigFactory.init();
 
         assertEquals("IPADDR IPLIKE 1.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
 
-        Thread.sleep(1000);
         IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid2.xml").getFile()), new FileOutputStream(temporaryFile));
+        temporaryFile.setLastModified(lastModified + 1000);
 
         invalid.set(true);
         try {
@@ -225,10 +210,10 @@ public class PollerConfigReloadIT {
 
         assertEquals("IPADDR IPLIKE 1.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());
 
-        Thread.sleep(1000);
         IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid2.xml").getFile()), new FileOutputStream(temporaryFile));
-        invalid.set(false);
+        temporaryFile.setLastModified(lastModified + 2000);
 
+        invalid.set(false);
         PollerConfigFactory.getInstance().update();
 
         assertEquals("IPADDR IPLIKE 2.*.*.*", PollerConfigFactory.getInstance().getPackage("example1").getFilter().getContent());

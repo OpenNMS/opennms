@@ -80,6 +80,11 @@ public final class PollerConfigFactory extends PollerConfigManager {
     private long m_currentVersion = -1L;
 
     /**
+     * Poller config file
+     */
+    private static File m_pollerConfigFile;
+
+    /**
      * <p>Constructor for PollerConfigFactory.</p>
      *
      * @param currentVersion a long.
@@ -88,6 +93,17 @@ public final class PollerConfigFactory extends PollerConfigManager {
     public PollerConfigFactory(final long currentVersion, final InputStream stream) {
         super(stream);
         m_currentVersion = currentVersion;
+    }
+
+    private static File getPollerConfigFile() throws IOException {
+        if (m_pollerConfigFile == null) {
+            m_pollerConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+        }
+        return m_pollerConfigFile;
+    }
+
+    public static void setPollerConfigFile(final File pollerConfigFile) throws IOException {
+        m_pollerConfigFile = pollerConfigFile;
     }
 
     /**
@@ -105,7 +121,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
             return;
         }
 
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+        final File cfgFile = getPollerConfigFile();
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
@@ -184,7 +200,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
             getWriteLock().lock();
             try {
                 final long timestamp = System.currentTimeMillis();
-                final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+                final File cfgFile = getPollerConfigFile();
                 LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
                 final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
                 fileWriter.write(xml);
@@ -206,7 +222,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
     public void update() throws IOException {
         getWriteLock().lock();
         try {
-            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+            final File cfgFile = getPollerConfigFile();
             if (cfgFile.lastModified() > m_currentVersion) {
                 m_currentVersion = cfgFile.lastModified();
                 LOG.debug("init: config file path: {}", cfgFile.getPath());

@@ -469,7 +469,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     
                 } catch (final Throwable t) {
                     LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
-                    Throwables.propagate(t);
+                    throw Throwables.propagate(t);
                 }
                 
             }
