@@ -48,8 +48,10 @@ import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
+import org.joda.time.Duration;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
@@ -65,24 +67,37 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
  * This class maintains the Drools context used to manage the lifecycle of the alarms.
  *
  * We drive the facts in the Drools context using callbacks provided by the {@link AlarmLifecycleListener}.
  *
- * We use a lock updating alarms in the context in order to avoid triggering the rules while an incomplete
- * view of the alarms is present in the working memory.
+ * Atomic actions are used to update facts in working memory.
  *
  * @author jwhite
  */
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5)
+            .every(Duration.standardSeconds(30))
+            .build();
+
+    private static final long MAX_NUM_ACTIONS_IN_FLIGHT = SystemProperties.getLong(
+            "org.opennms.netmgt.alarmd.drools.max_num_actions_in_flight", 5000);
 
     @Autowired
     private AlarmService alarmService;
@@ -112,6 +127,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private final AtomicLong atomicActionsInFlight = new AtomicLong(-1);
     private final AtomicLong numAlarmsFromLastSnapshot = new AtomicLong(-1);
     private final AtomicLong numSituationsFromLastSnapshot = new AtomicLong(-1);
+    private final Meter atomicActionsDropped = new Meter();
+    private final Meter atomicActionsQueued = new Meter();
 
     public DroolsAlarmContext() {
         this(getDefaultRulesFolder());
@@ -154,6 +171,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         getMetrics().register("atomicActionsInFlight", (Gauge<Long>) atomicActionsInFlight::get);
         getMetrics().register("numAlarmsFromLastSnapshot", (Gauge<Long>) numAlarmsFromLastSnapshot::get);
         getMetrics().register("numSituationsFromLastSnapshot", (Gauge<Long>) numSituationsFromLastSnapshot::get);
+        getMetrics().register("atomicActionsDropped", atomicActionsDropped);
+        getMetrics().register("atomicActionsQueued", atomicActionsQueued);
     }
 
     public static File getDefaultRulesFolder() {
@@ -194,18 +213,62 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         stateTracker.startTrackingAlarms();
     }
 
+    /**
+     * When running in the context of a transaction, execute the given action
+     * when the transaction is complete and has been successfully committed.
+     *
+     * If the transaction does not complete successfully, log a warning and drop the action.
+     *
+     * If we're not currently in a transaction, execute the action immediately.
+     *
+     * @param atomicAction action to consider
+     */
+    private void executeAtomicallyWhenTransactionComplete(KieSession.AtomicAction atomicAction) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCompletion(int status) {
+                    if (status != TransactionSynchronization.STATUS_COMMITTED) {
+                        RATE_LIMITED_LOGGER.warn("A database transaction did not complete successfully. " +
+                                "The alarms facts in the session may be out of sync until the next snapshot.");
+                        return;
+                    }
+                    submitOrRun(atomicAction);
+                }
+            });
+        } else {
+            submitOrRun(atomicAction);
+        }
+    }
+
     private void submitOrRun(KieSession.AtomicAction atomicAction) {
+        KieSession.AtomicAction actionWithTimeUpdate = kieSession -> {
+            // Always advance the clock
+            if (!isUsePseudoClock()) {
+                getClock().advanceTimeToNow();
+            }
+            atomicAction.execute(kieSession);
+        };
+
         if (fireThreadId.get() == Thread.currentThread().getId()) {
-            // This is the fire thread! Let's execute the action immediately instead of defering it.
-            atomicAction.execute(getKieSession());
+            // This is the fire thread! Let's execute the action immediately instead of deferring it.
+            actionWithTimeUpdate.execute(getKieSession());
         } else {
             // Submit the action for execution
-            // Track the number of atomic actions waiting to be executed for debugging
-            atomicActionsInFlight.incrementAndGet();
+            // Track the number of atomic actions waiting to be executed
+            final long numActionsInFlight = atomicActionsInFlight.incrementAndGet();
+            if (numActionsInFlight > MAX_NUM_ACTIONS_IN_FLIGHT) {
+                RATE_LIMITED_LOGGER.error("Dropping action - number of actions in flight exceed {}! " +
+                        "Alarms in Drools context will not match those in the database until the next successful sync.", MAX_NUM_ACTIONS_IN_FLIGHT);
+                atomicActionsDropped.mark();
+                atomicActionsInFlight.decrementAndGet();
+                return;
+            }
             getKieSession().submit(kieSession -> {
-                atomicAction.execute(kieSession);
+                actionWithTimeUpdate.execute(kieSession);
                 atomicActionsInFlight.decrementAndGet();
             });
+            atomicActionsQueued.mark();
         }
     }
 
@@ -295,7 +358,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     .collect(Collectors.toSet());
             for (OnmsAlarm alarm : alarmsToUpdate) {
                 handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
-
             }
 
             stateTracker.resetStateAndStopTrackingAlarms();
@@ -332,7 +394,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         // Retrieve the acks from the database for the set of the alarms we've been given
         final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
 
-        submitOrRun(kieSession -> {
+        executeAtomicallyWhenTransactionComplete(kieSession -> {
             handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
             stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
         });
@@ -411,65 +473,65 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     private void handleNewOrUpdatedAlarmForAtomic(KieSession kieSession, OnmsAlarm alarm, OnmsAcknowledgment ack) {
-            final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
-            if (alarmAndFact == null) {
-                LOG.debug("Inserting alarm into session: {}", alarm);
-                final FactHandle fact = kieSession.insert(alarm);
-                alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
-            } else {
-                // Updating the fact doesn't always give us to expected results so we resort to deleting it
-                // and adding it again instead
-                LOG.trace("Deleting alarm from session (for re-insertion): {}", alarm);
-                kieSession.delete(alarmAndFact.getFact());
-                // Reinsert
-                LOG.trace("Re-inserting alarm into session: {}", alarm);
-                final FactHandle fact = kieSession.insert(alarm);
-                alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
-            }
+        final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
+        if (alarmAndFact == null) {
+            LOG.debug("Inserting alarm into session: {}", alarm);
+            final FactHandle fact = kieSession.insert(alarm);
+            alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
+        } else {
+            // Updating the fact doesn't always give us to expected results so we resort to deleting it
+            // and adding it again instead
+            LOG.trace("Deleting alarm from session (for re-insertion): {}", alarm);
+            kieSession.delete(alarmAndFact.getFact());
+            // Reinsert
+            LOG.trace("Re-inserting alarm into session: {}", alarm);
+            final FactHandle fact = kieSession.insert(alarm);
+            alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
+        }
 
-            // Ack
-            final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
-            if (acknowledgmentFact == null) {
-                LOG.debug("Inserting first alarm acknowledgement into session: {}", ack);
-                final FactHandle fact = kieSession.insert(ack);
-                acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-            } else {
-                FactHandle fact = acknowledgmentFact.getFact();
-                LOG.trace("Updating acknowledgment in session: {}", ack);
-                kieSession.update(fact, ack);
-                acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-            }
+        // Ack
+        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
+        if (acknowledgmentFact == null) {
+            LOG.debug("Inserting first alarm acknowledgement into session: {}", ack);
+            final FactHandle fact = kieSession.insert(ack);
+            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+        } else {
+            FactHandle fact = acknowledgmentFact.getFact();
+            LOG.trace("Updating acknowledgment in session: {}", ack);
+            kieSession.update(fact, ack);
+            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+        }
 
-            if (alarm.isSituation()) {
-                final OnmsAlarm situation = alarm;
-                final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
-                for (AlarmAssociation association : situation.getAssociatedAlarms()) {
-                    Integer alarmId = association.getRelatedAlarm().getId();
-                    AlarmAssociationAndFact associationFact = associationFacts.get(alarmId);
-                    if (associationFact == null) {
-                        LOG.debug("Inserting alarm association into session: {}", association);
-                        final FactHandle fact = kieSession.insert(association);
-                        associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
-                    } else {
-                        FactHandle fact = associationFact.getFact();
-                        LOG.trace("Updating alarm association in session: {}", associationFact);
-                        kieSession.update(fact, association);
-                        associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
-                    }
+        if (alarm.isSituation()) {
+            final OnmsAlarm situation = alarm;
+            final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
+            for (AlarmAssociation association : situation.getAssociatedAlarms()) {
+                Integer alarmId = association.getRelatedAlarm().getId();
+                AlarmAssociationAndFact associationFact = associationFacts.get(alarmId);
+                if (associationFact == null) {
+                    LOG.debug("Inserting alarm association into session: {}", association);
+                    final FactHandle fact = kieSession.insert(association);
+                    associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
+                } else {
+                    FactHandle fact = associationFact.getFact();
+                    LOG.trace("Updating alarm association in session: {}", associationFact);
+                    kieSession.update(fact, association);
+                    associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
                 }
-                // Remove Fact for any Alarms no longer in the Situation
-                Set<Integer> deletedAlarmIds = associationFacts.values().stream()
-                        .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
-                        .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
-                        .collect(Collectors.toSet());
-                deletedAlarmIds.forEach(alarmId -> {
-                    final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
-                    if (associationAndFact != null) {
-                        LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
-                        kieSession.delete(associationAndFact.getFact());
-                    }
-                });
             }
+            // Remove Fact for any Alarms no longer in the Situation
+            Set<Integer> deletedAlarmIds = associationFacts.values().stream()
+                    .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
+                    .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
+                    .collect(Collectors.toSet());
+            deletedAlarmIds.forEach(alarmId -> {
+                final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
+                if (associationAndFact != null) {
+                    LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
+                    kieSession.delete(associationAndFact.getFact());
+                }
+            });
+        }
     }
 
     @Override
@@ -478,7 +540,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
-        submitOrRun(kieSession -> {
+
+        executeAtomicallyWhenTransactionComplete(kieSession -> {
             handleDeletedAlarmForAtomic(kieSession, alarmId, reductionKey);
             stateTracker.trackDeletedAlarm(alarmId, reductionKey);
         });

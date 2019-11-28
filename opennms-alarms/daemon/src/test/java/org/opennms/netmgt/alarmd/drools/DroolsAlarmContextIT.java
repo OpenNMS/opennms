@@ -503,6 +503,8 @@ public class DroolsAlarmContextIT {
 
         // Advance the clock and tick
         dac.handleNewOrUpdatedAlarm(trigger);
+        dac.getClock().advanceTime( 1, TimeUnit.MINUTES );
+        dac.tick();
         dac.getClock().advanceTime( 20, TimeUnit.MINUTES );
         dac.tick();
         assertThat(ticketer.didCloseTicketFor(trigger), equalTo(true));
