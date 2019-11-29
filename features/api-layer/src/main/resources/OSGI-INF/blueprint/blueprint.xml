@@ -33,6 +33,7 @@
   <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" availability="mandatory"/>
   <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" availability="mandatory"/>
   <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
+  <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
 
   <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
     <argument ref="nodeDao"/>
@@ -71,6 +72,12 @@
       <argument value="${alarmFeedback.gracePeriodInMs}"/>
       <argument value="${alarmFeedback.sleepTimeInMs}"/>
       <argument value="${alarmFeedback.waitTimeMs}"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.InterfaceToNodeCache">
+    <bean class="org.opennms.features.apilayer.dao.InterfaceToNodeCacheImpl">
+      <argument ref="interfaceToNodeCache"/>
     </bean>
   </service>
 
