@@ -80,16 +80,19 @@ public class ManagedDroolsContext {
 
     private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
 
+    public static final String CLOCK_UPDATE_INTERVAL_SYS_PROP = "org.opennms.features.drools.clock_update_interval_ms";
+
     /**
      * Frequency at which the clock is updated in the session
      */
     private static final long CLOCK_UPDATE_INTERVAL_MS = SystemProperties.getLong(
-            "org.opennms.features.drools.clock_update_interval_ms", TimeUnit.SECONDS.toMillis(15));
+            CLOCK_UPDATE_INTERVAL_SYS_PROP, TimeUnit.SECONDS.toMillis(15));
 
     /**
      * Frequency at which the liveness check is scheduled
      */
-    private static final long LIVENESS_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(5);
+    private static final long LIVENESS_CHECK_INTERVAL_MS = SystemProperties.getLong(
+            "org.opennms.netmgt.alarmd.drools.liveness_check_interval_ms", TimeUnit.SECONDS.toMillis(30));
 
     private final MetricRegistry metrics;
     private final File rulesFolder;
@@ -229,7 +232,7 @@ public class ManagedDroolsContext {
                         kieSession.fireUntilHalt();
                     } catch (Exception e) {
                         // If we're supposed to be stopped, ignore the exception
-                        if (!started.get()) {
+                        if (started.get()) {
                             LOG.error("Error occurred while firing rules. Waiting 30 seconds before starting to fire again.", e);
                             try {
                                 Thread.sleep(TimeUnit.SECONDS.toMillis(30));
@@ -238,7 +241,7 @@ public class ManagedDroolsContext {
                                 return;
                             }
                         } else {
-                            LOG.info("Encountered exception while firing rules, but the engine is stopped. Exiting thread.");
+                            LOG.warn("Encountered exception while firing rules, but the engine is stopped. Exiting thread.", e);
                             return;
                         }
                     }
@@ -284,7 +287,7 @@ public class ManagedDroolsContext {
         // Grab the facts
         final List<Object> factObjects = kieSession.getFactHandles().stream()
                 .map(kieSession::getObject)
-                .filter(o -> !(o instanceof  SessionClock)) // Exclude the fact for our SessionClock
+                .filter(o -> !(o instanceof SessionClock)) // Exclude the fact for our SessionClock
                 .collect(Collectors.toList());
 
         // Dispose the session
@@ -411,8 +414,12 @@ public class ManagedDroolsContext {
         return started.get();
     }
 
-    public SessionPseudoClock getClock() {
+    public SessionClock getClock() {
         return clock;
+    }
+
+    public boolean isUsePseudoClock() {
+        return usePseudoClock;
     }
 
     public void setUsePseudoClock(boolean usePseudoClock) {
