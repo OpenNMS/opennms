@@ -121,8 +121,6 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
 
     private Scenario scenario;
 
-    private final long tickLength = 1;
-
     private final ScenarioResults results = new ScenarioResults();
 
     @Before
@@ -178,20 +176,20 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
             final long start = Math.max(scenario.getActions().stream()
                     .min(Comparator.comparing(Action::getTime))
                     .map(e -> roundToTick(e.getTime()))
-                    .get() - tickLength, 0);
+                    .get() - scenario.getTickLengthMillis(), 0);
             final long end = scenario.getActions().stream()
                     .max(Comparator.comparing(Action::getTime))
                     .map(e -> roundToTick(e.getTime()))
-                    .get() + tickLength;
+                    .get() + scenario.getTickLengthMillis();
 
             if (start > 0) {
                 // Tick
-                PseudoClock.getInstance().advanceTime(tickLength, TimeUnit.MILLISECONDS);
-                m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
+                PseudoClock.getInstance().advanceTime(scenario.getTickLengthMillis(), TimeUnit.MILLISECONDS);
+                m_droolsAlarmContext.getClock().advanceTime(scenario.getTickLengthMillis(), TimeUnit.MILLISECONDS);
                 m_droolsAlarmContext.tick();
             }
 
-            for (long now = start; now <= end; now += tickLength) {
+            for (long now = start; now <= end; now += scenario.getTickLengthMillis()) {
                 // Perform the actions
                 final List<Action> actions = actionsByTick.get(now);
                 if (actions != null) {
@@ -201,8 +199,8 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
                 }
 
                 // Tick
-                PseudoClock.getInstance().advanceTime(tickLength, TimeUnit.MILLISECONDS);
-                m_droolsAlarmContext.getClock().advanceTime(tickLength, TimeUnit.MILLISECONDS);
+                PseudoClock.getInstance().advanceTime(scenario.getTickLengthMillis(), TimeUnit.MILLISECONDS);
+                m_droolsAlarmContext.getClock().advanceTime(scenario.getTickLengthMillis(), TimeUnit.MILLISECONDS);
                 m_droolsAlarmContext.tick();
                 results.addAlarms(now, m_transactionTemplate.execute((t) -> {
                             final List<OnmsAlarm> alarms = m_alarmDao.findAll();
@@ -241,7 +239,7 @@ public class AlarmdDriver implements TemporaryDatabaseAware<MockDatabase>, Actio
     }
 
     private long roundToTick(Date date) {
-        return Math.floorDiv(date.getTime(),tickLength) * tickLength;
+        return Math.floorDiv(date.getTime(),scenario.getTickLengthMillis()) * scenario.getTickLengthMillis();
     }
 
     @Override
