@@ -44,6 +44,8 @@ public class OnmsTopologyProtocol {
     }
     
     final private String m_id;
+    private String m_name;
+    private String m_source;
 
     private OnmsTopologyProtocol(String id) {
         m_id=id;
@@ -76,6 +78,22 @@ public class OnmsTopologyProtocol {
         } else if (!m_id.equals(other.m_id))
             return false;
         return true;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+
+    public String getSource() {
+        return m_source;
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+
+    public void setSource(String source) {
+        m_source = source;
     }
 
 }

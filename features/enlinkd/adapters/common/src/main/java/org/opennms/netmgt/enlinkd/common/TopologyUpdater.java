@@ -56,7 +56,10 @@ import com.google.common.collect.Table;
 public abstract class TopologyUpdater extends Discovery implements OnmsTopologyUpdater {
 
     public static OnmsTopologyProtocol create(ProtocolSupported protocol) {
-            return OnmsTopologyProtocol.create(protocol.name());
+            OnmsTopologyProtocol onmsTopologyProtocol = OnmsTopologyProtocol.create(protocol.name());
+            onmsTopologyProtocol.setName(protocol.getName());
+            onmsTopologyProtocol.setSource("Enhanced Linkd");
+            return onmsTopologyProtocol;
     }
     
     public static OnmsTopologyVertex create(NodeTopologyEntity node, IpInterfaceTopologyEntity primary) {

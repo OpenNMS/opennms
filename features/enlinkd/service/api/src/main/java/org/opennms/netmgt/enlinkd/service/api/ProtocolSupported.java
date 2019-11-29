@@ -29,11 +29,22 @@
 package org.opennms.netmgt.enlinkd.service.api;
 
 public enum ProtocolSupported {
-    LLDP,
-    OSPF,
-    ISIS,
-    BRIDGE,
-    CDP,
-    NODES,
-    USERDEFINED
+    LLDP("Link Layer Discovery Protocol"),
+    OSPF("Open Shortest Path First"),
+    ISIS("Intermediate System to Intermediate System"),
+    BRIDGE("Transparent Bridge Protocol"),
+    CDP("Cisco Discovery Protocol"),
+    NODES("All OpenNMS nodes"),
+    USERDEFINED("User Defined Links");
+
+private String name;
+
+    private ProtocolSupported(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+        
 }

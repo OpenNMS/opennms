@@ -43,6 +43,8 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +55,11 @@ public class LinkdSearchProvider implements SearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
 
     private final GraphProvider m_delegate;
+    private final OnmsTopologyDao m_onmsTopologyDao;
 
-    public LinkdSearchProvider(GraphProvider delegate) {
+    public LinkdSearchProvider(GraphProvider delegate, OnmsTopologyDao onmsTopologyDao) {
         m_delegate = delegate;
+        m_onmsTopologyDao = onmsTopologyDao;
     }
 
     //Search Provider methods
@@ -170,7 +174,14 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return m_delegate.contributesTo(namespace);
+        if ( m_delegate.getNamespace() != null && m_delegate.getNamespace().equals(namespace)) {
+            return true;  
+        }
+        for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
+          if (onmsTP.getId().equals(namespace))
+              return true;
+        }
+        return false;
     }
 
 

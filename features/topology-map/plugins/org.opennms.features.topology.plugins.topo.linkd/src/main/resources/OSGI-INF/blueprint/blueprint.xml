@@ -29,6 +29,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         init-method="start"
         destroy-method="stop" />
 
+    <!-- EnhancedLinkd -->
     <bean id="linkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
         <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
@@ -56,77 +57,48 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <argument ref="linkdTopologyProvider"/>
     </bean>
 
-    <bean id="linkdSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
-        <argument ref="linkdTopologyProvider" />
-    </bean>
-
-    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
-
     <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
         <argument ref="linkdTopologyHopProvider" />
     </bean>
-
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="linkdMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
         </service-properties>
     </service>
 
-	<!-- Cdp Topology Provider -->
-    <bean id="cdpTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
-        <property name="name" value="Cisco Discovery Protocol Topology Provider"/>
-        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information CDP protocol to generate an overall topology."/>
-        <property name="supportsCategorySearch" value="true"/>
+    <!-- SearchProvider -->
+    <bean id="linkdSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
+        <argument index="0" ref="linkdTopologyProvider" />
+        <argument index="1" ref="onmsTopologyDao" />
     </bean>
-
-    <bean id="cdpTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
-        <argument index="0" value="cdp" />
-        <argument index="1" ref="metricRegistry" />
-        <argument index="2"> 
-   	    	<list>
-		        <value>CDP</value>
-        	</list>
-       	</argument>
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
-        <property name="topologyProviderInfo" ref="cdpTopologyProviderInfo"/>
-    </bean>
-
-    <bean id="cdpTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
-        <argument ref="cdpTopologyProvider"/>
-    </bean>
-
-    <bean id="cdpSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
-        <argument ref="cdpTopologyProvider" />
-    </bean>
-
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
-    <bean id="cdpMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
-        <argument ref="cdpTopologyHopProvider" />
-    </bean>
-
-    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="cdpMetaTopologyProvider">
-        <service-properties>
-            <entry key="label" value="Cdp Topology" />
-        </service-properties>
-    </service>
-
-    <!-- EnhancedLinkd StatusProviders Service and CheckedOperation -->
+    <!-- EdgeStatusProvider -->
     <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
-
 	<bean id="linkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
         <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
+        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
     </bean>
-
     <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="linkdWrappedEdgeStatusProvider" />
 
-    <!-- status provider -->
+    <!-- Status provider -->
     <bean id="linkdStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdStatusProvider">
-        <argument ref="alarmDao"/>
+        <argument index="0" ref="alarmDao"/>
+        <argument index="1" ref="onmsTopologyDao"/>
     </bean>
     <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="linkdStatusProvider" />
+
+	<!-- Topologies Bundle Activator -->
+    <bean id="linkdBundleActivator" 
+    class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyBundleActivator"
+    	init-method="start"
+        destroy-method="stop">
+        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+		<property name="metricRegistry" ref="metricRegistry"/>
+		<property name="context" ref="blueprintBundleContext"/>
+    </bean>
 
     <!-- Icon definition -->
     <service>

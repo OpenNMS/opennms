@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,18 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadVerticesTimer = registry.timer(MetricRegistry.name(registryValue, "load", "vertices", "none"));
         m_loadEdgesTimer = registry.timer(MetricRegistry.name(registryValue, "load", "edges", "none"));
     }
-    
+
+    public LinkdTopologyProvider(MetricRegistry registry, String protocol ) {
+        super(protocol);
+        Objects.requireNonNull(registry);
+        Objects.requireNonNull(protocol);
+        m_protocols=new ArrayList<>();
+        m_protocols.add(protocol);
+        m_loadFullTimer = registry.timer(MetricRegistry.name(protocol, "load", "full"));
+        m_loadVerticesTimer = registry.timer(MetricRegistry.name(protocol, "load", "vertices", "none"));
+        m_loadEdgesTimer = registry.timer(MetricRegistry.name(protocol, "load", "edges", "none"));
+    }
+
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
        return selectionAwareDelegate.getSelection(selectedVertices, type);

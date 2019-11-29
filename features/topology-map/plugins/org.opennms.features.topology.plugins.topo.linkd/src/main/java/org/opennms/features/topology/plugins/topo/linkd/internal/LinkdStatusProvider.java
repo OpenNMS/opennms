@@ -48,6 +48,8 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.slf4j.LoggerFactory;
 
 public class LinkdStatusProvider implements StatusProvider {
@@ -65,13 +67,22 @@ public class LinkdStatusProvider implements StatusProvider {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return getNamespace() != null && getNamespace().equals(namespace);
+        if ( getNamespace() != null && getNamespace().equals(namespace)) {
+          return true;  
+        }
+        for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
+            if (onmsTP.getId().equals(namespace))
+                return true;
+        }
+        return false;
     }
 
     private final AlarmDao m_alarmDao;
+    private final OnmsTopologyDao m_onmsTopologyDao;
 
-    public LinkdStatusProvider(AlarmDao alarmDao) {
+    public LinkdStatusProvider(AlarmDao alarmDao, OnmsTopologyDao onmsTopologyDao) {
         m_alarmDao = alarmDao;
+        m_onmsTopologyDao = onmsTopologyDao;
     }
 
     @Override

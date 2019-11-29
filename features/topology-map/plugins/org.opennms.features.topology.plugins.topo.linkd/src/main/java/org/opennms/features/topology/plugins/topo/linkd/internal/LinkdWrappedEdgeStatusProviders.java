@@ -39,11 +39,14 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
 public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
 
     private EdgeStatusProvider m_edgeStatusProvider;
     private List<EdgeStatusProvider> m_providers;
+    private OnmsTopologyDao m_onmsTopologyDao;
 
     public void init() {
         m_providers = new ArrayList<>();
@@ -66,11 +69,22 @@ public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return namespace != null &&  namespace.equals(getNamespace());
+        if ( getNamespace() != null && getNamespace().equals(namespace)) {
+            return true;  
+          }
+          for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
+              if (onmsTP.getId().equals(namespace))
+                  return true;
+          }
+          return false;
     }
 
     public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
         m_edgeStatusProvider = edgeStatusProvider;
+    }
+
+    public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
+        m_onmsTopologyDao = onmsTopologyDao;
     }
 
 
