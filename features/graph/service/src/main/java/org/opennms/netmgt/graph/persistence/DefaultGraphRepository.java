@@ -54,7 +54,7 @@ import org.opennms.netmgt.graph.api.persistence.GraphRepository;
 import org.opennms.netmgt.graph.dao.api.GraphContainerDao;
 import org.opennms.netmgt.graph.persistence.mapper.EntityToGenericMapper;
 import org.opennms.netmgt.graph.persistence.mapper.GenericToEntityMapper;
-import org.opennms.netmgt.graph.updates.change.ContainerChangeSet;
+import org.opennms.netmgt.graph.api.updates.ContainerChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

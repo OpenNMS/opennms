@@ -79,4 +79,20 @@
         <argument ref="defaultNodeService" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="nodeEnrichmentProcessor" />
+
+    <!-- Notification Service -->
+    <bean id="notificationService" class="org.opennms.netmgt.graph.updates.DefaultGraphNotificationService" />
+    <service interface="org.opennms.netmgt.graph.api.updates.GraphNotificationService" ref="notificationService" />
+    <reference-list interface="org.opennms.netmgt.graph.api.updates.listener.GraphContainerChangeSetListener" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="notificationService" />
+    </reference-list>
+    <reference-list interface="org.opennms.netmgt.graph.api.updates.listener.GraphContainerChangeListener" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="notificationService" />
+    </reference-list>
+    <reference-list interface="org.opennms.netmgt.graph.api.updates.listener.GraphChangeSetListener" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="notificationService" />
+    </reference-list>
+    <reference-list interface="org.opennms.netmgt.graph.api.updates.listener.GraphChangeListener" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="notificationService" />
+    </reference-list>
 </blueprint>

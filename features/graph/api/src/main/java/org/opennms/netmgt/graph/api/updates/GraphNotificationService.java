@@ -26,14 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.listener;
+package org.opennms.netmgt.graph.api.updates;
 
-import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.Vertex;
-import org.opennms.netmgt.graph.updates.change.ChangeSet;
+import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 
-public interface GraphChangeSetListener<G extends ImmutableGraph<V, E>, V extends Vertex, E extends Edge> {
+public interface GraphNotificationService {
 
-    void graphChanged(ChangeSet<G, V, E> changeSet);
+    void containerChanged(ImmutableGraphContainer oldContainer, ImmutableGraphContainer newContainer);
+    void containerChanged(ContainerChangeSet containerChangeSet);
+
+    void graphChanged(ImmutableGraph oldGraph, ImmutableGraph newGraph);
+    void graphChanged(ChangeSet graphChangeSet);
 }

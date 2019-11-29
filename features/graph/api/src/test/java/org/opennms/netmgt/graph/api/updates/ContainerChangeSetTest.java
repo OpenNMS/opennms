@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.change;
+package org.opennms.netmgt.graph.api.updates;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -36,10 +36,10 @@ import java.util.Date;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraphContainer;
-import org.opennms.netmgt.graph.domain.simple.SimpleDomainVertex;
 
 public class ContainerChangeSetTest {
 
@@ -50,18 +50,18 @@ public class ContainerChangeSetTest {
     public void verifyDetectChanges() {
         // Define two graphs
         // Graph with vertices (1,2,3)
-        final SimpleDomainGraph graph1 = SimpleDomainGraph.builder().namespace(NAMESPACE)
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("1").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("2").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("3").build())
+        final GenericGraph graph1 = GenericGraph.builder().namespace(NAMESPACE)
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("1").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("2").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("3").build())
                 .build();
 
         // Graph with vertices (3,4)
-        final SimpleDomainGraph graph2 = SimpleDomainGraph.builder().namespace(NAMESPACE)
+        final GenericGraph graph2 = GenericGraph.builder().namespace(NAMESPACE)
                 .description("Some Description")
                 .label("Some Label")
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
-                .addVertex(SimpleDomainVertex.builder().namespace(NAMESPACE).id("4").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("3").label("Three").build())
+                .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("4").build())
                 .build();
 
         /*
@@ -69,8 +69,8 @@ public class ContainerChangeSetTest {
          */
         final Date changeSetDate = new Date();
         ContainerChangeSet changeSet = new ContainerChangeSet(
-                SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build(),
-                SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build(),
+                GenericGraphContainer.builder().id(CONTAINER_ID).build(),
+                GenericGraphContainer.builder().id(CONTAINER_ID).build(),
                 changeSetDate);
         assertEquals(Boolean.FALSE, changeSet.hasChanges());
         assertEquals(changeSetDate, changeSet.getChangeSetDate());
@@ -78,10 +78,10 @@ public class ContainerChangeSetTest {
         /*
          * Verify adding a graph
          */
-        final SimpleDomainGraphContainer containerWithGraph2 = SimpleDomainGraphContainer.builder().id(CONTAINER_ID)
+        final GenericGraphContainer containerWithGraph2 = GenericGraphContainer.builder().id(CONTAINER_ID)
                 .addGraph(graph2)
                 .build();
-        changeSet = new ContainerChangeSet(SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build(), containerWithGraph2);
+        changeSet = new ContainerChangeSet(GenericGraphContainer.builder().id(CONTAINER_ID).build(), containerWithGraph2);
         assertThat(changeSet.hasChanges(), Matchers.is(true));
         assertThat(changeSet.getGraphsUpdated(), Matchers.hasSize(0));
         assertThat(changeSet.getGraphsRemoved(), Matchers.hasSize(0));
@@ -90,8 +90,8 @@ public class ContainerChangeSetTest {
         /*
          * Verify removing a graph
          */
-        final SimpleDomainGraph graph3 = SimpleDomainGraph.builder().namespace(NAMESPACE + ".old").build();
-        final SimpleDomainGraphContainer containerWithGraph3 = SimpleDomainGraphContainer.builder()
+        final GenericGraph graph3 = GenericGraph.builder().namespace(NAMESPACE + ".old").build();
+        final GenericGraphContainer containerWithGraph3 = GenericGraphContainer.builder()
                 .id(CONTAINER_ID)
                 .addGraph(graph3)
                 .build();
@@ -104,7 +104,7 @@ public class ContainerChangeSetTest {
         /*
          * Verify updating a graph
          */
-        final SimpleDomainGraphContainer containerWithGraph1 = SimpleDomainGraphContainer.builder()
+        final GenericGraphContainer containerWithGraph1 = GenericGraphContainer.builder()
                 .id(CONTAINER_ID)
                 .addGraph(graph1)
                 .build();
@@ -133,7 +133,7 @@ public class ContainerChangeSetTest {
         assertEquals("1", graphChangeSet.getVerticesRemoved().get(0).getId());
         assertEquals("2", graphChangeSet.getVerticesRemoved().get(1).getId());
         assertEquals("3", graphChangeSet.getVerticesUpdated().get(0).getId());
-        assertEquals(new DefaultGraphInfo(NAMESPACE, SimpleDomainVertex.class)
+        assertEquals(new DefaultGraphInfo(NAMESPACE, GenericVertex.class)
                 .withDescription("Some Description")
                 .withLabel("Some Label"), graphChangeSet.getGraphInfo());
     }
@@ -142,8 +142,8 @@ public class ContainerChangeSetTest {
     // In theory this might be possible, but it does not make sense from a domain point.
     @Test
     public void verifyContainerIdCannotChange() {
-        final SimpleDomainGraphContainer oldContainer = SimpleDomainGraphContainer.builder().id(CONTAINER_ID).build();
-        final SimpleDomainGraphContainer newContainer = SimpleDomainGraphContainer.builder().id(CONTAINER_ID + ".opennms").build();
+        final GenericGraphContainer oldContainer = GenericGraphContainer.builder().id(CONTAINER_ID).build();
+        final GenericGraphContainer newContainer = GenericGraphContainer.builder().id(CONTAINER_ID + ".opennms").build();
         try {
             new ContainerChangeSet(oldContainer, newContainer);
             fail("Expected an exception to be thrown, but succeeded. Bailing");

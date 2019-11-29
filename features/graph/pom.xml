@@ -36,7 +36,6 @@
         <module>service</module>
         <module>shell</module>
         <module>domain</module>
-        <module>updates</module>
     </modules>
     <dependencies>
         <dependency>

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.updates.change;
+package org.opennms.netmgt.graph.api.updates;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,8 +39,6 @@ import org.opennms.netmgt.graph.api.Vertex;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
-import org.opennms.netmgt.graph.updates.listener.GraphChangeListener;
-import org.opennms.netmgt.graph.updates.listener.GraphChangeSetListener;
 
 public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E extends Edge> {
     private final String namespace;
@@ -163,39 +161,6 @@ public class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E exten
                 || !verticesAdded.isEmpty()
                 || !verticesRemoved.isEmpty()
                 || !verticesUpdated.isEmpty();
-    }
-
-    public void accept(GraphChangeListener listener) {
-        if (!getVerticesAdded().isEmpty()) {
-            listener.handleVerticesAdded(getVerticesAdded());
-        }
-        if (!getVerticesRemoved().isEmpty()) {
-            listener.handleVerticesRemoved(getVerticesRemoved());
-        }
-        if (!getVerticesUpdated().isEmpty()) {
-            listener.handleVerticesUpdated(getVerticesUpdated());
-        }
-        if (!getEdgesAdded().isEmpty()) {
-            listener.handleEdgesAdded(getEdgesAdded());
-        }
-        if (!getEdgesUpdated().isEmpty()) {
-            listener.handleEdgesUpdated(getEdgesUpdated());
-        }
-        if (!getEdgesRemoved().isEmpty()) {
-            listener.handleEdgesRemoved(getEdgesRemoved());
-        }
-        if (currentGraphInfo != null) {
-            listener.handleGraphInfoChanged(currentGraphInfo);
-        }
-        if (currentFocus != null) {
-            listener.handleFocusChanged(currentFocus);
-        }
-    }
-
-    public void accept(GraphChangeSetListener listener) {
-        if (hasChanges()) {
-            listener.graphChanged(this);
-        }
     }
 
     protected void detectChanges(G oldGraph, G newGraph) {
