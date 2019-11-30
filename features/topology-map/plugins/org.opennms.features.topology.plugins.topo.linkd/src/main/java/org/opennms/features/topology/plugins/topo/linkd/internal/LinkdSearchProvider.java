@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-public class LinkdSearchProvider implements SearchProvider {
+public class LinkdSearchProvider extends LinkdStatusProviderAbstract implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
 
@@ -113,7 +113,7 @@ public class LinkdSearchProvider implements SearchProvider {
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getNamespace(),searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(container.getMetaTopologyId(),searchResult.getId(), searchResult.getLabel());
         container.addCriteria(criterion);
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
         logCriteriaInContainer(container);
@@ -166,14 +166,5 @@ public class LinkdSearchProvider implements SearchProvider {
     public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
     }
-
-    @Override
-    public boolean contributesTo(String namespace) {
-        if ( m_delegate.getNamespace() != null && m_delegate.getNamespace().equals(namespace)) {
-            return true;  
-        }
-        return false;
-    }
-
 
 }
