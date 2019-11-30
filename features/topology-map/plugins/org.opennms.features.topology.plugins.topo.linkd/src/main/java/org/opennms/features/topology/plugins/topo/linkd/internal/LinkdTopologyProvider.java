@@ -62,15 +62,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final Timer m_loadVerticesTimer;
     private final Timer m_loadEdgesTimer;
     private final List<String> m_protocols;
-    
-
-    private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
+    private final SelectionAware selectionAwareDelegate;
 
     public LinkdTopologyProvider(String registryValue, MetricRegistry registry, List<String> protocols ) {
         super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registryValue);
         Objects.requireNonNull(registry);
         Objects.requireNonNull(protocols);
+        selectionAwareDelegate = new LinkdSelectionAware(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
         m_protocols=protocols;
         m_loadFullTimer = registry.timer(MetricRegistry.name(registryValue, "load", "full"));
         m_loadVerticesTimer = registry.timer(MetricRegistry.name(registryValue, "load", "vertices", "none"));
@@ -81,6 +80,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         super(protocol);
         Objects.requireNonNull(registry);
         Objects.requireNonNull(protocol);
+        selectionAwareDelegate = new LinkdSelectionAware(protocol);
         m_protocols=new ArrayList<>();
         m_protocols.add(protocol);
         m_loadFullTimer = registry.timer(MetricRegistry.name(protocol, "load", "full"));
@@ -102,9 +102,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         for (String protocol: m_protocols) {
             try{
                 loadTopology(protocol);
-                LOG.info("loadEdges: {} loaded", protocol);
+                LOG.info("loadEdges: {}, protocol: {} loaded",getNamespace(), protocol);
             } catch (Exception e){
-                LOG.error("loadEdges: Loading {} failed",protocol, e);
+                LOG.error("loadEdges: {}, protocol {} failed",getNamespace(),protocol, e);
             }
         }
     }
@@ -114,9 +114,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         
         final Map<String, LinkdVertex> vmap = new HashMap<>();
         topology.getVertices().stream().forEach(tvertex -> {
-            LinkdVertex vertex = (LinkdVertex) getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, tvertex.getId());
+            LinkdVertex vertex = (LinkdVertex) getVertex(getNamespace(), tvertex.getId());
             if (vertex == null) {
-                vertex = LinkdVertex.create(tvertex);
+                vertex = LinkdVertex.create(tvertex,getNamespace());
                 addVertices(vertex);
             } 
             vertex.getProtocolSupported().add(protocol);
@@ -124,7 +124,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         });
         
         topology.getEdges().stream().forEach(tedge -> addEdges(
-                                       LinkdEdge.create(
+                                       LinkdEdge.create(getNamespace(),
                                                 tedge.getId(), 
                                                 LinkdPort.create(tedge.getSource(), vmap.get(tedge.getSource().getVertex().getId())),
                                                 LinkdPort.create(tedge.getTarget(), vmap.get(tedge.getTarget().getVertex().getId())),
@@ -138,16 +138,16 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         try {
             node = m_onmsTopologyDao.getTopology("NODES").getDefaultVertex();
         } catch (Exception e) {
-            LOG.error("getDefaultVertex: no default node found", e);
+            LOG.error("getDefaultVertex: {} no default node found",getNamespace(), e);
             return null;
         }
 
         if (node == null) {
-            LOG.info("getDefaultVertex: no default node found!");
+            LOG.info("getDefaultVertex: {} no default node found!",getNamespace());
             return null;
         }
-        LOG.info("getDefaultVertex: default node found: [{}]:{}", node.getId(), node.getLabel());
-        return getVertex(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, node.getId());
+        LOG.info("getDefaultVertex: {} default node found: [{}]:{}", getNamespace(),node.getId(), node.getLabel());
+        return getVertex(getNamespace(), node.getId());
     }
 
     @Override
@@ -158,10 +158,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 .withCriteria(() -> { 
                     final Vertex defaultVertex = getDefaultVertex();
                     if (defaultVertex != null) {
-                        LOG.info("getDefaults: default vertex found: [{}]:{}", defaultVertex.getId(), defaultVertex.getLabel());
-                        return Lists.newArrayList(LinkdHopCriteria.createCriteria(defaultVertex.getId(), defaultVertex.getLabel()));
+                        LOG.info("getDefaults: {} default vertex found: [{}]:{}",getNamespace(), defaultVertex.getId(), defaultVertex.getLabel());
+                        return Lists.newArrayList(LinkdHopCriteria.createCriteria(getNamespace(),defaultVertex.getId(), defaultVertex.getLabel()));
                     }
-                    LOG.info("getDefaults: default vertex not found");
+                    LOG.info("getDefaults: {} default vertex not found",getNamespace());
                     return Lists.newArrayList();
         });
     }
@@ -170,7 +170,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         Timer.Context vcontext = m_loadVerticesTimer.time();
         try {
             for (OnmsTopologyVertex tvertex : m_onmsTopologyDao.getTopology("NODES").getVertices()) {
-                addVertices(LinkdVertex.create(tvertex));
+                addVertices(LinkdVertex.create(tvertex,getNamespace()));
             }
             LOG.info("refresh: Loaded Vertices");
         } catch (Exception e){

@@ -35,7 +35,6 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHo
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 /**
  * 
@@ -45,21 +44,23 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
  */
 public class LinkdHopCriteria extends VertexHopCriteria {
     
-    public synchronized static VertexHopCriteria createCriteria(String nodeId, String nodeLabel) {
-        VertexHopCriteria criterion = new LinkdHopCriteria(nodeId, nodeLabel);
+    public synchronized static VertexHopCriteria createCriteria(String namespace, String nodeId, String nodeLabel) {
+        VertexHopCriteria criterion = new LinkdHopCriteria(namespace,nodeId, nodeLabel);
         return criterion;
     }
 
     private final String m_nodeId;
+    private final String m_namespace;
 	
-    private LinkdHopCriteria(String nodeId, String nodeLabel) {
+    private LinkdHopCriteria(String namespace, String nodeId, String nodeLabel) {
         super(nodeId,nodeLabel);
         m_nodeId = nodeId;
+        m_namespace = namespace;
     }
     
     @Override
     public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+        return m_namespace;
     }
 
     @Override

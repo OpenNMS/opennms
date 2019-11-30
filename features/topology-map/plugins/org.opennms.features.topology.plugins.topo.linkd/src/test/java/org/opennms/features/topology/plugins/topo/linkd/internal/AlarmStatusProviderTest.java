@@ -48,25 +48,23 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 import com.google.common.collect.Lists;
 
 public class AlarmStatusProviderTest {
 
     private AlarmDao m_alarmDao;
-    private OnmsTopologyDao m_onmsTopologyDao;
-       private LinkdStatusProvider m_statusProvider;
+    private LinkdStatusProvider m_statusProvider;
     private VertexProvider m_vertexProvider;
     
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_onmsTopologyDao = EasyMock.createMock(OnmsTopologyDao.class);
-        m_statusProvider = new LinkdStatusProvider(m_alarmDao,m_onmsTopologyDao);
-
+        m_statusProvider = new LinkdStatusProvider();
+        m_statusProvider.setAlarmDao(m_alarmDao);
         m_vertexProvider = EasyMock.createMock(VertexProvider.class);
         EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<>());
+        EasyMock.expect(m_vertexProvider.getNamespace()).andReturn("nodes").anyTimes();
         EasyMock.replay(m_vertexProvider);
     }
     

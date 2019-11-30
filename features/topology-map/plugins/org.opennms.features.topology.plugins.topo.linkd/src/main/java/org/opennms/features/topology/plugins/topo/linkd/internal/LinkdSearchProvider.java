@@ -43,8 +43,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,11 +53,9 @@ public class LinkdSearchProvider implements SearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
 
     private final GraphProvider m_delegate;
-    private final OnmsTopologyDao m_onmsTopologyDao;
 
-    public LinkdSearchProvider(GraphProvider delegate, OnmsTopologyDao onmsTopologyDao) {
+    public LinkdSearchProvider(GraphProvider delegate) {
         m_delegate = delegate;
-        m_onmsTopologyDao = onmsTopologyDao;
     }
 
     //Search Provider methods
@@ -83,7 +79,6 @@ public class LinkdSearchProvider implements SearchProvider {
         return searchResults;
     }
     
-
     @Override
     public String getSearchProviderNamespace() {
         return m_delegate.getNamespace();
@@ -118,7 +113,7 @@ public class LinkdSearchProvider implements SearchProvider {
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getNamespace(),searchResult.getId(), searchResult.getLabel());
         container.addCriteria(criterion);
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
         logCriteriaInContainer(container);
@@ -176,10 +171,6 @@ public class LinkdSearchProvider implements SearchProvider {
     public boolean contributesTo(String namespace) {
         if ( m_delegate.getNamespace() != null && m_delegate.getNamespace().equals(namespace)) {
             return true;  
-        }
-        for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
-          if (onmsTP.getId().equals(namespace))
-              return true;
         }
         return false;
     }

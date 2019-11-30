@@ -38,6 +38,7 @@ import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
@@ -45,6 +46,15 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
 public class LinkdSelectionAware implements SelectionAware {
+    private final String nameSpace;
+
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
+
+    public LinkdSelectionAware(String nameSpace) {
+        super();
+        this.nameSpace = nameSpace;
+    }
+
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
         List<Integer> nodeIds = extractNodeIds(selectedVertices);
@@ -72,11 +82,11 @@ public class LinkdSelectionAware implements SelectionAware {
     protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
         List<Integer> nodeIdList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
+            if (nameSpace.equals(eachRef.getNamespace())) {
                 try {
                     nodeIdList.add(Integer.valueOf(eachRef.getId()));
                 } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
+                   LOG.info("Cannot filter nodes with ID: {}", eachRef.getId());
                 }
             } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
                 try{
@@ -88,7 +98,7 @@ public class LinkdSelectionAware implements SelectionAware {
                         }
                     }));
                 } catch (ClassCastException e){
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
+                    LOG.warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
 
                 }
             }

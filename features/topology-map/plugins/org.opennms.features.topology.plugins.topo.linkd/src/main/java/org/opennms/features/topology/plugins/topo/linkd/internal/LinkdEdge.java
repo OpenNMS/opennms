@@ -31,18 +31,17 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
-    public static LinkdEdge create(String id,
+    public static LinkdEdge create(String namespace,String id,
             LinkdPort sourceport, LinkdPort targetport,
             String discoveredBy) {
         
-        SimpleConnector source = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
-        SimpleConnector target = new SimpleConnector(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
+        SimpleConnector source = new SimpleConnector(namespace, sourceport.getVertex().getId()+"-"+id+"-connector", sourceport.getVertex());
+        SimpleConnector target = new SimpleConnector(namespace, targetport.getVertex().getId()+"-"+id+"-connector", targetport.getVertex());
 
-        LinkdEdge edge = new LinkdEdge(id, sourceport, targetport,source, target,discoveredBy);
+        LinkdEdge edge = new LinkdEdge(namespace,id, sourceport, targetport,source, target,discoveredBy);
         
         return edge;
     }
@@ -51,16 +50,16 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     private final LinkdPort m_targetPort;
     private final String m_discoveredBy;
     
-    public LinkdEdge(String id, LinkdPort source, LinkdPort target, String discoveredBy) {
-        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source.getVertex(), target.getVertex());
+    public LinkdEdge(String namespace,String id, LinkdPort source, LinkdPort target, String discoveredBy) {
+        super(namespace, id, source.getVertex(), target.getVertex());
         m_discoveredBy = discoveredBy;
         m_sourcePort = source;
         m_targetPort = target;
     }
 
-    public LinkdEdge(String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
+    public LinkdEdge(String namespace,String id, LinkdPort sourcePort, LinkdPort targetPort, SimpleConnector source,
             SimpleConnector target, String discoveredBy) {
-        super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
+        super(namespace, id, source, target);
         m_sourcePort = sourcePort;
         m_targetPort = targetPort;
         m_discoveredBy = discoveredBy;
@@ -68,7 +67,8 @@ public class LinkdEdge extends AbstractEdge implements Edge {
 
     // Constructor to make cloneable easier for sub classes
     private LinkdEdge(LinkdEdge edgeToClone) {
-            this(edgeToClone.getId(), 
+            this(edgeToClone.getNamespace(),
+                 edgeToClone.getId(), 
                  edgeToClone.getSourcePort().clone(), 
                  edgeToClone.getTargetPort().clone(),
                  edgeToClone.getSource().clone(),

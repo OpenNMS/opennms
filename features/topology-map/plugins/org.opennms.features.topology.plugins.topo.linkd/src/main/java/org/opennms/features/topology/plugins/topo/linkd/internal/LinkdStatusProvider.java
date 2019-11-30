@@ -47,12 +47,12 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LinkdStatusProvider implements StatusProvider {
+public class LinkdStatusProvider extends LinkdStatusProviderAbstract implements StatusProvider {
+
+    private static Logger LOG = LoggerFactory.getLogger(LinkdStatusProvider.class);
 
     private static class AlarmStatus extends DefaultStatus {
         public AlarmStatus(String label, long count) {
@@ -60,30 +60,7 @@ public class LinkdStatusProvider implements StatusProvider {
         }
     }
 
-    @Override
-    public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
-    }
-
-    @Override
-    public boolean contributesTo(String namespace) {
-        if ( getNamespace() != null && getNamespace().equals(namespace)) {
-          return true;  
-        }
-        for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
-            if (onmsTP.getId().equals(namespace))
-                return true;
-        }
-        return false;
-    }
-
-    private final AlarmDao m_alarmDao;
-    private final OnmsTopologyDao m_onmsTopologyDao;
-
-    public LinkdStatusProvider(AlarmDao alarmDao, OnmsTopologyDao onmsTopologyDao) {
-        m_alarmDao = alarmDao;
-        m_onmsTopologyDao = onmsTopologyDao;
-    }
+    private AlarmDao m_alarmDao;
 
     @Override
     public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
@@ -91,7 +68,7 @@ public class LinkdStatusProvider implements StatusProvider {
 
         // split nodes from groups and others
         List<VertexRef> nodeRefs = getNodeVertexRefs(vertexProvider, vertices, criteria); // nodes
-        List<VertexRef> otherRefs = getOtherVertexRefs(vertices);  // groups
+        List<VertexRef> otherRefs = getOtherVertexRefs(vertexProvider,vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
         Map<Integer, AlarmSummary> nodeIdToAlarmSummaryMap = getAlarmSummaries(nodeIdMap.keySet()); // calculate status for ALL nodes
@@ -103,7 +80,7 @@ public class LinkdStatusProvider implements StatusProvider {
             VertexRef ref = nodeIdMap.get(eachNodeId);
             returnMap.put(ref, status);
 
-            LoggerFactory.getLogger(getClass()).debug("Status for node '{}' with id '{}' is: {}", ref.getLabel(), ref.getId(), status);
+            LOG.debug("Status for node '{}' with id '{}' is: {}", ref.getLabel(), ref.getId(), status);
         }
 
         // calculate status for groups and nodes which are neither group nor node
@@ -147,15 +124,13 @@ public class LinkdStatusProvider implements StatusProvider {
         Map<Integer, VertexRef> vertexRefToNodeIdMap = new HashMap<Integer, VertexRef>();
 
         for (VertexRef eachRef : inputList) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    Integer nodeId = Integer.parseInt(eachRef.getId());
-                    if (nodeId != null) {
-                        vertexRefToNodeIdMap.put(nodeId, eachRef);
-                    }
-                } catch (NumberFormatException nfe) {
-                    LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
+            try {
+                Integer nodeId = Integer.parseInt(eachRef.getId());
+                if (nodeId != null) {
+                    vertexRefToNodeIdMap.put(nodeId, eachRef);
                 }
+            } catch (NumberFormatException nfe) {
+                LOG.debug("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
             }
         }
 
@@ -165,7 +140,7 @@ public class LinkdStatusProvider implements StatusProvider {
     private static List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
+            if (vertexProvider.getNamespace().equals(eachRef.getNamespace())) {
                 if(isGroup(eachRef)) {
                     addChildrenRecursively(vertexProvider, eachRef, returnList, criteria);
                 } else {
@@ -178,10 +153,10 @@ public class LinkdStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static List<VertexRef> getOtherVertexRefs(Collection<VertexRef> vertices) {
+    private static List<VertexRef> getOtherVertexRefs(VertexProvider vertexProvider,Collection<VertexRef> vertices) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if (!"nodes".equals(eachRef.getNamespace())) {
+            if (!vertexProvider.getNamespace().equals(eachRef.getNamespace())) {
                 returnList.add(eachRef); // we do not need to check for groups, because a group would have a namespace "nodes"
             }
         }
@@ -228,5 +203,9 @@ public class LinkdStatusProvider implements StatusProvider {
             return new AlarmStatus(severity.getLabel(), count);
         }
         return createDefaultStatus();
+    }
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
     }
 }

@@ -44,11 +44,10 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 import com.google.common.collect.Maps;
 
-public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
+public class LinkdEdgeStatusProvider extends LinkdStatusProviderAbstract implements EdgeStatusProvider {
 
     public static class LinkdEdgeStatus implements Status{
 
@@ -89,11 +88,6 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     private AlarmDao m_alarmDao;
 
     @Override
-    public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
-    }
-
-    @Override
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider,
             Collection<EdgeRef> edges, Criteria[] criteria) {
         Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
@@ -123,11 +117,6 @@ EDGES:        for (EdgeRef edgeRef : edges) {
               retVal.put(edgeRef, new LinkdEdgeStatus("up"));
         }
         return retVal;
-    }
-
-    @Override
-    public boolean contributesTo(String namespace) {
-        return namespace.equals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
     }
 
     public AlarmDao getAlarmDao() {
