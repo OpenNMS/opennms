@@ -57,4 +57,9 @@ public class LocationUtils {
         return DEFAULT_LOCATION_NAME.equals(getEffectiveLocationName(locationName));
     }
 
+    public static boolean doesLocationsMatch(String location1, String location2) {
+        return getEffectiveLocationName(location1).equals(getEffectiveLocationName(location2));
+    }
+
+
 }

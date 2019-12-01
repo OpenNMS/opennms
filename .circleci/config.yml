@@ -275,10 +275,11 @@ commands:
           destination: generated-tests
 
 workflows:
-  nightly-coverage:
+  weekly-coverage:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          # Saturday at 12:00 AM
+          cron: "0 0 * * 6"
           filters:
             branches:
               only:

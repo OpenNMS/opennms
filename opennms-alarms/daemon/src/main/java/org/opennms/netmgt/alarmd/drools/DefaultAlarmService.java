@@ -68,8 +68,8 @@ public class DefaultAlarmService implements AlarmService {
 
     @Override
     @Transactional
-    public void clearAlarm(OnmsAlarm alarm, Date clearTime) {
-        LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), clearTime);
+    public void clearAlarm(OnmsAlarm alarm, Date now) {
+        LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), now);
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
             LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
@@ -77,7 +77,7 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.CLEARED);
-        updateAutomationTime(alarmInTrans, clearTime);
+        updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
@@ -109,7 +109,7 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void unclearAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), alarm.getLastEventTime());
+        LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), now);
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
             LOG.warn("Alarm disappeared: {}. Skipping un-clear.", alarm);
@@ -125,7 +125,7 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void escalateAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Escalating alarm with id: {}", alarm.getId());
+        LOG.info("Escalating alarm with id: {} at: {}", alarm.getId(), now);
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
             LOG.warn("Alarm disappeared: {}. Skipping escalate.", alarm);
