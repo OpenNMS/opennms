@@ -64,6 +64,5 @@ public class EventToIndexTest {
         assertEquals(2, e.getParmCollection().size());
         assertNotNull(json.get("p_oids"));
         assertEquals(2, json.keySet().size());
-        System.err.println(json);
     }
 }
