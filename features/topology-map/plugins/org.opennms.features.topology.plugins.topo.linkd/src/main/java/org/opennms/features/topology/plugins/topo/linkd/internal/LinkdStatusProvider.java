@@ -153,7 +153,7 @@ public class LinkdStatusProvider extends LinkdStatusProviderAbstract implements 
         return returnList;
     }
 
-    private static List<VertexRef> getOtherVertexRefs(VertexProvider vertexProvider,Collection<VertexRef> vertices) {
+    private static List<VertexRef> getOtherVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices) {
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if (!vertexProvider.getNamespace().equals(eachRef.getNamespace())) {
