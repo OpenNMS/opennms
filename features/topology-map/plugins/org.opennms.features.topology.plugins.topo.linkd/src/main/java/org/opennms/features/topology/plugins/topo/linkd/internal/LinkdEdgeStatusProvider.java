@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.collect.Maps;
 
-public class LinkdEdgeStatusProvider extends LinkdStatusProviderAbstract implements EdgeStatusProvider {
+public class LinkdEdgeStatusProvider extends AbstractLinkdStatusProvider implements EdgeStatusProvider {
 
     public static class LinkdEdgeStatus implements Status{
 

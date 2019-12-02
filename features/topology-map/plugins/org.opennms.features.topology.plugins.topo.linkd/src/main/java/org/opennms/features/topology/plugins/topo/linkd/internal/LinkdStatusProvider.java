@@ -50,7 +50,7 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LinkdStatusProvider extends LinkdStatusProviderAbstract implements StatusProvider {
+public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements StatusProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdStatusProvider.class);
 

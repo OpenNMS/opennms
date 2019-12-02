@@ -32,7 +32,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
-public abstract class LinkdStatusProviderAbstract {
+public abstract class AbstractLinkdStatusProvider {
 
     public String getNamespace() {
         return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
