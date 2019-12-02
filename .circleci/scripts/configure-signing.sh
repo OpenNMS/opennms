@@ -4,6 +4,7 @@ rm -rf ~/.gnupg
 install -d -m 700 ~/.gnupg
 echo use-agent >> ~/.gnupg/gpg.conf
 echo pinentry-mode loopback >> ~/.gnupg/gpg.conf
+echo "passphrase-file $HOME/.gpg-passphrase" >> ~/.gnupg/gpg.conf
 echo allow-loopback-pinentry >> ~/.gnupg/gpg-agent.conf
 echo RELOADAGENT | gpg-connect-agent
 echo "$GPG_SECRET_KEY" | base64 --decode | gpg --import --no-tty --batch --yes

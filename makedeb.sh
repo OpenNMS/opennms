@@ -330,7 +330,7 @@ if $SIGN; then
     which dpkg-sig >/dev/null 2>&1 || die "unable to locate dpkg-sig"
 
     for DEB in $(echo "$TOPDIR"/../*.deb); do
-        run expect -c "set timeout -1; spawn dpkg-sig --sign builder -k \"$SIGN_ID\" \"$DEB\"; match_max 100000; expect \"Enter passphrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
+        run expect -c "set timeout -1; spawn dpkg-sig --sign builder -k \"$SIGN_ID\" \"$DEB\"; match_max 100000; expect \"Enter passphrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" 2>/dev/null || \
         die "Debian package signing of $DEB failed for $(branch)"
     done
 
