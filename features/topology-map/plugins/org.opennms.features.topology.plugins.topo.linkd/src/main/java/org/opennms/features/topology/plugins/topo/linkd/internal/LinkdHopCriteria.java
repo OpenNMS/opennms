@@ -37,27 +37,26 @@ import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
- * 
  * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
- *
  */
 public class LinkdHopCriteria extends VertexHopCriteria {
-    
+
     public static VertexHopCriteria createCriteria(String namespace, String nodeId, String nodeLabel) {
-        VertexHopCriteria criterion = new LinkdHopCriteria(namespace,nodeId, nodeLabel);
+        VertexHopCriteria criterion = new LinkdHopCriteria(namespace, nodeId, nodeLabel);
         return criterion;
     }
 
     private final String m_nodeId;
     private final String m_namespace;
-	
-    private LinkdHopCriteria(String namespace, String nodeId, String nodeLabel) {
-        super(nodeId,nodeLabel);
+
+    private LinkdHopCriteria(String namespace, String nodeId,
+            String nodeLabel) {
+        super(nodeId, nodeLabel);
         m_nodeId = nodeId;
         m_namespace = namespace;
     }
-    
+
     @Override
     public String getNamespace() {
         return m_namespace;
@@ -67,7 +66,8 @@ public class LinkdHopCriteria extends VertexHopCriteria {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((m_nodeId == null) ? 0 : m_nodeId.hashCode());
+        result = prime * result
+                + ((m_nodeId == null) ? 0 : m_nodeId.hashCode());
         result = prime * result
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
@@ -75,22 +75,24 @@ public class LinkdHopCriteria extends VertexHopCriteria {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
 
         if (obj instanceof LinkdHopCriteria) {
-            LinkdHopCriteria ref = (LinkdHopCriteria)obj;
+            LinkdHopCriteria ref = (LinkdHopCriteria) obj;
             return ref.m_nodeId.equals(m_nodeId) && ref.getNamespace().equals(getNamespace());
         }
-        
+
         return false;
     }
 
     @Override
     public Set<VertexRef> getVertices() {
-	Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-        vertices.add(new DefaultVertexRef(getNamespace(), m_nodeId, getLabel()));
+        Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
+        vertices.add(new DefaultVertexRef(getNamespace(), m_nodeId,getLabel()));
         return vertices;
     }
-	
+
 }
