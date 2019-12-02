@@ -34,6 +34,7 @@ import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -46,6 +47,7 @@ import org.junit.Test;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
+import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
 
 import io.restassured.RestAssured;
@@ -404,6 +406,29 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .statusCode(404);
+    }
+
+    // If the reduceFunction is exposed properly, it means bsm provider is exposing custom json renderers
+    @Test
+    public void verifyCustomJsonRenderer() {
+        final KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+        try {
+            karafShell.runCommand("bsm:generate-hierarchies 5 2");
+            given().log().ifValidationFails()
+                .get("{container_id}/{namespace}", "bsm", "bsm")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("vertices", Matchers.hasSize(5))
+                .content("vertices[0].reduceFunction.type", Matchers.is("highestseverity"))
+                .content("vertices[1].reduceFunction.type", Matchers.is("highestseverity"))
+                .content("vertices[2].reduceFunction.type", Matchers.is("highestseverity"))
+                .content("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
+                .content("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
+        } finally {
+            karafShell.runCommand("bsm:delete-generated-hierarchies");
+        }
     }
 
     private void createGraphMLAndWaitUntilDone(GraphmlDocument graphmlDocument) {
