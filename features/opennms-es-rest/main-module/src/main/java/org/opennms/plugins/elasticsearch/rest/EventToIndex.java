@@ -692,11 +692,11 @@ public class EventToIndex implements AutoCloseable {
 		return index;
 	}
 
-	private void handleParameters(Event event, JSONObject body) {
+	void handleParameters(Event event, JSONObject body) {
 		// Decide if oids should be grouped in a single JsonArray or flattened
 		if (groupOidParameters) {
 			final List<Parm> oidParameters = event.getParmCollection().stream().filter(p -> isOID(p.getParmName())).collect(Collectors.toList());
-			final List<Parm> normalParameters = event.getParmCollection();
+			final List<Parm> normalParameters = new ArrayList<>(event.getParmCollection());
 			normalParameters.removeAll(oidParameters);
 
 			// Handle non oid paramaters as always
@@ -718,7 +718,7 @@ public class EventToIndex implements AutoCloseable {
 		}
 	}
 
-	private void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
+	void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
 		final JSONParser jsonParser = new JSONParser();
 		for(Parm parm : parameters) {
 			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");
