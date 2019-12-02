@@ -66,7 +66,7 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
     public void canExposeGraphProvider() {
         try {
             karafShell.runCommand("opennms-bsm:generate-hierarchies 5 2");
-            karafShell.runCommand("graph:get --container bsm --namespace bsm", output -> {
+            karafShell.runCommand("opennms-graph:get --container bsm --namespace bsm", output -> {
                 final JSONObject jsonGraph = readGraph(output);
                 return jsonGraph.getString("label").equals("Business Service Graph")
                         && jsonGraph.getJSONArray("vertices").length() == 5;
@@ -80,7 +80,7 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
     public void canImportGraphRepository() {
         karafShell.runCommand("feature:install opennms-graph-provider-persistence-test");
         karafShell.runCommand("feature:list -i", output -> output.contains("opennms-graphs") && output.contains("opennms-graph-provider-persistence-test"));
-        karafShell.runCommand("graph:get --container persistence-example --namespace persistence-example.graph", output -> {
+        karafShell.runCommand("opennms-graph:get --container persistence-example --namespace persistence-example.graph", output -> {
             final JSONObject jsonGraph = readGraph(output);
             return jsonGraph.getString("label").equals("Graph")
                     && jsonGraph.getString("namespace").equals("persistence-example.graph");
