@@ -68,7 +68,7 @@ public class LinkdStatusProvider extends LinkdStatusProviderAbstract implements 
 
         // split nodes from groups and others
         List<VertexRef> nodeRefs = getNodeVertexRefs(vertexProvider, vertices, criteria); // nodes
-        List<VertexRef> otherRefs = getOtherVertexRefs(vertexProvider,vertices);  // groups
+        List<VertexRef> otherRefs = getOtherVertexRefs(vertexProvider, vertices);  // groups
 
         Map<Integer, VertexRef> nodeIdMap = extractNodeIds(nodeRefs);
         Map<Integer, AlarmSummary> nodeIdToAlarmSummaryMap = getAlarmSummaries(nodeIdMap.keySet()); // calculate status for ALL nodes
