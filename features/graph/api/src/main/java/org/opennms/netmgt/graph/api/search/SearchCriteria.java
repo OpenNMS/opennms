@@ -45,6 +45,7 @@ public class SearchCriteria {
     // The search criteria, usually the id of the SearchSuggestion
     private String criteria;
 
+    // TODO MVR is not required
     private String context;
 
     public SearchCriteria() {

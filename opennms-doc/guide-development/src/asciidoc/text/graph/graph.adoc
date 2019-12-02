@@ -1,0 +1,150 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+== Introduction
+
+This section covers the insides of the new _Graph Service API_ introduced with _{opennms-product-name}_.
+The _Graph Service API_ was heavily inspired by the GraphML (TODO add link) model and the original Topology API.
+
+== Terminology
+
+A *Graph* consists of any number of points with any number of connections in between.
+Usually these points are called *Nodes*, but as *Nodes* have a specific meaning in _{opennms-product-name}_ in the context of the _Graph Service_ they are called *Vertices* (plural of *Vertex*).
+The connection between two *Vertices* are usually called *Link*, however it also has a specific meaning inside _{opennms-product-name}_, thus it is called *Edge*.
+The following figure shows a *Graph* with five *Vertices* and four *Edges*.
+
+An *Element* can either be a *Graph*, *Vertex* or *Edge*.
+
+image::https://wiki.opennms.org/wiki/images/3/30/Toplogy-graph.png[]
+
+A *Graph Container* contains any number of *Graphs*.
+
+TODO add image of a graph container with a bunch of graphs
+
+== Graph Model
+
+=== Generic Graph Model
+
+The original Topology API could not expose the information from the backend graph implementation properly to the "front end".
+To prevent this issue in the _Graph Service API_ a more generic and abstract approach was used.
+
+The generic graph model is very similar to GraphML's model and represents some basic elements:
+
+* `GenericGraphContainer`,
+* `GenericGraph`,
+* `GenericVertex` and
+* `GenericEdge`
+
+Each of the above have besides their designated functionality described in Terminology (TODO ADD link) also properties assigned to them.
+Some properties are mandatory and determined by the element's type.
+Others are optionally and totally up to the entity providing a graph to the system.
+See TODO MVR for more information.
+
+The following rules apply to the generic model:
+
+- Each Graph container must be uniquely identified.
+  This identifier is called a `container id`
+- Each Graph must be uniquely identified overall graphs (meaning the namespace must be unique through the system).
+  This identifier is called a `namespace`.
+- Each Vertex and Edge must be uniquely identified by an identifier.
+  This identifier is called an `id`.
+- Each Vertex and Edge have the same `namespace` as the Graph they are part of.
+  This allows to uniquely identify vertices and edges throughout the system.
+- Each Graph, Vertex or Edge have additional properties to define their nature in more detail.
+  E.g. a Vertex may contain a `label`, `node` or `location` property.
+- Each Edge contains the source and target id of the Vertex it connects, therefore is ALWAYS directed.
+- Each edge may reference Vertices from a different Graph (`namespace`).
+  However at least one side must share the same `namespace` as the edge itself.
+  This is the "owning" side, thus the edge will be a member of that Graph.
+
+=== Domain Graph Model
+
+A domain graph model is a model implementing a use case in its domain using the generic graph model.
+This can be achieved by simply using the Generic Graph Model and setting the according properties.
+However this is not very Java-friendly.
+Therefore basic Domain Graph objects are provided to act as a view on the Generic Graph Model to provide a more convenient implementation.
+
+For the Domain Graph Model the same rules apply as for the Generic Graph Model.
+
+=== Immutability
+
+After a graph or container was created it is immutable.
+To build a graph builders are provided.
+
+== Providers
+
+To get a new graph or graph container to the system either a `GraphContainerProvider` or `GraphProvider` must be used.
+The latter is a convenient way of exposing a container which only consists of one graph.
+
+=== Meta Information
+
+Loading a graph container or graph may be very expensive.
+Especially, if only the meta data are of interest (e.g. label, description).
+Therefore each provider allows to fetch the meta data only without loading the graph or container.
+
+== Namespace concept
+
+== Cache
+
+Each call to `GraphContainerProvider.loadGraphContainer()` is cached until {opennms-product-name} restarts.
+This means it is up to the implementor to invalidate the cache.
+
+You can achieve this by manually invoking the `org.opennms.netmgt.graph.api.service.GraphContainerCache.invalidate(String containerId)` method as the `GraphContainerCache` is exposed as an OSGi-service.
+Alternatively a service property can be used to invalidate a cache entry after it was first populated to the cache:
+
+```xml
+<service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider">
+    <service-properties>
+        <entry key="cacheInvalidateInterval" value="300" /> <!-- seconds -->
+    </service-properties>
+</service>
+```
+
+== Search
+
+The goal behind searching is usually to bring one or more vertices into the focus of the user.
+Usually the user searches for something like a node label or category name.
+Mostly, those things do not directly relate to any element in the graph.
+
+Therefore a search always consists of the following process:
+
+1. Search for a concrete item in the system (e.g. node, vertex, category)
+1. Resolve all vertices which match the concrete item.
+
+Internally `SearchProvider` are used which allow to first make suggestions based on an input.
+A `NodeSearchProvider` might return a list of suggestions representing nodes in the system.
+After the user selected one, the `NodeSearchProvider` knows on how to "resolve" that selection to a unique set of vertices.
+
+
+== View / Semantic Zoom Level
+
+This _Semantic Zoom Level_ indicates the number of hops a vertex may be away from any vertex within the focus to be shown.
+The focus itself is a list of vertexes within the graph.
+If the _Semantic Zoom Level_ is `0` only the vertices in focus are shown.
+
+The _Graph Service API_ allows to create a view on any given graph considering a custom or default focus as well as the semantic zoom level.
+
+== Enrichment
+
+Enrichment only works on the view of a graph and cannot be performed on the full graph.
+
+Enrichment is the process to enrich the view of the graph with additional information, usually used when the enriched data is expensive to load/calculate,
+e.g. load node data or calculate the status.
+
+=== Build in Enrichment
+
+Node Enrichment
+
+TODO add property to graph....
+
+
+== ReST API
+
+TODO MVR add documentation
+
+== Limitations
+
+- Status of vertices is not exposed
+- custom images/icons cannot be set
+- VMWare Topology Provider not fully migrated
+- EnhancedLinkd Topology Provider not fully migrated
