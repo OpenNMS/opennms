@@ -48,7 +48,7 @@ import com.google.common.collect.Sets;
 public class LinkdSelectionAware implements SelectionAware {
     private final String nameSpace;
 
-    private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdSelectionAware.class);
 
     public LinkdSelectionAware(String nameSpace) {
         super();
