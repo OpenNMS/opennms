@@ -301,16 +301,17 @@ public class ModelMappersTest {
         List<OnmsMetaData> metaDataList = Collections.singletonList(onmsMetaData);
         onmsNode.setMetaData(metaDataList);
 
-        OnmsIpInterface onmsIpInterface = new OnmsIpInterface();
-        onmsIpInterface.setIpAddress(InetAddress.getLocalHost());
-        onmsIpInterface.setMetaData(metaDataList);
-        onmsNode.setIpInterfaces(Collections.singleton(onmsIpInterface));
-
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
         onmsSnmpInterface.setIfDescr("test.ifdescr");
         onmsSnmpInterface.setIfName("test.ifname");
         onmsSnmpInterface.setIfIndex(1);
         onmsNode.setSnmpInterfaces(Collections.singleton(onmsSnmpInterface));
+
+        OnmsIpInterface onmsIpInterface = new OnmsIpInterface();
+        onmsIpInterface.setIpAddress(InetAddress.getLocalHost());
+        onmsIpInterface.setSnmpInterface(onmsSnmpInterface);
+        onmsIpInterface.setMetaData(metaDataList);
+        onmsNode.setIpInterfaces(Collections.singleton(onmsIpInterface));
 
         Node node = ModelMappers.toNode(onmsNode);
         assertThat(node.getId(), equalTo(onmsNode.getId()));
@@ -349,6 +350,8 @@ public class ModelMappersTest {
 
         IpInterface ipInterface = node.getIpInterfaces().get(0);
         assertThat(ipInterface.getIpAddress(), equalTo(onmsNode.getIpInterfaces().iterator().next().getIpAddress()));
+        assertThat(ipInterface.getSnmpInterface().get().getIfIndex(), equalTo(onmsNode.getSnmpInterfaces().iterator().next().getIfIndex()));
+
         assertThat(ipInterface.getMetaData().get(0).getKey(),
                 equalTo(onmsNode.getIpInterfaces().iterator().next().getMetaData().get(0).getKey()));
 
