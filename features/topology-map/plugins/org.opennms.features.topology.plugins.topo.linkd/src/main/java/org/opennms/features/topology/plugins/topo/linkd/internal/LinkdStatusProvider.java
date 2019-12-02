@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 
 public class LinkdStatusProvider extends LinkdStatusProviderAbstract implements StatusProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(LinkdStatusProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdStatusProvider.class);
 
     private static class AlarmStatus extends DefaultStatus {
         public AlarmStatus(String label, long count) {
