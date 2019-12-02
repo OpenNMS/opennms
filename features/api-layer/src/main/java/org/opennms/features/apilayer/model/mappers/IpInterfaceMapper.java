@@ -32,7 +32,7 @@ import org.mapstruct.Mapper;
 import org.opennms.integration.api.v1.model.immutables.ImmutableIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
-@Mapper(uses = MetaDataMapper.class)
+@Mapper(uses = {MetaDataMapper.class, SnmpInterfaceMapper.class})
 public interface IpInterfaceMapper {
     ImmutableIpInterface map(OnmsIpInterface onmsIpInterface);
 }

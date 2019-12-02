@@ -63,10 +63,11 @@ global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
 rule "cosmicClear"
   salience 100
   when
+    $sessionClock : SessionClock()
     $clear : OnmsAlarm(alarmType == OnmsAlarm.RESOLUTION_TYPE)
     $trigger : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE, severity.isGreaterThanOrEqual(OnmsSeverity.NORMAL), reductionKey == $clear.clearKey, lastEventTime <= $clear.lastEventTime)
   then
-    alarmService.clearAlarm($trigger, $clear.getLastEventTime());
+    alarmService.clearAlarm($trigger, $sessionClock.now());
 end
 
 /*
@@ -94,8 +95,6 @@ end
          WHERE alarmid = ${_id}
       </statement>
     </action>
-
-    The lastAutomationTime is set to the time of the clearing event.
 */
 rule "unclear"
   when

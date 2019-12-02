@@ -190,9 +190,9 @@ ssh -p 8101 admin@localhost
 Once in the shell, you can print show the commands help as follows:
 [source]
 ----
-opennms> poller:test --help
+opennms> opennms-poller:test --help
 DESCRIPTION
-        poller:test
+        opennms-poller:test
 
         Execute a poller test from the command line using current settings from poller-configuration.xml
 
@@ -219,7 +219,7 @@ The following example runs the _ICMP_ monitor on a specific _IP Interface_.
 .Run ICMP monitor configuration defined in specific Polling Package
 [source]
 ----
-opennms> poller:test -i 10.23.42.1 -s ICMP -P example1
+opennms> opennms-poller:test -i 10.23.42.1 -s ICMP -P example1
 ----
 
 The output is verbose which allows debugging of _Monitor_ configurations.
@@ -258,12 +258,12 @@ Once in the shell, print command help as follows
 
 [source]
 ----
-opennms> filters:filter --help
+opennms> opennms-filters:filter --help
 DESCRIPTION
-        filters:filter
+        opennms-filters:filter
 	Enumerates nodes/interfaces that match a give filter
 SYNTAX
-        filters:filter filterRule
+        opennms-filters:filter filterRule
 ARGUMENTS
         filterRule
                 A filter Rule
@@ -271,7 +271,7 @@ ARGUMENTS
 For ex: Run a filter rule that match a location
 [source]
 ----
-filters:filter  "location='MINION'"
+opennms-filters:filter  "location='MINION'"
 ----
 Output is displayed as follows
 [source]
@@ -284,7 +284,7 @@ Another ex:  Run a filter that match a node location and for a given IP Address 
 Refer to https://wiki.opennms.org/wiki/IPLIKE[IPLIKE] for more info on using IPLIKE syntax.
 [source]
 ----
-filters:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
+opennms-filters:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
 ----
 Output is displayed as follows
 [source]

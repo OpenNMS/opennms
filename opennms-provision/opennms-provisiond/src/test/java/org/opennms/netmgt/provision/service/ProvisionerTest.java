@@ -37,8 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -94,9 +93,6 @@ public class ProvisionerTest {
         when(provisionService.isDiscoveryEnabled()).thenReturn(true);
         provisioner.setProvisionService(provisionService);
 
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        provisioner.setScheduledExecutor(scheduledExecutorService);
-
         MonitoringSystemDao monitoringSystemDao = mock(MonitoringSystemDao.class);
         provisioner.setMonitoringSystemDao(monitoringSystemDao);
 
@@ -108,10 +104,12 @@ public class ProvisionerTest {
                 .setDistPoller("non-existent")
                 .getEvent();
 
-        // Trigger the newSuspect and wait for the runnable to complete
+        // Trigger the newSuspect
         provisioner.handleNewSuspectEvent(newSuspectEvent);
-        scheduledExecutorService.shutdown();
-        scheduledExecutorService.awaitTermination(1, TimeUnit.MINUTES);
+        // Wait for the runnable to complete
+        final CountDownLatch latch = new CountDownLatch(1);
+        provisioner.getNewSuspectExecutor().execute(latch::countDown);
+        latch.await(1, TimeUnit.MINUTES);
 
         // Make sure we tried to lookup the monitoring system from the given id
         verify(monitoringSystemDao, times(1)).get("non-existent");

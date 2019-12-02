@@ -12,7 +12,6 @@ $severity-minor:                    #FFD60A;
 $severity-major:                    #FF9F0A;
 $severity-critical:                 #DF5251;
 
-
 $font-size-base:  0.875rem;
 //$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
 
@@ -31,6 +30,9 @@ $theme-colors: (
     // are no longer available with bootstrap 4.
     // Here default is defined the same as "light".
     "default":                      #f8f9fa,
+
+    // The navbar uses a grey color, which works good for darker backgrounds
+    "grey":                         rgba(255, 255, 255, 0.5),
 
     // Severities
     "severity-indeterminate":       $severity-indeterminate,

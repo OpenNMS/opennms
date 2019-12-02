@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -878,10 +879,33 @@ public class NodeScan implements Scan {
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
                 LOG.debug("Found primary interface and SNMP service for node {}/{}/{}", node.getId(), node.getForeignSource(), node.getForeignId());
                 onAgentFound(currentPhase, primaryIface);
+            } else if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") == null
+                    && scanWithSnmpProfiles(primaryIface.getIpAddress())) {
+                LOG.debug("Found snmp agent from profiles for node {}/{}/{}", node.getId(), node.getForeignSource(), node.getForeignId());
+                onAgentFound(currentPhase, primaryIface);
             } else {
                 LOG.debug("Failed to locate primary interface and SNMP service for node {}/{}/{}", node.getId(), node.getForeignSource(), node.getForeignId());
             }
         }
+    }
+
+    private boolean scanWithSnmpProfiles(InetAddress address) {
+        // Marked as primary but SNMP service not found. Try to match agent config from profiles.
+        try {
+            Optional<SnmpAgentConfig> validConfig = m_provisionService.getSnmpProfileMapper()
+                    .getAgentConfigFromProfiles(address, getLocationName())
+                    .get();
+            if (validConfig.isPresent()) {
+                SnmpAgentConfig agentConfig = validConfig.get();
+                m_agentConfigFactory.saveAgentConfigAsDefinition(agentConfig, getLocationName(), "Provisiond");
+                LOG.info("IP address {} is fitted with profile {}", address.getHostAddress(), agentConfig.getProfileLabel());
+                return true;
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error("Exception while trying to get SNMP profiles.", e);
+        }
+
+        return false;
     }
 
     /**

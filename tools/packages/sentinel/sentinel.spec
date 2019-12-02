@@ -18,7 +18,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java jre-11}
+%{!?_java:%define _java java-1.8.0-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -53,15 +53,9 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires:	%{_java}
 BuildRequires:	libxslt
 
-#Requires:       jicmp >= 2.0.0
-#Requires(pre):  jicmp >= 2.0.0
-#Requires:       jicmp6 >= 2.0.0
-#Requires(pre):  jicmp6 >= 2.0.0
 Requires:       openssh
 Requires(post): util-linux
 Requires:       util-linux
-#Requires(pre):  %{_java}
-#Requires:       %{_java}
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires(pre):  /usr/sbin/useradd

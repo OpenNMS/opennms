@@ -582,6 +582,7 @@
                 <feature>opennms-endpoints-grafana</feature>
                 <feature>opennms-reporting</feature>
                 <feature>opennms-send-event-command</feature>
+                <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
                 <feature>opennms-blobstore-noop</feature>
@@ -591,7 +592,6 @@
                 <feature>opennms-threshold-states-shell</feature>
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
-
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>

@@ -37,7 +37,9 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -569,6 +571,55 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
     }
+
+    @Test(timeout=300000)
+    @JUnitSnmpAgents({
+            @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
+            // for discovering the "SNMP" service on the second interface
+            @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
+    })
+    public void testPopulateWithoutMonitoredSNMPServiceAndNodeScan() throws Exception {
+
+
+        importFromResource("classpath:/requisition_snmp_primary_but_no_service.xml", Boolean.TRUE.toString());
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+
+        runPendingScans();
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: " + getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(6, getSnmpInterfaceDao().countAll());
+
+        // Node Delete
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
+
+        //Verify node count
+        assertEquals(0, getNodeDao().countAll());
+
+    }
+
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
