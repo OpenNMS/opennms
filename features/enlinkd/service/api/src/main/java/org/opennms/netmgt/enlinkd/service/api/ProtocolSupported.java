@@ -37,7 +37,7 @@ public enum ProtocolSupported {
     NODES("All OpenNMS nodes"),
     USERDEFINED("User Defined Links");
 
-private String name;
+    private final String name;
 
     private ProtocolSupported(String name) {
         this.name = name;
