@@ -65,14 +65,14 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
     @Test
     public void canExposeGraphProvider() {
         try {
-            karafShell.runCommand("bsm:generate-hierarchies 5 2");
+            karafShell.runCommand("opennms-bsm:generate-hierarchies 5 2");
             karafShell.runCommand("graph:get --container bsm --namespace bsm", output -> {
                 final JSONObject jsonGraph = readGraph(output);
                 return jsonGraph.getString("label").equals("Business Service Graph")
                         && jsonGraph.getJSONArray("vertices").length() == 5;
             });
         } finally {
-            karafShell.runCommand("bsm:delete-generated-hierarchies");
+            karafShell.runCommand("opennms-bsm:delete-generated-hierarchies");
         }
     }
 
@@ -108,7 +108,7 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
                 .body("edges", Matchers.hasSize(0));
 
         // Generate hierarchie
-        karafShell.runCommand("bsm:generate-hierarchies 5 2");
+        karafShell.runCommand("opennms-bsm:generate-hierarchies 5 2");
         Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {
             given().log().ifValidationFails()
                     .accept(ContentType.JSON)
@@ -121,7 +121,7 @@ public class GraphProviderIT extends OpenNMSSeleniumIT {
         });
 
         // Delete hierarchy and verify daemon reloaded successful
-        karafShell.runCommand("bsm:delete-generated-hierarchies");
+        karafShell.runCommand("opennms-bsm:delete-generated-hierarchies");
         Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {
             given().log().ifValidationFails()
                     .accept(ContentType.JSON)
