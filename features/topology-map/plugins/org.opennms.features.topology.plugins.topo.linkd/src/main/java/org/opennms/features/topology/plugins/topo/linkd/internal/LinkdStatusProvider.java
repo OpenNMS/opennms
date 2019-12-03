@@ -47,10 +47,18 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements StatusProvider {
+
+    private final AlarmDao m_alarmDao;
+
+    public LinkdStatusProvider(AlarmDao alarmDao,OnmsTopologyDao onmsTopologyDao) {
+        super(onmsTopologyDao);
+        m_alarmDao = alarmDao;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdStatusProvider.class);
 
@@ -60,7 +68,6 @@ public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements 
         }
     }
 
-    private AlarmDao m_alarmDao;
 
     @Override
     public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
@@ -205,7 +212,4 @@ public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements 
         return createDefaultStatus();
     }
 
-    public void setAlarmDao(AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
 }

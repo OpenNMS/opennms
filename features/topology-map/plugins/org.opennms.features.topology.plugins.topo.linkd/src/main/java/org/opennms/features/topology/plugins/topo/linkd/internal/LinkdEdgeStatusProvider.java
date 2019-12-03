@@ -44,10 +44,18 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 import com.google.common.collect.Maps;
 
 public class LinkdEdgeStatusProvider extends AbstractLinkdStatusProvider implements EdgeStatusProvider {
+
+    private final AlarmDao m_alarmDao;
+
+    public LinkdEdgeStatusProvider(AlarmDao alarmDao,OnmsTopologyDao onmsTopologyDao) {
+        super(onmsTopologyDao);
+        m_alarmDao = alarmDao;
+    }
 
     public static class LinkdEdgeStatus implements Status{
 
@@ -84,8 +92,6 @@ public class LinkdEdgeStatusProvider extends AbstractLinkdStatusProvider impleme
             return "LinkdEdgeStatus[" + m_status + "]";
         }
     }
-
-    private AlarmDao m_alarmDao;
 
     @Override
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider,
@@ -129,9 +135,4 @@ EDGES:        for (EdgeRef edgeRef : edges) {
         criteria.addRestriction(new NeRestriction("severity", OnmsSeverity.CLEARED));
         return getAlarmDao().findMatching(criteria);
     }
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
-
 }

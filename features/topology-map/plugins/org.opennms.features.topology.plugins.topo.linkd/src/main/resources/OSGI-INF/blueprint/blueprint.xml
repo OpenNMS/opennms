@@ -49,7 +49,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <value>USERDEFINED</value>
         	</list>
         	</argument>
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <argument index="3" ref="onmsTopologyDao"/>
         <property name="topologyProviderInfo" ref="linkdTopologyProviderInfo"/>
     </bean>
 
@@ -69,14 +69,14 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- SearchProvider -->
     <bean id="linkdSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
         <argument index="0" ref="linkdTopologyProvider" />
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <argument index="1" ref="onmsTopologyDao"/>
     </bean>
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
     <!-- EdgeStatusProvider -->
     <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
-        <property name="alarmDao" ref="alarmDao"/>
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <argument index="0" ref="alarmDao"/>
+        <argument index="0" ref="onmsTopologyDao"/>
     </bean>
 	<bean id="linkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
         <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
@@ -85,8 +85,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <!-- Status provider -->
     <bean id="linkdStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdStatusProvider">
-        <property name="alarmDao" ref="alarmDao"/>
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
+        <argument index="0" ref="alarmDao"/>
+        <argument index="1" ref="onmsTopologyDao"/>
     </bean>
     <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="linkdStatusProvider" />
 
@@ -95,9 +95,9 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyBundleActivator"
     	init-method="start"
         destroy-method="stop">
-        <property name="onmsTopologyDao" ref="onmsTopologyDao"/>
-		<property name="metricRegistry" ref="metricRegistry"/>
-		<property name="context" ref="blueprintBundleContext"/>
+        <argument index="0" ref="onmsTopologyDao"/>
+		<argument index="1" ref="metricRegistry"/>
+		<argument index="2" ref="blueprintBundleContext"/>
     </bean>
 
     <!-- Icon definition -->

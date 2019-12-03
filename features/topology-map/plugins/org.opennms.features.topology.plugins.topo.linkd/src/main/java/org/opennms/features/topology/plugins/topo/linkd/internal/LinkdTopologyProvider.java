@@ -56,7 +56,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
 
-    private OnmsTopologyDao m_onmsTopologyDao;
+    private final OnmsTopologyDao m_onmsTopologyDao;
 
     private final Timer m_loadFullTimer;
     private final Timer m_loadVerticesTimer;
@@ -64,11 +64,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final List<String> m_protocols;
     private final SelectionAware selectionAwareDelegate;
 
-    public LinkdTopologyProvider(String registryValue, MetricRegistry registry, List<String> protocols ) {
+    public LinkdTopologyProvider(String registryValue, MetricRegistry registry, List<String> protocols, OnmsTopologyDao onmsTopologyDao) {
         super(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registryValue);
         Objects.requireNonNull(registry);
         Objects.requireNonNull(protocols);
+        Objects.requireNonNull(onmsTopologyDao);
+        m_onmsTopologyDao = onmsTopologyDao;
         selectionAwareDelegate = new LinkdSelectionAware(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD);
         m_protocols=protocols;
         m_loadFullTimer = registry.timer(MetricRegistry.name(registryValue, "load", "full"));
@@ -76,10 +78,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadEdgesTimer = registry.timer(MetricRegistry.name(registryValue, "load", "edges", "none"));
     }
 
-    public LinkdTopologyProvider(MetricRegistry registry, String protocol ) {
+    public LinkdTopologyProvider(MetricRegistry registry, String protocol, OnmsTopologyDao onmsTopologyDao ) {
         super(protocol);
         Objects.requireNonNull(registry);
         Objects.requireNonNull(protocol);
+        Objects.requireNonNull(onmsTopologyDao);
+        m_onmsTopologyDao = onmsTopologyDao;
         selectionAwareDelegate = new LinkdSelectionAware(protocol);
         m_protocols=new ArrayList<>();
         m_protocols.add(protocol);
@@ -204,14 +208,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         LOG.info("refresh: Found {} vertices", getVerticesWithoutGroups().size());
         LOG.info("refresh: Found {} edges", getEdges().size());
     }
-    public OnmsTopologyDao getOnmsTopologyDao() {
-        return m_onmsTopologyDao;
-    }
-
-    public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
-        m_onmsTopologyDao = onmsTopologyDao;
-    }
-
+ 
     public List<String> getProtocols() {
         return m_protocols;
     }

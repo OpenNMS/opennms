@@ -220,7 +220,7 @@
         <value>USERDEFINED</value>
         	</list>
         	</constructor-arg>
-        <property name="onmsTopologyDao" ref="onmsTopologyDao" />
+        <constructor-arg index="3" ref="onmsTopologyDao" />
     </bean>
 
 </beans>

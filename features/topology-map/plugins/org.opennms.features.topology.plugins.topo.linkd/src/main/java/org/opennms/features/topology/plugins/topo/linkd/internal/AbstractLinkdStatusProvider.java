@@ -50,13 +50,14 @@ public abstract class AbstractLinkdStatusProvider {
         return false;
     }
 
-    private OnmsTopologyDao m_onmsTopologyDao;
+    private final OnmsTopologyDao m_onmsTopologyDao;
 
     public OnmsTopologyDao getOnmsTopologyDao() {
         return m_onmsTopologyDao;
     }
 
-    public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
+    public AbstractLinkdStatusProvider(OnmsTopologyDao onmsTopologyDao) {
+        super();
         m_onmsTopologyDao = onmsTopologyDao;
     }
     

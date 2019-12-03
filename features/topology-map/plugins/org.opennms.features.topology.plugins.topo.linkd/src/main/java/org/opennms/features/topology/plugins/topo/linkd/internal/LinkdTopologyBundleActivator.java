@@ -46,15 +46,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.sun.tools.javac.util.Assert;
 
 public class LinkdTopologyBundleActivator {
 
     private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyBundleActivator.class);
     private List<ServiceRegistration<MetaTopologyProvider>> registrations = new ArrayList<ServiceRegistration<MetaTopologyProvider>>();
 
-    private OnmsTopologyDao onmsTopologyDao;
-    private MetricRegistry metricRegistry;
-    private BundleContext context;
+    private final OnmsTopologyDao onmsTopologyDao;
+    private final MetricRegistry metricRegistry;
+    private final BundleContext context;
+
+    public LinkdTopologyBundleActivator(
+            OnmsTopologyDao onmsTopologyDao, MetricRegistry metricRegistry,
+            BundleContext context) {
+        this.onmsTopologyDao = onmsTopologyDao;
+        this.metricRegistry = metricRegistry;
+        this.context = context;
+    }
 
     public void start() throws Exception {
         for (OnmsTopologyProtocol onmsTopologyProtocol: onmsTopologyDao.getSupportedProtocols()) {
@@ -64,8 +73,7 @@ public class LinkdTopologyBundleActivator {
                                     "This Topology Provider displays the "+ onmsTopologyProtocol.getId() + " topology information discovered by: " + onmsTopologyProtocol.getSource(), 
                                     false, 
                                     true);
-            LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, onmsTopologyProtocol.getId());
-            topologyProvider.setOnmsTopologyDao(onmsTopologyDao);
+            LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, onmsTopologyProtocol.getId(), onmsTopologyDao);
             topologyProvider.setTopologyProviderInfo(info);
             VertexHopGraphProvider hop = new VertexHopGraphProvider(topologyProvider);
             SimpleMetaTopologyProvider meta = new SimpleMetaTopologyProvider(hop);
@@ -85,22 +93,6 @@ public class LinkdTopologyBundleActivator {
         
     }
 
-    public OnmsTopologyDao getOnmsTopologyDao() {
-        return onmsTopologyDao;
-    }
-
-    public void setOnmsTopologyDao(OnmsTopologyDao onmsTopologyDao) {
-        this.onmsTopologyDao = onmsTopologyDao;
-    }
-
-    public MetricRegistry getMetricRegistry() {
-        return metricRegistry;
-    }
-
-    public void setMetricRegistry(MetricRegistry registry) {
-        this.metricRegistry = registry;
-    }
-
     public List<ServiceRegistration<MetaTopologyProvider>> getRegistrations() {
         return registrations;
     }
@@ -109,13 +101,4 @@ public class LinkdTopologyBundleActivator {
             List<ServiceRegistration<MetaTopologyProvider>> registrations) {
         this.registrations = registrations;
     }
-
-    public BundleContext getContext() {
-        return context;
-    }
-
-    public void setContext(BundleContext context) {
-        this.context = context;
-    }
-
 }
