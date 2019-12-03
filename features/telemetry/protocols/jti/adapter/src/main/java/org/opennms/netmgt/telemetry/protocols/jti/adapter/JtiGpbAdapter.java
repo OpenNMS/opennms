@@ -44,7 +44,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedPersistingAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass;
@@ -73,7 +73,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  *
  * @author jwhite
  */
-public class JtiGpbAdapter extends AbstractScriptedPersistingAdapter {
+public class JtiGpbAdapter extends AbstractScriptedCollectionAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(JtiGpbAdapter.class);
 
     private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
@@ -100,7 +100,7 @@ public class JtiGpbAdapter extends AbstractScriptedPersistingAdapter {
     }
 
     @Override
-    public Stream<CollectionSetWithAgent> handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {
         final TelemetryTop.TelemetryStream jtiMsg;
         try {
             jtiMsg = TelemetryTop.TelemetryStream.parseFrom(message.getByteArray(), s_registry);

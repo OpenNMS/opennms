@@ -51,7 +51,8 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractPersistingAdapter;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableMap;
 
-public class BmpTelemetryAdapter extends AbstractPersistingAdapter {
+public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpTelemetryAdapter.class);
 
@@ -73,19 +74,16 @@ public class BmpTelemetryAdapter extends AbstractPersistingAdapter {
     }
 
     @Override
-    public Stream<CollectionSetWithAgent> handleMessage(final TelemetryMessageLogEntry message,
-                                                        final TelemetryMessageLog messageLog) {
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(final TelemetryMessageLogEntry message,
+                                                                  final TelemetryMessageLog messageLog) {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
         LOG.trace("Parsing packet: {}", message);
         final BsonDocument document = new RawBsonDocument(message.getByteArray());
-        if (document == null) {
-            return Stream.empty();
-        }
 
         // This adapter only cares about statistic packets
         if (!getString(document, "@type")
-                .map(type -> type.equals("STATISTICS_REPORT"))
+                .map(type -> Header.Type.STATISTICS_REPORT.name().equals(type))
                 .orElse(false)) {
             return Stream.empty();
         }

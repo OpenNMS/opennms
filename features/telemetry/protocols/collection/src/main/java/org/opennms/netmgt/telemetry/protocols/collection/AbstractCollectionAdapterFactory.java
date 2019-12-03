@@ -42,16 +42,10 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
-public abstract class AbstractCollectionAdapterFactory implements AdapterFactory {
-
-    @Autowired
-    private TelemetryRegistry telemetryRegistry;
+public abstract class AbstractCollectionAdapterFactory extends AbstractAdapterFactory {
 
     @Autowired
     private CollectionAgentFactory collectionAgentFactory;
-
-    @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
 
     @Autowired
     private NodeDao nodeDao;
@@ -68,22 +62,8 @@ public abstract class AbstractCollectionAdapterFactory implements AdapterFactory
     @Autowired
     private ThresholdingService thresholdingService;
 
-    private final BundleContext bundleContext;
-
-    public TelemetryRegistry getTelemetryRegistry() {
-        return telemetryRegistry;
-    }
-
-    public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
-        this.telemetryRegistry = telemetryRegistry;
-    }
-
     public AbstractCollectionAdapterFactory(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public BundleContext getBundleContext() {
-        return bundleContext;
+        super(bundleContext);
     }
 
     public CollectionAgentFactory getCollectionAgentFactory() {
@@ -92,14 +72,6 @@ public abstract class AbstractCollectionAdapterFactory implements AdapterFactory
 
     public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
         this.collectionAgentFactory = collectionAgentFactory;
-    }
-
-    public InterfaceToNodeCache getInterfaceToNodeCache() {
-        return interfaceToNodeCache;
-    }
-
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
     }
 
     public NodeDao getNodeDao() {

@@ -954,6 +954,12 @@ public abstract class EventConstants {
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
     //
+    // for BMP
+    //
+    public static final String BMP_PEER_DOWN = "uei.opennms.org/bmp/peerDown";
+    public static final String BMP_PEER_UP = "uei.opennms.org/bmp/peerUp";
+
+    //
     // for Bsmd
     //
     public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
