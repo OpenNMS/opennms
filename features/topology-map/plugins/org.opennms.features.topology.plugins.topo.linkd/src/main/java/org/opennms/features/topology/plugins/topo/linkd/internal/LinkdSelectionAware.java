@@ -51,7 +51,6 @@ public class LinkdSelectionAware implements SelectionAware {
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSelectionAware.class);
 
     public LinkdSelectionAware(String nameSpace) {
-        super();
         this.nameSpace = nameSpace;
     }
 
