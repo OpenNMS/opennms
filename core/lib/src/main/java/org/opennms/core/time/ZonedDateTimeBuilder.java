@@ -30,12 +30,12 @@ package org.opennms.core.time;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,9 +341,6 @@ public class ZonedDateTimeBuilder {
      * Convert a time zone String into a ZoneId. This will work with
      * all standard ZoneId types, plus a mostly-exhaustive list of
      * 3-letter offset abbreviations.
-     * 
-     * @param timezone
-     * @return
      */
     public static ZoneId parseZoneId(String value) {
         return ZoneId.of(value, TIME_ZONE_MAPPINGS);
@@ -479,34 +476,29 @@ public class ZonedDateTimeBuilder {
      * 
      * @return
      */
-    protected int getBestYear() {
-        if (m_year == null) {
-            return getBestYearForMonth(m_month);
-        } else {
-            return m_year;
-        }
+    private int getBestYear() {
+        return Optional.ofNullable(m_year).orElse(guessBestYear());
     }
 
-    public static int getBestYearForMonth(Integer month) {
-        final LocalDateTime now = LocalDateTime.now();
-        if (month == null) {
-            return now.getYear();
-        } else {
-            if (month > now.getMonth().getValue()) {
-                // If the month is larger than the current month,
-                // than assume that it was during the previous year
-                return now.getYear() - 1;
-            } else if (month.intValue() == Month.JANUARY.getValue() && now.getMonth() == Month.DECEMBER) {
-                // If the current month is December and the builder's
-                // month is January, than assume that it's a datestamp
-                // from slightly in the future and into the next year
-                final int yearValue = now.getYear() + 1;
-                LOG.warn("Received datestamp that is in January but our clock still says December; assigning future year {} to the datestamp", yearValue);
-                return yearValue;
-            } else {
-                return now.getYear();
-            }
-        }
+    private int guessBestYear() {
+        ZoneId zoneId = getBestZoneId();
+        LocalDateTime localReferenceTime = LocalDateTime.now(zoneId);
+
+        // get LocalDateTime
+        LocalDateTime dateTimeWithoutYear = LocalDateTime.of(
+                toValueOr0(m_year), toValueOr1(getMonth()), toValueOr1(getDayOfMonth()),
+                toValueOr0(getHourOfDay()), toValueOr0(getMinute()),
+                toValueOr0(getSecond()), 0);
+
+        return YearGuesser.guessYearForDate(dateTimeWithoutYear, localReferenceTime).getYear();
+    }
+
+    private static Integer toValueOr0(Integer integer) {
+        return Optional.ofNullable(integer).orElse(0);
+    }
+
+    private static Integer toValueOr1(Integer integer) {
+        return Optional.ofNullable(integer).orElse(1);
     }
 
     /**
