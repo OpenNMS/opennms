@@ -2,7 +2,7 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11"
+ARG BASE_IMAGE_VERSION="11.0.5.10-b3108"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-minion-base
 
