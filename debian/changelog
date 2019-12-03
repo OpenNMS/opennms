@@ -6,6 +6,8 @@ opennms (25.1.0-1) stable; urgency=medium
     For details on what has changed, see:
     http://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html
 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 06 Nov 2019 10:00:00 -0400
+
 opennms (25.0.0-1) stable; urgency=medium
 
   * New major stable release.  It contains a huge number of bug fixes and

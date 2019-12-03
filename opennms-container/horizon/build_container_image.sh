@@ -21,8 +21,6 @@ done
 
 docker build -t horizon \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
-  --build-arg BASE_IMAGE="opennms/openjdk" \
-  --build-arg BASE_IMAGE_VERSION="11.0.5.10-b3108" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${CIRCLE_REPOSITORY_URL}" \
   --build-arg REVISION="$(git describe --always)" \
