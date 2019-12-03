@@ -92,6 +92,39 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.1]
+
+==== Release Meridian-2019.1.1
+
+Release 2019.1.1 is the second release in the Meridian 2019 series.
+
+It contains a number of bug fixes mostly related to alarm and event processing and potential resource leaks, as well as provisioning enhancements to SNMP profiles.
+
+The codename for 2019.1.0 is _link:$$https://en.wikipedia.org/wiki/Venus_(planet)$$[Venus]_
+
+===== Bug
+
+* Readiness probe with Minion in Kubernetes with health:check does not work (Issue http://issues.opennms.org/browse/NMS-12120[NMS-12120])
+* Cannot use poller:poll karaf command with WsManMonitor through Minions (Issue http://issues.opennms.org/browse/NMS-12365[NMS-12365])
+* Strange behavior on used threads and file descriptors on Minion (Issue http://issues.opennms.org/browse/NMS-12366[NMS-12366])
+* Upstream Drools Bug: From with modify fires unexpected rule (Issue http://issues.opennms.org/browse/NMS-12367[NMS-12367])
+* "Page Not Found" in alarm-list when choosing number of alarms in dropdown-list (Issue http://issues.opennms.org/browse/NMS-12379[NMS-12379])
+* Build failure during release for 25.1.0 in CircleCI (Issue http://issues.opennms.org/browse/NMS-12380[NMS-12380])
+* backport missing patches from 25.1.0 to foundation-2019 (Issue http://issues.opennms.org/browse/NMS-12384[NMS-12384])
+* Discovery does not honor exclude-range inside a definition (Issue http://issues.opennms.org/browse/NMS-12385[NMS-12385])
+* Discovery exclude-range is not location-aware (Issue http://issues.opennms.org/browse/NMS-12386[NMS-12386])
+* Update OpenJDK 11.0.4 to 11.0.5 (Issue http://issues.opennms.org/browse/NMS-12387[NMS-12387])
+* Elasticsearch event forwarder manipulates in-flight event (Issue http://issues.opennms.org/browse/NMS-12390[NMS-12390])
+* send-event.pl is broken after OpenNMS 25.1.0 update (Issue http://issues.opennms.org/browse/NMS-12392[NMS-12392])
+* SNMP profile fitting is not triggered in some cases when MINION is involved (Issue http://issues.opennms.org/browse/NMS-12399[NMS-12399])
+* Alarmd fails intermittently and OOMs (Issue http://issues.opennms.org/browse/NMS-12412[NMS-12412])
+* SNMP Remove from definitions fails for definitions with profile label (Issue http://issues.opennms.org/browse/NMS-12413[NMS-12413])
+
+===== Enhancement
+
+* Create a step-by-step guide how to setup Kafka for Minions (Issue http://issues.opennms.org/browse/NMS-12368[NMS-12368])
+* Enhance new snmp profiles to allow fitting to nodes inside requisitions without SNMP service associated to any IPs configured (Issue http://issues.opennms.org/browse/NMS-12396[NMS-12396])
+
 [releasenotes-changelog-Meridian-2019.1.0]
 
 ==== Release Meridian-2019.1.0
