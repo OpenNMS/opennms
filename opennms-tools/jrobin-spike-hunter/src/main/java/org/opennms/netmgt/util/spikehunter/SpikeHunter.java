@@ -74,7 +74,8 @@ public class SpikeHunter {
 	private static PrintStream m_out;
 	
 	private static enum ANALYSIS_STRATEGIES {
-		PERCENTILE_STRATEGY
+		PERCENTILE_STRATEGY,
+		ABSOLUTE_VALUE_STRATEGY
 	}
 	
 	private static enum REPLACEMENT_STRATEGIES {
@@ -115,7 +116,7 @@ public class SpikeHunter {
 		m_options.addOption("h", "help", false, "This help text");
 		m_options.addOption("f", "file", true, "JRobin disk file on which to operate");
 		m_options.addOption("d", "ds-name", true, "Data source names on which to operate, comma-separated. If unspecified, operate on all DSes.");
-		m_options.addOption("a", "analysis-strategy", true, "Data analysis strategy. Defaults to percentile.");
+		m_options.addOption("a", "analysis-strategy", true, "Data analysis strategy. Defaults to percentile; also available is absolute.");
 		m_options.addOption("o", "operands", true, "Operands (numeric, comma-separated) for the selected analysis strategy. Defaults to 95,5.");
 		m_options.addOption("r", "replacement-strategy", true, "Strategy for replacing spike samples, one of nan|previous|next, defaults to nan");
 		m_options.addOption("n", "dry-run", false, "Just report spikes, do not make any changes to the JRobin disk file.");
@@ -132,6 +133,7 @@ public class SpikeHunter {
         
         Map<String,Integer> analysisStrategies = new HashMap<String,Integer>();
         analysisStrategies.put("percentile", ANALYSIS_STRATEGIES.PERCENTILE_STRATEGY.ordinal());
+        analysisStrategies.put("absolute", ANALYSIS_STRATEGIES.ABSOLUTE_VALUE_STRATEGY.ordinal());
         
         Map<String,Integer> replacementStrategies = new HashMap<String,Integer>();
         replacementStrategies.put("nan", REPLACEMENT_STRATEGIES.NAN_STRATEGY.ordinal());
