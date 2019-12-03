@@ -28,10 +28,20 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.opennms.plugins.elasticsearch.rest.EventToIndex.*;
+import static org.mockito.Mockito.mock;
+import static org.opennms.plugins.elasticsearch.rest.EventToIndex.isOID;
 
+import java.util.Collections;
+
+import org.json.simple.JSONObject;
 import org.junit.Test;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
+
+import io.searchbox.client.JestClient;
 
 public class EventToIndexTest {
 
@@ -42,5 +52,20 @@ public class EventToIndexTest {
         assertThat(isOID("..3.."), is(false));
         assertThat(isOID("192.168.0.1"), is(false));
         assertThat(isOID("nodeLabel"), is(false));
+    }
+
+    @Test
+    public void testHandleParameters() {
+        @SuppressWarnings("resource")
+        final EventToIndex etoi = new EventToIndex(mock(JestClient.class), 1);
+        etoi.setGroupOidParameters(true);
+
+        final Event e = new EventBuilder("opennms/fake-uei", "source").addParam(".3.1.2", "oid-param").addParam("nodeLabel", "fake-node").getEvent();
+        e.setParmCollection(Collections.unmodifiableList(e.getParmCollection()));
+        final JSONObject json = new JSONObject();
+        etoi.handleParameters(e, json);
+        assertEquals(2, e.getParmCollection().size());
+        assertNotNull(json.get("p_oids"));
+        assertEquals(2, json.keySet().size());
     }
 }
