@@ -1,4 +1,5 @@
 [releasenotes-2018]
+
 === OpenNMS Meridian 2018
 
 ==== System Requirements
@@ -83,6 +84,22 @@ New or updated trap definitions have been added for the following classes of dev
 * Drools has been updated to 7.x.
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
+
+[releasenotes-changelog-Meridian-2018.1.14]
+
+==== Release Meridian-2018.1.14
+
+Release 2018.1.14 is a small update to 2018.1.13 that fixes a few bugs including a fix to syslog date parsing, Drools fixes, and a few other changes.
+
+The codename for 2018.1.14 is _Earthquake_.
+
+===== Bug
+
+* Syslog incorrect dates being parsed into database (Issue http://issues.opennms.org/browse/NMS-10605[NMS-10605])
+* Cannot use poller:poll karaf command with WsManMonitor through Minions (Issue http://issues.opennms.org/browse/NMS-12365[NMS-12365])
+* Upstream Drools Bug: From with modify fires unexpected rule (Issue http://issues.opennms.org/browse/NMS-12367[NMS-12367])
+* "Page Not Found" in alarm-list when choosing number of alarms in dropdown-list (Issue http://issues.opennms.org/browse/NMS-12379[NMS-12379])
+* Elasticsearch event forwarder manipulates in-flight event (Issue http://issues.opennms.org/browse/NMS-12390[NMS-12390])
 
 [releasenotes-changelog-Meridian-2018.1.13]
 
