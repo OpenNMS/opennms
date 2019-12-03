@@ -34,19 +34,21 @@ import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 public final class BusinessServiceEdge extends AbstractDomainEdge {
 
-    private final static String PROPERTY_MAP_FUNCTION = "mapFunction";
-    private final static String PROPERTY_WEIGHT = "weight";
-    
+    interface Properties {
+        String MAP_FUNCTION = "mapFunction";
+        String WEIGHT = "weight";
+    }
+
     public BusinessServiceEdge(GenericEdge genericEdge) {
         super(genericEdge);
     }
 
     public MapFunction getMapFunction() {
-        return this.delegate.getProperty(PROPERTY_MAP_FUNCTION);
+        return this.delegate.getProperty(Properties.MAP_FUNCTION);
     }
 
     public float getWeight() {
-        return this.delegate.getProperty(PROPERTY_WEIGHT);
+        return this.delegate.getProperty(Properties.WEIGHT);
     }
 
     public final static BusinessServiceEdgeBuilder builder() {
@@ -68,12 +70,12 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
         }
         
         BusinessServiceEdgeBuilder weight(float weight) {
-            this.properties.put(PROPERTY_WEIGHT, weight);
+            this.properties.put(Properties.WEIGHT, weight);
             return this;
         }
        
         BusinessServiceEdgeBuilder mapFunction(MapFunction mapFunction) {
-            this.properties.put(PROPERTY_MAP_FUNCTION, mapFunction);
+            this.properties.put(Properties.MAP_FUNCTION, mapFunction);
             return this;
         }
         

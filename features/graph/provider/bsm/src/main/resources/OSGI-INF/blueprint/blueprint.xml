@@ -18,9 +18,13 @@
         <argument ref="businessServiceManager" />
         <argument ref="eventIpcManager" />
     </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="bsmGraphProvider" />
 
-    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="bsmGraphProvider">
-
+    <!-- Expose custom property converter to serialse the data to json -->
+    <service interface="org.opennms.netmgt.graph.rest.api.PropertyConverter">
+        <bean class="org.opennms.netmgt.graph.provider.bsm.converter.MapFunctionJsonConverter" />
     </service>
-
+    <service interface="org.opennms.netmgt.graph.rest.api.PropertyConverter">
+        <bean class="org.opennms.netmgt.graph.provider.bsm.converter.ReduceFunctionJsonConverter" />
+    </service>
 </blueprint>

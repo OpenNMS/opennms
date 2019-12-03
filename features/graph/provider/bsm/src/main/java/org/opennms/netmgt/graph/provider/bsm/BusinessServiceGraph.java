@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -35,9 +36,7 @@ import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraph;
 
 
-// TODO: Patrick: I am not sure we need such a complicated object structure since we only build the objects and then give them
-// as AbstractDomain* to the outside. Evaluate if the builders wouldn't be enough?
-public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusinessServiceVertex, BusinessServiceEdge> {
+public final class BusinessServiceGraph extends AbstractDomainGraph<BusinessServiceVertex, BusinessServiceEdge> {
 
     public static final String NAMESPACE = "bsm";
 
@@ -46,13 +45,13 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
     }
     
     @Override
-    protected ImmutableGraph<AbstractBusinessServiceVertex, BusinessServiceEdge> convert(GenericGraph graph) {
+    protected ImmutableGraph<BusinessServiceVertex, BusinessServiceEdge> convert(GenericGraph graph) {
         return new BusinessServiceGraph(graph);
     }
 
     @Override
-    protected AbstractBusinessServiceVertex convert(GenericVertex vertex) {
-        return AbstractBusinessServiceVertex.from(vertex);
+    protected BusinessServiceVertex convert(GenericVertex vertex) {
+        return BusinessServiceVertex.from(vertex);
     }
 
     @Override
@@ -62,7 +61,7 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
 
     @Override
     public Class getVertexType() {
-        return AbstractBusinessServiceVertex.class;
+        return BusinessService.class;
     }
     
     public static BusinessServiceGraphBuilder builder() {
@@ -73,8 +72,7 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<AbstractBusi
         return new BusinessServiceGraph(genericGraph);
     }
 
-    public final static class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder,
-        AbstractBusinessServiceVertex, BusinessServiceEdge> {
+    public final static class BusinessServiceGraphBuilder extends AbstractDomainGraphBuilder<BusinessServiceGraphBuilder, BusinessServiceVertex, BusinessServiceEdge> {
         
         private BusinessServiceGraphBuilder() {
             namespace(NAMESPACE);
