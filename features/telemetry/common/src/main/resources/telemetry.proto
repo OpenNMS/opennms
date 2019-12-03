@@ -1,15 +1,18 @@
-option java_package = "org.opennms.netmgt.telemetry.ipc";
+syntax = "proto3";
+option java_package = "org.opennms.netmgt.telemetry.common.ipc";
 option java_outer_classname = "TelemetryProtos";
 
 message TelemetryMessage {
-    required uint64 timestamp = 1;
-    required bytes bytes = 2;
+    uint64 timestamp = 1;
+    bytes bytes = 2;
 }
 
 message TelemetryMessageLog {
-    required string location = 1;
-    required string system_id = 2;
-    optional string source_address = 3;
-    optional uint32 source_port = 4;
-    repeated TelemetryMessage message = 5;
+    string location = 1;
+    string system_id = 2;
+    string source_address = 3;
+    uint32 source_port = 4;
+    bool isFlowMessage = 5;
+    bool useRoutingKey = 6;
+    repeated TelemetryMessage message = 7;
 }
