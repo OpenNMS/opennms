@@ -47,7 +47,6 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -55,33 +54,16 @@ import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public abstract class AbstractPersistingAdapter implements Adapter {
+public abstract class AbstractCollectionAdapter extends AbstractAdapter {
     private static final ServiceParameters EMPTY_SERVICE_PARAMETERS = new ServiceParameters(Collections.emptyMap());
-
-    protected final Logger LOG = LoggerFactory.getLogger(AbstractPersistingAdapter.class);
-
-    /**
-     * Time taken to handle a log
-     */
-    protected final Timer logParsingTimer;
-
-    /**
-     * Number of message per log
-     */
-    protected final Histogram packetsPerLogHistogram;
 
     private final LoadingCache<CacheKey, Optional<PackageDefinition>> cache = CacheBuilder.newBuilder()
             .maximumSize(SystemProperties.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
@@ -106,8 +88,6 @@ public abstract class AbstractPersistingAdapter implements Adapter {
                 }
             });
 
-    protected BundleContext bundleContext;
-
     @Autowired
     private FilterDao filterDao;
 
@@ -125,14 +105,8 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     private Cache<String, ThresholdingSession> agentThresholdingSessions = CacheBuilder.newBuilder().expireAfterAccess(thresholdingSessionTtlMinutes, TimeUnit.MINUTES).build();
 
-    private AdapterDefinition adapterConfig;
-
-    public AbstractPersistingAdapter(String name, MetricRegistry metricRegistry) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(metricRegistry);
-
-        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
-        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
+    public AbstractCollectionAdapter(String name, MetricRegistry metricRegistry) {
+        super(name, metricRegistry);
     }
 
     /**
@@ -152,46 +126,40 @@ public abstract class AbstractPersistingAdapter implements Adapter {
      * @throws Exception
      *             if an error occured while generating the collection set
      */
-    public abstract Stream<CollectionSetWithAgent> handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog);
+    public abstract Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog);
 
-    @Override
-    public void handleMessageLog(TelemetryMessageLog messageLog) {
-        try (Timer.Context ctx = logParsingTimer.time()) {
-            for (TelemetryMessageLogEntry message : messageLog.getMessageList()) {
-                handleMessage(message, messageLog).forEach(result -> {
-                    // Locate the matching package definition
-                    final PackageDefinition pkg = getPackageFor(adapterConfig, result.getAgent());
-                    if (pkg == null) {
-                        LOG.warn("No matching package found for message: {}. Dropping.", message);
-                        return;
-                    }
-
-                    // Build the repository from the package definition
-                    final RrdRepository repository = new RrdRepository();
-                    repository.setStep(pkg.getRrd().getStep());
-                    repository.setHeartBeat(repository.getStep() * 2);
-                    repository.setRraList(pkg.getRrd().getRras());
-                    repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
-
-                    // Persist!
-                    final CollectionSet collectionSet = result.getCollectionSet();
-                    LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
-                    final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
-                    collectionSet.visit(persister);
-
-                    // Thresholding
-                    try {
-                        if (isThresholdingEnabled.get()) {
-                            ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
-                            session.accept(collectionSet);
-                        }
-                    } catch (ThresholdInitializationException e) {
-                        LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
-                    }
-                });
+    public final void handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {
+        handleCollectionMessage(message, messageLog).forEach(result -> {
+            // Locate the matching package definition
+            final PackageDefinition pkg = getPackageFor(adapterConfig, result.getAgent());
+            if (pkg == null) {
+                LOG.warn("No matching package found for message: {}. Dropping.", message);
+                return;
             }
-            packetsPerLogHistogram.update(messageLog.getMessageList().size());
-        }
+
+            // Build the repository from the package definition
+            final RrdRepository repository = new RrdRepository();
+            repository.setStep(pkg.getRrd().getStep());
+            repository.setHeartBeat(repository.getStep() * 2);
+            repository.setRraList(pkg.getRrd().getRras());
+            repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
+
+            // Persist!
+            final CollectionSet collectionSet = result.getCollectionSet();
+            LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
+            final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
+            collectionSet.visit(persister);
+
+            // Thresholding
+            try {
+                if (isThresholdingEnabled.get()) {
+                    ThresholdingSession session = getSessionForAgent(result.getAgent(), repository);
+                    session.accept(collectionSet);
+                }
+            } catch (ThresholdInitializationException e) {
+                LOG.warn("Failed Thresholding of CollectionSet : {} for agent: {}", e.getMessage(), result.getAgent());
+            }
+        });
     }
 
     private ThresholdingSession getSessionForAgent(CollectionAgent agent, RrdRepository repository) throws ThresholdInitializationException {
@@ -220,11 +188,6 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         return new StringBuilder(String.valueOf(nodeId)).append(hostAddress).append(serviceName).toString();
     }
 
-    @Override
-    public void setConfig(AdapterDefinition adapterConfig) {
-        this.adapterConfig = adapterConfig;
-    }
-
     private PackageDefinition getPackageFor(AdapterDefinition protocol, CollectionAgent agent) {
         try {
             Optional<PackageDefinition> value = cache.get(new CacheKey(protocol.getName(), agent.getHostAddress()));
@@ -249,10 +212,6 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     public void setThresholdingService(ThresholdingService thresholdingService) {
         this.thresholdingService = thresholdingService;
-    }
-
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
     }
 
     private static class CacheKey {
@@ -290,7 +249,4 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         }
     }
 
-    @Override
-    public void destroy() {
-    }
 }

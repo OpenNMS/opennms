@@ -11,6 +11,7 @@
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
 	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
 	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
+	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
 
 	<!-- Telemetry Adapter -->
 	<bean id="bmpTelemetryFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapterFactory">
@@ -25,6 +26,19 @@
 		<property name="thresholdingService" ref="thresholdingService" />
 	</bean>
 	<service ref="bmpTelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+	<!-- Peer Status Adapter -->
+	<bean id="bmpPeerStatusFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="eventForwarder" ref="eventForwarder" />
+	</bean>
+	<service ref="bmpPeerStatusFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
 		</service-properties>

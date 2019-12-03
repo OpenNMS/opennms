@@ -44,7 +44,7 @@ import org.osgi.framework.BundleContext;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 
-public abstract class AbstractScriptedPersistingAdapter extends AbstractPersistingAdapter {
+public abstract class AbstractScriptedCollectionAdapter extends AbstractCollectionAdapter {
 
     private FileUpdateWatcher scriptUpdateWatcher;
 
@@ -88,7 +88,7 @@ public abstract class AbstractScriptedPersistingAdapter extends AbstractPersisti
      */
     private Map<ScriptedCollectionSetBuilder, Boolean> scriptUpdateMap = new ConcurrentHashMap<>();
 
-    public AbstractScriptedPersistingAdapter(String name, MetricRegistry metricRegistry) {
+    public AbstractScriptedCollectionAdapter(String name, MetricRegistry metricRegistry) {
         super(name, metricRegistry);
     }
 
