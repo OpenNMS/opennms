@@ -109,10 +109,20 @@ ifndef::opennms-prime[]
 include::text/sentinel/debian/debian.adoc[]
 endif::opennms-prime[]
 
-// Enable section numbers
-:sectnums:
+ifndef::opennms-prime[]
+include::text/run-with-docker/introduction.adoc[]
+include::text/run-with-docker/opennms-config.adoc[]
+include::text/run-with-docker/minion-config.adoc[]
+include::text/run-with-docker/sentinel-config.adoc[]
+endif::opennms-prime[]
 
 // Alternate ways of doing it
+include::text/minion-custom-messaging-system/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-horizon.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-minion.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/tuning-kafka.adoc[]
+
 include::text/install-opennms-versions.adoc[]
 include::text/minion-config-file.adoc[]
 include::text/run-in-non-root.adoc[]

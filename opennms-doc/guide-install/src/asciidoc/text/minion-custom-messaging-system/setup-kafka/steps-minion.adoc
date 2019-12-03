@@ -1,0 +1,99 @@
+
+==== Configure Minion
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+===== Step 1: Disable ActiveMQ for RPC and Sink
+
+.Disable ActiveMQ on _Minion_ startup
+[source, shell]
+----
+cat <<EOF >${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
+!minion-jms
+!opennms-core-ipc-rpc-jms
+!opennms-core-ipc-sink-camel
+EOF
+----
+
+===== Step 2: Enable Kafka for RPC and Sink
+
+[source, shell]
+----
+cat <<EOF >${MINION_HOME}/etc/featuresBoot.d/kafka.boot
+opennms-core-ipc-rpc-kafka
+opennms-core-ipc-sink-kafka
+EOF
+----
+
+===== Step 3: Configure Kafka server
+
+.Add Kafka server for RPC communication
+[source, shell]
+----
+cat <<EOF >${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg
+bootstrap.servers=kafka-1:9092,kafka-2:9092,kafka-3:9092
+acks=1
+EOF
+----
+
+.Add Kafka server for Sink communication
+[source, shell]
+----
+cat <<EOF >${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg
+bootstrap.servers=kafka-1:9092,kafka-2:9092,kafka-3:9092
+acks=1
+EOF
+----
+
+===== Step 4: Restart Minion to apply changes
+
+[source, shell]
+----
+systemctl restart minion
+----
+
+===== Step 5: Verify Kafka configuration and connectivity
+
+.Login to Karaf Shell
+[source, shell]
+----
+ssh admin@localhost -p 8201
+----
+
+.Test if Kafka RPC and Sink feature is started
+[source, shell]
+----
+feature:list | grep opennms-core-ipc-rpc-kafka
+opennms-core-ipc-rpc-kafka  | 25.0.0           | x        | Started
+
+feature:list | grep opennms-core-ipc-sink-kafka
+opennms-core-ipc-sink-kafka | 25.0.0           | x        | Started
+----
+
+.Test connectivity to Kafka
+[source, shell]
+----
+health:check 
+Verifying the health of the container
+
+Connecting to OpenNMS ReST API   [ Success  ]
+Verifying installed bundles      [ Success  ]
+Connecting to Kafka from RPC     [ Success  ]
+Connecting to Kafka from Sink    [ Success  ]
+
+=> Everything is awesome
+----
+
+===== Step 6. Verify Minion functionality
+
+.Ensure the Minion is registered in the _{opennms-product-name}_ web interface
+1. Login as Administrator
+2. Configure OpenNMS
+3. Manage Minions
+4. Minion should be registered and should be shown as "Up"
+5. Click on the name of the Minion and go to the node detail page
+6. Verify if the services on the loopback interface _JMX-Minion_, _Minion-Heartbeat_, _Minion-RPC_ are monitored and "Up"
+
+// Enable section numbers for step-by-step guide
+:sectnums:

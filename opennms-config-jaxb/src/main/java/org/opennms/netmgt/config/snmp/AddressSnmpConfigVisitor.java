@@ -58,6 +58,8 @@ import org.opennms.core.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implements SnmpConfigVisitor {
     private static final Logger LOG = LoggerFactory.getLogger(AddressSnmpConfigVisitor.class);
     private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
@@ -75,6 +77,9 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private boolean m_isMatchingDefault = true;
     private Definition m_generatedDefinition = null;
     private SnmpProfile m_snmpProfile;
+    private String m_currentLabel;
+    private String m_matchingProfileLabelAtDefaultLocation;
+    private String m_matchingProfileLabelAtGivenLocation;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         this(addr, null);
@@ -92,18 +97,27 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     @Override
     public void visitDefinition(final Definition definition) {
-        //LOG.debug("visitDefinition: {}", definition);
         m_currentDefinition = definition;
         m_currentLocation = LocationUtils.getEffectiveLocationName(definition.getLocation());
+        if (!Strings.isNullOrEmpty(definition.getProfileLabel())) {
+            m_currentLabel = definition.getProfileLabel();
+        }
     }
 
     private void handleMatch() {
         if (LocationUtils.isDefaultLocationName(m_currentLocation)) {
             m_matchedDefinitionAtDefaultLocation = m_currentDefinition;
+            if (!Strings.isNullOrEmpty(m_currentLabel)) {
+                m_matchingProfileLabelAtDefaultLocation = m_currentLabel;
+            }
         }
         if (m_location.equals(m_currentLocation)) {
             m_matchedDefinitionAtGivenLocation = m_currentDefinition;
+            if (!Strings.isNullOrEmpty(m_currentLabel)) {
+                m_matchingProfileLabelAtGivenLocation = m_currentLabel;
+            }
         }
+
     }
 
     private Definition getBestMatch() {
@@ -186,6 +200,7 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     @Override
     public void visitDefinitionFinished() {
         m_currentDefinition = null;
+        m_currentLabel = null;
     }
 
     @Override
@@ -375,6 +390,13 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
             definition.setTTL(sourceConfig.getTTL());
         } else if (m_currentConfig.hasTTL()) {
             definition.setTTL(m_currentConfig.getTTL());
+        }
+
+        // Set profile from matching definition else fall back to profile label at default location
+        if (!Strings.isNullOrEmpty(m_matchingProfileLabelAtGivenLocation)) {
+            definition.setProfileLabel(m_matchingProfileLabelAtGivenLocation);
+        } else if(!Strings.isNullOrEmpty(m_matchingProfileLabelAtDefaultLocation)) {
+            definition.setProfileLabel(m_matchingProfileLabelAtDefaultLocation);
         }
         return definition;
     }
