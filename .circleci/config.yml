@@ -321,6 +321,7 @@ workflows:
                 - /^features.*/
                 - /^mvr.*/
                 - /.*smoke.*/
+                - jira/NMS-12410
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
@@ -336,6 +337,7 @@ workflows:
                 - /^features.*/
                 - /^mvr.*/
                 - /.*smoke.*/
+                - jira/NMS-12410
       - horizon-publish-oci:
           requires:
             - horizon-rpm-build
