@@ -100,7 +100,7 @@ Release 2019.1.1 is the second release in the Meridian 2019 series.
 
 It contains a number of bug fixes mostly related to alarm and event processing and potential resource leaks, as well as provisioning enhancements to SNMP profiles.
 
-The codename for 2019.1.0 is _link:$$https://en.wikipedia.org/wiki/Venus_(planet)$$[Venus]_
+The codename for 2019.1.1 is _link:$$https://en.wikipedia.org/wiki/Venus_(planet)$$[Venus]_
 
 ===== Bug
 
