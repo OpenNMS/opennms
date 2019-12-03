@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFilenameFilter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.util.Map;
 
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -41,8 +40,10 @@ import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.Map;
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFilenameFilter;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -147,6 +148,12 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         // Initializing TimeoutTracker with default values
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
+        try {
+            setJCifsTimeouts(tracker.getConnectionTimeout());
+        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
+            logger.error("Error setting JCifs timeouts ", e);
+        }
+
         // Setting default PollStatus
         PollStatus serviceStatus = PollStatus.unknown();
 
@@ -214,6 +221,23 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         }
 
         return serviceStatus;
+    }
+
+    private void setFinalStatic(final Field finalStaticField, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        finalStaticField.setAccessible(true);
+
+        final Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(finalStaticField, finalStaticField.getModifiers() & ~Modifier.FINAL);
+
+        finalStaticField.set(null, value);
+    }
+
+    private void setJCifsTimeouts(int t) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
+        final Class<?> clazz = Class.forName("jcifs.smb.SmbConstants");
+        setFinalStatic(clazz.getField("SO_TIMEOUT"), t);
+        setFinalStatic(clazz.getField("CONN_TIMEOUT"), t);
+        setFinalStatic(clazz.getField("DEFAULT_RESPONSE_TIMEOUT"), t + 5000);
     }
 
     /**
