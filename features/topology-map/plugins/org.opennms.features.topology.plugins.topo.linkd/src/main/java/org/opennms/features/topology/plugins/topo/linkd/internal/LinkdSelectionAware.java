@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -51,6 +52,7 @@ public class LinkdSelectionAware implements SelectionAware {
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSelectionAware.class);
 
     public LinkdSelectionAware(String nameSpace) {
+        Objects.nonNull(nameSpace);
         this.nameSpace = nameSpace;
     }
 
