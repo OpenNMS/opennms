@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -51,12 +52,24 @@ import org.opennms.newts.api.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class TimescaleSearcher {
 
 
     private DataSource dataSource;
     private Connection connection;
+
+    private LoadingCache<String, Set<ResourcePath>> allResources = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .build(
+                    new CacheLoader<String, Set<ResourcePath>>() {
+                        public Set<ResourcePath> load(String key) throws SQLException {
+                            return getAllResources();
+                        }
+                    });
 
     @Autowired
     public TimescaleSearcher(DataSource dataSource) {
@@ -76,7 +89,7 @@ public class TimescaleSearcher {
         Set<ResourcePath> resources = new HashSet<>();
         while(rs.next()){
             String resourceString = rs.getString("resource");
-            ResourcePath resource = TimescaleUtils.toResourcePath(resourceString);
+            ResourcePath resource = new ResourcePath(TimescaleUtils.toResourcePath(resourceString), TimescaleUtils.toMetricName(resourceString));
             addIncludingParent(resources, resource);
         }
         rs.close();
@@ -86,10 +99,10 @@ public class TimescaleSearcher {
     public void addIncludingParent(Set<ResourcePath> allPaths, ResourcePath newPath) {
         ResourcePath currentPath = newPath;
         allPaths.add(currentPath);
-        while(currentPath.hasParent()) {
-            currentPath = currentPath.getParent();
-            allPaths.add(currentPath);
-        }
+//        while(currentPath.hasParent()) {
+//            currentPath = currentPath.getParent();
+//            allPaths.add(currentPath);
+//        }
     }
 
     public Map<String, String> getResourceAttributes(Context m_context, String toResourceId) {
@@ -102,10 +115,10 @@ public class TimescaleSearcher {
 
     public SearchResults search(ResourcePath path, int depth, boolean fetchMetrics) throws SQLException {
 
-        Set<ResourcePath> all = getAllResources();
+        Set<ResourcePath> all = allResources.getUnchecked("doesntmatter");
         List<ResourcePath> relevantResources = all.stream()
                 .filter(p -> path.relativeDepth(p)>-1)
-                .filter(p -> path.relativeDepth(p) <=depth)
+                .filter(p -> path.relativeDepth(p) == depth +1 )
                 .collect(Collectors.toList());
         SearchResults results = new SearchResults();
         for(ResourcePath relevantPath : relevantResources) {

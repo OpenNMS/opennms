@@ -34,6 +34,7 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,8 +44,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -109,8 +108,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
 
-    @Autowired
-    private DataSource dataSource;
+    private StringBuilder resultlog = new StringBuilder(); // TODO Patrick: remove me when debugging done
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -286,14 +284,11 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         LOG.trace("Searching for '{}'.", q);
         final SearchResults results = m_searcher.search(m_context, q, fetchMetrics);
         LOG.trace("Found {} results.", results.size());
-        return results;
-    }
-
-    private SearchResults searchForTimescale(ResourcePath path, int depth, boolean fetchMetrics) {
-        final Query q = findResourcesWithMetricsAtDepth(path, depth);
-        LOG.trace("Searching for '{}'.", q);
-        final SearchResults results = m_searcher.search(m_context, q, fetchMetrics);
-        LOG.trace("Found {} results.", results.size());
+        resultlog.append("\n").append("path=").append(path).append(", depth=").append(depth);
+        for (Iterator<Result> it = results.iterator(); it.hasNext(); ) {
+            Result result = it.next();
+            resultlog.append("\n  ").append(result.getResource().getId());
+        }
         return results;
     }
 
