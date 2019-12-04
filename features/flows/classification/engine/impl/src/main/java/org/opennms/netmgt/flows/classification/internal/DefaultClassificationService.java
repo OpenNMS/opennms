@@ -32,9 +32,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationService;
@@ -53,8 +55,6 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGro
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class DefaultClassificationService implements ClassificationService {
 
@@ -70,17 +70,17 @@ public class DefaultClassificationService implements ClassificationService {
 
     private final GroupValidator groupValidator;
 
-    private final TransactionOperations transactionTemplate;
+    private final SessionUtils sessionUtils;
 
     public DefaultClassificationService(ClassificationRuleDao classificationRuleDao,
                                         ClassificationGroupDao classificationGroupDao,
                                         ClassificationEngine classificationEngine,
                                         FilterService filterService,
-                                        TransactionOperations transactionOperations) {
+                                        SessionUtils sessionUtils) {
         this.classificationRuleDao = Objects.requireNonNull(classificationRuleDao);
         this.classificationGroupDao = Objects.requireNonNull(classificationGroupDao);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
-        this.transactionTemplate = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.ruleValidator = new RuleValidator(filterService);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
@@ -105,7 +105,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public Integer saveRule(Rule rule) throws InvalidRuleException {
-        return runInTransaction((status) -> {
+        return runInTransaction(() -> {
 
             ruleValidator.validate(rule);
 
@@ -127,7 +127,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public void importRules(int groupId, InputStream inputStream, boolean hasHeader, boolean deleteExistingRules) throws CSVImportException {
-        runInTransaction(status -> {
+        runInTransaction(() -> {
 
             // Get and check group
             Group group = classificationGroupDao.get(groupId);
@@ -188,7 +188,7 @@ public class DefaultClassificationService implements ClassificationService {
     public void deleteRules(int groupId) {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(Rule.class).alias("group", "group");
         criteriaBuilder.eq("group.id", groupId);
-        runInTransaction(status -> {
+        runInTransaction(() -> {
             Group group = classificationGroupDao.get(groupId);
             if (group == null) throw new NoSuchElementException();
             if(group.isReadOnly()) {
@@ -203,11 +203,11 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public void deleteRule(int ruleId) {
-        runInTransaction(status -> {
+        runInTransaction(() -> {
             final Rule rule = classificationRuleDao.get(ruleId);
             if (rule == null) throw new NoSuchElementException();
             assertRuleIsNotInReadOnlyGroup(rule);
-            return runInTransaction(transactionStatus -> {
+            return runInTransaction(() -> {
                 // Remove from group, as it would be saved later otherwise
                 final Group group = rule.getGroup();
                 group.removeRule(rule);
@@ -224,7 +224,7 @@ public class DefaultClassificationService implements ClassificationService {
         assertRuleIsNotInReadOnlyGroup(rule);
 
         // Persist
-        runInTransaction(status -> {
+        runInTransaction(() -> {
             ruleValidator.validate(rule);
             groupValidator.validate(rule.getGroup(), rule);
             classificationRuleDao.saveOrUpdate(rule);
@@ -271,7 +271,7 @@ public class DefaultClassificationService implements ClassificationService {
     @Override
     public Integer saveGroup(Group group) {
         checkForDuplicateName(group);
-        return runInTransaction((status) -> {
+        return runInTransaction(() -> {
             Integer groupId = classificationGroupDao.save(group);
             updateGroupPositionsAndReloadEngine(PositionUtil.sortGroupPositions(group, classificationGroupDao.findAll()));
             return groupId;
@@ -280,7 +280,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public void deleteGroup(int groupId) {
-        runInTransaction(status -> {
+        runInTransaction(() -> {
             final Group group = classificationGroupDao.get(groupId);
             if (group == null) {
                 throw new NoSuchElementException();
@@ -298,7 +298,7 @@ public class DefaultClassificationService implements ClassificationService {
     public void updateGroup(Group group) {
         if (group.getId() == null) throw new NoSuchElementException();
         checkForDuplicateName(group);
-        runInTransaction(status -> {
+        runInTransaction(() -> {
             classificationGroupDao.saveOrUpdate(group);
             updateGroupPositionsAndReloadEngine(PositionUtil.sortGroupPositions(group, classificationGroupDao.findAll()));
             updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(group.getRules()));
@@ -306,8 +306,9 @@ public class DefaultClassificationService implements ClassificationService {
         });
     }
 
-    private <T> T runInTransaction(TransactionCallback<T> callback) {
-        return transactionTemplate.execute(callback);
+    private <T> T runInTransaction(Supplier<T> supplier) {
+        Objects.requireNonNull(supplier);
+        return sessionUtils.withTransaction(supplier);
     }
 
     private void updateRulePositionsAndReloadEngine(final List<Rule> rules) {
