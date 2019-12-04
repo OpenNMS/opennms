@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -103,6 +103,9 @@ public class SpikeHunter {
 		} catch (RrdException rrde) {
 			System.out.println("RRD Exception trying to open RRD file: " + rrde.getMessage());
 			System.exit(-1);
+		} catch (NullPointerException npe) {
+		        usage(m_options, m_commandLine);
+		        System.exit(-1);
 		}
 		if (m_dumpContents) {
 			dumpContents();
@@ -148,7 +151,7 @@ public class SpikeHunter {
         	m_operands.add(Double.parseDouble(operandStr));
         }
         
-        m_analysisStrategy = analysisStrategies.get(m_commandLine.getOptionValue("l", "percentile").toLowerCase());
+        m_analysisStrategy = analysisStrategies.get(m_commandLine.getOptionValue("a", "percentile").toLowerCase());
         m_replacementStrategy = replacementStrategies.get(m_commandLine.getOptionValue("r", "nan").toLowerCase());
         
         m_dryRun = m_commandLine.hasOption("n");
@@ -231,7 +234,14 @@ public class SpikeHunter {
     }
     
     private static DataAnalyzer getDataAnalyzer() {
-    	DataAnalyzer analyzer = new PercentileDataAnalyzer(m_operands);
+        DataAnalyzer analyzer;
+        if (m_analysisStrategy == ANALYSIS_STRATEGIES.ABSOLUTE_VALUE_STRATEGY.ordinal()) {
+            analyzer = new AbsoluteValueDataAnalyzer(m_operands);
+        } else if (m_analysisStrategy == ANALYSIS_STRATEGIES.PERCENTILE_STRATEGY.ordinal()) {
+            analyzer = new PercentileDataAnalyzer(m_operands);
+        } else {
+            analyzer = new PercentileDataAnalyzer(m_operands);
+        }
     	return analyzer;
     }
     

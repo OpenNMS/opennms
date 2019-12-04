@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.util.spikehunter;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ public class AbsoluteValueDataAnalyzer implements DataAnalyzer {
 			if (Double.toString(values[i]).equals(Double.toString(Double.NaN))) {
 				continue;
 			}
-			if (values[i] > m_value) {
+			if (Math.abs(values[i]) > Math.abs(m_value)) {
 				violatorIndices.add(i);
 			}
 		}		
