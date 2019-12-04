@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -74,6 +75,8 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     private int threads = DEFAULT_NUM_THREADS;
 	
     private boolean dnsLookupsEnabled = true;
+
+    private boolean useRoutingKey = false;
 	
     private ExecutorService executor;
 
@@ -142,7 +145,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                     }
 
                     // Build the message to be sent
-                    final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO());
+                    final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO(), new Date(), true, getUseRoutingKey());
                     dispatcher.send(msg).whenComplete((any, exx) -> {
                         if (exx != null) {
                             // Dispatching failed
@@ -171,6 +174,14 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     public void setDnsLookupsEnabled(boolean dnsLookupsEnabled) {
         this.dnsLookupsEnabled = dnsLookupsEnabled;
+    }
+
+    public boolean getUseRoutingKey() {
+        return useRoutingKey;
+    }
+
+    public void setUseRoutingKey(boolean useRoutingKey) {
+        this.useRoutingKey = useRoutingKey;
     }
 
     @Override

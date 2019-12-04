@@ -28,24 +28,37 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
-import org.opennms.core.ipc.sink.api.Message;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
+
+import org.opennms.core.ipc.sink.api.Message;
 
 public class TelemetryMessage implements Message {
     private final InetSocketAddress source;
     private final ByteBuffer buffer;
     private final Date receivedAt;
+    private final boolean isFlowMessage;
+    private final boolean useRoutingKey;
 
     public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer) {
-        this(source, buffer, new Date());
+        this(source, buffer, new Date(), false, true);
     }
 
     public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt) {
+        this(source, buffer, receivedAt, false, true);
+    }
+
+    public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt, boolean isFlowMessage) {
+        this(source, buffer, receivedAt, isFlowMessage, true);
+    }
+
+    public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt, boolean isFlowMessage, boolean useRoutingKey) {
         this.source = source;
         this.buffer = buffer;
         this.receivedAt = receivedAt;
+        this.isFlowMessage = isFlowMessage;
+        this.useRoutingKey = useRoutingKey;
     }
 
     public InetSocketAddress getSource() {
@@ -59,4 +72,8 @@ public class TelemetryMessage implements Message {
     public Date getReceivedAt() {
         return receivedAt;
     }
+
+    public boolean getIsFlowMessage() { return isFlowMessage; }
+
+    public boolean getUseRoutingKey() { return useRoutingKey;}
 }

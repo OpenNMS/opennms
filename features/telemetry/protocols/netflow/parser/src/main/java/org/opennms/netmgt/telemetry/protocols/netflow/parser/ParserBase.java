@@ -120,6 +120,8 @@ public class ParserBase implements Parser {
 
     private boolean dnsLookupsEnabled = true;
 
+    private boolean useRoutingKey = false;
+
     private LoadingCache<InetAddress, Optional<Instant>> eventCache;
 
     private ExecutorService executor;
@@ -223,6 +225,14 @@ public class ParserBase implements Parser {
         this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
+    public boolean getUseRoutingKey() {
+        return useRoutingKey;
+    }
+
+    public void setUseRoutingKey(boolean useRoutingKey) {
+        this.useRoutingKey = useRoutingKey;
+    }
+
     public int getThreads() {
         return threads;
     }
@@ -262,7 +272,7 @@ public class ParserBase implements Parser {
                         final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer, new Date(), true, getUseRoutingKey());
 
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b,exx) -> {
