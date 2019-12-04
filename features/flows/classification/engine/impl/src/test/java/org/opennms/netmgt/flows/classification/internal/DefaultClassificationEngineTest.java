@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
@@ -189,6 +190,18 @@ public class DefaultClassificationEngineTest {
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             classificationEngine.classify(new ClassificationRequest("Default", 0, null, i, "127.0.0.1", ProtocolType.TCP));
         }
+    }
+
+    // See NMS-12429
+    @Test
+    public void verifyDoesNotRunOutOfMemory() {
+        final List<Rule> rules = Lists.newArrayList();
+        for (int i=0; i<100; i++) {
+            final Rule rule = new RuleBuilder().withName("rule1").withPosition(i+1).withProtocol("UDP").withDstAddress("192.168.0." + i).build();
+            rules.add(rule);
+        }
+        final DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> rules, FilterService.NOOP);
+        System.gc();
     }
 
     @Test(timeout=5000)

@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +50,8 @@ import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefini
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.RulePositionComparator;
+
+import com.google.common.collect.Maps;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
@@ -138,11 +141,18 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             theRules.addAll(anyPortRules);
         }
 
+        // Reduce memory pressure
+        anyPortRules.clear();
+        rules.clear();
+
         // Sort rules by position
         for (int i=0; i<rulePortList.size(); i++) {
             final List<RuleDefinition> portRules = rulePortList.get(i);
             portRules.sort(ruleComparator);
         }
+
+        // Cache the classifiers to ensure to not duplicate them all the time
+        final Map<RuleDefinition, CombinedClassifier> ruleToClassifierMapping = Maps.newHashMap();
 
         // Finally create classifiers
         for (int i = 0; i < rulePortList.size(); i++) {
@@ -168,13 +178,14 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                     // if none, the value of either src or dst port may be empty, as the filtering already occurred
                     // through the index of the rule in the classifierPortList.
                     if (rule.hasDstPortDefinition()) {
-                        portRule.setDstPort(Integer.toString(port));
+                        portRule.setDstPort(rule.getDstPort());
                     }
                     if (rule.hasSrcPortDefinition()) {
-                        portRule.setSrcPort(Integer.toString(port));
+                        portRule.setSrcPort(rule.getSrcPort());
                     }
                 }
-                return new CombinedClassifier(portRule, filterService);
+                ruleToClassifierMapping.putIfAbsent(rule, new CombinedClassifier(portRule, filterService));
+                return ruleToClassifierMapping.get(rule);
             })
             .collect(Collectors.toList());
             classifierPortList.set(port, classifiers);
