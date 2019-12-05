@@ -28,9 +28,10 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class PortValueTest {
@@ -38,31 +39,31 @@ public class PortValueTest {
     @Test
     public void verifySingleValue() {
         final PortValue portValue = new PortValue("5");
-        assertThat(portValue.getPorts(), Matchers.hasItems(5));
-        assertThat(portValue.matches(5), Matchers.is(true));
-        assertThat(portValue.matches(1), Matchers.is(false));
+        assertThat(portValue.getPorts(), hasItems(5));
+        assertThat(portValue.matches(5), is(true));
+        assertThat(portValue.matches(1), is(false));
     }
 
     @Test
     public void verifyMultipleValues() {
         final PortValue portValue = new PortValue("1,2,3");
-        assertThat(portValue.getPorts(), Matchers.hasItems(1,2,3));
-        assertThat(portValue.matches(1), Matchers.is(true));
-        assertThat(portValue.matches(2), Matchers.is(true));
-        assertThat(portValue.matches(3), Matchers.is(true));
-        assertThat(portValue.matches(4), Matchers.is(false));
-        assertThat(portValue.matches(5), Matchers.is(false));
+        assertThat(portValue.getPorts(), hasItems(1,2,3));
+        assertThat(portValue.matches(1), is(true));
+        assertThat(portValue.matches(2), is(true));
+        assertThat(portValue.matches(3), is(true));
+        assertThat(portValue.matches(4), is(false));
+        assertThat(portValue.matches(5), is(false));
     }
 
     @Test
     public void verifyRange() {
         final PortValue portValue = new PortValue("10-13");
-        assertThat(portValue.getPorts(), Matchers.hasItems(10, 11, 12));
-        assertThat(portValue.matches(10), Matchers.is(true));
-        assertThat(portValue.matches(11), Matchers.is(true));
-        assertThat(portValue.matches(12), Matchers.is(true));
-        assertThat(portValue.matches(1), Matchers.is(false));
-        assertThat(portValue.matches(2), Matchers.is(false));
-        assertThat(portValue.matches(3), Matchers.is(false));
+        assertThat(portValue.getPorts(), hasItems(10, 11, 12));
+        assertThat(portValue.matches(10), is(true));
+        assertThat(portValue.matches(11), is(true));
+        assertThat(portValue.matches(12), is(true));
+        assertThat(portValue.matches(1), is(false));
+        assertThat(portValue.matches(2), is(false));
+        assertThat(portValue.matches(3), is(false));
     }
 }

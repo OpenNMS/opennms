@@ -43,6 +43,7 @@ import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
@@ -201,7 +202,7 @@ public class DefaultClassificationEngineTest {
             rules.add(rule);
         }
         final DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> rules, FilterService.NOOP);
-        System.gc();
+        engine.classify(new ClassificationRequest("localhost", 1234, "127.0.0.1", 80, "192.168.0.1", Protocols.getProtocol("UDP")));
     }
 
     @Test(timeout=5000)
