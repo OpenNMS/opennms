@@ -79,6 +79,10 @@ public final class Header {
         this.observationDomainId = uint32(buffer);
     }
 
+    public int payloadLength() {
+        return this.length - Header.SIZE;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
