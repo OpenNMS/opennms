@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonBinary;
@@ -40,6 +39,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // struct extended_80211_payload {
 //    cipher_suite ciphersuite; /* encryption scheme used for this packet */
 //    opaque       data<>;      /* unencrypted bytes from the payload */
@@ -49,7 +50,7 @@ public class Extended80211Payload implements FlowData {
     public final CipherSuite ciphersuite;
     public final Opaque<byte[]> data;
 
-    public Extended80211Payload(final ByteBuffer buffer) throws InvalidPacketException {
+    public Extended80211Payload(final ByteBuf buffer) throws InvalidPacketException {
         this.ciphersuite = new CipherSuite(buffer);
         this.data = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
     }

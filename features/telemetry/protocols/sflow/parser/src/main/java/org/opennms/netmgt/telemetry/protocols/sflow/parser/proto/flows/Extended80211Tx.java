@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
@@ -39,6 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_80211_tx {
 //    string ssid<32>;              /* SSID string */
@@ -71,7 +71,7 @@ public class Extended80211Tx implements FlowData {
     public final UnsignedLong speed;
     public final long power;
 
-    public Extended80211Tx(final ByteBuffer buffer) throws InvalidPacketException {
+    public Extended80211Tx(final ByteBuf buffer) throws InvalidPacketException {
         this.ssid = new AsciiString(buffer);
         this.bssid = new Mac(buffer);
         this.version = Ieee80211Version.from(buffer);

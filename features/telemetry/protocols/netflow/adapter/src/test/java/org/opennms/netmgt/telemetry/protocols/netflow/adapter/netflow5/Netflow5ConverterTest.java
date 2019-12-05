@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -55,6 +55,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class Netflow5ConverterTest {
 
@@ -112,7 +115,7 @@ public class Netflow5ConverterTest {
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
         for (byte[] payload : payloads) {
-            final ByteBuffer buffer = ByteBuffer.wrap(payload);
+            final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
             try {
                 header = new Header(slice(buffer, Header.SIZE));

@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -56,6 +56,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Head
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class Netflow9ConverterTest {
 
@@ -104,7 +107,7 @@ public class Netflow9ConverterTest {
         final List<Flow> flows = new ArrayList<>();
         final Session session = new TcpSession(InetAddress.getLoopbackAddress());
         for (byte[] payload : payloads) {
-            final ByteBuffer buffer = ByteBuffer.wrap(payload);
+            final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
             try {
                 header = new Header(slice(buffer, Header.SIZE));

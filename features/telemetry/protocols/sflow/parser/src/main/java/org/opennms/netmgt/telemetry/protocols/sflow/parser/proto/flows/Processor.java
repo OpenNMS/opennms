@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct processor {
 //    percentage cpu_5s;           /* 5 second average CPU utilization */
@@ -53,7 +53,7 @@ public class Processor implements CounterData {
     public final UnsignedLong total_memory;
     public final UnsignedLong free_memory;
 
-    public Processor(final ByteBuffer buffer) throws InvalidPacketException {
+    public Processor(final ByteBuf buffer) throws InvalidPacketException {
         this.cpu_5s = new Percentage(buffer);
         this.cpu_1m = new Percentage(buffer);
         this.cpu_5m = new Percentage(buffer);

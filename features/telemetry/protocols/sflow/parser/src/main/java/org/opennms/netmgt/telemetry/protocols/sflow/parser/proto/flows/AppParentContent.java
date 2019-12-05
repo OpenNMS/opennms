@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct app_parent_content {
 //    context context;
@@ -44,7 +44,7 @@ import com.google.common.base.MoreObjects;
 public class AppParentContent implements FlowData {
     public final Context context;
 
-    public AppParentContent(final ByteBuffer buffer) throws InvalidPacketException {
+    public AppParentContent(final ByteBuf buffer) throws InvalidPacketException {
         this.context = new Context(buffer);
     }
 

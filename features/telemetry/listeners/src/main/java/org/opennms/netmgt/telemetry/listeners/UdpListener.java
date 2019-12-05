@@ -31,16 +31,13 @@ package org.opennms.netmgt.telemetry.listeners;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadFactory;
 
-import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -171,7 +168,7 @@ public class UdpListener implements Listener {
                     @Override
                     protected void channelRead0(final ChannelHandlerContext ctx, final DatagramPacket msg) throws Exception {
                         for (final UdpParser parser : parsers) {
-                            if (BufferUtils.peek(msg.content().nioBuffer(), ((Dispatchable) parser)::handles)) {
+                            if (BufferUtils.peek(msg.content(), ((Dispatchable) parser)::handles)) {
                                 new SingleDatagramPacketParserHandler(parser).channelRead0(ctx, msg);
                                 return;
                             }
@@ -215,7 +212,7 @@ public class UdpListener implements Listener {
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
             parser.parse(
-                    ReferenceCountUtil.retain(msg.content()).nioBuffer(),
+                    ReferenceCountUtil.retain(msg.content()),
                     msg.sender(), msg.recipient()
                 ).handle((result, ex) -> {
                     ReferenceCountUtil.release(msg.content());

@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct radio_utilization {
 //    unsigned int elapsed_time;         /* elapsed time in ms */
@@ -49,7 +49,7 @@ public class RadioUtilization implements CounterData {
     public final long on_channel_time;
     public final long on_channel_busy_time;
 
-    public RadioUtilization(final ByteBuffer buffer) throws InvalidPacketException {
+    public RadioUtilization(final ByteBuf buffer) throws InvalidPacketException {
         this.elapsed_time = BufferUtils.uint32(buffer);
         this.on_channel_time = BufferUtils.uint32(buffer);
         this.on_channel_busy_time = BufferUtils.uint32(buffer);
