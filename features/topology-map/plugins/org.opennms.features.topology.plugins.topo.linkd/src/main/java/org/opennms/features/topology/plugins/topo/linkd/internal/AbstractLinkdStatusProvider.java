@@ -34,32 +34,23 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
 public abstract class AbstractLinkdStatusProvider {
 
+    private final OnmsTopologyDao m_onmsTopologyDao;
+
+    public AbstractLinkdStatusProvider(OnmsTopologyDao onmsTopologyDao) {
+        m_onmsTopologyDao = onmsTopologyDao;
+    }
+
     public String getNamespace() {
         return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     public boolean contributesTo(String namespace) {
-        if ( OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equals(namespace)) {
-            return true;  
-        }
         for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
-            if (onmsTP.getId().equals(namespace)) {
+            final String protocolNamespace = OnmsTopology.TOPOLOGY_NAMESPACE_LINKD + "." + onmsTP.getId();
+            if (protocolNamespace.equals(namespace)) {
                 return true;
             }
         }
         return false;
     }
-
-    private final OnmsTopologyDao m_onmsTopologyDao;
-
-    public OnmsTopologyDao getOnmsTopologyDao() {
-        return m_onmsTopologyDao;
-    }
-
-    public AbstractLinkdStatusProvider(OnmsTopologyDao onmsTopologyDao) {
-        super();
-        m_onmsTopologyDao = onmsTopologyDao;
-    }
-    
-    
 }

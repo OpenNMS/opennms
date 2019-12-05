@@ -32,4 +32,7 @@ public interface SearchQuery {
     boolean matches(String searchResult);
 
 	String getQueryString();
+
+	// Returns the namespace where the current search is invoked in
+	String getNamespace();
 }

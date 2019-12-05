@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.api.topo;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -73,40 +72,40 @@ public class AbstractSearchProviderTest {
         }
     }
 
-    public class ContainsMatcher extends AbstractSearchQuery {
+//    public class ContainsMatcher extends AbstractSearchQuery {
+//
+//        public ContainsMatcher(String queryString) {
+//            super(queryString);
+//        }
+//
+//        @Override
+//        public boolean matches(String provided) {
+//            return provided.toLowerCase().contains(getQueryString().toLowerCase());
+//        }
+//    }
+//
+//    public class ExactMatcher extends AbstractSearchQuery {
+//
+//        public ExactMatcher(String queryString) {
+//            super(queryString);
+//        }
+//
+//        @Override
+//        public boolean matches(String provided) {
+//            return provided.toLowerCase().matches(getQueryString().toLowerCase());
+//        }
+//    }
 
-        public ContainsMatcher(String queryString) {
-            super(queryString);
-        }
-
-        @Override
-        public boolean matches(String provided) {
-            return provided.toLowerCase().contains(getQueryString().toLowerCase());
-        }
-    }
-
-    public class ExactMatcher extends AbstractSearchQuery {
-
-        public ExactMatcher(String queryString) {
-            super(queryString);
-        }
-
-        @Override
-        public boolean matches(String provided) {
-            return provided.toLowerCase().matches(getQueryString().toLowerCase());
-        }
-    }
-
-    @Test
-    public void testSearchProvider(){
-        SearchQuery containsQuery = new ContainsMatcher("node");
-        SearchQuery exactQuery = new ExactMatcher("node-label-1");
-
-        SearchProvider searchProvider1 = createSearchProvider();
-
-        assertEquals(10, searchProvider1.query(containsQuery, null).size());
-        assertEquals(1, searchProvider1.query(exactQuery, null).size());
-    }
+//    @Test
+//    public void testSearchProvider(){
+//        SearchQuery containsQuery = new ContainsMatcher("node");
+//        SearchQuery exactQuery = new ExactMatcher("node-label-1");
+//
+//        SearchProvider searchProvider1 = createSearchProvider();
+//
+//        assertEquals(10, searchProvider1.query(containsQuery, null).size());
+//        assertEquals(1, searchProvider1.query(exactQuery, null).size());
+//    }
 
     private SearchProvider createSearchProvider() {
         return new AbstractSearchProvider() {

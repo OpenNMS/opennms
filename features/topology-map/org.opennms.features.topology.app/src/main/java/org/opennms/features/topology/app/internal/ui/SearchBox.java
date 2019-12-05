@@ -308,7 +308,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 if (provider.supportsPrefix(query)) {
                     // If there is an '=' divider, strip it off. Otherwise, use an empty query string
                     String queryOnly = query.indexOf('=') > 0 ? query.substring(query.indexOf('=') + 1) : "";
-                    List<SearchResult> q = provider.query(getSearchQuery(queryOnly), m_operationContext.getGraphContainer());
+                    List<SearchResult> q = provider.query(getSearchQuery(namespace, queryOnly), m_operationContext.getGraphContainer());
                     results.addAll(q);
 
                     if (m_suggestionMap.containsKey(provider)) {
@@ -319,7 +319,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                     }
 
                 } else {
-                    List<SearchResult> q = provider.query(getSearchQuery(query), m_operationContext.getGraphContainer());
+                    List<SearchResult> q = provider.query(getSearchQuery(namespace, query), m_operationContext.getGraphContainer());
                     results.addAll(q);
                     if (m_suggestionMap.containsKey(provider)) {
                         m_suggestionMap.get(provider).addAll(q);
@@ -335,11 +335,11 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
 
-    private static SearchQuery getSearchQuery(String query) {
+    private static SearchQuery getSearchQuery(final String namespace, final String query) {
         if("*".equals(query) || "".equals(query)){
-            return new AllSearchQuery(query);
+            return new AllSearchQuery(namespace, query);
         } else {
-            return new ContainsSearchQuery(query);
+            return new ContainsSearchQuery(namespace, query);
         }
     }
 
@@ -417,8 +417,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
     private static class ContainsSearchQuery extends AbstractSearchQuery implements SearchQuery {
-        public ContainsSearchQuery(String query) {
-            super(query);
+        public ContainsSearchQuery(String namespace, String query) {
+            super(namespace, query);
         }
 
         @Override
@@ -429,8 +429,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     private static class AllSearchQuery extends AbstractSearchQuery{
 
-        public AllSearchQuery(String queryString) {
-            super(queryString);
+        public AllSearchQuery(String namespace, String queryString) {
+            super(namespace, queryString);
         }
 
         @Override

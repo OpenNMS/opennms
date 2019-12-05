@@ -111,7 +111,7 @@ public class BusinessServiceSearchProviderIT {
         // try searching
         final BusinessServiceSearchProvider provider = new BusinessServiceSearchProvider();
         provider.setBusinessServiceManager(businessServiceManager);
-        final SearchQuery query = new AbstractSearchQuery("Test"){
+        final SearchQuery query = new AbstractSearchQuery("bsm", "Test"){
             @Override
             public boolean matches(String label) {
                 return true; // always match, it does not matter

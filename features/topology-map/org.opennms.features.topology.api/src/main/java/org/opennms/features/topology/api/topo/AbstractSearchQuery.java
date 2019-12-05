@@ -28,12 +28,16 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.Objects;
+
 public abstract class AbstractSearchQuery implements SearchQuery{
 
-    private String m_queryString;
+    private final String m_queryString;
+    private final String m_namespace;
 
-    public AbstractSearchQuery(String queryString) {
-        m_queryString = queryString;
+    public AbstractSearchQuery(String namespace, String queryString) {
+        m_namespace = Objects.requireNonNull(namespace);
+        m_queryString = Objects.requireNonNull(queryString);
     }
 
     @Override
@@ -44,6 +48,11 @@ public abstract class AbstractSearchQuery implements SearchQuery{
     @Override
     public String toString() {
     	return m_queryString;
+    }
+
+    @Override
+    public String getNamespace() {
+        return m_namespace;
     }
 
     @Override
