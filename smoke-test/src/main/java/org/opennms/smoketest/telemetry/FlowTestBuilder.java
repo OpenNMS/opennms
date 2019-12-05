@@ -36,20 +36,25 @@ import java.util.function.Consumer;
 
 public class FlowTestBuilder {
 
-    private final List<FlowPacket> packets = new ArrayList<>();
+    private final List<FlowTester.Delivery> deliveries = new ArrayList<>();
     private final List<Consumer<FlowTester>> runBefore = new ArrayList<>();
     private final List<Consumer<FlowTester>> runAfter = new ArrayList<>();
     private InetSocketAddress opennmsWebAddress;
 
-    public FlowTestBuilder withFlowPacket(FlowPacket packet, InetSocketAddress sendToAddress) {
-        final FlowPacket packetWithDestination = new FlowPacket(packet.getNetflowVersion(), packet.getResource(), packet.getFlowCount(), sendToAddress);
-        this.packets.add(packetWithDestination);
+    public FlowTestBuilder withFlowPacket(final FlowPacket packet, final Sender sender) {
+        this.deliveries.add(new FlowTester.Delivery(packet, sender));
         return this;
     }
 
-    public FlowTestBuilder withFlowPackets(List<FlowPacket> packets) {
-        this.packets.clear();
-        this.packets.addAll(packets);
+    public FlowTestBuilder withFlowPackets(List<FlowTester.Delivery> deliveries) {
+        this.deliveries.addAll(deliveries);
+        return this;
+    }
+
+    public FlowTestBuilder withFlowPackets(List<FlowPacket> packets, final Sender sender) {
+        packets.stream()
+               .map(packet -> new FlowTester.Delivery(packet, sender))
+               .forEach(this.deliveries::add);
         return this;
     }
 
@@ -58,20 +63,20 @@ public class FlowTestBuilder {
         return this;
     }
 
-    public FlowTestBuilder withNetflow5Packet(InetSocketAddress sendToAddress) {
-        return withFlowPacket(Packets.Netflow5, sendToAddress);
+    public FlowTestBuilder withNetflow5Packet(final Sender sender) {
+        return withFlowPacket(Packets.Netflow5, sender);
     }
 
-    public FlowTestBuilder withNetflow9Packet(InetSocketAddress sendToAddress) {
-        return withFlowPacket(Packets.Netflow9, sendToAddress);
+    public FlowTestBuilder withNetflow9Packet(final Sender sender) {
+        return withFlowPacket(Packets.Netflow9, sender);
     }
 
-    public FlowTestBuilder withIpfixPacket(InetSocketAddress sendToAddress) {
-        return withFlowPacket(Packets.Ipfix, sendToAddress);
+    public FlowTestBuilder withIpfixPacket(final Sender sender) {
+        return withFlowPacket(Packets.Ipfix, sender);
     }
 
-    public FlowTestBuilder withSFlowPacket(InetSocketAddress sendToAddress) {
-        return withFlowPacket(Packets.SFlow, sendToAddress);
+    public FlowTestBuilder withSFlowPacket(final Sender sender) {
+        return withFlowPacket(Packets.SFlow, sender);
     }
 
     public FlowTestBuilder verifyBeforeSendingFlows(Consumer<FlowTester> before) {
@@ -85,7 +90,7 @@ public class FlowTestBuilder {
     }
 
     public FlowTester build(InetSocketAddress elasticAddress) {
-        final FlowTester flowTester = new FlowTester(elasticAddress, opennmsWebAddress, packets);
+        final FlowTester flowTester = new FlowTester(elasticAddress, opennmsWebAddress, deliveries);
         flowTester.setRunAfter(runAfter);
         flowTester.setRunBefore(runBefore);
         return flowTester;
