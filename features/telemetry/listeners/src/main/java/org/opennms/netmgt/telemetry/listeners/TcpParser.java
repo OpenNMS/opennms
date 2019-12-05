@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
@@ -37,7 +38,7 @@ import io.netty.buffer.ByteBuf;
 
 public interface TcpParser extends Parser {
     interface Handler {
-        CompletableFuture<?> parse(final ByteBuf buffer) throws Exception;
+        Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception;
     }
 
     Handler accept(final InetSocketAddress remoteAddress,
