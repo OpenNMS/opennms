@@ -38,26 +38,20 @@ public class TelemetryMessage implements Message {
     private final InetSocketAddress source;
     private final ByteBuffer buffer;
     private final Date receivedAt;
-    private final boolean isFlowMessage;
     private final boolean useRoutingKey;
 
     public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer) {
-        this(source, buffer, new Date(), false, true);
+        this(source, buffer, new Date(), true);
     }
 
     public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt) {
-        this(source, buffer, receivedAt, false, true);
+        this(source, buffer, receivedAt, true);
     }
 
-    public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt, boolean isFlowMessage) {
-        this(source, buffer, receivedAt, isFlowMessage, true);
-    }
-
-    public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt, boolean isFlowMessage, boolean useRoutingKey) {
+    public TelemetryMessage(InetSocketAddress source, ByteBuffer buffer, Date receivedAt, boolean useRoutingKey) {
         this.source = source;
         this.buffer = buffer;
         this.receivedAt = receivedAt;
-        this.isFlowMessage = isFlowMessage;
         this.useRoutingKey = useRoutingKey;
     }
 
@@ -72,8 +66,6 @@ public class TelemetryMessage implements Message {
     public Date getReceivedAt() {
         return receivedAt;
     }
-
-    public boolean getIsFlowMessage() { return isFlowMessage; }
 
     public boolean getUseRoutingKey() { return useRoutingKey;}
 }

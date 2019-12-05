@@ -145,7 +145,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                     }
 
                     // Build the message to be sent
-                    final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO(), new Date(), true, getUseRoutingKey());
+                    final TelemetryMessage msg = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO(), new Date(), getUseRoutingKey());
                     dispatcher.send(msg).whenComplete((any, exx) -> {
                         if (exx != null) {
                             // Dispatching failed

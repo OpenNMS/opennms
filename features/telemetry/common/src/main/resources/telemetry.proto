@@ -12,7 +12,6 @@ message TelemetryMessageLog {
     string system_id = 2;
     string source_address = 3;
     uint32 source_port = 4;
-    bool isFlowMessage = 5;
-    bool useRoutingKey = 6;
-    repeated TelemetryMessage message = 7;
+    bool useRoutingKey = 5;
+    repeated TelemetryMessage message = 6;
 }

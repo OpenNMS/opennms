@@ -272,7 +272,7 @@ public class ParserBase implements Parser {
                         final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer, new Date(), true, getUseRoutingKey());
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer, new Date(), getUseRoutingKey());
 
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b,exx) -> {

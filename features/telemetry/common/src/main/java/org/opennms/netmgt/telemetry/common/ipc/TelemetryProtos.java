@@ -66,6 +66,7 @@ public final class TelemetryProtos {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:TelemetryMessage)
       TelemetryMessageOrBuilder, TelemetryMessageLogEntry {
+  private static final long serialVersionUID = 0L;
     // Use TelemetryMessage.newBuilder() to construct.
     private TelemetryMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -632,35 +633,30 @@ public final class TelemetryProtos {
     int getSourcePort();
 
     /**
-     * <code>bool isFlowMessage = 5;</code>
-     */
-    boolean getIsFlowMessage();
-
-    /**
-     * <code>bool useRoutingKey = 6;</code>
+     * <code>bool useRoutingKey = 5;</code>
      */
     boolean getUseRoutingKey();
 
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> 
         getMessageList();
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage getMessage(int index);
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     int getMessageCount();
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     java.util.List<? extends org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder> 
         getMessageOrBuilderList();
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder getMessageOrBuilder(
         int index);
@@ -672,6 +668,7 @@ public final class TelemetryProtos {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:TelemetryMessageLog)
       TelemetryMessageLogOrBuilder, Message, org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog {
+  private static final long serialVersionUID = 0L;
     // Use TelemetryMessageLog.newBuilder() to construct.
     private TelemetryMessageLog(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -681,7 +678,6 @@ public final class TelemetryProtos {
       systemId_ = "";
       sourceAddress_ = "";
       sourcePort_ = 0;
-      isFlowMessage_ = false;
       useRoutingKey_ = false;
       message_ = java.util.Collections.emptyList();
     }
@@ -735,18 +731,13 @@ public final class TelemetryProtos {
             }
             case 40: {
 
-              isFlowMessage_ = input.readBool();
-              break;
-            }
-            case 48: {
-
               useRoutingKey_ = input.readBool();
               break;
             }
-            case 58: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
                 message_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage>();
-                mutable_bitField0_ |= 0x00000040;
+                mutable_bitField0_ |= 0x00000020;
               }
               message_.add(
                   input.readMessage(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.parser(), extensionRegistry));
@@ -767,7 +758,7 @@ public final class TelemetryProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           message_ = java.util.Collections.unmodifiableList(message_);
         }
         this.unknownFields = unknownFields.build();
@@ -899,53 +890,44 @@ public final class TelemetryProtos {
       return sourcePort_;
     }
 
-    public static final int ISFLOWMESSAGE_FIELD_NUMBER = 5;
-    private boolean isFlowMessage_;
-    /**
-     * <code>bool isFlowMessage = 5;</code>
-     */
-    public boolean getIsFlowMessage() {
-      return isFlowMessage_;
-    }
-
-    public static final int USEROUTINGKEY_FIELD_NUMBER = 6;
+    public static final int USEROUTINGKEY_FIELD_NUMBER = 5;
     private boolean useRoutingKey_;
     /**
-     * <code>bool useRoutingKey = 6;</code>
+     * <code>bool useRoutingKey = 5;</code>
      */
     public boolean getUseRoutingKey() {
       return useRoutingKey_;
     }
 
-    public static final int MESSAGE_FIELD_NUMBER = 7;
+    public static final int MESSAGE_FIELD_NUMBER = 6;
     private java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> message_;
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     public java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> getMessageList() {
       return message_;
     }
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     public java.util.List<? extends org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder> 
         getMessageOrBuilderList() {
       return message_;
     }
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     public int getMessageCount() {
       return message_.size();
     }
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage getMessage(int index) {
       return message_.get(index);
     }
     /**
-     * <code>repeated .TelemetryMessage message = 7;</code>
+     * <code>repeated .TelemetryMessage message = 6;</code>
      */
     public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder getMessageOrBuilder(
         int index) {
@@ -978,14 +960,11 @@ public final class TelemetryProtos {
       if (sourcePort_ != 0) {
         output.writeUInt32(4, sourcePort_);
       }
-      if (isFlowMessage_ != false) {
-        output.writeBool(5, isFlowMessage_);
-      }
       if (useRoutingKey_ != false) {
-        output.writeBool(6, useRoutingKey_);
+        output.writeBool(5, useRoutingKey_);
       }
       for (int i = 0; i < message_.size(); i++) {
-        output.writeMessage(7, message_.get(i));
+        output.writeMessage(6, message_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -1009,17 +988,13 @@ public final class TelemetryProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, sourcePort_);
       }
-      if (isFlowMessage_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(5, isFlowMessage_);
-      }
       if (useRoutingKey_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(6, useRoutingKey_);
+          .computeBoolSize(5, useRoutingKey_);
       }
       for (int i = 0; i < message_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(7, message_.get(i));
+          .computeMessageSize(6, message_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1045,8 +1020,6 @@ public final class TelemetryProtos {
           .equals(other.getSourceAddress());
       result = result && (getSourcePort()
           == other.getSourcePort());
-      result = result && (getIsFlowMessage()
-          == other.getIsFlowMessage());
       result = result && (getUseRoutingKey()
           == other.getUseRoutingKey());
       result = result && getMessageList()
@@ -1070,9 +1043,6 @@ public final class TelemetryProtos {
       hash = (53 * hash) + getSourceAddress().hashCode();
       hash = (37 * hash) + SOURCE_PORT_FIELD_NUMBER;
       hash = (53 * hash) + getSourcePort();
-      hash = (37 * hash) + ISFLOWMESSAGE_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getIsFlowMessage());
       hash = (37 * hash) + USEROUTINGKEY_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getUseRoutingKey());
@@ -1222,13 +1192,11 @@ public final class TelemetryProtos {
 
         sourcePort_ = 0;
 
-        isFlowMessage_ = false;
-
         useRoutingKey_ = false;
 
         if (messageBuilder_ == null) {
           message_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000020);
         } else {
           messageBuilder_.clear();
         }
@@ -1264,12 +1232,11 @@ public final class TelemetryProtos {
         result.systemId_ = systemId_;
         result.sourceAddress_ = sourceAddress_;
         result.sourcePort_ = sourcePort_;
-        result.isFlowMessage_ = isFlowMessage_;
         result.useRoutingKey_ = useRoutingKey_;
         if (messageBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
             message_ = java.util.Collections.unmodifiableList(message_);
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.message_ = message_;
         } else {
@@ -1339,9 +1306,6 @@ public final class TelemetryProtos {
         if (other.getSourcePort() != 0) {
           setSourcePort(other.getSourcePort());
         }
-        if (other.getIsFlowMessage() != false) {
-          setIsFlowMessage(other.getIsFlowMessage());
-        }
         if (other.getUseRoutingKey() != false) {
           setUseRoutingKey(other.getUseRoutingKey());
         }
@@ -1349,7 +1313,7 @@ public final class TelemetryProtos {
           if (!other.message_.isEmpty()) {
             if (message_.isEmpty()) {
               message_ = other.message_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensureMessageIsMutable();
               message_.addAll(other.message_);
@@ -1362,7 +1326,7 @@ public final class TelemetryProtos {
               messageBuilder_.dispose();
               messageBuilder_ = null;
               message_ = other.message_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000020);
               messageBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getMessageFieldBuilder() : null;
@@ -1634,41 +1598,15 @@ public final class TelemetryProtos {
         return this;
       }
 
-      private boolean isFlowMessage_ ;
-      /**
-       * <code>bool isFlowMessage = 5;</code>
-       */
-      public boolean getIsFlowMessage() {
-        return isFlowMessage_;
-      }
-      /**
-       * <code>bool isFlowMessage = 5;</code>
-       */
-      public Builder setIsFlowMessage(boolean value) {
-        
-        isFlowMessage_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bool isFlowMessage = 5;</code>
-       */
-      public Builder clearIsFlowMessage() {
-        
-        isFlowMessage_ = false;
-        onChanged();
-        return this;
-      }
-
       private boolean useRoutingKey_ ;
       /**
-       * <code>bool useRoutingKey = 6;</code>
+       * <code>bool useRoutingKey = 5;</code>
        */
       public boolean getUseRoutingKey() {
         return useRoutingKey_;
       }
       /**
-       * <code>bool useRoutingKey = 6;</code>
+       * <code>bool useRoutingKey = 5;</code>
        */
       public Builder setUseRoutingKey(boolean value) {
         
@@ -1677,7 +1615,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>bool useRoutingKey = 6;</code>
+       * <code>bool useRoutingKey = 5;</code>
        */
       public Builder clearUseRoutingKey() {
         
@@ -1689,9 +1627,9 @@ public final class TelemetryProtos {
       private java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> message_ =
         java.util.Collections.emptyList();
       private void ensureMessageIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
           message_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage>(message_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000020;
          }
       }
 
@@ -1699,7 +1637,7 @@ public final class TelemetryProtos {
           org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder> messageBuilder_;
 
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> getMessageList() {
         if (messageBuilder_ == null) {
@@ -1709,7 +1647,7 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public int getMessageCount() {
         if (messageBuilder_ == null) {
@@ -1719,7 +1657,7 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage getMessage(int index) {
         if (messageBuilder_ == null) {
@@ -1729,7 +1667,7 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder setMessage(
           int index, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage value) {
@@ -1746,7 +1684,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder setMessage(
           int index, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder builderForValue) {
@@ -1760,7 +1698,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder addMessage(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage value) {
         if (messageBuilder_ == null) {
@@ -1776,7 +1714,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder addMessage(
           int index, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage value) {
@@ -1793,7 +1731,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder addMessage(
           org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder builderForValue) {
@@ -1807,7 +1745,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder addMessage(
           int index, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder builderForValue) {
@@ -1821,7 +1759,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder addAllMessage(
           java.lang.Iterable<? extends org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> values) {
@@ -1836,12 +1774,12 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder clearMessage() {
         if (messageBuilder_ == null) {
           message_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           messageBuilder_.clear();
@@ -1849,7 +1787,7 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public Builder removeMessage(int index) {
         if (messageBuilder_ == null) {
@@ -1862,14 +1800,14 @@ public final class TelemetryProtos {
         return this;
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder getMessageBuilder(
           int index) {
         return getMessageFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder getMessageOrBuilder(
           int index) {
@@ -1879,7 +1817,7 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public java.util.List<? extends org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder> 
            getMessageOrBuilderList() {
@@ -1890,14 +1828,14 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder addMessageBuilder() {
         return getMessageFieldBuilder().addBuilder(
             org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.getDefaultInstance());
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder addMessageBuilder(
           int index) {
@@ -1905,7 +1843,7 @@ public final class TelemetryProtos {
             index, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.getDefaultInstance());
       }
       /**
-       * <code>repeated .TelemetryMessage message = 7;</code>
+       * <code>repeated .TelemetryMessage message = 6;</code>
        */
       public java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder> 
            getMessageBuilderList() {
@@ -1918,7 +1856,7 @@ public final class TelemetryProtos {
           messageBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageOrBuilder>(
                   message_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  ((bitField0_ & 0x00000020) == 0x00000020),
                   getParentForChildren(),
                   isClean());
           message_ = null;
@@ -1998,14 +1936,13 @@ public final class TelemetryProtos {
   static {
     java.lang.String[] descriptorData = {
       "\n\017telemetry.proto\"4\n\020TelemetryMessage\022\021\n" +
-      "\ttimestamp\030\001 \001(\004\022\r\n\005bytes\030\002 \001(\014\"\271\001\n\023Tele" +
+      "\ttimestamp\030\001 \001(\004\022\r\n\005bytes\030\002 \001(\014\"\242\001\n\023Tele" +
       "metryMessageLog\022\020\n\010location\030\001 \001(\t\022\021\n\tsys" +
       "tem_id\030\002 \001(\t\022\026\n\016source_address\030\003 \001(\t\022\023\n\013" +
-      "source_port\030\004 \001(\r\022\025\n\risFlowMessage\030\005 \001(\010" +
-      "\022\025\n\ruseRoutingKey\030\006 \001(\010\022\"\n\007message\030\007 \003(\013" +
-      "2\021.TelemetryMessageB:\n\'org.opennms.netmg" +
-      "t.telemetry.common.ipcB\017TelemetryProtosb" +
-      "\006proto3"
+      "source_port\030\004 \001(\r\022\025\n\ruseRoutingKey\030\005 \001(\010" +
+      "\022\"\n\007message\030\006 \003(\0132\021.TelemetryMessageB:\n\'" +
+      "org.opennms.netmgt.telemetry.common.ipcB" +
+      "\017TelemetryProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2030,7 +1967,7 @@ public final class TelemetryProtos {
     internal_static_TelemetryMessageLog_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TelemetryMessageLog_descriptor,
-        new java.lang.String[] { "Location", "SystemId", "SourceAddress", "SourcePort", "IsFlowMessage", "UseRoutingKey", "Message", });
+        new java.lang.String[] { "Location", "SystemId", "SourceAddress", "SourcePort", "UseRoutingKey", "Message", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

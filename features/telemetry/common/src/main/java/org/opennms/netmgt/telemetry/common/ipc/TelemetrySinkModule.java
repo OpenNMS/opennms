@@ -131,7 +131,6 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
                             .setSystemId(systemId)
                             .setSourceAddress(message.getSource().getHostString())
                             .setSourcePort(message.getSource().getPort())
-                            .setIsFlowMessage(message.getIsFlowMessage())
                             .setUseRoutingKey(message.getUseRoutingKey());
                 }
                 final TelemetryProtos.TelemetryMessage messageDto = TelemetryProtos.TelemetryMessage.newBuilder()
@@ -175,9 +174,8 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
     public Optional<String> getRoutingKey(final TelemetryProtos.TelemetryMessageLog message) {
         if (message.getUseRoutingKey()) {
             return Optional.of(String.format("%s@%s:%d", message.getLocation(), message.getSourceAddress(), message.getSourcePort()));
-        } else {
-            return null;
         }
+        return Optional.empty();
     }
 
     public DistPollerDao getDistPollerDao() {
