@@ -44,6 +44,7 @@ import java.util.Optional;
  */
 public interface SinkModule<S extends Message, T extends Message> {
 
+    String HEARTBEAT_MODULE_ID = "Heartbeat";
     /**
      * Globally unique identifier.
      *

@@ -1567,4 +1567,18 @@
     <feature name="opennms-threshold-states-shell" description="OpenNMS :: Features :: Collection :: Thresholding :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-core-ipc-grpc-osgi" description="OpenNMS :: Core : IPC :: GRPC :: OSGI :: Shaded" version="${project.version}">
+        <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-grpc-server" description="OpenNMS :: Core :: IPC :: GRPC :: Server" version="${project.version}">
+        <feature>opennms-core-ipc-grpc-osgi</feature>
+        <feature>opennms-core-ipc-sink-api</feature>
+        <feature>opennms-identity</feature>
+        <feature>opennms-core-ipc-rpc-api</feature>
+        <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.server/${project.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guavagRPCVersion}</bundle>
+    </feature>
 </features>
