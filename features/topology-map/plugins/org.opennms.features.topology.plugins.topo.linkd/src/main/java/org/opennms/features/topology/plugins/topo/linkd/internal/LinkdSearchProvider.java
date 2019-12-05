@@ -33,11 +33,10 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.IgnoreHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -54,9 +53,9 @@ public class LinkdSearchProvider extends AbstractLinkdStatusProvider implements 
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
 
-    private final MetaTopologyProvider m_delegate;
+    private final GraphProvider m_delegate;
 
-    public LinkdSearchProvider(MetaTopologyProvider delegate, OnmsTopologyDao onmsTopologyDao) {
+    public LinkdSearchProvider(GraphProvider delegate, OnmsTopologyDao onmsTopologyDao) {
         super(onmsTopologyDao);
         m_delegate = delegate;
     }
@@ -66,10 +65,10 @@ public class LinkdSearchProvider extends AbstractLinkdStatusProvider implements 
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
 
-        final List<Vertex> vertices =  m_delegate.getGraphProviderBy(searchQuery.getNamespace()).getVertices(new IgnoreHopCriteria());
-        final List<SearchResult> searchResults = Lists.newArrayList();
+        List<Vertex> vertices =  m_delegate.getVertices();
+        List<SearchResult> searchResults = Lists.newArrayList();
 
-        for (Vertex vertex : vertices) {
+        for(Vertex vertex : vertices){
             if(searchQuery.matches(vertex.getLabel())) {
                 searchResults.add(new SearchResult(vertex, false, false));
             }
@@ -84,7 +83,7 @@ public class LinkdSearchProvider extends AbstractLinkdStatusProvider implements 
     
     @Override
     public String getSearchProviderNamespace() {
-        return "nodes";
+        return m_delegate.getNamespace();
     }
     
     @Override
