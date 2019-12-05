@@ -29,8 +29,12 @@
 package org.opennms.netmgt.measurements.impl;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +46,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -55,8 +61,10 @@ import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.timescale.support.TimescaleUtils;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
@@ -124,11 +132,87 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
     // Used to limit the number of threads that are performing aggregation calculations in parallel
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
+    @Autowired
+    private DataSource dataSource;
+    private Connection connection;
+
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
         final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
+        final Map<String, Object> constants = Maps.newHashMap();
+
+        FetchResults result;
+
+        // TODO Patrick: do db stuff proper.
+        try {
+
+            String stepInSeconds = (step / 1000) + " Seconds";
+            String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
+            String sql = "SELECT time_bucket('"+stepInSeconds+"', time) AS step, min(value), avg(value), max(value) FROM timeseries where " +
+                    "resource=? AND time > ? AND time < ? GROUP BY step ORDER BY step DESC";
+            if(maxrows>0) {
+                sql = sql + " LIMIT " + maxrows;
+            }
+            if(connection == null) {
+                this.connection = this.dataSource.getConnection();
+
+            }
+            PreparedStatement statement = connection.prepareStatement(sql);
+            // statement.setString(1, stepInSeconds);
+            statement.setString(1, resourceId);
+            statement.setTimestamp(2, new java.sql.Timestamp(start));
+            statement.setTimestamp(3, new java.sql.Timestamp(end));
+            ResultSet rs = statement.executeQuery();
+
+            ArrayList<Long> timestamps = new ArrayList<>();
+            List<Double> valuesMin = new ArrayList<>();
+            List<Double> valuesAvg = new ArrayList<>();
+            List<Double> valuesMax = new ArrayList<>();
+
+            while(rs.next()){
+                long timestamp = rs.getTimestamp("step").getTime()*1000;
+                timestamps.add(timestamp);
+
+                valuesAvg.add(rs.getDouble("avg"));
+                valuesMin.add(rs.getDouble("min"));
+                valuesMax.add(rs.getDouble("max"));
+            }
+            long[] timestampsArray = toLongArray(timestamps);
+            Map<String, double[]> columns = new HashMap<>();
+            columns.put("maxRtMicro", toDoubleArray(valuesMax));
+            columns.put("rtMicro", toDoubleArray(valuesAvg));
+            columns.put("minRtMicro", toDoubleArray(valuesMin));
+
+            List<QueryResource> resources = getResources(sources, relaxed);
+            QueryMetadata metaData = new QueryMetadata(resources);
+            result = new FetchResults(timestampsArray, columns, step, new HashMap<>(), metaData);
+            rs.close();
+        } catch (SQLException e) {
+            LOG.error("Could not retrieve FetchResults", e);
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    private long[] toLongArray(List<Long> longs) {
+        long[] longArray = new long[longs.size()];
+        for(int i=0; i<longs.size(); i++){
+            longArray[i] = longs.get(i);
+        }
+        return longArray;
+    }
+
+    private double[] toDoubleArray(List<Double> values) {
+        double[] array = new double[values.size()];
+        for(int i=0; i<values.size(); i++){
+            array[i] = values.get(i);
+        }
+        return array;
+    }
+
+    private List<QueryResource> getResources(List<Source> sources, boolean relaxed) {
         final Map<String, Object> constants = Maps.newHashMap();
         final List<QueryResource> resources = new ArrayList<>();
 
@@ -201,58 +285,10 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
                 listOfSources.add(source);
             }
         }
-
-        // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
-        // so we perform multiple queries in parallel, and aggregate the results.
-        Map<String, Future<Collection<Row<Measurement>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
-        for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
-            measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
-                    getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
-        }
-
-        long[] timestamps = null;
-        Map<String, double[]> columns = Maps.newHashMap();
-
-        for (Entry<String, Future<Collection<Row<Measurement>>>> entry : measurementsByNewtsResourceId.entrySet()) {
-            Collection<Row<Measurement>> rows;
-            try {
-                rows = entry.getValue().get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw Throwables.propagate(e);
-            }
-
-            final int N = rows.size();
-
-            if (timestamps == null) {
-                timestamps = new long[N];
-                int k=0;
-                for (final Row<Measurement> row : rows) {
-                    timestamps[k] = row.getTimestamp().asMillis();
-                    k++;
-                }
-            }
-
-            int k = 0;
-            for (Row<Measurement> row : rows) {
-                for (Measurement measurement : row.getElements()) {
-                    double[] column = columns.get(measurement.getName());
-                    if (column == null) {
-                        column = new double[N];
-                        columns.put(measurement.getName(), column);
-                    }
-                    column[k] = measurement.getValue();
-                }
-                k += 1;
-            }
-        }
-
-        FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants, new QueryMetadata(resources));
-        if (relaxed) {
-            Utils.fillMissingValues(fetchResults, sources);
-        }
-        LOG.trace("Fetch results: {}", fetchResults);
-        return fetchResults;
+        return resources;
     }
+
+
 
     private Callable<OnmsResource> getResourceByIdCallable(final ResourceId resourceId) {
         return new Callable<OnmsResource>() {
@@ -285,44 +321,6 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
             availableAggregationThreads.release();
         }
     };
-
-    private Callable<Collection<Row<Measurement>>> getMeasurementsForResourceCallable(final String newtsResourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
-        return new Callable<Collection<Row<Measurement>>>() {
-            @Override
-            public Collection<Row<Measurement>> call() throws Exception {
-                ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
-                for (Source source : listOfSources) {
-                    // Use the datasource as the metric name if set, otherwise use the name of the attribute
-                    final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
-                    final String name = source.getLabel();
-                    final AggregationFunction fn = toAggregationFunction(source.getAggregation());
-
-                    resultDescriptor.datasource(name, metricName, lag.getHeartbeat(), fn);
-                    resultDescriptor.export(name);
-                }
-
-                LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
-                Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), start, end,
-                        resultDescriptor, Optional.of(Duration.millis(lag.getStep())), limitConcurrentAggregationsCallback);
-                Collection<Row<Measurement>> rows = results.getRows();
-                LOG.debug("Found {} rows.", rows.size());
-                return rows;
-            }
-        };
-    }
-
-
-    private static AggregationFunction toAggregationFunction(String fn) {
-        if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
-            return StandardAggregationFunctions.AVERAGE;
-        } else if ("max".equalsIgnoreCase(fn)) {
-            return StandardAggregationFunctions.MAX;
-        } else if ("min".equalsIgnoreCase(fn)) {
-            return StandardAggregationFunctions.MIN;
-        } else {
-            throw new IllegalArgumentException("Unsupported aggregation function: " + fn);
-        }
-    }
 
     @VisibleForTesting
     protected static class LateAggregationParams {

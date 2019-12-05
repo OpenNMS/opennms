@@ -32,18 +32,18 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyProvider;
 
 /**
- * Provides a reference to the {@link org.opennms.netmgt.measurements.impl.NewtsFetchStrategy}
+ * Provides a reference to the {@link org.opennms.netmgt.measurements.impl.TimescaleFetchStrategy}
  * when using the 'newts' time-series series strategy.
  *
  * @author jwhite
  */
 public class TimescaleFetchStrategyProvider implements MeasurementFetchStrategyProvider {
 
-    public static final String NEWTS_TIME_SERIES_STRATEGY_NAME = "newts";
+    public static final String TIME_SERIES_STRATEGY_NAME = "timescale";
 
     @Override
     public Class<? extends MeasurementFetchStrategy> getStrategyClass(String timeSeriesStrategyName, String rrdStrategyClass) {
-        if (!NEWTS_TIME_SERIES_STRATEGY_NAME.equalsIgnoreCase(timeSeriesStrategyName)) {
+        if (!TIME_SERIES_STRATEGY_NAME.equalsIgnoreCase(timeSeriesStrategyName)) {
             return null;
         }
         return TimescaleFetchStrategy.class;
