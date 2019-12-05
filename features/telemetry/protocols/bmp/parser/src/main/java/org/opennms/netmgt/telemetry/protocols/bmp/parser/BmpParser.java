@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -141,8 +142,23 @@ public class BmpParser implements TcpParser {
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
         return buffer -> {
-            final Header header = new Header(slice(buffer, Header.SIZE));
-            final Packet packet = header.parsePayload(slice(buffer, header.length - Header.SIZE));
+            buffer.markReaderIndex();
+
+            final Header header;
+            if (buffer.isReadable(Header.SIZE)) {
+                header = new Header(slice(buffer, Header.SIZE));
+            } else {
+                buffer.resetReaderIndex();
+                return Optional.empty();
+            }
+
+            final Packet packet;
+            if (buffer.isReadable(header.payloadLength())) {
+                packet = header.parsePayload(slice(buffer, header.payloadLength()));
+            } else {
+                buffer.resetReaderIndex();
+                return Optional.empty();
+            }
 
             LOG.trace("Got packet: {}", packet);
 
@@ -161,7 +177,7 @@ public class BmpParser implements TcpParser {
             this.recordsDispatched.mark();
 
             final TelemetryMessage message = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO());
-            return dispatcher.send(message);
+            return Optional.of(dispatcher.send(message));
         };
     }
 
