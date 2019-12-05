@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -38,8 +39,8 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 
 import com.codahale.metrics.MetricRegistry;
@@ -61,12 +62,27 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
         final TcpSession session = new TcpSession(remoteAddress.getAddress());
 
         return buffer -> {
-            final Header header = new Header(slice(buffer, Header.SIZE));
-            final Packet packet = new Packet(session, header, buffer);
+            buffer.markReaderIndex();
 
-            detectClockSkew(header.unixSecs * 1000L, session.getRemoteAddress());
+            final Header header;
+            if (buffer.isReadable(Header.SIZE)) {
+                header = new Header(slice(buffer, Header.SIZE));
+            } else {
+                buffer.resetReaderIndex();
+                return Optional.empty();
+            }
 
-            return this.transmit(packet, remoteAddress);
+            final Packet packet;
+            if (buffer.isReadable(header.payloadLength())) {
+                packet = new Packet(session, header, slice(buffer, header.payloadLength()));
+            } else {
+                buffer.resetReaderIndex();
+                return Optional.empty();
+            }
+
+            detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
+
+            return Optional.of(this.transmit(packet, remoteAddress));
         };
     }
 }

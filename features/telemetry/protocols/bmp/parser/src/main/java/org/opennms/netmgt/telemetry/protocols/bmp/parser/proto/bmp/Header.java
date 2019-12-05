@@ -69,6 +69,10 @@ public class Header {
         this.type = Type.from(buffer);
     }
 
+    public int payloadLength() {
+        return this.length - Header.SIZE;
+    }
+
     public Packet parsePayload(final ByteBuf buffer) throws InvalidPacketException {
         return this.type.parse(this, buffer);
     }

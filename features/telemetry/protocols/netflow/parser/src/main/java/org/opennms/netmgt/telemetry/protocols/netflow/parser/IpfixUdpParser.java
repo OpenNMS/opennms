@@ -68,7 +68,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     protected RecordProvider parse(final Session session,
                                    final ByteBuf buffer) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
-        final Packet packet = new Packet(session, header, buffer);
+        final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
 
         detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
 
