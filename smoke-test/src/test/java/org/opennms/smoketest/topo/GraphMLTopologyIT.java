@@ -28,7 +28,10 @@
 
 package org.opennms.smoketest.topo;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.opennms.smoketest.TopologyIT.waitForTransition;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +54,7 @@ import org.junit.runners.MethodSorters;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
+import org.opennms.features.topology.link.TopologyLinkBuilder;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -256,6 +260,29 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
         Assert.assertEquals(1, topologyUIPage.getFocusedVertices().size());
     }
 
+    @Test
+    public void verifyCanSetLayerViaUrlParameter() {
+        adminPage(); // leave topology page to ensure the link actually works
+        final String namespace = "acme:markets";
+        final String searchTokenNamespace = "Acme:markets:";
+        final String url = new TopologyLinkBuilder()
+                .provider(() -> LABEL)
+                .focus("north.2", "north.3")
+                .szl(0)
+                .layer(namespace)
+                .getLink();
+        getDriver().get(getBaseUrl() + url.substring(1) /* ignore leading / */);
+
+        // verify that the page loaded properly
+        // DO NOT invoke .open()
+        topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrl());
+        waitForTransition();
+        Assert.assertThat(topologyUIPage.getSzl(), is(0));
+        Assert.assertThat(topologyUIPage.getFocusedVertices(), hasItems(
+                focusVertex(topologyUIPage, searchTokenNamespace, "North 2"),
+                focusVertex(topologyUIPage, searchTokenNamespace, "North 3")));
+    }
+
     /**
      * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
      */
@@ -334,6 +361,6 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     private static TopologyIT.FocusedVertex focusVertex(TopologyIT.TopologyUIPage topologyUIPage, String namespace, String label) {
-        return  new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
+        return new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
     }
 }

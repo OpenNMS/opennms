@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.features.topology.api.Callbacks;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -72,6 +73,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHo
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -210,9 +212,24 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     // The order matters
                     request -> loadHistoryFragment(request),
                     request -> loadGraphProvider(request),
+                    request -> loadLayer(request),
                     request -> loadVertexHopCriteria(request),
                     request -> loadSemanticZoomLevel(request),
                     request -> loadLayout(request));
+        }
+
+        private boolean loadLayer(VaadinRequest request) {
+            final String layerNamespace = request.getParameter(TopologyLinkBuilder.PARAMETER_LAYER_NAMESPACE);
+            if (layerNamespace != null) {
+                if (!Objects.equals(m_graphContainer.getTopologyServiceClient().getNamespace(), layerNamespace)) {
+                    final GraphProvider layerProvider = m_graphContainer.getTopologyServiceClient().getGraphProviderBy(layerNamespace);
+                    if (layerProvider != null) {
+                        m_graphContainer.selectTopologyProvider(layerProvider, Callbacks.applyDefaults());
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         @Override
