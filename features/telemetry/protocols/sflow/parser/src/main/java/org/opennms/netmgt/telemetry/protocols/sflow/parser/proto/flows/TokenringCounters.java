@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct tokenring_counters {
 //   unsigned int dot5StatsLineErrors;
@@ -78,7 +78,7 @@ public class TokenringCounters implements CounterData {
     public final long dot5StatsSingles;
     public final long dot5StatsFreqErrors;
 
-    public TokenringCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public TokenringCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.dot5StatsLineErrors = BufferUtils.uint32(buffer);
         this.dot5StatsBurstErrors = BufferUtils.uint32(buffer);
         this.dot5StatsACErrors = BufferUtils.uint32(buffer);

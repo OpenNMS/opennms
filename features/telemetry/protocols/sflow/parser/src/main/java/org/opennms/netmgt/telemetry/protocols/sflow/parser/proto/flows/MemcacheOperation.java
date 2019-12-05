@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct memcache_operation {
 //   memcache_protocol protocol;  /* protocol */
@@ -59,7 +59,7 @@ public class MemcacheOperation implements CounterData {
     public final long uS;
     public final MemcacheStatus status;
 
-    public MemcacheOperation(final ByteBuffer buffer) throws InvalidPacketException {
+    public MemcacheOperation(final ByteBuf buffer) throws InvalidPacketException {
         this.protocol = MemcacheProtocol.from(buffer);
         this.cmd = MemcacheCmd.from(buffer);
         this.key = new AsciiString(buffer);

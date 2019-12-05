@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class PrefixTreatAsWithdraw extends Counter {
-    public PrefixTreatAsWithdraw(final ByteBuffer buffer) {
+    public PrefixTreatAsWithdraw(final ByteBuf buffer) {
         super(buffer);
     }
 

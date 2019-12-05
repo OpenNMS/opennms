@@ -28,38 +28,39 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
+import io.netty.buffer.ByteBuf;
+
 public class InformationElement extends TLV<InformationElement.Type, String, Void> {
 
-    public InformationElement(final ByteBuffer buffer) throws InvalidPacketException {
+    public InformationElement(final ByteBuf buffer) throws InvalidPacketException {
         super(buffer, Type::from, null);
     }
 
     public enum Type implements TLV.Type<String, Void> {
         STRING {
             @Override
-            public String parse(final ByteBuffer buffer, final Void parameter) {
-                return new String(bytes(buffer, buffer.remaining()), StandardCharsets.UTF_8);
+            public String parse(final ByteBuf buffer, final Void parameter) {
+                return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.UTF_8);
             }
         },
 
         SYS_DESCR {
             @Override
-            public String parse(final ByteBuffer buffer, final Void parameter) {
-                return new String(bytes(buffer, buffer.remaining()), StandardCharsets.US_ASCII);
+            public String parse(final ByteBuf buffer, final Void parameter) {
+                return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.US_ASCII);
             }
         },
 
         SYS_NAME {
             @Override
-            public String parse(final ByteBuffer buffer, final Void parameter) {
-                return new String(bytes(buffer, buffer.remaining()), StandardCharsets.US_ASCII);
+            public String parse(final ByteBuf buffer, final Void parameter) {
+                return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.US_ASCII);
             }
         };
 

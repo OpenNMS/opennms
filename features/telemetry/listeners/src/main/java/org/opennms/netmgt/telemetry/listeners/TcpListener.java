@@ -111,7 +111,7 @@ public class TcpListener implements Listener {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
                                                                 final ByteBuf msg) throws Exception {
-                                        session.parse(ReferenceCountUtil.retain(msg).nioBuffer())
+                                        session.parse(ReferenceCountUtil.retain(msg))
                                                 .handle((result, ex) -> {
                                                     ReferenceCountUtil.release(msg);
                                                     if (ex != null) {

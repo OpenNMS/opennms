@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class PeerDownPacket implements Packet {
     public final Header header;
     public final PeerHeader peerHeader;
@@ -54,7 +55,7 @@ public class PeerDownPacket implements Packet {
     public final Type type;     // uint8
     public final Reason reason; // variable
 
-    public PeerDownPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
+    public PeerDownPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
@@ -65,36 +66,36 @@ public class PeerDownPacket implements Packet {
     public enum Type {
         LOCAL_BGP_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                 return new LocalBgpNotification(buffer, flags);
             }
         },
         LOCAL_NO_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                 return new LocalNoNotification(buffer, flags);
             }
         },
         REMOTE_BGP_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                 return new RemoteBgpNotification(buffer, flags);
             }
         },
         REMOTE_NO_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                 return new RemoteNoNotification(buffer, flags);
             }
         },
         UNKNOWN {
             @Override
-            public Reason parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                 return new Unknown(buffer, flags);
             }
         };
 
-        public abstract Reason parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException;
+        public abstract Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
 
         private static Type from(final int type) {
             switch (type) {

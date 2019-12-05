@@ -28,18 +28,19 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint64;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.time.Instant;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 public class PeerHeader {
     public final Type type;   // uint8
@@ -55,7 +56,7 @@ public class PeerHeader {
 
     public final Instant timestamp; // uint32 (seconds) + uint32(microseconds)
 
-    public PeerHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public PeerHeader(final ByteBuf buffer) throws InvalidPacketException {
         this.type = Type.from(buffer);
 
         this.flags = new PeerFlags(uint8(buffer));
@@ -75,7 +76,7 @@ public class PeerHeader {
         RD_INSTANCE,
         LOCAL_INSTANCE;
 
-        private static Type from(final ByteBuffer buffer) throws InvalidPacketException {
+        private static Type from(final ByteBuf buffer) throws InvalidPacketException {
             final int type = uint8(buffer);
             switch (type) {
                 case 0:

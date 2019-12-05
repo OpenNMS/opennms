@@ -28,18 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down;
 
-import java.nio.ByteBuffer;
-
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.NotificationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class LocalBgpNotification implements Reason {
     public final NotificationPacket notification;
 
-    public LocalBgpNotification(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public LocalBgpNotification(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         this.notification = NotificationPacket.parse(buffer, flags);
     }
 

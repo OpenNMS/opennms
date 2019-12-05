@@ -28,18 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class Origin implements Attribute {
     public final Value value;
 
-    public Origin(final ByteBuffer buffer, final PeerFlags flags) {
+    public Origin(final ByteBuf buffer, final PeerFlags flags) {
         this.value = Value.from(uint8(buffer));
     }
 

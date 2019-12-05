@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct host_cpu {
 //    float load_one;              /* 1 minute load avg., -1.0 = unknown */
@@ -99,7 +99,7 @@ public class HostCpu implements CounterData {
                 .toString();
     }
 
-    public HostCpu(final ByteBuffer buffer) throws InvalidPacketException {
+    public HostCpu(final ByteBuf buffer) throws InvalidPacketException {
         this.load_one = BufferUtils.sfloat(buffer);
         this.load_five = BufferUtils.sfloat(buffer);
         this.load_fifteen = BufferUtils.sfloat(buffer);

@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class AdjRibIn extends Gauge {
 
-    public AdjRibIn(final ByteBuffer buffer) {
+    public AdjRibIn(final ByteBuf buffer) {
         super(buffer);
     }
 

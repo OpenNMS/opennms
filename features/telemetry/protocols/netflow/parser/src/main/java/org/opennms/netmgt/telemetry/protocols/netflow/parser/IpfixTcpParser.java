@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
 

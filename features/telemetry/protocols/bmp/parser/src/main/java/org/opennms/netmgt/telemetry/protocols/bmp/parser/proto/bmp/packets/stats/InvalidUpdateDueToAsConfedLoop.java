@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class InvalidUpdateDueToAsConfedLoop extends Counter {
-    public InvalidUpdateDueToAsConfedLoop(final ByteBuffer buffer) {
+    public InvalidUpdateDueToAsConfedLoop(final ByteBuf buffer) {
         super(buffer);
     }
 

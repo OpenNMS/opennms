@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp;
 
-import java.nio.ByteBuffer;
-
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.KeepalivePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.NotificationPacket;
@@ -37,11 +35,13 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.OpenP
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
+import io.netty.buffer.ByteBuf;
+
 public interface Packet {
     void accept(final Visitor visitor);
 
     interface Parser {
-        Packet parse(final Header header, final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException;
+        Packet parse(final Header header, final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
     }
 
     interface Visitor {
@@ -51,7 +51,7 @@ public interface Packet {
         void visit(final KeepalivePacket packet);
     }
 
-    static Packet parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    static Packet parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         final Header header = new Header(buffer);
         return header.parsePayload(buffer, flags);
     }

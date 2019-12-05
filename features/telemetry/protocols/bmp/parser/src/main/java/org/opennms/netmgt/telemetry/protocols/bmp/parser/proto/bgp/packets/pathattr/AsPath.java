@@ -28,22 +28,23 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatCount;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatCount;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class AsPath implements Attribute {
     public final List<Segment> segments;
 
-    public AsPath(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public AsPath(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         segments = BufferUtils.repeatRemaining(buffer, segmentBuffer -> new Segment(segmentBuffer, flags));
     }
 
@@ -51,7 +52,7 @@ public class AsPath implements Attribute {
         public final Type type;
         public final List<Long> path;
 
-        public Segment(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+        public Segment(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
             this.type = Type.from(uint8(buffer));
             this.path = repeatCount(buffer, uint8(buffer), flags::parseAS);
         }
