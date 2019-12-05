@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,32 +28,28 @@
 
 package org.opennms.smoketest.telemetry;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.elastic.NetflowVersion;
+public interface Sender {
+    void send(final byte[] payload) throws IOException;
 
-public class FlowPacket extends Packet {
+    static Sender udp(final InetSocketAddress destinationAddress) {
+        Objects.requireNonNull(destinationAddress);
 
-    private final NetflowVersion netflowVersion;
-    private final int flowCount;
-
-    public FlowPacket(final NetflowVersion netflowVersion,
-                      final Payload payload,
-                      final int flowCount) {
-        super(payload);
-
-        this.netflowVersion = Objects.requireNonNull(netflowVersion);
-        this.flowCount = flowCount;
-        if (flowCount < 1) {
-            throw new IllegalArgumentException("Flow count must be strictly positive.");
-        }
+        return payload -> {
+            try (DatagramSocket serverSocket = new DatagramSocket()) {
+                final DatagramPacket sendPacket = new DatagramPacket(payload, payload.length, destinationAddress);
+                serverSocket.send(sendPacket);
+            }
+        };
     }
 
-    public int getFlowCount() {
-        return flowCount;
-    }
-
-    public NetflowVersion getNetflowVersion() {
-        return netflowVersion;
+    static Sender stream(final OutputStream stream) {
+        return stream::write;
     }
 }

@@ -55,6 +55,7 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
+import org.opennms.smoketest.telemetry.Sender;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.RestClient;
 
@@ -117,7 +118,7 @@ public class ClockSkewIT {
 
         // now send Netflow v5 packet
         final FlowTester flowTester = new FlowTestBuilder()
-                .withNetflow5Packet(flowTelemetryAddress)
+                .withNetflow5Packet(Sender.udp(flowTelemetryAddress))
                 .verifyOpennmsRestEndpoint(opennmsWebAddress)
                 .build(elasticRestAddress);
 

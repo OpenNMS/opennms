@@ -26,21 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.sentinel;
+package org.opennms.smoketest.flow;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.features.jest.client.SearchResultUtils;
-import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.FlowPacket;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
@@ -48,43 +46,40 @@ import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
 import org.opennms.smoketest.telemetry.Sender;
 
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
-
-public class SinglePortFlowsIT {
+/**
+ * Verifies that sending flow packets to a TCP listener.
+ * See issue NMS-12430 for more details.
+ */
+public class TCPFlowsIT {
 
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withMinion()
-            .withSentinel()
             .withTelemetryProcessing()
-            .withIpcStrategy(IpcStrategy.KAFKA)
             .build());
 
+    // Verifies that when OpenNMS and ElasticSearch is running and configured, that sending a flow packet
+    // will actually be persisted in elastic
     @Test
-    public void verifySinglePort() throws Exception {
-        // Determine endpoints
+    public void verifyFlowStack() throws Exception {
+        final InetSocketAddress flowTelemetryAddress = stack.opennms().getNetworkProtocolAddress(NetworkProtocol.IPFIX_TCP);
+        final InetSocketAddress opennmsWebAddress = stack.opennms().getWebAddress();
         final InetSocketAddress elasticRestAddress = InetSocketAddress.createUnresolved(
                 stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
-        final InetSocketAddress flowTelemetryAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
 
-        // Now verify Flow creation
+        final FlowPacket packet1 = Packets.Ipfix;
+        final FlowPacket packet2 = Packets.Ipfix;
+
+        final Socket socket = new Socket();
+        socket.connect(flowTelemetryAddress);
+
+        final OutputStream stream = new BufferedOutputStream(socket.getOutputStream(), 71);
+        final Sender sender = Sender.stream(stream);
+
         final FlowTester tester = new FlowTestBuilder()
-                .withFlowPackets(Packets.getFlowPackets(), Sender.udp(flowTelemetryAddress))
-                .verifyBeforeSendingFlows((flowTester) -> {
-                    try {
-                        final SearchResult response = flowTester.getJestClient().execute(
-                                new Search.Builder("")
-                                        .addIndex("netflow-*")
-                                        .build());
-                        assertEquals(Boolean.TRUE, response.isSucceeded());
-                        assertEquals(0L, SearchResultUtils.getTotal(response));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .withFlowPacket(packet1, sender)
+                .withFlowPacket(packet2, sender)
+                .verifyOpennmsRestEndpoint(opennmsWebAddress)
                 .build(elasticRestAddress);
         tester.verifyFlows();
     }
-
 }

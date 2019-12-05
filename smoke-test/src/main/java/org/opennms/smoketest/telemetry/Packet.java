@@ -29,61 +29,21 @@
 package org.opennms.smoketest.telemetry;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.util.Objects;
 
-import com.google.common.io.ByteStreams;
-
 public class Packet {
+    protected final Payload payload;
 
-    private final String resource;
-    private final byte[] payload;
-    private InetSocketAddress destinationAddress;
-
-    public Packet(String resource) {
-        this(resource, null);
-    }
-
-    public Packet(String resource, InetSocketAddress destinationAddress) {
-        this.resource = Objects.requireNonNull(resource);
-        this.destinationAddress = destinationAddress;
-        payload = null;
-    }
-
-    public Packet(byte[] payload, InetSocketAddress destinationAddress) {
+    public Packet(final Payload payload) {
         this.payload = Objects.requireNonNull(payload);
-        this.destinationAddress = destinationAddress;
-        resource = null;
     }
 
-    public void setDestinationAddress(InetSocketAddress destinationAddress) {
-        this.destinationAddress = destinationAddress;
+    public Payload getPayload() {
+        return this.payload;
     }
 
-    public InetSocketAddress getDestinationAddress() {
-        return destinationAddress;
-    }
-
-    public String getResource() {
-        return resource;
-    }
-
-    // Sends a packet to the defined destination address
-    public void send() throws IOException {
-        Objects.requireNonNull(destinationAddress, "DestinationAddress was not initialized properly");
-        final byte[] bytes = payload == null ? getPacketContent(resource) : payload;
-        try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
-            final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
-            serverSocket.send(sendPacket);
-        }
-    }
-
-    private static byte[] getPacketContent(final String filename) throws IOException {
-        try (final InputStream is = Packet.class.getResourceAsStream(filename)) {
-            return ByteStreams.toByteArray(is);
-        }
+    public void send(final Sender sender) throws IOException {
+        final byte[] payload = this.payload.load();
+        sender.send(payload);
     }
 }
