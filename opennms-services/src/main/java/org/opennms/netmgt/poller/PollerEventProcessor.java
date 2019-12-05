@@ -457,7 +457,7 @@ final class PollerEventProcessor implements EventListener {
 
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
-            LOG.error("Interface {}/{} does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
+            LOG.error("Service {}/{}/{} does not exist in pollable node map, unable to delete service.", nodeId, event.getInterface(), service);
             return;
         }
 
