@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_vni_ingress {
 //    unsigned int vni;
@@ -52,7 +52,7 @@ public class ExtendedVniIngress implements FlowData {
                 .toString();
     }
 
-    public ExtendedVniIngress(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedVniIngress(final ByteBuf buffer) throws InvalidPacketException {
         this.vni = BufferUtils.uint32(buffer);
     }
 

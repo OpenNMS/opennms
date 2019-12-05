@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct counters_sample_expanded {
 //    unsigned int sequence_number;   /* Incremented with each counter sample
@@ -60,7 +61,7 @@ public class CountersSampleExpanded implements SampleData {
     public final SFlowDataSourceExpanded source_id;
     public final Array<CounterRecord> counters;
 
-    public CountersSampleExpanded(final ByteBuffer buffer) throws InvalidPacketException {
+    public CountersSampleExpanded(final ByteBuf buffer) throws InvalidPacketException {
         this.sequence_number = BufferUtils.uint32(buffer);
         this.source_id = new SFlowDataSourceExpanded(buffer);
         this.counters = new Array(buffer, Optional.empty(), CounterRecord::new);

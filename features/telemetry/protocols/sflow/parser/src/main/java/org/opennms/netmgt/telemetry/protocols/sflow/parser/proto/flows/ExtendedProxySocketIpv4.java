@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_proxy_socket_ipv4 {
 //   extended_socket_ipv4 socket;
@@ -44,7 +44,7 @@ import com.google.common.base.MoreObjects;
 public class ExtendedProxySocketIpv4 implements FlowData {
     public final ExtendedSocketIpv4 socket;
 
-    public ExtendedProxySocketIpv4(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedProxySocketIpv4(final ByteBuf buffer) throws InvalidPacketException {
         this.socket = new ExtendedSocketIpv4(buffer);
     }
 

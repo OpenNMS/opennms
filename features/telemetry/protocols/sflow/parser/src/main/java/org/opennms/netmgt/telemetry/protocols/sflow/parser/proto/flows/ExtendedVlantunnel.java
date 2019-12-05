@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
@@ -40,6 +39,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedInteger;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_vlantunnel { 
 //   unsigned int stack<>;  /* List of stripped 802.1Q TPID/TCI layers. Each 
@@ -58,7 +59,7 @@ public class ExtendedVlantunnel implements FlowData {
                 .toString();
     }
 
-    public ExtendedVlantunnel(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedVlantunnel(final ByteBuf buffer) throws InvalidPacketException {
         this.stack = new Array(buffer, Optional.empty(), BufferUtils::uint32);
     }
 
