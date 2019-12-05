@@ -29,13 +29,14 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
@@ -51,7 +52,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.ReferenceCountUtil;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements Listener {
@@ -107,18 +108,25 @@ public class TcpListener implements Listener {
                                         super.channelRead(ctx, msg);
                                     }
                                 })
-                                .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
+                                .addLast(new ByteToMessageDecoder() {
+                                    @Override
+                                    protected void decode(final ChannelHandlerContext ctx,
+                                                          final ByteBuf in,
+                                                          final List<Object> out) throws Exception {
+                                        session.parse(in)
+                                               .ifPresent(out::add);
+                                    }
+                                })
+                                .addLast(new SimpleChannelInboundHandler<CompletableFuture<?>>() {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
-                                                                final ByteBuf msg) throws Exception {
-                                        session.parse(ReferenceCountUtil.retain(msg))
-                                                .handle((result, ex) -> {
-                                                    ReferenceCountUtil.release(msg);
-                                                    if (ex != null) {
-                                                        ctx.fireExceptionCaught(ex);
-                                                    }
-                                                    return result;
-                                                });
+                                                                final CompletableFuture<?> future) throws Exception {
+                                        future.handle((result, ex) -> {
+                                            if (ex != null) {
+                                                ctx.fireExceptionCaught(ex);
+                                            }
+                                            return result;
+                                        });
                                     }
                                 })
                                 .addLast(new ChannelInboundHandlerAdapter() {
