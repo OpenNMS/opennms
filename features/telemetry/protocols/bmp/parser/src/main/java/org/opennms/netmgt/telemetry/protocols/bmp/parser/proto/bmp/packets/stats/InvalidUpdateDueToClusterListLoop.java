@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class InvalidUpdateDueToClusterListLoop extends Counter {
-    public InvalidUpdateDueToClusterListLoop(final ByteBuffer buffer) {
+    public InvalidUpdateDueToClusterListLoop(final ByteBuf buffer) {
         super(buffer);
     }
 

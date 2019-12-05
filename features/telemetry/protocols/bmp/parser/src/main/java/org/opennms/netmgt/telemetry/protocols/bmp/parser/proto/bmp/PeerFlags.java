@@ -28,18 +28,19 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.skip;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import org.opennms.core.utils.InetAddressUtils;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class PeerFlags {
     public enum AddressVersion {
@@ -70,7 +71,7 @@ public class PeerFlags {
                 .toString();
     }
 
-    public InetAddress parsePaddedAddress(final ByteBuffer buffer) {
+    public InetAddress parsePaddedAddress(final ByteBuf buffer) {
         return InetAddressUtils.getInetAddress(this.addressVersion.<byte[]>map(v -> {switch (v) {
             case IP_V4:
                 skip(buffer, 12);
@@ -82,7 +83,7 @@ public class PeerFlags {
         }}));
     }
 
-    public InetAddress parseAddress(final ByteBuffer buffer) {
+    public InetAddress parseAddress(final ByteBuf buffer) {
         return InetAddressUtils.getInetAddress(this.addressVersion.<byte[]>map(v -> {switch (v) {
             case IP_V4:
                 return bytes(buffer, 4);
@@ -93,7 +94,7 @@ public class PeerFlags {
         }}));
     }
 
-    public long parseAS(final ByteBuffer buffer) {
+    public long parseAS(final ByteBuf buffer) {
         return this.legacyASPath
                 ? uint16(buffer)
                 : uint32(buffer);

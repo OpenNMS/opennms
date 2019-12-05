@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -45,6 +44,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Termi
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class Header {
     public static final int SIZE = 1 + 4 + 1;
 
@@ -54,7 +55,7 @@ public class Header {
     public final int length;  // uint32
     public final Type type;   // uint8
 
-    public Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Header(final ByteBuf buffer) throws InvalidPacketException {
         this.version = uint8(buffer);
         if (this.version != VERSION) {
             throw new InvalidPacketException(buffer, "Invalid version number: 0x%04X", this.version);
@@ -68,7 +69,7 @@ public class Header {
         this.type = Type.from(buffer);
     }
 
-    public Packet parsePayload(final ByteBuffer buffer) throws InvalidPacketException {
+    public Packet parsePayload(final ByteBuf buffer) throws InvalidPacketException {
         return this.type.parse(this, buffer);
     }
 
@@ -88,11 +89,11 @@ public class Header {
             this.parser = Objects.requireNonNull(parser);
         }
 
-        private Packet parse(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
+        private Packet parse(final Header header, final ByteBuf buffer) throws InvalidPacketException {
             return this.parser.parse(header, buffer);
         }
 
-        private static Type from(final ByteBuffer buffer) throws InvalidPacketException {
+        private static Type from(final ByteBuf buffer) throws InvalidPacketException {
             final int type = uint8(buffer);
             switch (type) {
                 case 0:

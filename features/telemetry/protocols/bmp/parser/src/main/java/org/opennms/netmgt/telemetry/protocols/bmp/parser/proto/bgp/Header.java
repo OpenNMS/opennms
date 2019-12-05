@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -45,6 +44,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class Header {
     public static final int SIZE = 16 + 2 + 1;
 
@@ -53,7 +54,7 @@ public class Header {
     public final int length;
     public final Type type;
 
-    public Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Header(final ByteBuf buffer) throws InvalidPacketException {
         final byte[] marker = bytes(buffer, 16);
         if (!Arrays.equals(marker, EXPECTED_MARKER)) {
             throw new InvalidPacketException(buffer, "Invalid BGP packet marker");
@@ -63,7 +64,7 @@ public class Header {
         this.type = Type.from(buffer);
     }
 
-    public Packet parsePayload(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public Packet parsePayload(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         return this.type.parse(this, buffer, flags);
     }
 
@@ -80,7 +81,7 @@ public class Header {
             this.parser = Objects.requireNonNull(parser);
         }
 
-        private static Type from(final ByteBuffer buffer) throws InvalidPacketException {
+        private static Type from(final ByteBuf buffer) throws InvalidPacketException {
             final int type = uint8(buffer);
             switch (type) {
                 case 1:
@@ -96,7 +97,7 @@ public class Header {
             }
         }
 
-        private Packet parse(final Header header, final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+        private Packet parse(final Header header, final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
             return this.parser.parse(header, buffer, flags);
         }
     }

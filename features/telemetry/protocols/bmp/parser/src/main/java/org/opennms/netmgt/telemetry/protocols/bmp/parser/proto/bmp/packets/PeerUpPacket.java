@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatRemaining;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class PeerUpPacket implements Packet {
     public final Header header;
@@ -58,7 +59,7 @@ public class PeerUpPacket implements Packet {
 
     public final TLV.List<InformationElement, InformationElement.Type, String> information;
 
-    public PeerUpPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
+    public PeerUpPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 

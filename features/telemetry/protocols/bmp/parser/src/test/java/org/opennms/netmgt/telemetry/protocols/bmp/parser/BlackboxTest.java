@@ -35,7 +35,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.Is.isA;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -95,6 +95,9 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
 
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest implements Packet.Visitor {
@@ -247,8 +250,10 @@ public class BlackboxTest implements Packet.Visitor {
             channel.read(buffer);
             buffer.flip();
 
-            final Header header = new Header(slice(buffer, Header.SIZE));
-            final Packet packet = header.parsePayload(buffer);
+            final ByteBuf buf = Unpooled.wrappedBuffer(buffer);
+
+            final Header header = new Header(slice(buf, Header.SIZE));
+            final Packet packet = header.parsePayload(buf);
             assertThat(packet, isA(clazz));
             assertThat((long) header.length, is(channel.size()));
             packet.accept(this);

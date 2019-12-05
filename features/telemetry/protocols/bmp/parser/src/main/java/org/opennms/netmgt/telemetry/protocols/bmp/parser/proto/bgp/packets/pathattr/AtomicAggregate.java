@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import java.nio.ByteBuffer;
-
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class AtomicAggregate implements Attribute {
 
-    public AtomicAggregate(final ByteBuffer buffer, final PeerFlags flags) {}
+    public AtomicAggregate(final ByteBuf buffer, final PeerFlags flags) {}
 
     @Override
     public void accept(final Visitor visitor) {

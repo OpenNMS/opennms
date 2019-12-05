@@ -29,16 +29,17 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class NextHop implements Attribute {
     public final InetAddress address;
 
-    public NextHop(final ByteBuffer buffer, final PeerFlags flags) {
+    public NextHop(final ByteBuf buffer, final PeerFlags flags) {
         this.address = flags.parseAddress(buffer);
     }
 

@@ -28,25 +28,26 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class Opaque<T> {
 
     @FunctionalInterface
     public interface Parser<T> {
-        T parse(final ByteBuffer buffer) throws InvalidPacketException;
+        T parse(final ByteBuf buffer) throws InvalidPacketException;
     }
 
     public final int length;
     public final T value;
 
-    public Opaque(final ByteBuffer buffer,
+    public Opaque(final ByteBuf buffer,
                   final Optional<Integer> length,
                   final Parser<T> parser) throws InvalidPacketException {
         this.length = length.orElseGet(() -> (int) BufferUtils.uint32(buffer));
@@ -69,13 +70,13 @@ public class Opaque<T> {
                 .toString();
     }
 
-    public static <T> T parseUnknown(final ByteBuffer buffer) throws InvalidPacketException {
+    public static <T> T parseUnknown(final ByteBuf buffer) throws InvalidPacketException {
         // This will consume the whole buffer and always returns null
-        buffer.position(buffer.limit());
+        BufferUtils.skip(buffer, buffer.readableBytes());
         return null;
     }
 
-    public static byte[] parseBytes(final ByteBuffer buffer) throws InvalidPacketException {
-        return BufferUtils.bytes(buffer, buffer.remaining());
+    public static byte[] parseBytes(final ByteBuf buffer) throws InvalidPacketException {
+        return BufferUtils.bytes(buffer, buffer.readableBytes());
     }
 }

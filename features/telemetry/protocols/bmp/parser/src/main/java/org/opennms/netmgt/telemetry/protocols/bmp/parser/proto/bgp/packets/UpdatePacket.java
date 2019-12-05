@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatRemaining;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,6 +53,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class UpdatePacket implements Packet {
     public final Header header;
 
@@ -61,7 +62,7 @@ public class UpdatePacket implements Packet {
     public final List<PathAttribute> pathAttributes;
     public final List<Prefix> reachableRoutes;
 
-    public UpdatePacket(final Header header, final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public UpdatePacket(final Header header, final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         this.withdrawRoutes = repeatRemaining(slice(buffer, uint16(buffer)), prefixBuffer -> new Prefix(prefixBuffer, flags));
@@ -78,7 +79,7 @@ public class UpdatePacket implements Packet {
         public final int length;         // uint8
         public final InetAddress prefix; // byte[length padded to 8 bits]
 
-        public Prefix(final ByteBuffer buffer, final PeerFlags flags) {
+        public Prefix(final ByteBuf buffer, final PeerFlags flags) {
             this.length = uint8(buffer);
 
             // Create a buffer for the address with the size required to hold the full address (depending on the
@@ -88,7 +89,7 @@ public class UpdatePacket implements Packet {
                 case IP_V6: return 16;
                 default: throw new IllegalStateException();
             }})];
-            buffer.get(prefix, 0, (this.length + (8-1)) / 8); // Read n bits padded to the next full byte
+            buffer.readBytes(prefix, 0, (this.length + (8-1)) / 8); // Read n bits padded to the next full byte
             this.prefix = InetAddressUtils.getInetAddress(prefix);
         }
 
@@ -112,7 +113,7 @@ public class UpdatePacket implements Packet {
 
         public final Attribute attribute;
 
-        public PathAttribute(final ByteBuffer buffer, final PeerFlags peerFlags) throws InvalidPacketException {
+        public PathAttribute(final ByteBuf buffer, final PeerFlags peerFlags) throws InvalidPacketException {
             final int flags = uint8(buffer);
             this.optional   = ((flags >> 7 & 0x01) == 1);
             this.transitive = ((flags >> 6 & 0x01) == 1);
@@ -133,48 +134,48 @@ public class UpdatePacket implements Packet {
         public enum Type {
             ORIGIN {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new Origin(buffer, flags);
                 }
             },
             AS_PATH {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new AsPath(buffer, flags);
                 }
             },
             NEXT_HOP {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new NextHop(buffer, flags);
                 }
             },
             MULTI_EXIT_DISC {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new MultiExistDisc(buffer, flags);
                 }
             },
             LOCAL_PREF {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new LocalPref(buffer, flags);
                 }
             },
             ATOMIC_AGGREGATE {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new AtomicAggregate(buffer, flags);
                 }
             },
             AGGREGATOR {
                 @Override
-                public Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new Aggregator(buffer, flags);
                 }
             };
 
-            public abstract Attribute parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException;
+            public abstract Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
 
             private static Type from(final int type) {
                 switch (type) {
@@ -205,7 +206,7 @@ public class UpdatePacket implements Packet {
         }
     }
 
-    public static UpdatePacket parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public static UpdatePacket parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.UPDATE) {
             throw new InvalidPacketException(buffer, "Expected Update Message, got: {}", header.type);

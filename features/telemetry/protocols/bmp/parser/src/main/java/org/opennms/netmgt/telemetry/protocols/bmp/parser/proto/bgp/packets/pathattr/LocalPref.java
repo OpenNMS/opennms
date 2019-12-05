@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class LocalPref implements Attribute {
 
     public final long preference;
 
-    public LocalPref(final ByteBuffer buffer, final PeerFlags flags) {
+    public LocalPref(final ByteBuf buffer, final PeerFlags flags) {
         this.preference = uint32(buffer);
     }
 

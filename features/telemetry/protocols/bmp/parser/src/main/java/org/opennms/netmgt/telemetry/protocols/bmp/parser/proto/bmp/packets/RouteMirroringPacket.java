@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatRemaining;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -45,13 +44,15 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirro
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class RouteMirroringPacket implements Packet {
 
     public final Header header;
     public final PeerHeader peerHeader;
     public final TLV.List<Element, Element.Type, Mirroring> elements;
 
-    public RouteMirroringPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
+    public RouteMirroringPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
@@ -65,20 +66,20 @@ public class RouteMirroringPacket implements Packet {
 
     public static class Element extends TLV<Element.Type, Mirroring, PeerFlags> {
 
-        public Element(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+        public Element(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
             super(buffer, Element.Type::from, flags);
         }
 
         public enum Type implements TLV.Type<Mirroring, PeerFlags> {
             BGP_MESSAGE{
                 @Override
-                public Mirroring parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new BgpMessage(buffer, flags);
                 }
             },
             INFORMATION{
                 @Override
-                public Mirroring parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new Information(buffer, flags);
                 }
             };

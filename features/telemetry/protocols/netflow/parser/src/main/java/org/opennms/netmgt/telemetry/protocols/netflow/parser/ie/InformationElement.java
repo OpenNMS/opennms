@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie;
 
-import java.nio.ByteBuffer;
-
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
+import io.netty.buffer.ByteBuf;
+
 public interface InformationElement {
 
     Value<?> parse(final Session.Resolver resolver,
-                   final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException;
+                   final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException;
 
     String getName();
 

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import java.nio.ByteBuffer;
-
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
@@ -39,11 +37,13 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Route
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
 
+import io.netty.buffer.ByteBuf;
+
 public interface Packet {
     void accept(final Visitor visitor);
 
     interface Parser {
-        Packet parse(final Header header, final ByteBuffer buffer) throws InvalidPacketException;
+        Packet parse(final Header header, final ByteBuf buffer) throws InvalidPacketException;
     }
 
     interface Visitor {

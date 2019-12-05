@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
@@ -37,12 +35,14 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef address next_hop;
 
 public class NextHop {
     public final Address next_hop;
 
-    public NextHop(final ByteBuffer buffer) throws InvalidPacketException {
+    public NextHop(final ByteBuf buffer) throws InvalidPacketException {
         this.next_hop = new Address(buffer);
     }
 

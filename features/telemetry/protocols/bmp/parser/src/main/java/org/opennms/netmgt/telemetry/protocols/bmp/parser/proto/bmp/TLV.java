@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.skip;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
@@ -43,12 +42,14 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ForwardingList;
 
+import io.netty.buffer.ByteBuf;
+
 public class TLV<T extends TLV.Type<V, P>, V, P> {
     public final T type;     // uint16
     public final int length; // uint16
     public final V value;    // byte[length]
 
-    public TLV(final ByteBuffer buffer, final IntFunction<T> typer, final P parameter)  throws InvalidPacketException {
+    public TLV(final ByteBuf buffer, final IntFunction<T> typer, final P parameter) throws InvalidPacketException {
         final int type = uint16(buffer);
 
         this.type = typer.apply(type);
@@ -69,7 +70,7 @@ public class TLV<T extends TLV.Type<V, P>, V, P> {
 
     @FunctionalInterface
     public interface Type<V, P> {
-        V parse(final ByteBuffer buffer, final P parameter) throws InvalidPacketException;
+        V parse(final ByteBuf buffer, final P parameter) throws InvalidPacketException;
     }
 
     @Override

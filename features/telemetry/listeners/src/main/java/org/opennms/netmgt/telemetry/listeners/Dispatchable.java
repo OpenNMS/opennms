@@ -26,9 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.receiver;
+package org.opennms.netmgt.telemetry.listeners;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 /**
  * A listener may define multiple parsers, in order to dispatch it to only one queue,
@@ -46,5 +46,5 @@ public interface Dispatchable {
      * @param buffer Representing the incoming data
      * @return true if the implementor can handle the data, otherwise false.
      */
-    boolean handles(final ByteBuffer buffer);
+    boolean handles(final ByteBuf buffer);
 }

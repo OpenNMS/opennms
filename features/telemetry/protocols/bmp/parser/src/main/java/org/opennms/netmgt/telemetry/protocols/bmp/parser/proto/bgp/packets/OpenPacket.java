@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.skip;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class OpenPacket implements Packet {
     public final Header header;
 
@@ -52,7 +53,7 @@ public class OpenPacket implements Packet {
     public final int holdTime; // uint16
     public final long id;      // uint32
 
-    public OpenPacket(final Header header, final ByteBuffer buffer, final PeerFlags flags) {
+    public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
         this.header = Objects.requireNonNull(header);
 
         this.version = uint8(buffer);
@@ -71,7 +72,7 @@ public class OpenPacket implements Packet {
         visitor.visit(this);
     }
 
-    public static OpenPacket parse(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public static OpenPacket parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.OPEN) {
             throw new InvalidPacketException(buffer, "Expected Open Message, got: {}", header.type);

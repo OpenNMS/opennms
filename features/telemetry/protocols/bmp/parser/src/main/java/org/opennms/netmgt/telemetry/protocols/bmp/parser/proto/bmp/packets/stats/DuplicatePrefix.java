@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class DuplicatePrefix extends Counter {
-    public DuplicatePrefix(final ByteBuffer buffer) {
+    public DuplicatePrefix(final ByteBuf buffer) {
         super(buffer);
     }
 
