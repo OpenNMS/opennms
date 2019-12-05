@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,32 +28,30 @@
 
 package org.opennms.smoketest.telemetry;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
-import org.opennms.netmgt.flows.elastic.NetflowVersion;
+import org.jetbrains.annotations.NotNull;
 
-public class FlowPacket extends Packet {
+import com.google.common.io.ByteStreams;
 
-    private final NetflowVersion netflowVersion;
-    private final int flowCount;
+public interface Payload {
 
-    public FlowPacket(final NetflowVersion netflowVersion,
-                      final Payload payload,
-                      final int flowCount) {
-        super(payload);
+    @NotNull byte[] load() throws IOException;
 
-        this.netflowVersion = Objects.requireNonNull(netflowVersion);
-        this.flowCount = flowCount;
-        if (flowCount < 1) {
-            throw new IllegalArgumentException("Flow count must be strictly positive.");
-        }
+    static Payload resource(final String filename) {
+        Objects.requireNonNull(filename);
+
+        return () -> {
+            try (final InputStream is = Packet.class.getResourceAsStream(filename)) {
+                return ByteStreams.toByteArray(is);
+            }
+        };
     }
 
-    public int getFlowCount() {
-        return flowCount;
-    }
-
-    public NetflowVersion getNetflowVersion() {
-        return netflowVersion;
+    static Payload direct(final byte... payload) {
+        Objects.requireNonNull(payload);
+        return () -> payload;
     }
 }
