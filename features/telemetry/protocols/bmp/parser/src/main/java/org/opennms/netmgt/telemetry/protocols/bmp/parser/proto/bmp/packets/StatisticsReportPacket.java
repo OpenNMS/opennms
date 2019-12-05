@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.repeatCount;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatCount;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -60,13 +59,15 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class StatisticsReportPacket implements Packet {
     public final Header header;
     public final PeerHeader peerHeader;
 
     public final TLV.List<Element, Element.Type, Metric> statistics;
 
-    public StatisticsReportPacket(final Header header, final ByteBuffer buffer) throws InvalidPacketException {
+    public StatisticsReportPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
@@ -80,7 +81,7 @@ public class StatisticsReportPacket implements Packet {
 
     public static class Element extends TLV<Element.Type, Metric, Void> {
 
-        public Element(final ByteBuffer buffer) throws InvalidPacketException {
+        public Element(final ByteBuf buffer) throws InvalidPacketException {
             super(buffer, Element.Type::from, null);
         }
 
@@ -103,9 +104,9 @@ public class StatisticsReportPacket implements Packet {
             EXPORT_RIB(ExportRib::new),
             ;
 
-            private final Function<ByteBuffer, Metric> parser;
+            private final Function<ByteBuf, Metric> parser;
 
-            private Type(final Function<ByteBuffer, Metric> parser) {
+            private Type(final Function<ByteBuf, Metric> parser) {
                 this.parser = Objects.requireNonNull(parser);
             }
 
@@ -134,7 +135,7 @@ public class StatisticsReportPacket implements Packet {
             }
 
             @Override
-            public Metric parse(final ByteBuffer buffer, final Void parameter) throws InvalidPacketException {
+            public Metric parse(final ByteBuf buffer, final Void parameter) throws InvalidPacketException {
                 return this.parser.apply(buffer);
             }
         }

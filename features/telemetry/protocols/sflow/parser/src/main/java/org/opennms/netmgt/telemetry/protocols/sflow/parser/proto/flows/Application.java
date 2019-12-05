@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
@@ -38,12 +37,14 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef utf8string application<32>;
 
 public class Application {
     public final Array<Utf8string> application;
 
-    public Application(final ByteBuffer buffer) throws InvalidPacketException {
+    public Application(final ByteBuf buffer) throws InvalidPacketException {
         this.application = new Array(buffer, Optional.empty(), Utf8string::new);
     }
 

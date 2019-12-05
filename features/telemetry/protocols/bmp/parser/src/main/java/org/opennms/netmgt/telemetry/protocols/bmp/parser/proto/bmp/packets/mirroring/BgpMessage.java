@@ -28,18 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring;
 
-import java.nio.ByteBuffer;
-
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class BgpMessage implements Mirroring {
     public final Packet packet;
 
-    public BgpMessage(final ByteBuffer buffer, final PeerFlags flags) throws InvalidPacketException {
+    public BgpMessage(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         this.packet = Packet.parse(buffer, flags);
     }
 

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct virt_disk_io {
 //    unsigned hyper capacity;   /* logical size in bytes */
@@ -59,7 +59,7 @@ public class VirtDiskIo implements CounterData {
     public final UnsignedLong wr_bytes;
     public final long errs;
 
-    public VirtDiskIo(final ByteBuffer buffer) throws InvalidPacketException {
+    public VirtDiskIo(final ByteBuf buffer) throws InvalidPacketException {
         this.capacity = BufferUtils.uint64(buffer);
         this.allocation = BufferUtils.uint64(buffer);
         this.available = BufferUtils.uint64(buffer);

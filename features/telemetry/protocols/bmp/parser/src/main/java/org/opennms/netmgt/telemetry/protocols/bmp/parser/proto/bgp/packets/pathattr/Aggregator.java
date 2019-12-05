@@ -28,20 +28,21 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class Aggregator implements Attribute {
     public final int as;              // uint16
     public final InetAddress address; // uint32
 
-    public Aggregator(final ByteBuffer buffer, final PeerFlags flags) {
+    public Aggregator(final ByteBuf buffer, final PeerFlags flags) {
         this.as = uint16(buffer);
         this.address = flags.parseAddress(buffer);
     }

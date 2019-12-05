@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct sfp {
 //   unsigned int module_id;
@@ -54,7 +55,7 @@ public class Sfp {
     public final Integer module_temperature;
     public final Array<Lane> lanes;
 
-    public Sfp(final ByteBuffer buffer) throws InvalidPacketException {
+    public Sfp(final ByteBuf buffer) throws InvalidPacketException {
         this.module_id = BufferUtils.uint32(buffer);
         this.module_num_lanes = BufferUtils.uint32(buffer);
         this.module_supply_voltage = BufferUtils.uint32(buffer);

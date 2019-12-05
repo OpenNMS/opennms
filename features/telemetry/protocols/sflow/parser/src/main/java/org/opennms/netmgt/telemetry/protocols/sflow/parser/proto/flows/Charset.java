@@ -28,21 +28,21 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // typedef unsigned int charset;
 
 public class Charset {
     public final long charset;
 
-    public Charset(final ByteBuffer buffer) throws InvalidPacketException {
+    public Charset(final ByteBuf buffer) throws InvalidPacketException {
         this.charset = BufferUtils.uint32(buffer);
     }
 

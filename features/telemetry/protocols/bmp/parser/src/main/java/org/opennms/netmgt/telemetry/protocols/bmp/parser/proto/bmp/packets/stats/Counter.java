@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public abstract class Counter implements Metric {
     public final long counter; // uint32
 
-    public Counter(final ByteBuffer buffer) {
+    public Counter(final ByteBuf buffer) {
         this.counter = uint32(buffer);
     }
 

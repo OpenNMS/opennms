@@ -28,21 +28,21 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint64;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 public class PerAfiAdjRibIn implements Metric {
     public final int afi;            // uint16
     public final int safi;           // uint8
     public final UnsignedLong gauge; // uint64
 
-    public PerAfiAdjRibIn(final ByteBuffer buffer) {
+    public PerAfiAdjRibIn(final ByteBuf buffer) {
         this.afi = uint16(buffer);
         this.safi = uint8(buffer);
         this.gauge = uint64(buffer);
