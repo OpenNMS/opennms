@@ -31,6 +31,7 @@ package org.opennms.netmgt.timescale;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -237,7 +238,7 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
                     LOG.debug("Inserting {} samples", batch.size());
                     // m_sampleRepository.insert(batch);
                     for (Sample sample: batch) {
-                        ps.setDate(1, new Date(sample.getTimestamp().asMillis()));
+                        ps.setTimestamp(1, new Timestamp(sample.getTimestamp().asMillis()));
                         ps.setString(2, sample.getContext().getId());
                         ps.setString(3, sample.getResource().getId());
                         ps.setString(4, sample.getName());

@@ -148,10 +148,11 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
         // TODO Patrick: do db stuff proper.
         try {
 
-            String stepInSeconds = (step / 1000) + " Seconds";
+            long computedStepInMillis = lag.getStep();
+            String computedStepInSeconds = (lag.getStep() / 1000 ) + " Seconds";
             String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
-            String sql = "SELECT time_bucket('"+stepInSeconds+"', time) AS step, min(value), avg(value), max(value) FROM timeseries where " +
-                    "resource=? AND time > ? AND time < ? GROUP BY step ORDER BY step DESC";
+            String sql = "SELECT time_bucket_gapfill('"+computedStepInSeconds+"', time) AS step, min(value), avg(value), max(value) FROM timeseries where " +
+                    "resource=? AND time > ? AND time < ? GROUP BY step ORDER BY step ASC";
             if(maxrows>0) {
                 sql = sql + " LIMIT " + maxrows;
             }
@@ -163,7 +164,7 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
             // statement.setString(1, stepInSeconds);
             statement.setString(1, resourceId);
             statement.setTimestamp(2, new java.sql.Timestamp(start));
-            statement.setTimestamp(3, new java.sql.Timestamp(end));
+            statement.setTimestamp(3, new java.sql.Timestamp(end + computedStepInMillis));
             ResultSet rs = statement.executeQuery();
 
             ArrayList<Long> timestamps = new ArrayList<>();
@@ -172,9 +173,8 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
             List<Double> valuesMax = new ArrayList<>();
 
             while(rs.next()){
-                long timestamp = rs.getTimestamp("step").getTime()*1000;
+                long timestamp = rs.getTimestamp("step").getTime();
                 timestamps.add(timestamp);
-
                 valuesAvg.add(rs.getDouble("avg"));
                 valuesMin.add(rs.getDouble("min"));
                 valuesMax.add(rs.getDouble("max"));
@@ -187,7 +187,7 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
 
             List<QueryResource> resources = getResources(sources, relaxed);
             QueryMetadata metaData = new QueryMetadata(resources);
-            result = new FetchResults(timestampsArray, columns, step, new HashMap<>(), metaData);
+            result = new FetchResults(timestampsArray, columns, computedStepInMillis, new HashMap<>(), metaData);
             rs.close();
         } catch (SQLException e) {
             LOG.error("Could not retrieve FetchResults", e);
@@ -206,8 +206,12 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
 
     private double[] toDoubleArray(List<Double> values) {
         double[] array = new double[values.size()];
-        for(int i=0; i<values.size(); i++){
-            array[i] = values.get(i);
+        for(int i=0; i<values.size(); i++) {
+            Double value = values.get(i);
+//            if(value.longValue()==0) {
+//                value = Double.NaN;
+//            }
+            array[i] = value * 100;
         }
         return array;
     }
