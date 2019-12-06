@@ -30,9 +30,11 @@ package org.opennms.features.topology.api.topo;
 
 public abstract class AbstractSearchQuery implements SearchQuery{
 
-    private String m_queryString;
+    private final String m_queryString;
+    private final String m_namespace;
 
-    public AbstractSearchQuery(String queryString) {
+    public AbstractSearchQuery(String namespace, String queryString) {
+        m_namespace = namespace;
         m_queryString = queryString;
     }
 
@@ -41,6 +43,11 @@ public abstract class AbstractSearchQuery implements SearchQuery{
         return m_queryString;
     }
 
+    @Override
+    public String getNamespace(){
+        return m_namespace;
+    }
+    
     @Override
     public String toString() {
     	return m_queryString;
