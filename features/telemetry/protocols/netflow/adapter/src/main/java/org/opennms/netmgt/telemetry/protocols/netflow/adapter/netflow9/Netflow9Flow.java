@@ -295,4 +295,11 @@ class Netflow9Flow extends UpdatingFlow implements Flow {
     private long getBootTime() {
         return this.getTimestamp() - this.getSysUpTime();
     }
+
+    @Override
+    public String getNodeIdentifier() {
+        return getString(this.document, "@sourceId")
+                .map(String::valueOf)
+                .orElse(null);
+    }
 }

@@ -59,11 +59,15 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
@@ -72,9 +76,6 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -749,8 +750,9 @@ public class FlowQueryIT {
         this.loadFlows(flows);
     }
 
-    private void loadFlows(final List<FlowDocument> flows) throws FlowException {
-        flowRepository.enrichAndPersistFlows(flows, new FlowSource("test", "127.0.0.1"));
+    private void loadFlows(final List<FlowDocument> flowDocuments) throws FlowException {
+        final List<Flow> flows = flowDocuments.stream().map(TestFlow::new).collect(Collectors.toList());
+        flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null));
 
         // Retrieve all the flows we just persisted
         await().atMost(60, TimeUnit.SECONDS).until(() -> flowRepository.getFlowCount(Collections.singletonList(

@@ -224,4 +224,10 @@ public interface Flow {
      * VLAN ID.
      */
     Integer getVlan();
+
+    /**
+     * Method to get node lookup identifier
+     * @return the identifier
+     */
+    String getNodeIdentifier();
 }
