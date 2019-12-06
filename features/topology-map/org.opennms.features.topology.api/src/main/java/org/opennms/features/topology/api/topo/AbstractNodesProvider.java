@@ -26,24 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal;
+package org.opennms.features.topology.api.topo;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
-public abstract class AbstractLinkdStatusProvider {
+public abstract class AbstractNodesProvider {
 
-    public String getNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
-    }
-
-    public boolean contributesTo(String namespace) {
+    public static boolean contributesToNodes(String namespace) {
         if ( OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equals(namespace)) {
             return true;  
         }
         if (namespace != null && namespace.startsWith(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD_PREFIX)) {
             return true;
         }
-        return false;
+        return false;        
+    }
+
+    public static String getNodesNamespace() {
+        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+    }
+
+    public String getNamespace() {
+        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
+    }
+
+    public boolean contributesTo(String namespace) {
+        return contributesToNodes(namespace);
     }
         
 }

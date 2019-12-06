@@ -38,6 +38,7 @@ import org.opennms.features.graphml.model.GraphML;
 import org.opennms.features.graphml.model.GraphMLEdge;
 import org.opennms.features.graphml.model.GraphMLGraph;
 import org.opennms.features.graphml.model.GraphMLNode;
+import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.plugins.topo.asset.filter.Filter;
 import org.opennms.features.topology.plugins.topo.asset.filter.FilterParser;
 import org.opennms.features.topology.plugins.topo.asset.layers.IdGenerator;
@@ -70,8 +71,8 @@ public class AssetGraphGenerator {
 
 		// Add last Layer for Nodes
 		layers.add(new LayerBuilder()
-				.withId("nodes")
-				.withNamespace("nodes")
+				.withId(AbstractNodesProvider.getNodesNamespace())
+				.withNamespace(AbstractNodesProvider.getNodesNamespace())
 				.withLabel("Nodes")
 				.withDescription("The nodes in the hierarchy of the topology")
 				.withItemProvider(node -> node)

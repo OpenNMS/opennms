@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.HistoryAwareSearchProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -66,8 +67,6 @@ import org.slf4j.LoggerFactory;
  */
 public class AlarmSearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
 
-	private final static String CONTRIBUTES_TO_NAMESPACE = "nodes";
-
 	private static Logger LOG = LoggerFactory.getLogger(AlarmSearchProvider.class);
 
 	private AlarmProvider alarmProvider;
@@ -83,7 +82,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
 
     @Override
     public boolean contributesTo(String namespace) {
-        return CONTRIBUTES_TO_NAMESPACE.equals(namespace);
+        return AbstractNodesProvider.contributesToNodes(namespace);
     }
 
 	@Override

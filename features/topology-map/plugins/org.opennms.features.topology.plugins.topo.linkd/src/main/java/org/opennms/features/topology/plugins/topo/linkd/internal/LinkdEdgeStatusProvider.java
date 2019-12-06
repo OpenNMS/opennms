@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
+import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -47,7 +48,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.collect.Maps;
 
-public class LinkdEdgeStatusProvider extends AbstractLinkdStatusProvider implements EdgeStatusProvider {
+public class LinkdEdgeStatusProvider extends AbstractNodesProvider implements EdgeStatusProvider {
 
     private final AlarmDao m_alarmDao;
 

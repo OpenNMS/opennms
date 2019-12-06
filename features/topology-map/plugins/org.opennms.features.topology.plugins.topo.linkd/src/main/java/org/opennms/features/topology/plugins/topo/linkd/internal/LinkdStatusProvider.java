@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
@@ -50,7 +51,7 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements StatusProvider {
+public class LinkdStatusProvider extends AbstractNodesProvider implements StatusProvider {
 
     private final AlarmDao m_alarmDao;
 
@@ -162,7 +163,7 @@ public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements 
         List<VertexRef> returnList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
             if (!vertexProvider.getNamespace().equals(eachRef.getNamespace())) {
-                returnList.add(eachRef); // we do not need to check for groups, because a group would have a namespace "nodes"
+                returnList.add(eachRef); // we do not need to check for groups.
             }
         }
         return returnList;

@@ -74,9 +74,8 @@ public class LinkdSelectionAware implements SelectionAware {
     }
 
     /**
-     * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
-     * For a vertex with namespace "node" the "getId()" method always returns the node id.
-     *
+     * Gets the node ids from the given vertices. 
+     * 
      * @param vertices
      * @return
      */

@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.IgnoreHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
-public class LinkdSearchProvider extends AbstractLinkdStatusProvider implements SearchProvider {
+public class LinkdSearchProvider extends AbstractNodesProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSearchProvider.class);
 
