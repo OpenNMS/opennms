@@ -43,7 +43,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +54,7 @@ public class LinkdSearchProvider extends AbstractLinkdStatusProvider implements 
 
     private final GraphProvider m_delegate;
 
-    public LinkdSearchProvider(GraphProvider delegate, OnmsTopologyDao onmsTopologyDao) {
-        super(onmsTopologyDao);
+    public LinkdSearchProvider(GraphProvider delegate) {
         m_delegate = delegate;
     }
 

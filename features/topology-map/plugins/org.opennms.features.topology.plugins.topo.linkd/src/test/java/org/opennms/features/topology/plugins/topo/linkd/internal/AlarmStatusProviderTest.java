@@ -60,7 +60,7 @@ public class AlarmStatusProviderTest {
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_statusProvider = new LinkdStatusProvider(m_alarmDao,null);
+        m_statusProvider = new LinkdStatusProvider(m_alarmDao);
         m_vertexProvider = EasyMock.createMock(VertexProvider.class);
         EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<>());
         EasyMock.expect(m_vertexProvider.getNamespace()).andReturn("nodes").anyTimes();

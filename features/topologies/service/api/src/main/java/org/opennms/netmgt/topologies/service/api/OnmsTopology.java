@@ -40,10 +40,15 @@ public class OnmsTopology {
     public final static String SOURCE_IFINDEX= "sourceifindex";
     public final static String TARGET_IFINDEX= "targetifindex";
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
+    public static final String TOPOLOGY_NAMESPACE_LINKD_PREFIX = "nodes:";
     
     private Set<OnmsTopologyVertex> m_vertices;
     private Set<OnmsTopologyEdge> m_edges;
     private OnmsTopologyVertex m_defaultVertex;
+    
+    public static String getTopologyNameSpace(OnmsTopologyProtocol protocol) {
+        return TOPOLOGY_NAMESPACE_LINKD_PREFIX+protocol.getId();
+    }
 
     public OnmsTopology() {
         m_vertices = new HashSet<OnmsTopologyVertex>();

@@ -47,7 +47,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +54,7 @@ public class LinkdStatusProvider extends AbstractLinkdStatusProvider implements 
 
     private final AlarmDao m_alarmDao;
 
-    public LinkdStatusProvider(AlarmDao alarmDao,OnmsTopologyDao onmsTopologyDao) {
-        super(onmsTopologyDao);
+    public LinkdStatusProvider(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 

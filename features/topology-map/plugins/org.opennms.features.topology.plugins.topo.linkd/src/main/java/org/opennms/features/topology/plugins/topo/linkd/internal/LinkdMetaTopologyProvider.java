@@ -39,9 +39,9 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
-import org.osgi.framework.BundleContext;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -50,15 +50,15 @@ public class LinkdMetaTopologyProvider implements MetaTopologyProvider{
 
     private final List<GraphProvider> providers = Lists.newArrayList();
 
-    public LinkdMetaTopologyProvider(final OnmsTopologyDao onmsTopologyDao, final MetricRegistry metricRegistry, final BundleContext context) {
+    public LinkdMetaTopologyProvider(final OnmsTopologyDao onmsTopologyDao, final MetricRegistry metricRegistry) {
         for (OnmsTopologyProtocol onmsTopologyProtocol: onmsTopologyDao.getSupportedProtocols()) {
             final TopologyProviderInfo info =
                     new DefaultTopologyProviderInfo(
-                            onmsTopologyProtocol.getName() + " Topology Provider",
+                            onmsTopologyProtocol.getId(),
                             "This Topology Provider displays the "+ onmsTopologyProtocol.getId() + " topology information discovered by: " + onmsTopologyProtocol.getSource(),
                             false,
                             true);
-            final LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, getId() + "." + onmsTopologyProtocol.getId(), onmsTopologyDao);
+            final LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, onmsTopologyProtocol, onmsTopologyDao);
             topologyProvider.setTopologyProviderInfo(info);
 
             final VertexHopGraphProvider hop = new VertexHopGraphProvider(topologyProvider);
@@ -96,6 +96,6 @@ public class LinkdMetaTopologyProvider implements MetaTopologyProvider{
 
     @Override
     public String getId() {
-        return "nodes";
+        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD_PREFIX+"meta";
     }
 }

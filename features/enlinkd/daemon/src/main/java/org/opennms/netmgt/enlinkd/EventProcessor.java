@@ -164,7 +164,10 @@ public final class EventProcessor {
     @EventHandler(uei = EventConstants.RELOAD_TOPOLOGY_UEI)
     public void handleReloadTopology(Event e) {
         final String topologyNamespace = EventUtils.getParm(e, PARAM_TOPOLOGY_NAMESPACE);
-        if (topologyNamespace == null || "all".equalsIgnoreCase(topologyNamespace) || OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equalsIgnoreCase(topologyNamespace)) {
+        if (topologyNamespace == null 
+                || "all".equalsIgnoreCase(topologyNamespace) 
+                || OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equalsIgnoreCase(topologyNamespace)
+                || topologyNamespace.toLowerCase().startsWith(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD_PREFIX)) {
             m_linkd.reloadTopology();
         }
     }

@@ -44,7 +44,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 
 import com.google.common.collect.Maps;
 
@@ -52,8 +51,7 @@ public class LinkdEdgeStatusProvider extends AbstractLinkdStatusProvider impleme
 
     private final AlarmDao m_alarmDao;
 
-    public LinkdEdgeStatusProvider(AlarmDao alarmDao,OnmsTopologyDao onmsTopologyDao) {
-        super(onmsTopologyDao);
+    public LinkdEdgeStatusProvider(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 

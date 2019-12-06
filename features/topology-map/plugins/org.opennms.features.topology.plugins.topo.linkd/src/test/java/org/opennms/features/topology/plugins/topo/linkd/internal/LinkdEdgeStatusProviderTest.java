@@ -158,7 +158,7 @@ public class LinkdEdgeStatusProviderTest {
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_edgeProvider = EasyMock.createMock(EdgeProvider.class);
-        m_statusProvider = new LinkdEdgeStatusProvider(m_alarmDao,null);
+        m_statusProvider = new LinkdEdgeStatusProvider(m_alarmDao);
 
     }
 

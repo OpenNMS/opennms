@@ -57,26 +57,34 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <argument ref="linkdTopologyProvider"/>
     </bean>
 
-    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+    <bean id="enlinkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
         <argument ref="linkdTopologyHopProvider" />
+    </bean>
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="enlinkdMetaTopologyProvider">
+        <service-properties>
+            <entry key="label" value="Enhanced Linkd" />
+        </service-properties>
+    </service>
+
+    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdMetaTopologyProvider">
+        <argument index="0" ref="onmsTopologyDao"/>
+        <argument index="1" ref="metricRegistry" />
     </bean>
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="linkdMetaTopologyProvider">
         <service-properties>
-            <entry key="label" value="Enhanced Linkd" />
+            <entry key="label" value="Protocol Topologies" />
         </service-properties>
     </service>
 
     <!-- SearchProvider -->
     <bean id="linkdSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
         <argument index="0" ref="linkdTopologyProvider" />
-        <argument index="1" ref="onmsTopologyDao"/>
     </bean>
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
     <!-- EdgeStatusProvider -->
     <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
         <argument index="0" ref="alarmDao"/>
-        <argument index="1" ref="onmsTopologyDao"/>
     </bean>
 	<bean id="linkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
         <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
@@ -86,7 +94,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- Status provider -->
     <bean id="linkdStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdStatusProvider">
         <argument index="0" ref="alarmDao"/>
-        <argument index="1" ref="onmsTopologyDao"/>
     </bean>
     <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="linkdStatusProvider" />
 

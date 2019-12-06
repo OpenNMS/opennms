@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,20 +79,19 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadEdgesTimer = registry.timer(MetricRegistry.name(registryValue, "load", "edges", "none"));
     }
 
-    public LinkdTopologyProvider(MetricRegistry registry, String protocol, OnmsTopologyDao onmsTopologyDao ) {
-        super(protocol);
+    public LinkdTopologyProvider(MetricRegistry registry, OnmsTopologyProtocol protocol, OnmsTopologyDao onmsTopologyDao ) {
+        super(OnmsTopology.getTopologyNameSpace(Objects.requireNonNull(protocol)));
         Objects.requireNonNull(registry);
-        Objects.requireNonNull(protocol);
         Objects.requireNonNull(onmsTopologyDao);
         m_onmsTopologyDao = onmsTopologyDao;
-        selectionAwareDelegate = new LinkdSelectionAware(protocol);
+        selectionAwareDelegate = new LinkdSelectionAware(getNamespace());
         m_protocols=new ArrayList<>();
-        m_protocols.add(protocol);
-        m_loadFullTimer = registry.timer(MetricRegistry.name(protocol, "load", "full"));
-        m_loadVerticesTimer = registry.timer(MetricRegistry.name(protocol, "load", "vertices", "none"));
-        m_loadEdgesTimer = registry.timer(MetricRegistry.name(protocol, "load", "edges", "none"));
+        m_protocols.add(protocol.getId());
+        m_loadFullTimer = registry.timer(MetricRegistry.name(getNamespace(), "load", "full"));
+        m_loadVerticesTimer = registry.timer(MetricRegistry.name(getNamespace(), "load", "vertices", "none"));
+        m_loadEdgesTimer = registry.timer(MetricRegistry.name(getNamespace(), "load", "edges", "none"));
     }
-
+    
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
        return selectionAwareDelegate.getSelection(selectedVertices, type);

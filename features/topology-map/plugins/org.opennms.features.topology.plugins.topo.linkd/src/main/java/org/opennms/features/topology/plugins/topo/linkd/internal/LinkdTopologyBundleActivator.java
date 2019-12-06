@@ -72,7 +72,7 @@ public class LinkdTopologyBundleActivator {
                                     "This Topology Provider displays the "+ onmsTopologyProtocol.getId() + " topology information discovered by: " + onmsTopologyProtocol.getSource(), 
                                     false, 
                                     true);
-            LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, onmsTopologyProtocol.getId(), onmsTopologyDao);
+            LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, onmsTopologyProtocol, onmsTopologyDao);
             topologyProvider.setTopologyProviderInfo(info);
             VertexHopGraphProvider hop = new VertexHopGraphProvider(topologyProvider);
             SimpleMetaTopologyProvider meta = new SimpleMetaTopologyProvider(hop);

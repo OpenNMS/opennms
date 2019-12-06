@@ -29,8 +29,6 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
-import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 
 public abstract class AbstractLinkdStatusProvider {
 
@@ -42,24 +40,10 @@ public abstract class AbstractLinkdStatusProvider {
         if ( OnmsTopology.TOPOLOGY_NAMESPACE_LINKD.equals(namespace)) {
             return true;  
         }
-        for (OnmsTopologyProtocol onmsTP :m_onmsTopologyDao.getSupportedProtocols()) {
-            if (onmsTP.getId().equals(namespace)) {
-                return true;
-            }
+        if (namespace != null && namespace.startsWith(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD_PREFIX)) {
+            return true;
         }
         return false;
     }
-
-    private final OnmsTopologyDao m_onmsTopologyDao;
-
-    public OnmsTopologyDao getOnmsTopologyDao() {
-        return m_onmsTopologyDao;
-    }
-
-    public AbstractLinkdStatusProvider(OnmsTopologyDao onmsTopologyDao) {
-        super();
-        m_onmsTopologyDao = onmsTopologyDao;
-    }
-    
-    
+        
 }
