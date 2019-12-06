@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
@@ -49,8 +50,11 @@ import com.google.common.collect.Lists;
 public class LinkdMetaTopologyProvider implements MetaTopologyProvider{
 
     private final List<GraphProvider> providers = Lists.newArrayList();
+    private final GraphProvider defaultProvider;
 
-    public LinkdMetaTopologyProvider(final OnmsTopologyDao onmsTopologyDao, final MetricRegistry metricRegistry) {
+    public LinkdMetaTopologyProvider(final OnmsTopologyDao onmsTopologyDao, final MetricRegistry metricRegistry, GraphProvider linkdTp) {
+        defaultProvider=Objects.requireNonNull(linkdTp);
+        providers.add(defaultProvider);
         for (OnmsTopologyProtocol onmsTopologyProtocol: onmsTopologyDao.getSupportedProtocols()) {
             final TopologyProviderInfo info =
                     new DefaultTopologyProviderInfo(
@@ -68,7 +72,7 @@ public class LinkdMetaTopologyProvider implements MetaTopologyProvider{
 
     @Override
     public GraphProvider getDefaultGraphProvider() {
-        return providers.get(0);
+        return defaultProvider;
     }
 
     @Override
