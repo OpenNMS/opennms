@@ -219,6 +219,8 @@ public class ElasticFlowRepository implements FlowRepository {
         final List<FlowDocument> flowDocuments;
         try (final Timer.Context ctx = logEnrichementTimer.time()) {
             flowDocuments = documentEnricher.enrich(flows, source);
+        } catch (Exception e) {
+            throw new FlowException("Failed to enrich one or more flows.", e);
         }
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
