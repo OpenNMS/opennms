@@ -233,6 +233,15 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         finalStaticField.set(null, value);
     }
 
+    /**
+     * Due to limitations of the JCifs library we must use this hack to modify the timeouts. Since the timeouts are set
+     * in a static fields only global timeouts will work reliably.
+     *
+     * @param t the timeout to be set
+     * @throws NoSuchFieldException
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     */
     private void setJCifsTimeouts(int t) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         final Class<?> clazz = Class.forName("jcifs.smb.SmbConstants");
         setFinalStatic(clazz.getField("SO_TIMEOUT"), t);
