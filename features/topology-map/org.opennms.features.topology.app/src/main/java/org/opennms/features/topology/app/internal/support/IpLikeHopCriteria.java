@@ -67,6 +67,8 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 	private IPVertex m_collapsedVertex;
 
 	private IpInterfaceProvider ipInterfaceProvider;
+	
+	private final String m_children_namespace;
 
 	@Override
 	public String getSearchString() {
@@ -98,6 +100,7 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 
 	public IpLikeHopCriteria(SearchResult searchResult, IpInterfaceProvider ipInterfaceProvider) {
     	super(searchResult.getQuery());
+    	m_children_namespace = searchResult.getNamespace();
     	m_collapsed = searchResult.isCollapsed();
         m_ipQuery = searchResult.getQuery();
         this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
@@ -145,7 +148,7 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
 		for (OnmsIpInterface ip : ips) {
 			OnmsNode node = ip.getNode();
-			vertices.add(new DefaultVertexRef(AbstractNodesProvider.getNodesNamespace(), String.valueOf(node.getId()), node.getLabel()));
+			vertices.add(new DefaultVertexRef(m_children_namespace, String.valueOf(node.getId()), node.getLabel()));
 		}
 		
 		return vertices;

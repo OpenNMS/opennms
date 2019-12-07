@@ -152,7 +152,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
                     continue IPLOOP;
 
                 } else {
-                	SearchResult searchResult = createSearchResult(ip, queryString);
+                	SearchResult searchResult = createSearchResult(searchQuery.getNamespace(),ip, queryString);
                 	if (!results.contains(searchResult)) {
 						results.add(searchResult);
 					}
@@ -170,8 +170,8 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
         return results;
     }
 
-	private SearchResult createSearchResult(String ip, String queryString) {
-		SearchResult result = new SearchResult(getSearchProviderNamespace(), ip, ip, queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
+	private SearchResult createSearchResult(String namespace,String ip, String queryString) {
+		SearchResult result = new SearchResult(namespace, ip, ip, queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
 		return result;
 	}
 
