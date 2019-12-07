@@ -298,7 +298,7 @@ class Netflow9Flow extends UpdatingFlow implements Flow {
 
     @Override
     public String getNodeIdentifier() {
-        return getString(this.document, "@sourceId")
+        return getInt64(this.document, "@sourceId")
                 .map(String::valueOf)
                 .orElse(null);
     }

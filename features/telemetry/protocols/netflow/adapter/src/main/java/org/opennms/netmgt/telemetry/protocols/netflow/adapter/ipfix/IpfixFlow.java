@@ -436,7 +436,7 @@ class IpfixFlow extends UpdatingFlow implements Flow {
 
     @Override
     public String getNodeIdentifier() {
-        return getString(this.document, "@observationDomainId")
+        return getInt64(this.document, "@observationDomainId")
                 .map(String::valueOf)
                 .orElse(null);
     }

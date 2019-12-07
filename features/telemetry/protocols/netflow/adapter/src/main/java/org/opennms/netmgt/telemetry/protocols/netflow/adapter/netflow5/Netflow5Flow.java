@@ -269,7 +269,7 @@ class Netflow5Flow implements Flow {
 
     @Override
     public String getNodeIdentifier() {
-        return getString(this.document, "@engineId")
+        return getInt64(this.document, "@engineId")
                 .map(String::valueOf)
                 .orElse(null);
     }

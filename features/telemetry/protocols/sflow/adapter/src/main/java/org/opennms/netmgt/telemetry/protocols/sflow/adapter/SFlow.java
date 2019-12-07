@@ -332,9 +332,7 @@ public class SFlow implements Flow {
                 getString(document, "agent_address", "ipv4", "address"))
                 .orElse("unknown");
 
-        final String subAgentId = getString(this.document, "@sub_agent_id")
-                .map(String::valueOf)
-                .orElse("unknown");
+        final String subAgentId = header.getSubAgentId() == null ? "unknown" : String.valueOf(header.getSubAgentId());
 
         return address + ":" + subAgentId;
     }

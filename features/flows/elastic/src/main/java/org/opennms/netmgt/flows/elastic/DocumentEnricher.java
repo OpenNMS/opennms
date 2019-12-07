@@ -110,10 +110,10 @@ public class DocumentEnricher {
             // Node data
             getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setNodeExporter);
             if (document.getDstAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), document.getDstAddr(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setNodeDst);
+                getNodeInfoFromCache(source.getLocation(), document.getDstAddr(), null, null).ifPresent(document::setNodeDst);
             }
             if (document.getSrcAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), document.getSrcAddr(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setNodeSrc);
+                getNodeInfoFromCache(source.getLocation(), document.getSrcAddr(), null, null).ifPresent(document::setNodeSrc);
             }
 
             // Locality
