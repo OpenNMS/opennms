@@ -29,12 +29,17 @@
 package org.opennms.netmgt.provision.detector.snmp;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.support.AgentBasedSyncAbstractDetector;
 import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericServiceDetectorFactory<SnmpDetector> {
@@ -62,7 +67,22 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
         }
-        return m_agentConfigFactory.getAgentConfig(address, location).toMap();
+        List<SnmpProfile> snmpProfiles = m_agentConfigFactory.getProfiles();
+        if (snmpProfiles.isEmpty()) {
+            return m_agentConfigFactory.getAgentConfig(address, location).toMap();
+        } else {
+            Map<String, String> agentConfigMap = new HashMap<>();
+            agentConfigMap.put(AgentBasedSyncAbstractDetector.HAS_MULTIPLE_AGENT_CONFIGS, Boolean.toString(true));
+            // Add default config as string with profile label as key.
+            String defaultConfig = m_agentConfigFactory.getAgentConfig(address, location).toProtocolConfigString();
+            agentConfigMap.put(SnmpAgentConfig.PROFILE_LABEL_FOR_DEFAULT_CONFIG, defaultConfig);
+            // Add snmp profile label as key and config converted to string as value.
+            snmpProfiles.forEach((snmpProfile -> {
+                SnmpAgentConfig snmpAgentConfig = m_agentConfigFactory.getAgentConfigFromProfile(snmpProfile, address);
+                agentConfigMap.put(snmpAgentConfig.getProfileLabel(), snmpAgentConfig.toProtocolConfigString());
+            }));
+            return agentConfigMap;
+        }
     }
 
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {

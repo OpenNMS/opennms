@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.detector.snmp;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -218,6 +219,27 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
         }
+    }
+
+    @Override
+    public List<SnmpAgentConfig> getListOfAgentConfigs(DetectRequest request) {
+        List<SnmpAgentConfig> agentConfigList = new ArrayList<>();
+        Map<String, String> runTimeAttributes = request.getRuntimeAttributes();
+        if (hasMultipleAgentConfigs(runTimeAttributes)) {
+            runTimeAttributes.remove(HAS_MULTIPLE_AGENT_CONFIGS);
+            //Rest of the attribute values are snmp configs.
+            runTimeAttributes.forEach((label, configAsString) -> {
+                agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
+            });
+        }
+        return agentConfigList;
+    }
+
+    @Override
+    public boolean isServiceDetected(InetAddress address, List<SnmpAgentConfig> agentConfigList) {
+        return agentConfigList.parallelStream().anyMatch(snmpAgentConfig -> {
+            return isServiceDetected(address, snmpAgentConfig);
+        });
     }
 
     private boolean isServiceDetected(MatchType matchType, List<String> retrievedValues, String expectedValue) {

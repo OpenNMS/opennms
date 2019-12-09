@@ -32,6 +32,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -121,6 +122,16 @@ public class ActiveMQDetector extends AgentBasedSyncAbstractDetector<URI> {
 		} catch (Throwable t) {
 			throw new UndeclaredThrowableException(t);
 		}
+	}
+
+	@Override
+	public List<URI> getListOfAgentConfigs(DetectRequest request) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isServiceDetected(InetAddress address, List<URI> agentConfig) {
+		throw new UnsupportedOperationException();
 	}
 
 	/** {@inheritDoc} */

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.wmi;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
@@ -134,7 +135,17 @@ public class WmiDetector extends AgentBasedSyncAbstractDetector<WmiAgentConfig> 
         return (result != null && result.getResultCode() != WmiResult.RES_STATE_CRIT
                 && result.getResultCode() != WmiResult.RES_STATE_UNKNOWN);
     }
-    
+
+    @Override
+    public List<WmiAgentConfig> getListOfAgentConfigs(DetectRequest request) {
+       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isServiceDetected(InetAddress address, List<WmiAgentConfig> agentConfig) {
+        throw new UnsupportedOperationException();
+    }
+
     private WmiResult isServer(InetAddress host, String user, String pass,
             String domain, String namespace, String matchType, int retries, int timeout,
             WmiParams params) {
