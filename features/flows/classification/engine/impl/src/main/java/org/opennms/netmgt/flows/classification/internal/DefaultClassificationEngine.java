@@ -61,7 +61,7 @@ import com.google.common.cache.LoadingCache;
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     // (port) -> rule mapping
-    private final List<List<RuleDefinition>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
+    private final List<List<RuleDefinition>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE + 1);
     // (RuleDefinition) -> Combined Classifier
     private final Map<RuleDefinition, CombinedClassifier> ruleClassifierMap = new HashMap<>();
     // Cache to load the list of classifiers
@@ -142,7 +142,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         final List<RuleDefinition> anyPortRules = new ArrayList<>();
 
         // Initialize each element
-        for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
+        for (int i=Rule.MIN_PORT_VALUE; i<=Rule.MAX_PORT_VALUE; i++) {
             rulePortList.add(new ArrayList<>());
         }
 
