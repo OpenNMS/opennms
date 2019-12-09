@@ -90,19 +90,13 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                         portRule.setGroupPosition(rule.getGroupPosition());
                         portRule.setPosition(rule.getPosition());
 
-                        // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)
-                        if (rule.hasDstPortDefinition() && rule.hasSrcPortDefinition()) {
-                            portRule.setSrcPort(rule.getSrcPort()); // keep src port as is, to apply filter
-                        } else {
-                            // Only src or dst ports are defined (or none)
-                            // if none, the value of either src or dst port may be empty, as the filtering already occurred
-                            // through the index of the rule in the classifierPortList.
-                            if (rule.hasDstPortDefinition()) {
-                                portRule.setDstPort(rule.getDstPort());
-                            }
-                            if (rule.hasSrcPortDefinition()) {
-                                portRule.setSrcPort(rule.getSrcPort());
-                            }
+                        // If none, the value of either src or dst port may be empty, as the filtering already occurred
+                        // through the index of the rule in the classifierPortList.
+                        if (rule.hasDstPortDefinition()) {
+                            portRule.setDstPort(rule.getDstPort());
+                        }
+                        if (rule.hasSrcPortDefinition()) {
+                            portRule.setSrcPort(rule.getSrcPort());
                         }
                         ruleClassifierMap.put(rule, new CombinedClassifier(portRule, filterService));
                     }
