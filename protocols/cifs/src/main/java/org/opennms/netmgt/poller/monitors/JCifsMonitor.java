@@ -148,11 +148,7 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         // Initializing TimeoutTracker with default values
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        try {
-            setJCifsTimeouts(tracker.getConnectionTimeout());
-        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
-            logger.error("Error setting JCifs timeouts ", e);
-        }
+        setJCifsTimeouts(tracker.getConnectionTimeout());
 
         // Setting default PollStatus
         PollStatus serviceStatus = PollStatus.unknown();
@@ -223,7 +219,7 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         return serviceStatus;
     }
 
-    private void setFinalStatic(final Field finalStaticField, final Object value) throws NoSuchFieldException, IllegalAccessException {
+    private void setFieldValue(final Field finalStaticField, final Object value) throws NoSuchFieldException, IllegalAccessException {
         finalStaticField.setAccessible(true);
 
         final Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -237,16 +233,17 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
      * Due to limitations of the JCifs library we must use this hack to modify the timeouts. Since the timeouts are set
      * in a static fields only global timeouts will work reliably.
      *
-     * @param t the timeout to be set
-     * @throws NoSuchFieldException
-     * @throws ClassNotFoundException
-     * @throws IllegalAccessException
+     * @param timeoutInMilliseconds the timeout to be set
      */
-    private void setJCifsTimeouts(int t) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
-        final Class<?> clazz = Class.forName("jcifs.smb.SmbConstants");
-        setFinalStatic(clazz.getField("SO_TIMEOUT"), t);
-        setFinalStatic(clazz.getField("CONN_TIMEOUT"), t);
-        setFinalStatic(clazz.getField("DEFAULT_RESPONSE_TIMEOUT"), t + 5000);
+    private void setJCifsTimeouts(final int timeoutInMilliseconds) {
+        try {
+            final Class<?> clazz = Class.forName("jcifs.smb.SmbConstants");
+            setFieldValue(clazz.getField("SO_TIMEOUT"), timeoutInMilliseconds);
+            setFieldValue(clazz.getField("CONN_TIMEOUT"), timeoutInMilliseconds);
+            setFieldValue(clazz.getField("DEFAULT_RESPONSE_TIMEOUT"), timeoutInMilliseconds);
+        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
+            logger.error("Error setting JCifs timeouts ", e);
+        }
     }
 
     /**

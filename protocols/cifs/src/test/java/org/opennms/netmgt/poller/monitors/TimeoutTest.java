@@ -69,7 +69,6 @@ public class TimeoutTest {
         assertTrue("Limit reached " + delta + " > " + limit, delta <= limit);
     }
 
-
     @Test
     public void testTimeouts() throws Exception {
         // first call took more time
