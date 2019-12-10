@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.criteria.Criteria;
@@ -61,21 +60,20 @@ import org.slf4j.LoggerFactory;
  * that are also collapsible since multiple nodes may have the same IP.  The
  * <IpLikeHopCriteria> supports adding all the nodes having the selected IP.
  * 
- * FIXME: Improve the label to support showing how many vertices are supported
- * by each <SearchResult>
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @author <a href=mailto:antonio@opennms.it>Antonio Russo</a>
  *
  */
 public class IpLikeSearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
 
-	private static Logger LOG = LoggerFactory.getLogger(IpLikeSearchProvider.class);
+    private static Logger LOG = LoggerFactory.getLogger(IpLikeSearchProvider.class);
 	
-	private IpInterfaceProvider ipInterfaceProvider;
+    private IpInterfaceProvider ipInterfaceProvider;
 
     public IpLikeSearchProvider(IpInterfaceProvider ipInterfaceProvider) {
     	this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
-	}
+    }
 
     @Override
     public String getSearchProviderNamespace() {
@@ -99,41 +97,38 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 
         List<SearchResult> results = new ArrayList<>();
         
-		String queryString = searchQuery.getQueryString();
+        String queryString = searchQuery.getQueryString();
 		
-		if (!isIpLikeQuery(queryString)) {
-			LOG.debug("SearchProvider->query: query not IPLIKE compatible.");
-			return results;
-		}
+        if (!isIpLikeQuery(queryString)) {
+            LOG.debug("SearchProvider->query: query not IPLIKE compatible.");
+            return results;
+        }
     	
     	CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
     	
-		bldr.iplike("ipAddr", queryString).orderBy("ipAddress", true);
-		Criteria dbQueryCriteria = bldr.toCriteria();
-		List<OnmsIpInterface> ips;
+    	bldr.iplike("ipAddr", queryString).orderBy("ipAddress", true);
+    	Criteria dbQueryCriteria = bldr.toCriteria();
+    	List<OnmsIpInterface> ips;
 		
-		//Here to catch query exceptions and avoid unnecessary exception messages in the Vaadin UI
-		//Mainly do to not having yet found the perfect iplike regex that supports IPLIKE syntax 
-		//for both IPv4 and IPv6 IPLIKE expressions in the isIpLikeQuery method.  The current Pattern
-		//test currently fails not catching octets ending in '-' such as '10.7-.*.*' and only supports
-		//IPv4 addresses.  This just lets us fail to the underlying IPLIKE stored procedure.  The IPLIKE
-		//Utils class might be a good place to have a static method that validates the query string
-		//since it seems to do something very similar in its matches method.
+    	//Here to catch query exceptions and avoid unnecessary exception messages in the Vaadin UI
+    	//Mainly do to not having yet found the perfect iplike regex that supports IPLIKE syntax 
+    	//for both IPv4 and IPv6 IPLIKE expressions in the isIpLikeQuery method.  The current Pattern
+    	//test currently fails not catching octets ending in '-' such as '10.7-.*.*' and only supports
+    	//IPv4 addresses.  This just lets us fail to the underlying IPLIKE stored procedure.  The IPLIKE
+    	//Utils class might be a good place to have a static method that validates the query string
+    	//since it seems to do something very similar in its matches method.
         try {
-			ips = ipInterfaceProvider.findMatching(dbQueryCriteria);
+            ips = ipInterfaceProvider.findMatching(dbQueryCriteria);
             if (ips.size() == 0) {
                 return results;
-            } else {
-                if (isIpLikeQuery(queryString)) {
-                    LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
-                    SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), queryString, queryString,
-							queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
-                    if (!results.contains(searchResult)) {
-						results.add(searchResult);
-					}
-                }
-            }
-
+            } 
+            LOG.debug("SearchProvider->query: adding IPLIKE search spec '{}' to the search results.", queryString);
+            results.add(new SearchResult(searchQuery.getNamespace(), 
+                                         queryString,
+                                         queryString,
+                                         queryString,
+                                         SearchResult.COLLAPSIBLE,
+                                         !SearchResult.COLLAPSED));
             Set<String> ipAddrs = new HashSet<>();
             
             LOG.info("SearchProvider->query: creating IP address set.");
@@ -148,46 +143,30 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
                 
                 if (findCriterion(ip, graphContainer) != null) {
                     continue IPLOOP;
-
                 } else {
-                	SearchResult searchResult = createSearchResult(searchQuery.getNamespace(),ip, queryString);
-                	if (!results.contains(searchResult)) {
-						results.add(searchResult);
-					}
+                    SearchResult searchResult = new SearchResult(searchQuery.getNamespace(), ip, ip, ip, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
+                    if (!results.contains(searchResult)) {
+                        results.add(searchResult);
+                    }
                 }
             }
             LOG.info("SearchProvider->query: found: '{}' IP interfaces.", ips.size());
-            
         } catch (Exception e) {
             LOG.error("SearchProvider-query: caught exception during iplike query: {}", e);
-            
-        }
-		
-		LOG.info("SearchProvider->query: built search result with {} results.", results.size());
+        }		
+	LOG.info("SearchProvider->query: built search result with {} results.", results.size());
 
         return results;
     }
 
-	private SearchResult createSearchResult(String namespace,String ip, String queryString) {
-		SearchResult result = new SearchResult(namespace, ip, ip, queryString, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
-		return result;
-	}
-
-
     /**
      * Validate if the query string has any chance of being an IPLIKE query.
-     * 
-     * FIXME: validates iplike strings that have an octet ending in '-' such as:
-     * 10.7-.*.*
      * 
      * @param queryString
      * @return true if the string contains a '*' or '-' or ',' ".
      */
     private boolean isIpLikeQuery(String queryString) {
-        
-//        Matcher iplikeMatcher = m_iplikePattern.matcher(queryString);
-//        return iplikeMatcher.matches();
-        
+                
         boolean validity = false;
         
         int ipv4delimCnt = StringUtils.countMatches(queryString, ".");
@@ -197,18 +176,16 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
             validity = true;
         } else {
             validity = false;
-        }
-        
+        }        
         return validity;
     	 
-	}
+    }
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
         return supportsPrefix(IpLikeHopCriteria.NAMESPACE+"=", searchPrefix);
     }
 
-    //FIXME so that the focus button works.???
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
     	
@@ -218,7 +195,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
     	Set<VertexRef> vertices = ((IpLikeHopCriteria)criterion).getVertices();
     	LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
     	
-		return vertices;
+    	return vertices;
     	
     }
     
@@ -247,72 +224,82 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
      * stored in the <SearchResult> that was created by this class during the query method.  The SearchResult 
      * and the Criterion use the OnmsIpinterfaceId as the ID for dereferencing in the container.
      */
-	@Override
-	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-    	LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
 
-		IpLikeHopCriteria criterion = createCriteria(searchResult);
-		container.addCriteria(criterion);
-		
-        LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
+        IpLikeHopCriteria criterion = createCriteria(searchResult);
+	container.addCriteria(criterion);
+
+        LOG.debug("SearchProvider->addVertexHopCriteria: adding hop criteria {}.", criterion);
         
         logCriteriaInContainer(container);
 
-	}
+    }
 
     private void logCriteriaInContainer(GraphContainer container) {
         org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-        LOG.debug("SearchProvider->addVertexHopCriteria: there are now {} criteria in the GraphContainer.", criteria.length);
+        LOG.debug("SearchProvider->addVertexHopCriteria: there are now {} criteria in the GraphContainer.",
+                  criteria.length);
         for (org.opennms.features.topology.api.topo.Criteria crit : criteria) {
-            LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
+            LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.",
+                      crit);
         }
     }
 
-	
-	@Override
-	public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-    	LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-		org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
-		
-		if (criterion != null) {
-			container.removeCriteria(criterion);
-		}
-		logCriteriaInContainer(container);
-	}
-	
-	@Override
-	public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
-    	LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
-    	
-        CollapsibleCriteria criteria = getMatchingCriteriaById(graphContainer, searchResult.getId());
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult,
+            GraphContainer container) {
+        LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'",
+                  searchResult);
+        org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(),
+                                                                                  container);
+
+        if (criterion != null) {
+            container.removeCriteria(criterion);
+        }
+        logCriteriaInContainer(container);
+    }
+
+    @Override
+    public void onToggleCollapse(SearchResult searchResult,
+            GraphContainer graphContainer) {
+        LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'",
+                  searchResult);
+
+        CollapsibleCriteria criteria = getMatchingCriteriaById(graphContainer,
+                                                               searchResult.getId());
         if (criteria != null) {
             criteria.setCollapsed(!criteria.isCollapsed());
             graphContainer.redoLayout();
         }
-        
-	}
 
-	@Override
-	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
-		IpLikeHopCriteria criteria = createCriteria(input);
-		return criteria;
-	}
+    }
 
-	private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
-		
-		org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-		for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
-			if (criterion instanceof IpLikeHopCriteria) {
-				String id = ((IpLikeHopCriteria) criterion).getId();
-				if (id.equals(resultId)) {
-					return criterion;
-				}
-			}
-		}
-		return null;
-	}
+    @Override
+    public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(
+            SearchResult input, GraphContainer container) {
+        IpLikeHopCriteria criteria = createCriteria(input);
+        return criteria;
+    }
 
-    private static CollapsibleCriteria getMatchingCriteriaById(GraphContainer graphContainer, String id) {
+    private org.opennms.features.topology.api.topo.Criteria findCriterion(
+            String resultId, GraphContainer container) {
+
+        org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
+        for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
+            if (criterion instanceof IpLikeHopCriteria) {
+                String id = ((IpLikeHopCriteria) criterion).getId();
+                if (id.equals(resultId)) {
+                    return criterion;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static CollapsibleCriteria getMatchingCriteriaById(
+            GraphContainer graphContainer, String id) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
         for (CollapsibleCriteria criterion : criteria) {
             if (criterion.getId().equals(id)) {
@@ -322,7 +309,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
         return null;
     }
 
-	private IpLikeHopCriteria createCriteria(SearchResult searchResult) {
-		return new IpLikeHopCriteria(searchResult, this.ipInterfaceProvider);
-	}
+    private IpLikeHopCriteria createCriteria(SearchResult searchResult) {
+        return new IpLikeHopCriteria(searchResult, this.ipInterfaceProvider);
+    }
 }

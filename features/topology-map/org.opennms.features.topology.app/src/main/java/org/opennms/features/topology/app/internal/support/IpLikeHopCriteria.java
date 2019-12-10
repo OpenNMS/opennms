@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,6 @@ import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GroupRef;
@@ -50,43 +49,43 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
- * This <Criteria> implementation supports the users selection of search results from an IPLIKE query
- * in the topology UI.
+ * This <Criteria> implementation supports the users selection of search
+ * results from an IPLIKE query in the topology UI.
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * @author <a href=mailto:thedesloge@opennms.org>Donald Desloge</a>
  * @author <a href=mailto:seth@opennms.org>Seth Leger</a>
- *
  */
-public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriteria {
+public class IpLikeHopCriteria extends VertexHopCriteria
+        implements SearchCriteria {
 
-	public static final String NAMESPACE = "iplike";
-	private final String m_ipQuery;
-	
-	private boolean m_collapsed = false;
-	private IPVertex m_collapsedVertex;
+    public static final String NAMESPACE = "iplike";
+    private final String m_ipQuery;
 
-	private IpInterfaceProvider ipInterfaceProvider;
-	
-	private final String m_children_namespace;
+    private boolean m_collapsed = false;
+    private IPVertex m_collapsedVertex;
 
-	@Override
-	public String getSearchString() {
-		return m_ipQuery;
-	}
+    private IpInterfaceProvider ipInterfaceProvider;
 
-	public static class IPVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<>();
+    private final String m_children_namespace;
+
+    @Override
+    public String getSearchString() {
+        return m_ipQuery;
+    }
+
+    public static class IPVertex extends AbstractVertex implements GroupRef {
+        private Set<VertexRef> m_children = new HashSet<>();
 
         public IPVertex(String namespace, String id, String label) {
-			super(namespace, id, label);
-			setIconKey("group");
-		}
+            super(namespace, id, label);
+            setIconKey("group");
+        }
 
-		@Override
-		public boolean isGroup() {
-			return true;
-		}
+        @Override
+        public boolean isGroup() {
+            return true;
+        }
 
         @Override
         public Set<VertexRef> getChildren() {
@@ -98,78 +97,87 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
         }
     }
 
-	public IpLikeHopCriteria(SearchResult searchResult, IpInterfaceProvider ipInterfaceProvider) {
-    	super(searchResult.getQuery());
-    	m_children_namespace = searchResult.getNamespace();
-    	m_collapsed = searchResult.isCollapsed();
+    public IpLikeHopCriteria(SearchResult searchResult,
+            IpInterfaceProvider ipInterfaceProvider) {
+        super(searchResult.getQuery());
+        m_children_namespace = searchResult.getNamespace();
+        m_collapsed = searchResult.isCollapsed();
         m_ipQuery = searchResult.getQuery();
         this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
-        m_collapsedVertex = new IPVertex(NAMESPACE, NAMESPACE+":"+m_ipQuery, m_ipQuery);
+        m_collapsedVertex = new IPVertex(NAMESPACE,
+                                         NAMESPACE + ":" + m_ipQuery,
+                                         m_ipQuery);
         m_collapsedVertex.setChildren(getVertices());
         setId(searchResult.getId());
     }
 
-	@Override
-	public String getNamespace() {
-		return NAMESPACE;
-	}
+    @Override
+    public String getNamespace() {
+        return NAMESPACE;
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((m_ipQuery == null) ? 0 : m_ipQuery.hashCode());
+        result = prime * result
+                + ((m_ipQuery == null) ? 0 : m_ipQuery.hashCode());
         result = prime * result
                 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
         return result;
     }
 
-	@Override
+    @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
 
         if (obj instanceof IpLikeHopCriteria) {
-            IpLikeHopCriteria ref = (IpLikeHopCriteria)obj;
-			return ref.m_ipQuery.equals(m_ipQuery) && ref.getNamespace().equals(getNamespace());
+            IpLikeHopCriteria ref = (IpLikeHopCriteria) obj;
+            return ref.m_ipQuery.equals(m_ipQuery)
+                    && ref.getNamespace().equals(getNamespace());
         }
-        
+
         return false;
     }
 
-	@Override
-	public Set<VertexRef> getVertices() {
-		
-		CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
+    @Override
+    public Set<VertexRef> getVertices() {
 
-		bldr.iplike("ipAddr", m_ipQuery);
-		List<OnmsIpInterface> ips = ipInterfaceProvider.findMatching(bldr.toCriteria());
+        CriteriaBuilder bldr = new CriteriaBuilder(OnmsIpInterface.class);
 
-		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-		for (OnmsIpInterface ip : ips) {
-			OnmsNode node = ip.getNode();
-			vertices.add(new DefaultVertexRef(m_children_namespace, String.valueOf(node.getId()), node.getLabel()));
-		}
-		
-		return vertices;
-	}
+        bldr.iplike("ipAddr", m_ipQuery);
+        List<OnmsIpInterface> ips = ipInterfaceProvider.findMatching(bldr.toCriteria());
 
-	@Override
-	public boolean isCollapsed() {
-		return m_collapsed;
-	}
+        Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
+        for (OnmsIpInterface ip : ips) {
+            OnmsNode node = ip.getNode();
+            vertices.add(new DefaultVertexRef(m_children_namespace,
+                                              String.valueOf(node.getId()),
+                                              node.getLabel()));
+        }
 
-	@Override
-	public void setCollapsed(boolean collapsed) {
-		if (collapsed != isCollapsed()) {
-			this.m_collapsed = collapsed;
-			setDirty(true);
-		}
-	}
+        return vertices;
+    }
 
-	@Override
-	public Vertex getCollapsedRepresentation() {
-		return m_collapsedVertex;
-	}
-	
+    @Override
+    public boolean isCollapsed() {
+        return m_collapsed;
+    }
+
+    @Override
+    public void setCollapsed(boolean collapsed) {
+        if (collapsed != isCollapsed()) {
+            this.m_collapsed = collapsed;
+            setDirty(true);
+        }
+    }
+
+    @Override
+    public Vertex getCollapsedRepresentation() {
+        return m_collapsedVertex;
+    }
+
 }
