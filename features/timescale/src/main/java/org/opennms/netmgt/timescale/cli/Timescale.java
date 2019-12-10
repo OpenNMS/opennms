@@ -61,12 +61,12 @@ public class Timescale {
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-            System.out.println("Usage: $OPENNMS_HOME/bin/newts <command>");
+            System.out.println("Usage: $OPENNMS_HOME/bin/timescale <command>");
             System.out.println();
             System.out.println("Supported commands are:");
             System.out.println("\tinit");
             System.out.println();
-            System.out.println("Run $OPENNMS_HOME/bin/newts <command> -h for command specific options.");
+            System.out.println("Run $OPENNMS_HOME/bin/timescale <command> -h for command specific options.");
             return;
         }
 

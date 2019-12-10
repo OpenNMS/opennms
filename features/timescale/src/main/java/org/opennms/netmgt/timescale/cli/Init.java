@@ -28,54 +28,71 @@
 
 package org.opennms.netmgt.timescale.cli;
 
-import java.util.ServiceLoader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
 
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.newts.cassandra.Schema;
-import org.opennms.newts.cassandra.SchemaManager;
+import org.opennms.core.db.DataSourceConfigurationFactory;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.opennms.core.db.install.SimpleDataSource;
 
 public class Init implements Command {
 
-    private static ServiceLoader<Schema> s_schemas = ServiceLoader.load(Schema.class);
+    private static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
 
-    @Option(name="-h", aliases={ "--help" }, help=true)
+    @Option(name = "-h", aliases = {"--help"}, help = true)
     boolean showHelp = false;
 
-    @Option(name="-p", aliases={ "--print-only" }, usage="Prints the CQL statements instead of executing them.")
+    @Option(name = "-p", aliases = {"--print-only"}, usage = "Prints the statements instead of executing them.")
     boolean printOnly = false;
-
-    @Option(name="-r", aliases={ "--replication-factor" }, usage="Sets the replication factor to use when creating the keyspace.")
-    int replicationFactor = SchemaManager.DEFAULT_REPLICATION_FACTOR;
 
     @Override
     public void execute() throws Exception {
         if (showHelp) {
-            System.out.println("Usage: $OPENNMS_HOME/bin/newts init");
+            System.out.println("Usage: $OPENNMS_HOME/bin/timescale init");
             CmdLineParser parser = new CmdLineParser(new Init());
             parser.printUsage(System.out);
             return;
         }
 
-        String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
-        String hostname = System.getProperty("org.opennms.newts.config.hostname", "localhost");
-        int port = SystemProperties.getInteger("org.opennms.newts.config.port", 9042);
-        String username = System.getProperty("org.opennms.newts.config.username");
-        String password = System.getProperty("org.opennms.newts.config.password");
-        boolean ssl = Boolean.getBoolean("org.opennms.newts.config.ssl");
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
 
-        System.out.println(String.format("Initializing the '%s' keyspaces on %s:%d", keyspace, hostname, port));
+        InputStream is = new FileInputStream(cfgFile);
+        final JdbcDataSource dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
+        final DataSource ds = new SimpleDataSource(dsConfig);
+        is.close();
 
-        try (SchemaManager m = new SchemaManager(keyspace, hostname, port, username, password, ssl)) {
-            m.setReplicationFactor(replicationFactor);
-            for (Schema s : s_schemas) {
-                m.create(s, true, printOnly);
+        System.out.println("Checking preconditions");
+        try (Connection conn = ds.getConnection();
+            Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery("select count(*) from pg_extension where extname = 'timescaledb';");
+            result.next();
+            if (result.getInt(1) < 1) {
+                System.out.println("It looks like timescale plugin is not installed. Please install: https://docs.timescale.com/latest/getting-started/installation");
             }
+            System.out.println("Installing Timescale tables");
+            executeQuery(stmt,"CREATE TABLE timeseries( time TIMESTAMPTZ NOT NULL, context TEXT NOT NULL, resource TEXT NOT NULL, name TEXT NOT NULL, type TEXT NOT NULL, value DOUBLE PRECISION NULL)");
+            executeQuery(stmt, "SELECT create_hypertable('timeseries', 'time');");
+            // double check:
+            stmt.execute("select * from timeseries;"); // will throw exception if table doesn't exist
+            System.out.println("Done. Enjoy!");
         }
+    }
 
-        if (!printOnly) {
-            System.out.println("The keyspace was succesfully created.");
+    private void executeQuery(Statement stmt, final String sql) throws SQLException {
+        if(printOnly) {
+            System.out.println(sql);
+        } else {
+            stmt.execute(sql);
         }
     }
 }
