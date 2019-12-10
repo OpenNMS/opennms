@@ -53,6 +53,10 @@
       <artifactId>metrics-core</artifactId>
       <version>${dropwizardMetricsVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
     <!-- Test Dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>

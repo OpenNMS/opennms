@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
@@ -189,6 +191,18 @@ public class DefaultClassificationEngineTest {
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             classificationEngine.classify(new ClassificationRequest("Default", 0, null, i, "127.0.0.1", ProtocolType.TCP));
         }
+    }
+
+    // See NMS-12429
+    @Test
+    public void verifyDoesNotRunOutOfMemory() {
+        final List<Rule> rules = Lists.newArrayList();
+        for (int i=0; i<100; i++) {
+            final Rule rule = new RuleBuilder().withName("rule1").withPosition(i+1).withProtocol("UDP").withDstAddress("192.168.0." + i).build();
+            rules.add(rule);
+        }
+        final DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> rules, FilterService.NOOP);
+        engine.classify(new ClassificationRequest("localhost", 1234, "127.0.0.1", 80, "192.168.0.1", Protocols.getProtocol("UDP")));
     }
 
     @Test(timeout=5000)
