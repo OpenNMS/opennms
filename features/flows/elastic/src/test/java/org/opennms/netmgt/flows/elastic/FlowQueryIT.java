@@ -97,11 +97,13 @@ public class FlowQueryIT {
         MockLogAppender.setupLogging(true, "DEBUG");
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+
         final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
+
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                 new MockIdentity(), new MockTracerRegistry(), new IndexSettings(), 3, 12000);

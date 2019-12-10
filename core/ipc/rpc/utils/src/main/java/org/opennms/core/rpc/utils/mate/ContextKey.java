@@ -42,13 +42,11 @@ public final class ContextKey implements Comparable<ContextKey> {
     }
 
     public ContextKey(final String contextKey) {
-        if (contextKey == null) {
-            throw new IllegalArgumentException("contextKey must not be null");
-        }
+        Objects.requireNonNull(contextKey , "contextKey must not be null");
         final String arr[] = contextKey.split(":");
 
         if (arr.length != 2) {
-            throw new IllegalArgumentException("contextKey must be in the format 'context:key'");
+            throw new IllegalArgumentException("contextKey '" + contextKey + "' must be in the format 'context:key'");
         }
 
         this.context = arr[0];

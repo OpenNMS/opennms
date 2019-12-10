@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -558,8 +557,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
 
     public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value) {
-
-        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = '" + StringEscapeUtils.escapeSql(context) + "' AND key = '" + StringEscapeUtils.escapeSql(key) + "' AND value = '" + StringEscapeUtils.escapeSql(value) + "'")
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
+                .setString("context", context)
+                .setString("key", key)
+                .setString("value", value)
                 .setResultTransformer(new ResultTransformer() {
                     @Override
                     public Object transformTuple(Object[] tuple, String[] aliases) {

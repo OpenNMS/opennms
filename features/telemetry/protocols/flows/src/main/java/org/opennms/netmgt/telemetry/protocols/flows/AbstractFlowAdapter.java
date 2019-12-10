@@ -63,6 +63,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     private final Converter<P> converter;
 
     private String metaDataNodeLookup;
+    private ContextKey contextKey;
 
     /**
      * Time taken to parse a log
@@ -114,7 +115,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(),
                     messageLog.getSourceAddress(),
-                    Strings.isNullOrEmpty(metaDataNodeLookup) ? null : new ContextKey(metaDataNodeLookup));
+                    contextKey);
             flowRepository.persist(flows, source);
         } catch (DetailedFlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
@@ -144,5 +145,11 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     public void setMetaDataNodeLookup(String metaDataNodeLookup) {
         this.metaDataNodeLookup = metaDataNodeLookup;
+
+        if (!Strings.isNullOrEmpty(this.metaDataNodeLookup)) {
+            this.contextKey = new ContextKey(metaDataNodeLookup);
+        } else {
+            this.contextKey = null;
+        }
     }
 }

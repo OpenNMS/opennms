@@ -58,7 +58,7 @@ public class TestFlow implements Flow {
 
         switch (flowDocument.getDirection()) {
             case INGRESS:
-                return Direction.EGRESS;
+                return Direction.INGRESS;
             case EGRESS:
                 return Direction.EGRESS;
             default:
@@ -164,7 +164,7 @@ public class TestFlow implements Flow {
     @Override
     public SamplingAlgorithm getSamplingAlgorithm() {
         if (flowDocument.getSamplingAlgorithm() == null) {
-            return SamplingAlgorithm.Unassigned;
+            return null;
         }
 
         switch (flowDocument.getSamplingAlgorithm()) {
