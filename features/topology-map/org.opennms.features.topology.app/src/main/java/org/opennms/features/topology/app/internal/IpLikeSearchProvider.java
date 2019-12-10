@@ -73,8 +73,6 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 	
 	private IpInterfaceProvider ipInterfaceProvider;
 
-    private static final Pattern m_iplikePattern = Pattern.compile("^[0-9?,\\-*]*\\.[0-9?,\\-*]*\\.[0-9?,\\-*]*\\.[0-9?,\\-*]*$");
-
     public IpLikeSearchProvider(IpInterfaceProvider ipInterfaceProvider) {
     	this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
 	}
