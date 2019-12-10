@@ -34,7 +34,6 @@ import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -413,7 +412,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     public void verifyCustomJsonRenderer() {
         final KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
         try {
-            karafShell.runCommand("bsm:generate-hierarchies 5 2");
+            karafShell.runCommand("opennms-bsm:generate-hierarchies 5 2");
             given().log().ifValidationFails()
                 .get("{container_id}/{namespace}", "bsm", "bsm")
                 .then()
@@ -427,7 +426,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .content("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
                 .content("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
         } finally {
-            karafShell.runCommand("bsm:delete-generated-hierarchies");
+            karafShell.runCommand("opennms-bsm:delete-generated-hierarchies");
         }
     }
 
