@@ -38,6 +38,7 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 
 public class NodesOnmsTopologyUpdater extends TopologyUpdater {
 
@@ -75,7 +76,7 @@ public class NodesOnmsTopologyUpdater extends TopologyUpdater {
 
     @Override
     public OnmsTopologyProtocol getProtocol() {
-        return create(ProtocolSupported.NODES);
+        return create(ProtocolSupported.NODES, OnmsProtocolLayer.NoLayer);
     }
 
 }

@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.api.support;
 
-import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
 public class SemanticZoomLevelCriteria extends Criteria {
 	private int m_szl;
@@ -74,6 +74,6 @@ public class SemanticZoomLevelCriteria extends Criteria {
 	 */
 	@Override
 	public String getNamespace() {
-		return AbstractNodesProvider.getNodesNamespace();
+		return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
 	}
 }

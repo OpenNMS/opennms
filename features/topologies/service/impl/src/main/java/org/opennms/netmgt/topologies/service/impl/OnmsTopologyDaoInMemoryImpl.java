@@ -50,9 +50,20 @@ public class OnmsTopologyDaoInMemoryImpl implements OnmsTopologyDao {
 
     @Override
     public OnmsTopology getTopology(String protocolSupported) {
-        OnmsTopologyProtocol protocol = OnmsTopologyProtocol.create(protocolSupported);
-        if (m_updatersMap.containsKey(protocol)) {
-            return m_updatersMap.get(protocol).getTopology();
+        for (OnmsTopologyProtocol protocol: m_updatersMap.keySet()) {
+            if (protocol.getId().equalsIgnoreCase(protocolSupported)) {
+                return m_updatersMap.get(protocol).getTopology();
+            }
+        }
+        throw new IllegalArgumentException(String.format("%s protocol not supported", protocolSupported));
+    }
+
+    @Override
+    public OnmsTopologyProtocol getTopologyProtocol(String protocolSupported) {
+        for (OnmsTopologyProtocol protocol: m_updatersMap.keySet()) {
+            if (protocol.getId().equalsIgnoreCase(protocolSupported)) {
+                return protocol.clone();
+            }
         }
         throw new IllegalArgumentException(String.format("%s protocol not supported", protocolSupported));
     }

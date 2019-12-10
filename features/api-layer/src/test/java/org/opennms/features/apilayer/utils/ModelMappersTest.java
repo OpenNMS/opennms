@@ -74,6 +74,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.topologies.service.api.EdgeMockUtil;
@@ -92,7 +93,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         EdgeMockUtil.addNode(true, mockEdge);
         EdgeMockUtil.addNode(false, mockEdge);
-        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL, OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
@@ -121,7 +122,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         addPort(true, mockEdge);
         addPort(false, mockEdge);
-        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL,OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
@@ -156,7 +157,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         EdgeMockUtil.addSegment(true, mockEdge);
         EdgeMockUtil.addSegment(false, mockEdge);
-        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL,OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));
@@ -190,7 +191,7 @@ public class ModelMappersTest {
         OnmsTopologyEdge mockEdge = createEdge();
         addPort(true, mockEdge);
         EdgeMockUtil.addSegment(false, mockEdge);
-        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+        TopologyEdge mappedEdge = edgeMapper.toEdge(OnmsTopologyProtocol.create(PROTOCOL, OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getProtocol().name(), equalTo(PROTOCOL));

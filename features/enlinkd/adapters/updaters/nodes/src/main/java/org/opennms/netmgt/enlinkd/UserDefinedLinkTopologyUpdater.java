@@ -48,6 +48,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class UserDefinedLinkTopologyUpdater extends TopologyUpdater {
@@ -111,7 +112,7 @@ public class UserDefinedLinkTopologyUpdater extends TopologyUpdater {
 
     @Override
     public OnmsTopologyProtocol getProtocol() {
-        return create(ProtocolSupported.USERDEFINED);
+        return create(ProtocolSupported.USERDEFINED, OnmsProtocolLayer.UserDefined);
     }
 
 }

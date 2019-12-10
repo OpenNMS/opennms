@@ -102,6 +102,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 
@@ -800,7 +801,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         
         //Testing updates
         OnmsTopologyLogger tl = createAndSubscribe(
-                  ProtocolSupported.CDP.name());
+                  ProtocolSupported.CDP.name(), OnmsProtocolLayer.Layer2);
         assertEquals("CDP:Consumer:Logger", tl.getName());
         //No updates not yet runned 
         assertEquals(0, tl.getQueue().size());        
@@ -812,7 +813,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(!m_cdpTopologyService.parseUpdates());
         assertEquals(6, tl.getQueue().size());
         for (OnmsTopologyMessage m: tl.getQueue()) {
-            assertEquals(TopologyUpdater.create(ProtocolSupported.CDP), m.getProtocol());
+            assertEquals(TopologyUpdater.create(ProtocolSupported.CDP, OnmsProtocolLayer.Layer2), m.getProtocol());
             assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
             if (m.getMessagebody() instanceof OnmsTopologyVertex) {
                 OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();
@@ -899,7 +900,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(4, topology.getEdges().size());
         
         OnmsTopologyLogger tl = createAndSubscribe(
-                  ProtocolSupported.LLDP.name());
+                  ProtocolSupported.LLDP.name(), OnmsProtocolLayer.Layer2);
         assertEquals("LLDP:Consumer:Logger", tl.getName());
                 
         System.err.println("--------Printing new start----------");
@@ -922,7 +923,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         int vertices = 0;
         int edges = 0;
         for (OnmsTopologyMessage m: tl.getQueue()) {
-            assertEquals(TopologyUpdater.create(ProtocolSupported.LLDP), m.getProtocol());
+            assertEquals(TopologyUpdater.create(ProtocolSupported.LLDP, OnmsProtocolLayer.Layer2), m.getProtocol());
             assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
             if (m.getMessagebody() instanceof OnmsTopologyVertex) {
                 OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();

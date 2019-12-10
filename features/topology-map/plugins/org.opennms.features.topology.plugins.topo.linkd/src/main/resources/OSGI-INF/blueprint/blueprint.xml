@@ -29,38 +29,10 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         init-method="start"
         destroy-method="stop" />
 
-    <!-- EnhancedLinkd Default Topology Provider-->
-    <bean id="linkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
-        <property name="name" value="All"/>
-        <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
-        <property name="supportsCategorySearch" value="true"/>
-    </bean>
-
-    <bean id="linkdTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
-        <argument index="0" value="enlinkd" />
-        <argument index="1" ref="metricRegistry" />
-        <argument index="2"> 
-        	<list>
-		        <value>LLDP</value>
-		        <value>OSPF</value>
-		        <value>ISIS</value>
-		        <value>BRIDGE</value>
-		        <value>CDP</value>
-		        <value>USERDEFINED</value>
-        	</list>
-       	</argument>
-        <argument index="3" ref="onmsTopologyDao"/>
-        <property name="topologyProviderInfo" ref="linkdTopologyProviderInfo"/>
-    </bean>
-
-    <bean id="linkdTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
-        <argument ref="linkdTopologyProvider"/>
-    </bean>
-
+    <!-- LinkdMetaTopologyProvider -->
     <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdMetaTopologyProvider">
-        <argument index="0" ref="onmsTopologyDao"/>
-        <argument index="1" ref="metricRegistry" />
-        <argument index="2" ref="linkdTopologyHopProvider" />
+        <argument ref="onmsTopologyDao"/>
+        <argument ref="metricRegistry" />
     </bean>
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="linkdMetaTopologyProvider">
         <service-properties>

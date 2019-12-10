@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -156,7 +157,39 @@ public class ModelMappers {
     }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
-        return OnmsTopologyProtocol.create(protocol.name());
+        OnmsTopologyProtocol onmsProtocol = null;
+        switch (protocol) {
+        case BRIDGE:
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.Layer2);            
+            break;
+        case CDP:    
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.Layer2);            
+            break;
+        case LLDP:    
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.Layer2);            
+            break;
+        case ISIS:    
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.NetworkTopology);            
+            break;
+        case OSPF:    
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.Layer3);            
+            break;
+        case USERDEFINED:    
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.UserDefined);            
+            break;
+        case NODES:    
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.NoLayer);            
+            break;
+        case ALL:
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.NoLayer);            
+            break;
+        default:
+            onmsProtocol = OnmsTopologyProtocol.create(protocol.name(), OnmsProtocolLayer.NoLayer);            
+            break;
+        }
+        
+        return onmsProtocol;
+
     }
     
     public static TopologyProtocol toTopologyProtocol(OnmsTopologyProtocol protocol) {

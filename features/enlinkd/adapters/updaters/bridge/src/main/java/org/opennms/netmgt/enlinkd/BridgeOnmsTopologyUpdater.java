@@ -49,6 +49,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,7 +276,7 @@ public class BridgeOnmsTopologyUpdater extends TopologyUpdater {
 
     @Override
     public OnmsTopologyProtocol getProtocol() {
-        return create(ProtocolSupported.BRIDGE);
+        return create(ProtocolSupported.BRIDGE, OnmsProtocolLayer.Layer2);
     }
 
     public BridgeTopologyService getBridgeTopologyService() {

@@ -64,6 +64,7 @@ import org.opennms.netmgt.enlinkd.service.api.NodeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -183,8 +184,8 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         m_nodeDao.flush();
     }
 
-    public OnmsTopologyLogger createAndSubscribe(String protocol) {
-        OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol);
+    public OnmsTopologyLogger createAndSubscribe(String protocol, OnmsProtocolLayer layer) {
+        OnmsTopologyLogger tl = new OnmsTopologyLogger(protocol, layer);
         m_topologyDao.subscribe(tl);
         return tl;
     }

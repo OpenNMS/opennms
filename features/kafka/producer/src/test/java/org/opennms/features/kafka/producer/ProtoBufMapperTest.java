@@ -53,8 +53,8 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.topologies.service.api.EdgeMockUtil;
-import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Tests for {@link ProtobufMapper}.
@@ -119,7 +119,7 @@ public class ProtoBufMapperTest {
         EdgeMockUtil.addNode(true, mockEdge);
         EdgeMockUtil.addNode(false, mockEdge);
         OpennmsModelProtos.TopologyEdge mappedEdge =
-                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL, OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
@@ -137,7 +137,7 @@ public class ProtoBufMapperTest {
         EdgeMockUtil.addPort(true, mockEdge);
         EdgeMockUtil.addPort(false, mockEdge);
         OpennmsModelProtos.TopologyEdge mappedEdge =
-                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL, OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
@@ -160,7 +160,7 @@ public class ProtoBufMapperTest {
         EdgeMockUtil.addSegment(true, mockEdge);
         EdgeMockUtil.addSegment(false, mockEdge);
         OpennmsModelProtos.TopologyEdge mappedEdge =
-                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL, OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));
@@ -181,7 +181,7 @@ public class ProtoBufMapperTest {
         EdgeMockUtil.addPort(true, mockEdge);
         EdgeMockUtil.addSegment(false, mockEdge);
         OpennmsModelProtos.TopologyEdge mappedEdge =
-                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL), mockEdge);
+                protobufMapper.toEdgeTopologyMessage(OnmsTopologyProtocol.create(PROTOCOL, OnmsProtocolLayer.Layer2), mockEdge);
 
         assertThat(mappedEdge.getRef().getId(), equalTo(EdgeMockUtil.EDGE_ID));
         assertThat(mappedEdge.getRef().getProtocol().name(), equalTo(PROTOCOL));

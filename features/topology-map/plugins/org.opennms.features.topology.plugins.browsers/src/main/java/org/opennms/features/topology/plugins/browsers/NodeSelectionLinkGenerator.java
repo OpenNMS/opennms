@@ -29,14 +29,14 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
-import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
-import com.vaadin.v7.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.v7.ui.Table.ColumnGenerator;
 import com.vaadin.v7.ui.themes.BaseTheme;
@@ -77,7 +77,7 @@ public class NodeSelectionLinkGenerator extends AbstractSelectionLinkGenerator {
 					public void buttonClick(ClickEvent event) {
                         Integer nodeId = nodeIdProperty.getValue();
                         String nodeLabel = (String)source.getContainerProperty(itemId, m_nodeLabelProperty).getValue();
-						VertexRef vertexRef = new DefaultVertexRef(AbstractNodesProvider.getNodesNamespace(), String.valueOf(nodeId), nodeLabel);
+						VertexRef vertexRef = new DefaultVertexRef(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD, String.valueOf(nodeId), nodeLabel);
                         fireVertexUpdatedEvent(vertexRef);
                     }
                 });

@@ -75,6 +75,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage.TopologyMessageStatus;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.impl.OnmsTopologyLogger;
 /*
@@ -1090,7 +1091,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         Set<String> protocols= new HashSet<>();
         protocols.add(ProtocolSupported.BRIDGE.name());
         OnmsTopologyLogger tl = createAndSubscribe(
-                  ProtocolSupported.BRIDGE.name());
+                  ProtocolSupported.BRIDGE.name(), OnmsProtocolLayer.Layer2);
         assertEquals("BRIDGE:Consumer:Logger", tl.getName());
         assertEquals(0, tl.getQueue().size());        
         
@@ -1102,7 +1103,7 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         int edges = 0;
         int segments = 0;
         for (OnmsTopologyMessage m: tl.getQueue()) {
-            assertEquals(TopologyUpdater.create(ProtocolSupported.BRIDGE), m.getProtocol());
+            assertEquals(TopologyUpdater.create(ProtocolSupported.BRIDGE, OnmsProtocolLayer.Layer2), m.getProtocol());
             assertEquals(TopologyMessageStatus.UPDATE, m.getMessagestatus());
             if (m.getMessagebody() instanceof OnmsTopologyVertex) {
                 OnmsTopologyVertex vertex = (OnmsTopologyVertex) m.getMessagebody();

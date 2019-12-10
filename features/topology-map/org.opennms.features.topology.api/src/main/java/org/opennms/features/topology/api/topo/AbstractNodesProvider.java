@@ -42,10 +42,6 @@ public abstract class AbstractNodesProvider {
         return false;        
     }
 
-    public static String getNodesNamespace() {
-        return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
-    }
-
     public String getNamespace() {
         return OnmsTopology.TOPOLOGY_NAMESPACE_LINKD;
     }

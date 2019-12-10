@@ -38,6 +38,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyMessage;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,8 @@ public class OnmsTopologyLogger implements OnmsTopologyConsumer {
     private final OnmsTopologyProtocol m_protocol;
     private List<OnmsTopologyMessage> m_queue = new ArrayList<>();
 
-    public OnmsTopologyLogger(String protocol) {
-        m_protocol = OnmsTopologyProtocol.create(protocol);
+    public OnmsTopologyLogger(String protocol, OnmsProtocolLayer layer) {
+        m_protocol = OnmsTopologyProtocol.create(protocol,layer);
     }
 
     @Override

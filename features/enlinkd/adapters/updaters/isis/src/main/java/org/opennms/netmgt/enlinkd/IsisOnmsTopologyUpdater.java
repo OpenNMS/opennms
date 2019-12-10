@@ -46,6 +46,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 import com.google.common.collect.Table;
@@ -123,7 +124,7 @@ public class IsisOnmsTopologyUpdater extends TopologyUpdater {
 
     @Override
     public OnmsTopologyProtocol getProtocol() {
-        return create(ProtocolSupported.ISIS);
+        return create(ProtocolSupported.ISIS, OnmsProtocolLayer.NetworkTopology);
     }
 
     public IsisTopologyService getIsisTopologyService() {

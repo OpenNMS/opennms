@@ -76,7 +76,7 @@ public class AbstractSearchProviderTest {
     public class ContainsMatcher extends AbstractSearchQuery {
 
         public ContainsMatcher(String queryString) {
-            super(null,queryString);
+            super("Test",queryString);
         }
 
         @Override
@@ -88,7 +88,7 @@ public class AbstractSearchProviderTest {
     public class ExactMatcher extends AbstractSearchQuery {
 
         public ExactMatcher(String queryString) {
-            super(null,queryString);
+            super("Test", queryString);
         }
 
         @Override

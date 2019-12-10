@@ -53,6 +53,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyPort;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 
 public class EdgeDaoImplTest {
@@ -68,7 +69,7 @@ public class EdgeDaoImplTest {
         Map<OnmsTopologyProtocol, OnmsTopology> topologyMap = new HashMap<>();
 
         when(onmsTopologyDao.getSupportedProtocols()).thenReturn(
-                new HashSet<>(Arrays.asList(OnmsTopologyProtocol.create("CDP"), OnmsTopologyProtocol.create("ISIS"))));
+                new HashSet<>(Arrays.asList(OnmsTopologyProtocol.create("CDP", OnmsProtocolLayer.Layer2), OnmsTopologyProtocol.create("ISIS", OnmsProtocolLayer.NetworkTopology))));
 
         // Create two dummy edges to respond with for calls to the DAO
         OnmsTopology mockCDPTopology = mock(OnmsTopology.class);
@@ -84,7 +85,7 @@ public class EdgeDaoImplTest {
         when(mockCdpEdge.getTarget()).thenReturn(mockCdpEdgePort);
         cdpEdges.add(mockCdpEdge);
         when(mockCDPTopology.getEdges()).thenReturn(cdpEdges);
-        topologyMap.put(OnmsTopologyProtocol.create("CDP"), mockCDPTopology);
+        topologyMap.put(OnmsTopologyProtocol.create("CDP",OnmsProtocolLayer.Layer2), mockCDPTopology);
 
         OnmsTopology mockIsIsTopology = mock(OnmsTopology.class);
         Set<OnmsTopologyEdge> isisEdges = new HashSet<>();
@@ -99,7 +100,7 @@ public class EdgeDaoImplTest {
         when(mockIsIsEdge.getTarget()).thenReturn(mockIsIsEdgePort);
         isisEdges.add(mockIsIsEdge);
         when(mockIsIsTopology.getEdges()).thenReturn(isisEdges);
-        topologyMap.put(OnmsTopologyProtocol.create("ISIS"), mockIsIsTopology);
+        topologyMap.put(OnmsTopologyProtocol.create("ISIS",OnmsProtocolLayer.NetworkTopology), mockIsIsTopology);
 
         when(onmsTopologyDao.getTopologies()).thenReturn(topologyMap);
     }

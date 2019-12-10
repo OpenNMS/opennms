@@ -31,7 +31,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
@@ -43,23 +42,30 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol.OnmsProtocolLayer;
+import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocolComparator;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 
-public class LinkdMetaTopologyProvider implements MetaTopologyProvider{
+public class LinkdMetaTopologyProvider implements MetaTopologyProvider {
 
     private final List<GraphProvider> providers = Lists.newArrayList();
-    private final GraphProvider defaultProvider;
 
-    public LinkdMetaTopologyProvider(final OnmsTopologyDao onmsTopologyDao, final MetricRegistry metricRegistry, GraphProvider linkdTp) {
-        defaultProvider=Objects.requireNonNull(linkdTp);
-        providers.add(defaultProvider);
+    public LinkdMetaTopologyProvider(final OnmsTopologyDao onmsTopologyDao, final MetricRegistry metricRegistry) {
+        List<OnmsTopologyProtocol> protocols = Lists.newArrayList();
         for (OnmsTopologyProtocol onmsTopologyProtocol: onmsTopologyDao.getSupportedProtocols()) {
+            if (onmsTopologyProtocol.getLayer() == OnmsProtocolLayer.NoLayer) {
+                continue;
+            }
+            protocols.add(onmsTopologyProtocol);
+        }
+        Collections.sort(protocols,new OnmsTopologyProtocolComparator());
+        for (OnmsTopologyProtocol onmsTopologyProtocol: protocols) {
             final TopologyProviderInfo info =
                     new DefaultTopologyProviderInfo(
                             onmsTopologyProtocol.getId(),
-                            "This Topology Provider displays the "+ onmsTopologyProtocol.getId() + " topology information discovered by: " + onmsTopologyProtocol.getSource(),
+                            "This Topology Provider displays the "+ onmsTopologyProtocol.getLayer()+ " " +onmsTopologyProtocol.getId() + " topology information discovered by: " + onmsTopologyProtocol.getSource(),
                             false,
                             true);
             final LinkdTopologyProvider topologyProvider = new LinkdTopologyProvider(metricRegistry, onmsTopologyProtocol, onmsTopologyDao);
@@ -72,7 +78,7 @@ public class LinkdMetaTopologyProvider implements MetaTopologyProvider{
 
     @Override
     public GraphProvider getDefaultGraphProvider() {
-        return defaultProvider;
+        return providers.get(0);
     }
 
     @Override

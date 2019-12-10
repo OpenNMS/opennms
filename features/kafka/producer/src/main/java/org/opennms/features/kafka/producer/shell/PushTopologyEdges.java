@@ -79,7 +79,7 @@ public class PushTopologyEdges implements Action {
             // One or more protocols set, retrieve them in and process them in the order specified
             topologies = new LinkedHashMap<>();
             for (String protocol : protocols) {
-                topologies.put(OnmsTopologyProtocol.create(protocol), onmsTopologyDao.getTopology(protocol));
+                topologies.put(onmsTopologyDao.getTopologyProtocol(protocol), onmsTopologyDao.getTopology(protocol));
             }
         }
 

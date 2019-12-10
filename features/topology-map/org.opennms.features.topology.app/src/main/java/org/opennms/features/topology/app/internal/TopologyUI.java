@@ -65,7 +65,6 @@ import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
@@ -92,6 +91,7 @@ import org.opennms.features.topology.app.internal.ui.ToolbarPanelController;
 import org.opennms.features.topology.app.internal.ui.breadcrumbs.BreadcrumbComponent;
 import org.opennms.features.topology.link.TopologyLinkBuilder;
 import org.opennms.features.vaadin.components.header.HeaderComponent;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
 import org.opennms.osgi.EventConsumer;
 import org.opennms.osgi.OnmsServiceManager;
@@ -341,7 +341,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                             @Override
                             public Component getComponent() {
                                 m_currentHudDisplay = new HudDisplay();
-                                m_currentHudDisplay.setProvider(m_graphContainer.getTopologyServiceClient().getNamespace().equals(AbstractNodesProvider.getNodesNamespace())
+                                m_currentHudDisplay.setProvider(m_graphContainer.getTopologyServiceClient().getNamespace().equals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD)
                                         ? "Linkd"
                                         : m_graphContainer.getTopologyServiceClient().getNamespace());
                                 m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));

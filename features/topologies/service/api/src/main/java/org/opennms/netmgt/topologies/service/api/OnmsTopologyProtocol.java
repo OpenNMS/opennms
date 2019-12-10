@@ -32,11 +32,37 @@ import java.util.Objects;
 
 public class OnmsTopologyProtocol {
 
-    private static final OnmsTopologyProtocol ALL_PROTOCOLS = create("ALL");
+    private static final OnmsTopologyProtocol ALL_PROTOCOLS = create("ALL",OnmsProtocolLayer.NoLayer);
 
-    public static OnmsTopologyProtocol create(String id) {
+    public enum OnmsProtocolLayer {
+        UserDefined(0),
+        Layer7(1),
+        Layer6(2),
+        Layer5(3),
+        Layer4(4),
+        Layer3p4(5),
+        Layer3(6),
+        NetworkTopology(7),
+        Layer2c5(8),
+        Layer2(9),
+        Layer1(10),
+        NoLayer(11);
+        
+        private final int position;
+        
+        private OnmsProtocolLayer(int position) {
+            this.position=position;
+        }
+        
+        public int getPosition() {
+            return position;
+        }
+        
+    }
+    public static OnmsTopologyProtocol create(String id, OnmsProtocolLayer layer) {
         Objects.requireNonNull(id, "id is null, cannot create protocol");
-        return new OnmsTopologyProtocol(id.toUpperCase());
+        Objects.requireNonNull(layer, "layer is null, cannot create protocol");
+        return new OnmsTopologyProtocol(id.toUpperCase(),layer);
     }
     
     public static OnmsTopologyProtocol allProtocols() {
@@ -44,11 +70,13 @@ public class OnmsTopologyProtocol {
     }
     
     final private String m_id;
+    final private OnmsProtocolLayer m_layer;
     private String m_name;
     private String m_source;
 
-    private OnmsTopologyProtocol(String id) {
+    private OnmsTopologyProtocol(String id, OnmsProtocolLayer layer) {
         m_id=id;
+        m_layer=layer;
     }
 
     public String getId() {
@@ -94,6 +122,17 @@ public class OnmsTopologyProtocol {
 
     public void setSource(String source) {
         m_source = source;
+    }
+
+    public OnmsProtocolLayer getLayer() {
+        return m_layer;
+    }
+    
+    public OnmsTopologyProtocol clone() {
+        OnmsTopologyProtocol protocol = create(m_id, m_layer);
+        protocol.setName(m_name);
+        protocol.setSource(m_source);
+        return protocol;
     }
 
 }

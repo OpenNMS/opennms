@@ -41,7 +41,6 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.support.ServiceLocator;
-import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
@@ -52,6 +51,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,7 +231,7 @@ public class DefaultTopologyService implements TopologyService {
     }
 
     public void invalidate(String namespace) {
-        if(namespace.startsWith(AbstractNodesProvider.getNodesNamespace())) {
+        if(namespace.startsWith(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD)) {
             topologyEntityCache.refresh();
         }
 
