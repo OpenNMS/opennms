@@ -36,7 +36,6 @@ import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractNodesProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GroupRef;
@@ -165,7 +164,7 @@ public class AlarmHopCriteria extends VertexHopCriteria implements SearchCriteri
 			if (node == null) {
 			    continue;
 			}
-			vertices.add(new DefaultVertexRef(AbstractNodesProvider.getNodesNamespace(), String.valueOf(node.getId()), node.getLabel()));
+			vertices.add(new DefaultVertexRef(m_searchResult.getNamespace(), String.valueOf(node.getId()), node.getLabel()));
 		}
         return vertices;
     }

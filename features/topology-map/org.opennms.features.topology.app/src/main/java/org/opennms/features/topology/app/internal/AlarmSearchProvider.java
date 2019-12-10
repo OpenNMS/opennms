@@ -115,27 +115,33 @@ public class AlarmSearchProvider extends AbstractSearchProvider
             m_nodeLabel = nodeLabel;
         }
 
-        public AlarmSearchResult(Integer alarmId, String nodeLabel,
+        public AlarmSearchResult(String namespace, Integer alarmId, String nodeLabel,
                 String query, boolean collapsed) {
-            super(getSearchProviderNamespace(), String.valueOf(alarmId),
+            super(namespace, String.valueOf(alarmId),
                   nodeLabel, query, SearchResult.COLLAPSIBLE, collapsed);
 
             this.setAlarmId(alarmId);
             this.setNodeLabel(nodeLabel);
         }
 
-        public AlarmSearchResult(String id) {
-            super(getSearchProviderNamespace(), id, id, id,
+        public AlarmSearchResult(String namespace,String id) {
+            super(namespace, id, id, id,
                   SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
         }
 
         public AlarmSearchResult(SearchResult searchResult) {
-            super(getSearchProviderNamespace(), searchResult.getId(),
+            super(searchResult.getNamespace(), searchResult.getId(),
                   searchResult.getLabel(), searchResult.getQuery(),
                   searchResult.isCollapsible(), searchResult.isCollapsed());
-            this.setAlarmId(Integer.valueOf(searchResult.getId()));
-            this.setNodeLabel(searchResult.getLabel());
-            this.setSeverityQuery(false);
+            try {
+                this.setAlarmId(Integer.valueOf(searchResult.getId()));
+                this.setNodeLabel(searchResult.getLabel());
+                this.setSeverityQuery(false);
+            } catch (NumberFormatException e) {
+                this.setSeverityQuery(true);
+                this.setNodeLabel(searchResult.getId());
+                
+            }
         }
 
         public boolean isSeverityQuery() {
@@ -167,11 +173,12 @@ public class AlarmSearchProvider extends AbstractSearchProvider
             return results;
         }
 
-        List<OnmsAlarm> alarms = findAlarms(results, queryString);
+        List<OnmsAlarm> alarms = findAlarms(searchQuery.getNamespace(),results, queryString);
         if (!alarms.isEmpty()) {
             try {
                 LOG.debug("SearchProvider.query: building search result from set of alarms.");
-                Set<AlarmSearchResult> queryResults = buildResults(queryString,
+                Set<AlarmSearchResult> queryResults = buildResults(searchQuery.getNamespace(),
+                                                                   queryString,
                                                                    alarms);
 
                 // Put the alarm search results into a compatible result set
@@ -198,7 +205,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider
         return results;
     }
 
-    private Set<AlarmSearchResult> buildResults(final String queryString,
+    private Set<AlarmSearchResult> buildResults(final String namespace,final String queryString,
             List<OnmsAlarm> alarms) {
         Set<AlarmSearchResult> queryResults = new HashSet<>();
 
@@ -208,7 +215,8 @@ public class AlarmSearchProvider extends AbstractSearchProvider
             LOG.debug("SearchProvider.query: adding '{}' to set of results.",
                       nodeLabel);
 
-            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(),
+            AlarmSearchResult result = new AlarmSearchResult(namespace,
+                                                             alarm.getId(),
                                                              alarm.getNodeLabel(),
                                                              queryString,
                                                              !SearchResult.COLLAPSED);
@@ -217,7 +225,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider
         return queryResults;
     }
 
-    private List<OnmsAlarm> findAlarms(final List<SearchResult> results,
+    private List<OnmsAlarm> findAlarms(final String namespace,final List<SearchResult> results,
             final String queryString) {
         CriteriaBuilder bldr = new CriteriaBuilder(OnmsAlarm.class);
 
@@ -231,7 +239,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider
             alarms = alarmProvider.findMatchingAlarms(bldr.toCriteria());
 
             if (alarms.size() > 0) {
-                AlarmSearchResult result = new AlarmSearchResult(queryString);
+                AlarmSearchResult result = new AlarmSearchResult(namespace,queryString);
                 result.setSeverityQuery(true);
                 results.add(result);
             }
