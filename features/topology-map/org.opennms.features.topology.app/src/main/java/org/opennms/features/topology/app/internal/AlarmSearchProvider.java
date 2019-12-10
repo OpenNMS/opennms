@@ -65,17 +65,18 @@ import org.slf4j.LoggerFactory;
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  *
  */
-public class AlarmSearchProvider extends AbstractSearchProvider implements HistoryAwareSearchProvider {
+public class AlarmSearchProvider extends AbstractSearchProvider
+        implements HistoryAwareSearchProvider {
 
-	private static Logger LOG = LoggerFactory.getLogger(AlarmSearchProvider.class);
+    private static Logger LOG = LoggerFactory.getLogger(AlarmSearchProvider.class);
 
-	private AlarmProvider alarmProvider;
+    private AlarmProvider alarmProvider;
 
-	public AlarmSearchProvider(AlarmProvider alarmProvider) {
-		this.alarmProvider = Objects.requireNonNull(alarmProvider);
-	}
+    public AlarmSearchProvider(AlarmProvider alarmProvider) {
+        this.alarmProvider = Objects.requireNonNull(alarmProvider);
+    }
 
-	@Override
+    @Override
     public String getSearchProviderNamespace() {
         return AlarmHopCriteria.NAMESPACE;
     }
@@ -85,58 +86,62 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
         return AbstractNodesProvider.contributesToNodes(namespace);
     }
 
-	@Override
-	public Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
-		AlarmHopCriteria criteria = createCriteria(input);
-		return criteria;
-	}
+    @Override
+    public Criteria buildCriteriaFromQuery(SearchResult input,
+            GraphContainer container) {
+        AlarmHopCriteria criteria = createCriteria(input);
+        return criteria;
+    }
 
-	public class AlarmSearchResult extends SearchResult {
-        
+    public class AlarmSearchResult extends SearchResult {
+
         private Integer m_alarmId;
         private String m_nodeLabel;
         private boolean m_severityQuery = false;
-        
-        
+
         public Integer getAlarmId() {
             return m_alarmId;
         }
-        
+
         public void setAlarmId(Integer alarmId) {
             m_alarmId = alarmId;
         }
-        
+
         public String getNodeLabel() {
             return m_nodeLabel;
         }
-        
+
         public void setNodeLabel(String nodeLabel) {
             m_nodeLabel = nodeLabel;
         }
-        
-        public AlarmSearchResult (Integer alarmId, String nodeLabel, String query, boolean collapsed) {
-            super(getSearchProviderNamespace(), String.valueOf(alarmId), nodeLabel, query, SearchResult.COLLAPSIBLE, collapsed);
-            
+
+        public AlarmSearchResult(Integer alarmId, String nodeLabel,
+                String query, boolean collapsed) {
+            super(getSearchProviderNamespace(), String.valueOf(alarmId),
+                  nodeLabel, query, SearchResult.COLLAPSIBLE, collapsed);
+
             this.setAlarmId(alarmId);
             this.setNodeLabel(nodeLabel);
         }
-        
+
         public AlarmSearchResult(String id) {
-            super(getSearchProviderNamespace(), id, id, id, SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
+            super(getSearchProviderNamespace(), id, id, id,
+                  SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED);
         }
 
         public AlarmSearchResult(SearchResult searchResult) {
-            super(getSearchProviderNamespace(), searchResult.getId(), searchResult.getLabel(), searchResult.getQuery(),
-					searchResult.isCollapsible(), searchResult.isCollapsed());
+            super(getSearchProviderNamespace(), searchResult.getId(),
+                  searchResult.getLabel(), searchResult.getQuery(),
+                  searchResult.isCollapsible(), searchResult.isCollapsed());
             this.setAlarmId(Integer.valueOf(searchResult.getId()));
             this.setNodeLabel(searchResult.getLabel());
             this.setSeverityQuery(false);
         }
 
         public boolean isSeverityQuery() {
-            return m_severityQuery ;
+            return m_severityQuery;
         }
-        
+
         public void setSeverityQuery(boolean isSeverityQuery) {
             m_severityQuery = isSeverityQuery;
         }
@@ -144,65 +149,82 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
     }
 
     /**
-     * This method processes the <SearchQuery> that the user has typed and returns a <SearchResult> list
-     * of matching IP addresses as well as the query string itself, which is collapsible, to act
-     * as a subnet container.
-     * 
+     * This method processes the <SearchQuery> that the user has typed and
+     * returns a <SearchResult> list of matching IP addresses as well as the
+     * query string itself, which is collapsible, to act as a subnet
+     * container.
      */
     @Override
-    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-    	LOG.info("SearchProvider.query: called with search query: '{}'", searchQuery);
+    public List<SearchResult> query(SearchQuery searchQuery,
+            GraphContainer graphContainer) {
+        LOG.info("SearchProvider.query: called with search query: '{}'",
+                 searchQuery);
 
         final List<SearchResult> results = new ArrayList<>();
-		final String queryString = searchQuery.getQueryString();
-		if (!isAlarmQuery(queryString)) {
-			LOG.debug("SearchProvider.query: query not Alarm compatible.");
-			return results;
-		}
-		
-		List<OnmsAlarm> alarms = findAlarms(results, queryString);
-		if (!alarms.isEmpty()) {
+        final String queryString = searchQuery.getQueryString();
+        if (!isAlarmQuery(queryString)) {
+            LOG.debug("SearchProvider.query: query not Alarm compatible.");
+            return results;
+        }
+
+        List<OnmsAlarm> alarms = findAlarms(results, queryString);
+        if (!alarms.isEmpty()) {
             try {
                 LOG.debug("SearchProvider.query: building search result from set of alarms.");
-                Set<AlarmSearchResult> queryResults = buildResults(queryString, alarms);
+                Set<AlarmSearchResult> queryResults = buildResults(queryString,
+                                                                   alarms);
 
-                //Put the alarm search results into a compatible result set for the graph container
+                // Put the alarm search results into a compatible result set
+                // for the graph container
                 for (AlarmSearchResult result : queryResults) {
-                    if (findCriterion(result, graphContainer) == null) { // if not already added, add
+                    if (findCriterion(result, graphContainer) == null) { // if
+                                                                         // not
+                                                                         // already
+                                                                         // added,
+                                                                         // add
                         results.add(result);
                     }
                 }
-                LOG.debug("SearchProvider.query: found: '{}' alarms.", alarms.size());
+                LOG.debug("SearchProvider.query: found: '{}' alarms.",
+                          alarms.size());
             } catch (Exception e) {
-                LOG.error("SearchProvider-query: caught exception during alarm query: {}", e);
+                LOG.error("SearchProvider-query: caught exception during alarm query: {}",
+                          e);
             }
         }
 
-		LOG.info("SearchProvider.query: built search result with {} results.", results.size());
-		return results;
+        LOG.info("SearchProvider.query: built search result with {} results.",
+                 results.size());
+        return results;
     }
 
-    private Set<AlarmSearchResult> buildResults(final String queryString, List<OnmsAlarm> alarms) {
+    private Set<AlarmSearchResult> buildResults(final String queryString,
+            List<OnmsAlarm> alarms) {
         Set<AlarmSearchResult> queryResults = new HashSet<>();
 
         LOG.debug("SearchProvider.query: creating alarm results set.");
         for (OnmsAlarm alarm : alarms) {
             String nodeLabel = alarm.getNodeLabel();
-            LOG.debug("SearchProvider.query: adding '{}' to set of results.", nodeLabel);
+            LOG.debug("SearchProvider.query: adding '{}' to set of results.",
+                      nodeLabel);
 
-            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(), alarm.getNodeLabel(), queryString, !SearchResult.COLLAPSED);
+            AlarmSearchResult result = new AlarmSearchResult(alarm.getId(),
+                                                             alarm.getNodeLabel(),
+                                                             queryString,
+                                                             !SearchResult.COLLAPSED);
             queryResults.add(result);
         }
         return queryResults;
     }
 
-    private List<OnmsAlarm> findAlarms(final List<SearchResult> results, final String queryString) {
+    private List<OnmsAlarm> findAlarms(final List<SearchResult> results,
+            final String queryString) {
         CriteriaBuilder bldr = new CriteriaBuilder(OnmsAlarm.class);
-        
+
         OnmsSeverity severity = OnmsSeverity.get(queryString);
-        
+
         List<OnmsAlarm> alarms;
-        
+
         if (!OnmsSeverity.INDETERMINATE.equals(severity)) {
             bldr = new CriteriaBuilder(OnmsAlarm.class);
             bldr.eq("severity", severity);
@@ -214,81 +236,94 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
                 results.add(result);
             }
         } else {
-            
-            bldr.isNotNull("node").ilike("uei", "%"+queryString+"%").orderBy("node");
+
+            bldr.isNotNull("node").ilike("uei", "%" + queryString
+                    + "%").orderBy("node");
             alarms = alarmProvider.findMatchingAlarms(bldr.toCriteria());
 
         }
         return alarms;
     }
-    
 
     /**
      * Validate if the query string has any chance of being an Alarm query.
      * 
      * @param queryString
-     * @return true if the string is found in logmsg, description, UEI or severity
+     * @return true if the string is found in logmsg, description, UEI or
+     *         severity
      */
     private boolean isAlarmQuery(String queryString) {
-        //TODO: find a way to throttle the queries
+        // TODO: find a way to throttle the queries
         if (queryString.length() > 3) {
             return true;
         } else {
             return false;
         }
-	}
+    }
 
     @Override
     public boolean supportsPrefix(String searchPrefix) {
-        return supportsPrefix(AlarmHopCriteria.NAMESPACE+"=", searchPrefix);
+        return supportsPrefix(AlarmHopCriteria.NAMESPACE + "=", searchPrefix);
     }
 
-    //FIXME so that the focus button works.???
+    // FIXME so that the focus button works.???
     @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
-    	LOG.debug("SearchProvider.getVertexRefsBy: called with search result: '{}'", searchResult);
-    	Criteria criterion = findCriterion(searchResult, container);
-    	
-    	Set<VertexRef> vertices = ((AlarmHopCriteria)criterion).getVertices();
-    	LOG.debug("SearchProvider.getVertexRefsBy: found '{}' vertices.", vertices.size());
-		return vertices;
-    	
-    }
-    
-    @Override
-    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-    	LOG.trace("SearchProvider.onCenterSearchResult: called with search result: '{}'", searchResult);
-    	super.onCenterSearchResult(searchResult, graphContainer);
-    }
-    
-    @Override
-    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	LOG.trace("SearchProvider.onFocusSearchResult: called with search result: '{}'", searchResult);
-    	super.onFocusSearchResult(searchResult, operationContext);
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult,
+            GraphContainer container) {
+        LOG.debug("SearchProvider.getVertexRefsBy: called with search result: '{}'",
+                  searchResult);
+        Criteria criterion = findCriterion(searchResult, container);
+
+        Set<VertexRef> vertices = ((AlarmHopCriteria) criterion).getVertices();
+        LOG.debug("SearchProvider.getVertexRefsBy: found '{}' vertices.",
+                  vertices.size());
+        return vertices;
 
     }
-    
+
     @Override
-    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	LOG.debug("SearchProvider.onDefocusSearchResult: called with search result: '{}'", searchResult);
-    	super.onDefocusSearchResult(searchResult, operationContext);
+    public void onCenterSearchResult(SearchResult searchResult,
+            GraphContainer graphContainer) {
+        LOG.trace("SearchProvider.onCenterSearchResult: called with search result: '{}'",
+                  searchResult);
+        super.onCenterSearchResult(searchResult, graphContainer);
+    }
+
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult,
+            OperationContext operationContext) {
+        LOG.trace("SearchProvider.onFocusSearchResult: called with search result: '{}'",
+                  searchResult);
+        super.onFocusSearchResult(searchResult, operationContext);
 
     }
-    
+
+    @Override
+    public void onDefocusSearchResult(SearchResult searchResult,
+            OperationContext operationContext) {
+        LOG.debug("SearchProvider.onDefocusSearchResult: called with search result: '{}'",
+                  searchResult);
+        super.onDefocusSearchResult(searchResult, operationContext);
+
+    }
+
     /**
-     * Creates a criteria that provides <VertexRefs> matching the Alarm query from the users query
-     * stored in the <SearchResult> that was created by this class during the query method.  The SearchResult 
-     * and the Criterion use the AlarmID as the ID for dereferencing in the container.
+     * Creates a criteria that provides <VertexRefs> matching the Alarm query
+     * from the users query stored in the <SearchResult> that was created by
+     * this class during the query method. The SearchResult and the Criterion
+     * use the AlarmID as the ID for dereferencing in the container.
      */
-	@Override
-	public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider.addVertexHopCriteria: called with search result: '{}'", searchResult);
-        
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult,
+            GraphContainer container) {
+        LOG.debug("SearchProvider.addVertexHopCriteria: called with search result: '{}'",
+                  searchResult);
+
         AlarmSearchResult aResult = new AlarmSearchResult(searchResult);
-        
+
         String id = searchResult.getId();
         String query = searchResult.getQuery();
-        
+
         if (!OnmsSeverity.get(query).equals(OnmsSeverity.INDETERMINATE)) {
             aResult.setSeverityQuery(true);
         } else {
@@ -298,45 +333,54 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
 
         container.addCriteria(new AlarmHopCriteria(aResult, alarmProvider));
 
-        LOG.debug("SearchProvider.addVertexHop: adding hop criteria {}.", new AlarmHopCriteria(aResult, alarmProvider));
-	}
+        LOG.debug("SearchProvider.addVertexHop: adding hop criteria {}.",
+                  new AlarmHopCriteria(aResult, alarmProvider));
+    }
 
-	@Override
-	public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-    	LOG.debug("SearchProvider.removeVertexHopCriteria: called with search result: '{}'", searchResult);
-		Criteria criterion = findCriterion(searchResult, container);
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult,
+            GraphContainer container) {
+        LOG.debug("SearchProvider.removeVertexHopCriteria: called with search result: '{}'",
+                  searchResult);
+        Criteria criterion = findCriterion(searchResult, container);
 
-		if (criterion != null) {
-			container.removeCriteria(criterion);
-		}
-	}
-	
-	@Override
-	public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
-    	LOG.debug("SearchProvider.onToggleCollapse: called with search result: '{}'", searchResult);
-    	
-        CollapsibleCriteria criteria = getMatchingCriteriaById(graphContainer, searchResult.getId());
+        if (criterion != null) {
+            container.removeCriteria(criterion);
+        }
+    }
+
+    @Override
+    public void onToggleCollapse(SearchResult searchResult,
+            GraphContainer graphContainer) {
+        LOG.debug("SearchProvider.onToggleCollapse: called with search result: '{}'",
+                  searchResult);
+
+        CollapsibleCriteria criteria = getMatchingCriteriaById(graphContainer,
+                                                               searchResult.getId());
         if (criteria != null) {
             criteria.setCollapsed(!criteria.isCollapsed());
             graphContainer.redoLayout();
         }
-	}
+    }
 
-	//FIXME: Should only allow there to be one criteria in the container that matches a single node
-	private AlarmHopCriteria findCriterion(SearchResult result, GraphContainer container) {
-		org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-		for (Criteria criterion : criteria) {
-			if (criterion instanceof AlarmHopCriteria) {
-				AlarmSearchResult searchResult = ((AlarmHopCriteria) criterion).getSearchResult();
-				if (searchResult.equals(result)) {
-					return (AlarmHopCriteria) criterion;
-				}
-			}
-		}
-	    return null;
-	}
+    // FIXME: Should only allow there to be one criteria in the container that
+    // matches a single node
+    private AlarmHopCriteria findCriterion(SearchResult result,
+            GraphContainer container) {
+        org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
+        for (Criteria criterion : criteria) {
+            if (criterion instanceof AlarmHopCriteria) {
+                AlarmSearchResult searchResult = ((AlarmHopCriteria) criterion).getSearchResult();
+                if (searchResult.equals(result)) {
+                    return (AlarmHopCriteria) criterion;
+                }
+            }
+        }
+        return null;
+    }
 
-    private static CollapsibleCriteria getMatchingCriteriaById(GraphContainer graphContainer, String id) {
+    private static CollapsibleCriteria getMatchingCriteriaById(
+            GraphContainer graphContainer, String id) {
         CollapsibleCriteria[] criteria = VertexHopGraphProvider.getCollapsibleCriteriaForContainer(graphContainer);
         for (CollapsibleCriteria criterion : criteria) {
             if (criterion.getId().equals(id)) {
@@ -347,6 +391,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
     }
 
     private AlarmHopCriteria createCriteria(SearchResult searchResult) {
-		return new AlarmHopCriteria(new AlarmSearchResult(searchResult), alarmProvider);
-	}
+        return new AlarmHopCriteria(new AlarmSearchResult(searchResult),
+                                    alarmProvider);
+    }
 }
