@@ -104,9 +104,19 @@ public final class GenericEdge extends GenericElement implements Edge {
         private VertexRef target;
         
         private GenericEdgeBuilder() {}
-        
+
+        public GenericEdgeBuilder source(String namespace, String id) {
+            source(new VertexRef(namespace, id));
+            return this;
+        }
+
         public GenericEdgeBuilder source(VertexRef source) {
             this.source = source;
+            return this;
+        }
+
+        public GenericEdgeBuilder target(String namespace, String id) {
+            target(new VertexRef(namespace, id));
             return this;
         }
         
