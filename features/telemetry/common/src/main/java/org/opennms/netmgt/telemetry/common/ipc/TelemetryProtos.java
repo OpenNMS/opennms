@@ -50,12 +50,20 @@ public final class TelemetryProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>uint64 timestamp = 1;</code>
+     * <code>required uint64 timestamp = 1;</code>
+     */
+    boolean hasTimestamp();
+    /**
+     * <code>required uint64 timestamp = 1;</code>
      */
     long getTimestamp();
 
     /**
-     * <code>bytes bytes = 2;</code>
+     * <code>required bytes bytes = 2;</code>
+     */
+    boolean hasBytes();
+    /**
+     * <code>required bytes bytes = 2;</code>
      */
     com.google.protobuf.ByteString getBytes();
   }
@@ -101,17 +109,17 @@ public final class TelemetryProtos {
               done = true;
               break;
             case 8: {
-
+              bitField0_ |= 0x00000001;
               timestamp_ = input.readUInt64();
               break;
             }
             case 18: {
-
+              bitField0_ |= 0x00000002;
               bytes_ = input.readBytes();
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -142,10 +150,17 @@ public final class TelemetryProtos {
               org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.class, org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.Builder.class);
     }
 
+    private int bitField0_;
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
     private long timestamp_;
     /**
-     * <code>uint64 timestamp = 1;</code>
+     * <code>required uint64 timestamp = 1;</code>
+     */
+    public boolean hasTimestamp() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required uint64 timestamp = 1;</code>
      */
     public long getTimestamp() {
       return timestamp_;
@@ -154,7 +169,13 @@ public final class TelemetryProtos {
     public static final int BYTES_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString bytes_;
     /**
-     * <code>bytes bytes = 2;</code>
+     * <code>required bytes bytes = 2;</code>
+     */
+    public boolean hasBytes() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required bytes bytes = 2;</code>
      */
     public com.google.protobuf.ByteString getBytes() {
       return bytes_;
@@ -172,6 +193,14 @@ public final class TelemetryProtos {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasTimestamp()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasBytes()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -179,10 +208,10 @@ public final class TelemetryProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (timestamp_ != 0L) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeUInt64(1, timestamp_);
       }
-      if (!bytes_.isEmpty()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, bytes_);
       }
       unknownFields.writeTo(output);
@@ -194,11 +223,11 @@ public final class TelemetryProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (timestamp_ != 0L) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(1, timestamp_);
       }
-      if (!bytes_.isEmpty()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, bytes_);
       }
@@ -218,10 +247,16 @@ public final class TelemetryProtos {
       org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage other = (org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage) obj;
 
       boolean result = true;
-      result = result && (getTimestamp()
-          == other.getTimestamp());
-      result = result && getBytes()
-          .equals(other.getBytes());
+      result = result && (hasTimestamp() == other.hasTimestamp());
+      if (hasTimestamp()) {
+        result = result && (getTimestamp()
+            == other.getTimestamp());
+      }
+      result = result && (hasBytes() == other.hasBytes());
+      if (hasBytes()) {
+        result = result && getBytes()
+            .equals(other.getBytes());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -233,11 +268,15 @@ public final class TelemetryProtos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getTimestamp());
-      hash = (37 * hash) + BYTES_FIELD_NUMBER;
-      hash = (53 * hash) + getBytes().hashCode();
+      if (hasTimestamp()) {
+        hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getTimestamp());
+      }
+      if (hasBytes()) {
+        hash = (37 * hash) + BYTES_FIELD_NUMBER;
+        hash = (53 * hash) + getBytes().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -372,9 +411,9 @@ public final class TelemetryProtos {
       public Builder clear() {
         super.clear();
         timestamp_ = 0L;
-
+        bitField0_ = (bitField0_ & ~0x00000001);
         bytes_ = com.google.protobuf.ByteString.EMPTY;
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -401,8 +440,17 @@ public final class TelemetryProtos {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage buildPartial() {
         org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage result = new org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
         result.timestamp_ = timestamp_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.bytes_ = bytes_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -451,10 +499,10 @@ public final class TelemetryProtos {
 
       public Builder mergeFrom(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage other) {
         if (other == org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.getDefaultInstance()) return this;
-        if (other.getTimestamp() != 0L) {
+        if (other.hasTimestamp()) {
           setTimestamp(other.getTimestamp());
         }
-        if (other.getBytes() != com.google.protobuf.ByteString.EMPTY) {
+        if (other.hasBytes()) {
           setBytes(other.getBytes());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -464,6 +512,12 @@ public final class TelemetryProtos {
 
       @java.lang.Override
       public final boolean isInitialized() {
+        if (!hasTimestamp()) {
+          return false;
+        }
+        if (!hasBytes()) {
+          return false;
+        }
         return true;
       }
 
@@ -485,28 +539,35 @@ public final class TelemetryProtos {
         }
         return this;
       }
+      private int bitField0_;
 
       private long timestamp_ ;
       /**
-       * <code>uint64 timestamp = 1;</code>
+       * <code>required uint64 timestamp = 1;</code>
+       */
+      public boolean hasTimestamp() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required uint64 timestamp = 1;</code>
        */
       public long getTimestamp() {
         return timestamp_;
       }
       /**
-       * <code>uint64 timestamp = 1;</code>
+       * <code>required uint64 timestamp = 1;</code>
        */
       public Builder setTimestamp(long value) {
-        
+        bitField0_ |= 0x00000001;
         timestamp_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint64 timestamp = 1;</code>
+       * <code>required uint64 timestamp = 1;</code>
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -514,28 +575,34 @@ public final class TelemetryProtos {
 
       private com.google.protobuf.ByteString bytes_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes bytes = 2;</code>
+       * <code>required bytes bytes = 2;</code>
+       */
+      public boolean hasBytes() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required bytes bytes = 2;</code>
        */
       public com.google.protobuf.ByteString getBytes() {
         return bytes_;
       }
       /**
-       * <code>bytes bytes = 2;</code>
+       * <code>required bytes bytes = 2;</code>
        */
       public Builder setBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000002;
         bytes_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes bytes = 2;</code>
+       * <code>required bytes bytes = 2;</code>
        */
       public Builder clearBytes() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         bytes_ = getDefaultInstance().getBytes();
         onChanged();
         return this;
@@ -543,7 +610,7 @@ public final class TelemetryProtos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -566,7 +633,7 @@ public final class TelemetryProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TelemetryMessage>
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<TelemetryMessage>
         PARSER = new com.google.protobuf.AbstractParser<TelemetryMessage>() {
       @java.lang.Override
       public TelemetryMessage parsePartialFrom(
@@ -598,42 +665,62 @@ public final class TelemetryProtos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string location = 1;</code>
+     * <code>required string location = 1;</code>
+     */
+    boolean hasLocation();
+    /**
+     * <code>required string location = 1;</code>
      */
     java.lang.String getLocation();
     /**
-     * <code>string location = 1;</code>
+     * <code>required string location = 1;</code>
      */
     com.google.protobuf.ByteString
         getLocationBytes();
 
     /**
-     * <code>string system_id = 2;</code>
+     * <code>required string system_id = 2;</code>
+     */
+    boolean hasSystemId();
+    /**
+     * <code>required string system_id = 2;</code>
      */
     java.lang.String getSystemId();
     /**
-     * <code>string system_id = 2;</code>
+     * <code>required string system_id = 2;</code>
      */
     com.google.protobuf.ByteString
         getSystemIdBytes();
 
     /**
-     * <code>string source_address = 3;</code>
+     * <code>optional string source_address = 3;</code>
+     */
+    boolean hasSourceAddress();
+    /**
+     * <code>optional string source_address = 3;</code>
      */
     java.lang.String getSourceAddress();
     /**
-     * <code>string source_address = 3;</code>
+     * <code>optional string source_address = 3;</code>
      */
     com.google.protobuf.ByteString
         getSourceAddressBytes();
 
     /**
-     * <code>uint32 source_port = 4;</code>
+     * <code>optional uint32 source_port = 4;</code>
+     */
+    boolean hasSourcePort();
+    /**
+     * <code>optional uint32 source_port = 4;</code>
      */
     int getSourcePort();
 
     /**
-     * <code>bool useRoutingKey = 5;</code>
+     * <code>optional bool useRoutingKey = 5;</code>
+     */
+    boolean hasUseRoutingKey();
+    /**
+     * <code>optional bool useRoutingKey = 5;</code>
      */
     boolean getUseRoutingKey();
 
@@ -707,30 +794,30 @@ public final class TelemetryProtos {
               done = true;
               break;
             case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              location_ = s;
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              location_ = bs;
               break;
             }
             case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              systemId_ = s;
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              systemId_ = bs;
               break;
             }
             case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              sourceAddress_ = s;
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000004;
+              sourceAddress_ = bs;
               break;
             }
             case 32: {
-
+              bitField0_ |= 0x00000008;
               sourcePort_ = input.readUInt32();
               break;
             }
             case 40: {
-
+              bitField0_ |= 0x00000010;
               useRoutingKey_ = input.readBool();
               break;
             }
@@ -740,11 +827,11 @@ public final class TelemetryProtos {
                 mutable_bitField0_ |= 0x00000020;
               }
               message_.add(
-                  input.readMessage(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.parser(), extensionRegistry));
+                  input.readMessage(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage.PARSER, extensionRegistry));
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -782,7 +869,13 @@ public final class TelemetryProtos {
     public static final int LOCATION_FIELD_NUMBER = 1;
     private volatile java.lang.Object location_;
     /**
-     * <code>string location = 1;</code>
+     * <code>required string location = 1;</code>
+     */
+    public boolean hasLocation() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string location = 1;</code>
      */
     public java.lang.String getLocation() {
       java.lang.Object ref = location_;
@@ -792,12 +885,14 @@ public final class TelemetryProtos {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        location_ = s;
+        if (bs.isValidUtf8()) {
+          location_ = s;
+        }
         return s;
       }
     }
     /**
-     * <code>string location = 1;</code>
+     * <code>required string location = 1;</code>
      */
     public com.google.protobuf.ByteString
         getLocationBytes() {
@@ -816,7 +911,13 @@ public final class TelemetryProtos {
     public static final int SYSTEM_ID_FIELD_NUMBER = 2;
     private volatile java.lang.Object systemId_;
     /**
-     * <code>string system_id = 2;</code>
+     * <code>required string system_id = 2;</code>
+     */
+    public boolean hasSystemId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string system_id = 2;</code>
      */
     public java.lang.String getSystemId() {
       java.lang.Object ref = systemId_;
@@ -826,12 +927,14 @@ public final class TelemetryProtos {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        systemId_ = s;
+        if (bs.isValidUtf8()) {
+          systemId_ = s;
+        }
         return s;
       }
     }
     /**
-     * <code>string system_id = 2;</code>
+     * <code>required string system_id = 2;</code>
      */
     public com.google.protobuf.ByteString
         getSystemIdBytes() {
@@ -850,7 +953,13 @@ public final class TelemetryProtos {
     public static final int SOURCE_ADDRESS_FIELD_NUMBER = 3;
     private volatile java.lang.Object sourceAddress_;
     /**
-     * <code>string source_address = 3;</code>
+     * <code>optional string source_address = 3;</code>
+     */
+    public boolean hasSourceAddress() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string source_address = 3;</code>
      */
     public java.lang.String getSourceAddress() {
       java.lang.Object ref = sourceAddress_;
@@ -860,12 +969,14 @@ public final class TelemetryProtos {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        sourceAddress_ = s;
+        if (bs.isValidUtf8()) {
+          sourceAddress_ = s;
+        }
         return s;
       }
     }
     /**
-     * <code>string source_address = 3;</code>
+     * <code>optional string source_address = 3;</code>
      */
     public com.google.protobuf.ByteString
         getSourceAddressBytes() {
@@ -884,7 +995,13 @@ public final class TelemetryProtos {
     public static final int SOURCE_PORT_FIELD_NUMBER = 4;
     private int sourcePort_;
     /**
-     * <code>uint32 source_port = 4;</code>
+     * <code>optional uint32 source_port = 4;</code>
+     */
+    public boolean hasSourcePort() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional uint32 source_port = 4;</code>
      */
     public int getSourcePort() {
       return sourcePort_;
@@ -893,7 +1010,13 @@ public final class TelemetryProtos {
     public static final int USEROUTINGKEY_FIELD_NUMBER = 5;
     private boolean useRoutingKey_;
     /**
-     * <code>bool useRoutingKey = 5;</code>
+     * <code>optional bool useRoutingKey = 5;</code>
+     */
+    public boolean hasUseRoutingKey() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional bool useRoutingKey = 5;</code>
      */
     public boolean getUseRoutingKey() {
       return useRoutingKey_;
@@ -941,6 +1064,20 @@ public final class TelemetryProtos {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasLocation()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSystemId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getMessageCount(); i++) {
+        if (!getMessage(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -948,19 +1085,19 @@ public final class TelemetryProtos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getLocationBytes().isEmpty()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, location_);
       }
-      if (!getSystemIdBytes().isEmpty()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, systemId_);
       }
-      if (!getSourceAddressBytes().isEmpty()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, sourceAddress_);
       }
-      if (sourcePort_ != 0) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(4, sourcePort_);
       }
-      if (useRoutingKey_ != false) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBool(5, useRoutingKey_);
       }
       for (int i = 0; i < message_.size(); i++) {
@@ -975,20 +1112,20 @@ public final class TelemetryProtos {
       if (size != -1) return size;
 
       size = 0;
-      if (!getLocationBytes().isEmpty()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, location_);
       }
-      if (!getSystemIdBytes().isEmpty()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, systemId_);
       }
-      if (!getSourceAddressBytes().isEmpty()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, sourceAddress_);
       }
-      if (sourcePort_ != 0) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, sourcePort_);
       }
-      if (useRoutingKey_ != false) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(5, useRoutingKey_);
       }
@@ -1012,16 +1149,31 @@ public final class TelemetryProtos {
       org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog other = (org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog) obj;
 
       boolean result = true;
-      result = result && getLocation()
-          .equals(other.getLocation());
-      result = result && getSystemId()
-          .equals(other.getSystemId());
-      result = result && getSourceAddress()
-          .equals(other.getSourceAddress());
-      result = result && (getSourcePort()
-          == other.getSourcePort());
-      result = result && (getUseRoutingKey()
-          == other.getUseRoutingKey());
+      result = result && (hasLocation() == other.hasLocation());
+      if (hasLocation()) {
+        result = result && getLocation()
+            .equals(other.getLocation());
+      }
+      result = result && (hasSystemId() == other.hasSystemId());
+      if (hasSystemId()) {
+        result = result && getSystemId()
+            .equals(other.getSystemId());
+      }
+      result = result && (hasSourceAddress() == other.hasSourceAddress());
+      if (hasSourceAddress()) {
+        result = result && getSourceAddress()
+            .equals(other.getSourceAddress());
+      }
+      result = result && (hasSourcePort() == other.hasSourcePort());
+      if (hasSourcePort()) {
+        result = result && (getSourcePort()
+            == other.getSourcePort());
+      }
+      result = result && (hasUseRoutingKey() == other.hasUseRoutingKey());
+      if (hasUseRoutingKey()) {
+        result = result && (getUseRoutingKey()
+            == other.getUseRoutingKey());
+      }
       result = result && getMessageList()
           .equals(other.getMessageList());
       result = result && unknownFields.equals(other.unknownFields);
@@ -1035,17 +1187,27 @@ public final class TelemetryProtos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + LOCATION_FIELD_NUMBER;
-      hash = (53 * hash) + getLocation().hashCode();
-      hash = (37 * hash) + SYSTEM_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getSystemId().hashCode();
-      hash = (37 * hash) + SOURCE_ADDRESS_FIELD_NUMBER;
-      hash = (53 * hash) + getSourceAddress().hashCode();
-      hash = (37 * hash) + SOURCE_PORT_FIELD_NUMBER;
-      hash = (53 * hash) + getSourcePort();
-      hash = (37 * hash) + USEROUTINGKEY_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getUseRoutingKey());
+      if (hasLocation()) {
+        hash = (37 * hash) + LOCATION_FIELD_NUMBER;
+        hash = (53 * hash) + getLocation().hashCode();
+      }
+      if (hasSystemId()) {
+        hash = (37 * hash) + SYSTEM_ID_FIELD_NUMBER;
+        hash = (53 * hash) + getSystemId().hashCode();
+      }
+      if (hasSourceAddress()) {
+        hash = (37 * hash) + SOURCE_ADDRESS_FIELD_NUMBER;
+        hash = (53 * hash) + getSourceAddress().hashCode();
+      }
+      if (hasSourcePort()) {
+        hash = (37 * hash) + SOURCE_PORT_FIELD_NUMBER;
+        hash = (53 * hash) + getSourcePort();
+      }
+      if (hasUseRoutingKey()) {
+        hash = (37 * hash) + USEROUTINGKEY_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getUseRoutingKey());
+      }
       if (getMessageCount() > 0) {
         hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
         hash = (53 * hash) + getMessageList().hashCode();
@@ -1185,15 +1347,15 @@ public final class TelemetryProtos {
       public Builder clear() {
         super.clear();
         location_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000001);
         systemId_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         sourceAddress_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000004);
         sourcePort_ = 0;
-
+        bitField0_ = (bitField0_ & ~0x00000008);
         useRoutingKey_ = false;
-
+        bitField0_ = (bitField0_ & ~0x00000010);
         if (messageBuilder_ == null) {
           message_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000020);
@@ -1228,10 +1390,25 @@ public final class TelemetryProtos {
         org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog result = new org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
         result.location_ = location_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.systemId_ = systemId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
         result.sourceAddress_ = sourceAddress_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
         result.sourcePort_ = sourcePort_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
         result.useRoutingKey_ = useRoutingKey_;
         if (messageBuilder_ == null) {
           if (((bitField0_ & 0x00000020) == 0x00000020)) {
@@ -1291,22 +1468,25 @@ public final class TelemetryProtos {
 
       public Builder mergeFrom(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog other) {
         if (other == org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog.getDefaultInstance()) return this;
-        if (!other.getLocation().isEmpty()) {
+        if (other.hasLocation()) {
+          bitField0_ |= 0x00000001;
           location_ = other.location_;
           onChanged();
         }
-        if (!other.getSystemId().isEmpty()) {
+        if (other.hasSystemId()) {
+          bitField0_ |= 0x00000002;
           systemId_ = other.systemId_;
           onChanged();
         }
-        if (!other.getSourceAddress().isEmpty()) {
+        if (other.hasSourceAddress()) {
+          bitField0_ |= 0x00000004;
           sourceAddress_ = other.sourceAddress_;
           onChanged();
         }
-        if (other.getSourcePort() != 0) {
+        if (other.hasSourcePort()) {
           setSourcePort(other.getSourcePort());
         }
-        if (other.getUseRoutingKey() != false) {
+        if (other.hasUseRoutingKey()) {
           setUseRoutingKey(other.getUseRoutingKey());
         }
         if (messageBuilder_ == null) {
@@ -1342,6 +1522,17 @@ public final class TelemetryProtos {
 
       @java.lang.Override
       public final boolean isInitialized() {
+        if (!hasLocation()) {
+          return false;
+        }
+        if (!hasSystemId()) {
+          return false;
+        }
+        for (int i = 0; i < getMessageCount(); i++) {
+          if (!getMessage(i).isInitialized()) {
+            return false;
+          }
+        }
         return true;
       }
 
@@ -1367,7 +1558,13 @@ public final class TelemetryProtos {
 
       private java.lang.Object location_ = "";
       /**
-       * <code>string location = 1;</code>
+       * <code>required string location = 1;</code>
+       */
+      public boolean hasLocation() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string location = 1;</code>
        */
       public java.lang.String getLocation() {
         java.lang.Object ref = location_;
@@ -1375,14 +1572,16 @@ public final class TelemetryProtos {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          location_ = s;
+          if (bs.isValidUtf8()) {
+            location_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string location = 1;</code>
+       * <code>required string location = 1;</code>
        */
       public com.google.protobuf.ByteString
           getLocationBytes() {
@@ -1398,37 +1597,36 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>string location = 1;</code>
+       * <code>required string location = 1;</code>
        */
       public Builder setLocation(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000001;
         location_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string location = 1;</code>
+       * <code>required string location = 1;</code>
        */
       public Builder clearLocation() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         location_ = getDefaultInstance().getLocation();
         onChanged();
         return this;
       }
       /**
-       * <code>string location = 1;</code>
+       * <code>required string location = 1;</code>
        */
       public Builder setLocationBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  checkByteStringIsUtf8(value);
-        
+  bitField0_ |= 0x00000001;
         location_ = value;
         onChanged();
         return this;
@@ -1436,7 +1634,13 @@ public final class TelemetryProtos {
 
       private java.lang.Object systemId_ = "";
       /**
-       * <code>string system_id = 2;</code>
+       * <code>required string system_id = 2;</code>
+       */
+      public boolean hasSystemId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string system_id = 2;</code>
        */
       public java.lang.String getSystemId() {
         java.lang.Object ref = systemId_;
@@ -1444,14 +1648,16 @@ public final class TelemetryProtos {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          systemId_ = s;
+          if (bs.isValidUtf8()) {
+            systemId_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string system_id = 2;</code>
+       * <code>required string system_id = 2;</code>
        */
       public com.google.protobuf.ByteString
           getSystemIdBytes() {
@@ -1467,37 +1673,36 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>string system_id = 2;</code>
+       * <code>required string system_id = 2;</code>
        */
       public Builder setSystemId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000002;
         systemId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string system_id = 2;</code>
+       * <code>required string system_id = 2;</code>
        */
       public Builder clearSystemId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         systemId_ = getDefaultInstance().getSystemId();
         onChanged();
         return this;
       }
       /**
-       * <code>string system_id = 2;</code>
+       * <code>required string system_id = 2;</code>
        */
       public Builder setSystemIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  checkByteStringIsUtf8(value);
-        
+  bitField0_ |= 0x00000002;
         systemId_ = value;
         onChanged();
         return this;
@@ -1505,7 +1710,13 @@ public final class TelemetryProtos {
 
       private java.lang.Object sourceAddress_ = "";
       /**
-       * <code>string source_address = 3;</code>
+       * <code>optional string source_address = 3;</code>
+       */
+      public boolean hasSourceAddress() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string source_address = 3;</code>
        */
       public java.lang.String getSourceAddress() {
         java.lang.Object ref = sourceAddress_;
@@ -1513,14 +1724,16 @@ public final class TelemetryProtos {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          sourceAddress_ = s;
+          if (bs.isValidUtf8()) {
+            sourceAddress_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string source_address = 3;</code>
+       * <code>optional string source_address = 3;</code>
        */
       public com.google.protobuf.ByteString
           getSourceAddressBytes() {
@@ -1536,37 +1749,36 @@ public final class TelemetryProtos {
         }
       }
       /**
-       * <code>string source_address = 3;</code>
+       * <code>optional string source_address = 3;</code>
        */
       public Builder setSourceAddress(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000004;
         sourceAddress_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string source_address = 3;</code>
+       * <code>optional string source_address = 3;</code>
        */
       public Builder clearSourceAddress() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         sourceAddress_ = getDefaultInstance().getSourceAddress();
         onChanged();
         return this;
       }
       /**
-       * <code>string source_address = 3;</code>
+       * <code>optional string source_address = 3;</code>
        */
       public Builder setSourceAddressBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  checkByteStringIsUtf8(value);
-        
+  bitField0_ |= 0x00000004;
         sourceAddress_ = value;
         onChanged();
         return this;
@@ -1574,25 +1786,31 @@ public final class TelemetryProtos {
 
       private int sourcePort_ ;
       /**
-       * <code>uint32 source_port = 4;</code>
+       * <code>optional uint32 source_port = 4;</code>
+       */
+      public boolean hasSourcePort() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional uint32 source_port = 4;</code>
        */
       public int getSourcePort() {
         return sourcePort_;
       }
       /**
-       * <code>uint32 source_port = 4;</code>
+       * <code>optional uint32 source_port = 4;</code>
        */
       public Builder setSourcePort(int value) {
-        
+        bitField0_ |= 0x00000008;
         sourcePort_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 source_port = 4;</code>
+       * <code>optional uint32 source_port = 4;</code>
        */
       public Builder clearSourcePort() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         sourcePort_ = 0;
         onChanged();
         return this;
@@ -1600,25 +1818,31 @@ public final class TelemetryProtos {
 
       private boolean useRoutingKey_ ;
       /**
-       * <code>bool useRoutingKey = 5;</code>
+       * <code>optional bool useRoutingKey = 5;</code>
+       */
+      public boolean hasUseRoutingKey() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional bool useRoutingKey = 5;</code>
        */
       public boolean getUseRoutingKey() {
         return useRoutingKey_;
       }
       /**
-       * <code>bool useRoutingKey = 5;</code>
+       * <code>optional bool useRoutingKey = 5;</code>
        */
       public Builder setUseRoutingKey(boolean value) {
-        
+        bitField0_ |= 0x00000010;
         useRoutingKey_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool useRoutingKey = 5;</code>
+       * <code>optional bool useRoutingKey = 5;</code>
        */
       public Builder clearUseRoutingKey() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         useRoutingKey_ = false;
         onChanged();
         return this;
@@ -1866,7 +2090,7 @@ public final class TelemetryProtos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1889,7 +2113,7 @@ public final class TelemetryProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TelemetryMessageLog>
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<TelemetryMessageLog>
         PARSER = new com.google.protobuf.AbstractParser<TelemetryMessageLog>() {
       @java.lang.Override
       public TelemetryMessageLog parsePartialFrom(
@@ -1936,13 +2160,13 @@ public final class TelemetryProtos {
   static {
     java.lang.String[] descriptorData = {
       "\n\017telemetry.proto\"4\n\020TelemetryMessage\022\021\n" +
-      "\ttimestamp\030\001 \001(\004\022\r\n\005bytes\030\002 \001(\014\"\242\001\n\023Tele" +
-      "metryMessageLog\022\020\n\010location\030\001 \001(\t\022\021\n\tsys" +
-      "tem_id\030\002 \001(\t\022\026\n\016source_address\030\003 \001(\t\022\023\n\013" +
+      "\ttimestamp\030\001 \002(\004\022\r\n\005bytes\030\002 \002(\014\"\242\001\n\023Tele" +
+      "metryMessageLog\022\020\n\010location\030\001 \002(\t\022\021\n\tsys" +
+      "tem_id\030\002 \002(\t\022\026\n\016source_address\030\003 \001(\t\022\023\n\013" +
       "source_port\030\004 \001(\r\022\025\n\ruseRoutingKey\030\005 \001(\010" +
       "\022\"\n\007message\030\006 \003(\0132\021.TelemetryMessageB:\n\'" +
       "org.opennms.netmgt.telemetry.common.ipcB" +
-      "\017TelemetryProtosb\006proto3"
+      "\017TelemetryProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
