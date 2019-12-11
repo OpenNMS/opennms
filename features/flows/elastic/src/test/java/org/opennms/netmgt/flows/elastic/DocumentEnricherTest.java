@@ -29,11 +29,10 @@
 package org.opennms.netmgt.flows.elastic;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +72,7 @@ public class DocumentEnricherTest {
         final List<FlowDocument> documents = Lists.newArrayList();
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.2"));
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.3"));
-        enricher.enrich(documents, new FlowSource("Default", "127.0.0.1"));
+        enricher.enrich(documents.stream().map(TestFlow::new).collect(Collectors.toList()), new FlowSource("Default", "127.0.0.1", null));
 
         // get is also called for each save, so we account for those as well
         assertEquals(6, nodeDaoGetCounter.get());

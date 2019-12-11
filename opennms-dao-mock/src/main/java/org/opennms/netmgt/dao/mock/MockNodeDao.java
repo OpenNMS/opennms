@@ -499,5 +499,8 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         return null;
     }
 
-
+    @Override
+    public List<OnmsNode> findNodeWithMetaData(String context, String key, String value) {
+        return Collections.emptyList();
+    }
 }
