@@ -35,9 +35,9 @@ public class OnmsTopologyProtocolComparator implements Comparator<OnmsTopologyPr
     @Override
     public int compare(OnmsTopologyProtocol o1, OnmsTopologyProtocol o2) {
         if (o1.getLayer().getPosition() != o2.getLayer().getPosition()) {
-            return o1.getLayer().getPosition() - o2.getLayer().getPosition();
+            return o2.getLayer().getPosition() - o1.getLayer().getPosition();
         }            
-        return o1.getId().compareTo(o2.getId());
+        return o2.getId().compareTo(o1.getId());
     }
     
 }
