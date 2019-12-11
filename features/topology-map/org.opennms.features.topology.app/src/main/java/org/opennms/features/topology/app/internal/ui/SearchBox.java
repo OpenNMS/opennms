@@ -339,7 +339,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
         if("*".equals(query) || "".equals(query)){
             return new AllSearchQuery(namespace,query);
         } else {
-            return new ContainsSearchQuery(namespace,query);
+            return new ContainsSearchQuery(namespace, query);
         }
     }
 
@@ -417,8 +417,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     }
 
     private static class ContainsSearchQuery extends AbstractSearchQuery implements SearchQuery {
-        public ContainsSearchQuery(String namespace,String query) {
-            super(namespace,query);
+        public ContainsSearchQuery(String namespace, String query) {
+            super(namespace, query);
         }
 
         @Override
@@ -429,8 +429,8 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     private static class AllSearchQuery extends AbstractSearchQuery{
 
-        public AllSearchQuery(String namespace,String queryString) {
-            super(namespace,queryString);
+        public AllSearchQuery(String namespace, String queryString) {
+            super(namespace, queryString);
         }
 
         @Override
