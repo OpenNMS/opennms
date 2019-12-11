@@ -171,6 +171,10 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
 
     @Override
     public Optional<String> getRoutingKey(final TelemetryProtos.TelemetryMessageLog message) {
+        // Allow the queue configuration to drive whether or not the routing key is used. Default to true.
+        if (!queueConfig.getUseRoutingKey().orElse(true)) {
+            return Optional.empty();
+        }
         return Optional.of(String.format("%s@%s:%d", message.getLocation(), message.getSourceAddress(), message.getSourcePort()));
     }
 
