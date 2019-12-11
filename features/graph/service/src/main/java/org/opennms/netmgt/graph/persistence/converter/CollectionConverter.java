@@ -54,7 +54,7 @@ import com.google.gson.JsonSerializer;
 /**
  * Transforms a {@link java.util.Collection} from and to a String to be persisted/serialized to the database. <br/>
  * The {@link java.util.Collection} may only contain elements of a type that is supported by the {@link ConverterService}.<br/>
- * The conversation follows the following pattern:<br/>
+ * The conversion follows the following pattern:<br/>
  * {@link java.util.Collection} <-> {@link SerializedCollection} <-> JSON String.
  * The {@link SerializedCollection} is the Java representation of the JSON object.<br/>
  * The elements in the Collection are converted to Strings using the {@link ConverterService}.
