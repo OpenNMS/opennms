@@ -35,7 +35,7 @@ The following rules apply to the _Generic Graph Model_:
 
 - Each Graph container must be uniquely identified.
   This identifier is called a `container id`
-- Each Graph must be uniquely identified overall graphs (meaning the namespace must be unique through the system).
+- Each Graph must be uniquely identified over all graphs (meaning the namespace must be unique throughout the system).
   This identifier is called a `namespace`.
 - Each Vertex and Edge must be uniquely identified by an identifier.
   This identifier is called an `id`.
