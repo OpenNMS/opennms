@@ -32,8 +32,11 @@ import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 
-// Graph Persistence... only for access of underlying persistence (hibernate)
-// To access all graphs (GraphProviders), use the GraphService
+/**
+ * The {@link GraphRepository} allows persisting any given {@link ImmutableGraphContainer} or {@link GraphContainerInfo}.
+ *
+ * Please ensure that the implementing side knows how to persist the property values accordingly (e.g. custom types)
+ */
 public interface GraphRepository {
 
     void save(ImmutableGraphContainer graphContainer);
@@ -45,14 +48,5 @@ public interface GraphRepository {
     GraphContainerInfo findContainerInfoById(String containerId);
 
     void deleteContainer(String containerId);
-
-    // TODO Remove these
-//    <V extends Vertex, E extends Edge<V>, G extends Graph<V, E>> void save(G graph);
-//
-//    GenericGraph findByNamespace(String namespace);
-//
-//    GraphInfo findGraphInfo(String namespace);
-//
-//    <G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> G findByNamespace(final String namespace, final Function<GenericGraph, G> transformer);
 
 }
