@@ -109,7 +109,7 @@ public class CollectionConverter implements Converter<Collection<?>> {
         } else if (ImmutableSet.class.isAssignableFrom(type)) {
             return ImmutableSet.copyOf(values);
         } else {
-            LOG.warn("Cannot recreate {}, will use ImmutableList instead.");
+            LOG.warn("Cannot recreate {}, will use ImmutableList instead.", type);
             return ImmutableList.copyOf(values);
         }
     }
