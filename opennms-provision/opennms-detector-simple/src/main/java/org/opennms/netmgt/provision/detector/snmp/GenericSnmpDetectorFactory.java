@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
+import static org.opennms.netmgt.snmp.SnmpAgentConfig.AGENT_CONFIG_PREFIX;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
@@ -67,19 +69,21 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
         if (m_agentConfigFactory == null) {
             throw new IllegalStateException("Cannot determine agent configuration without a SnmpAgentConfigFactory.");
         }
+
         List<SnmpProfile> snmpProfiles = m_agentConfigFactory.getProfiles();
         if (snmpProfiles.isEmpty()) {
             return m_agentConfigFactory.getAgentConfig(address, location).toMap();
         } else {
+            // SNMP config has profiles, detector should handle multiple agent configs.
             Map<String, String> agentConfigMap = new HashMap<>();
             agentConfigMap.put(AgentBasedSyncAbstractDetector.HAS_MULTIPLE_AGENT_CONFIGS, Boolean.toString(true));
             // Add default config as string with profile label as key.
             String defaultConfig = m_agentConfigFactory.getAgentConfig(address, location).toProtocolConfigString();
-            agentConfigMap.put(SnmpAgentConfig.PROFILE_LABEL_FOR_DEFAULT_CONFIG, defaultConfig);
+            agentConfigMap.put(AGENT_CONFIG_PREFIX + SnmpAgentConfig.PROFILE_LABEL_FOR_DEFAULT_CONFIG, defaultConfig);
             // Add snmp profile label as key and config converted to string as value.
             snmpProfiles.forEach((snmpProfile -> {
                 SnmpAgentConfig snmpAgentConfig = m_agentConfigFactory.getAgentConfigFromProfile(snmpProfile, address);
-                agentConfigMap.put(snmpAgentConfig.getProfileLabel(), snmpAgentConfig.toProtocolConfigString());
+                agentConfigMap.put(AGENT_CONFIG_PREFIX + snmpAgentConfig.getProfileLabel(), snmpAgentConfig.toProtocolConfigString());
             }));
             return agentConfigMap;
         }

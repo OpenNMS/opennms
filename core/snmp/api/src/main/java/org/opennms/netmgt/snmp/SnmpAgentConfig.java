@@ -54,6 +54,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     private static final long serialVersionUID = -6646744513933866811L;
 
     public static final String PROFILE_LABEL_FOR_DEFAULT_CONFIG = "default";
+    public static final String AGENT_CONFIG_PREFIX = "SNMP_AGENT_CONFIG_";
     private InetAddress m_address;
     private InetAddress m_proxyFor;
     private String profileLabel;

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
+import static org.opennms.netmgt.snmp.SnmpAgentConfig.AGENT_CONFIG_PREFIX;
+
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -226,21 +228,16 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         List<SnmpAgentConfig> agentConfigList = new ArrayList<>();
         Map<String, String> runTimeAttributes = request.getRuntimeAttributes();
         if (hasMultipleAgentConfigs(runTimeAttributes)) {
-            runTimeAttributes.remove(HAS_MULTIPLE_AGENT_CONFIGS);
-            //Rest of the attribute values are snmp configs.
+            //Retrieve agent configs from runtime attributes.
             runTimeAttributes.forEach((label, configAsString) -> {
-                agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
+                if (label.contains(AGENT_CONFIG_PREFIX)) {
+                    agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
+                }
             });
         }
         return agentConfigList;
     }
 
-    @Override
-    public boolean isServiceDetected(InetAddress address, List<SnmpAgentConfig> agentConfigList) {
-        return agentConfigList.parallelStream().anyMatch(snmpAgentConfig -> {
-            return isServiceDetected(address, snmpAgentConfig);
-        });
-    }
 
     private boolean isServiceDetected(MatchType matchType, List<String> retrievedValues, String expectedValue) {
         matchType = matchType == null ? MatchType.Exist : matchType;

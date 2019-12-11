@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,7 @@ public abstract class AgentBasedSyncAbstractDetector<T> extends AbstractDetector
     @Override
     public DetectResults detect(DetectRequest request) {
         Map<String, String> runTimeAttributes = request.getRuntimeAttributes();
+
         if (hasMultipleAgentConfigs(runTimeAttributes)) {
             return new DetectResultsImpl(isServiceDetected(request.getAddress(), getListOfAgentConfigs(request)));
         }
@@ -61,9 +63,20 @@ public abstract class AgentBasedSyncAbstractDetector<T> extends AbstractDetector
 
     public abstract boolean isServiceDetected(final InetAddress address, final T agentConfig);
 
-    public abstract List<T> getListOfAgentConfigs(DetectRequest request);
+    /**
+     * Override this if detector can support multiple agent configs.
+     */
+    public List<T> getListOfAgentConfigs(DetectRequest request) {
+        List<T> agentConfigList = new ArrayList<T>();
+        agentConfigList.add(getAgentConfig(request));
+        return agentConfigList;
+    }
 
-    public abstract boolean isServiceDetected(final InetAddress address, final List<T> agentConfig);
+    public boolean isServiceDetected(final InetAddress address, final List<T> agentConfigList) {
+        return agentConfigList.stream().anyMatch(agentConfig -> {
+            return isServiceDetected(address, agentConfig);
+        });
+    }
 
     public static boolean hasMultipleAgentConfigs(Map<String, String> runTimeAttributes) {
         return runTimeAttributes != null &&

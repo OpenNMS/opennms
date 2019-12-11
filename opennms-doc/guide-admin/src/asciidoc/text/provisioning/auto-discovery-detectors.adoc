@@ -36,7 +36,7 @@ Sample Configuration with detectors is shown below.
 			<detector name="reverse-dns-lookup" class-name="org.opennms.netmgt.provision.detector.rdns.ReverseDNSLookupDetector"/>
 			<detector name="SNMP" class-name="org.opennms.netmgt.provision.detector.snmp.SnmpDetector">
 				<parameter key="timeout" value="5000"/>
-        <parameter key="ttl" value="120000"/>
+				<parameter key="ttl" value="120000"/>
 			</detector>
 		</detectors>
 
