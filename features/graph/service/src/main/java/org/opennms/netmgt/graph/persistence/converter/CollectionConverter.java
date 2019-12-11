@@ -101,9 +101,6 @@ public class CollectionConverter implements Converter<Collection<?>> {
     }
 
     private Collection<?> recreateCollection(Class<Collection<?>> type, List values) {
-
-        // the list of possible collections should be synchronized with: AllowedValuesInPropertiesMap
-        // TODO: Patrick: find a way to keep the 2 classes consistent
         if (ImmutableList.class.isAssignableFrom(type)) {
             return ImmutableList.copyOf(values);
         } else if (ImmutableSet.class.isAssignableFrom(type)) {
