@@ -51,10 +51,10 @@ public class ChangeSetTest {
                 .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v1").label("Vertex 1").build())
                 .addVertex(GenericVertex.builder().namespace(NAMESPACE).id("v2").label("Vertex 2").build())
                 .build();
-        ChangeSet changeSet = new ChangeSet(graph, graph);
+        ChangeSet changeSet = ChangeSet.builder(graph, graph).build();
         assertThat(changeSet.hasChanges(), Matchers.is(false));
 
-        changeSet = new ChangeSet(graph, GenericGraph.from(graph).build());
+        changeSet = ChangeSet.builder(graph, GenericGraph.from(graph).build()).build();
         assertThat(changeSet.hasChanges(), Matchers.is(false));
     }
 
@@ -71,7 +71,7 @@ public class ChangeSetTest {
                         .target(new VertexRef(NAMESPACE, "v2"))
                         .build())
                 .build();
-        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet(null, graph);
+        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = ChangeSet.builder(null, graph).build();
         assertThat(changeSet.getNamespace(), Matchers.is(NAMESPACE));
         assertThat(changeSet.hasGraphInfoChanged(), Matchers.is(true));
         assertThat(changeSet.hasFocusChanged(), Matchers.is(false));
@@ -110,7 +110,7 @@ public class ChangeSetTest {
 
         // Detect changes
         // Changes are (removed vertices: 1, 2. Added Vertices: 4, Updated Vertices: 3
-        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet(oldGraph, newGraph);
+        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = ChangeSet.builder(oldGraph, newGraph).build();
         assertThat(changeSet.getNamespace(), Matchers.is(NAMESPACE)); // Ensure the namespace was detected successful
 
         // Verify change Flags
@@ -149,7 +149,7 @@ public class ChangeSetTest {
         final GenericGraph graph2 = builder.build();
 
         // Detect changes
-        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = new ChangeSet(graph1, graph2);
+        final ChangeSet<GenericGraph, GenericVertex, GenericEdge> changeSet = ChangeSet.builder(graph1, graph2).build();
 
         // Verify change flags
         assertThat(changeSet.hasChanges(), Matchers.is(true));
@@ -173,7 +173,7 @@ public class ChangeSetTest {
         final GenericGraph oldGraph = GenericGraph.builder().namespace(NAMESPACE).build();
         final GenericGraph newGraph = GenericGraph.builder().namespace(NAMESPACE + ".opennms").build();
         try {
-            new ChangeSet(oldGraph, newGraph);
+            ChangeSet.builder(oldGraph, newGraph).build();
             fail("Expected an exception to be thrown, but succeeded. Bailing");
         } catch (IllegalStateException ex) {
             // expected, as namespace changes are not supported

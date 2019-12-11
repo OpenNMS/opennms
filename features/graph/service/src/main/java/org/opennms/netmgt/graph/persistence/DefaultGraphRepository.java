@@ -130,7 +130,7 @@ public class DefaultGraphRepository implements GraphRepository {
 
                 // The Changes are calculated on the Generic conversion of the input and persisted graph
                 // In order to apply the changes here, they must again be converted to the actual implementation of the persisted graph (entity).
-                ContainerChangeSet containerChangeSet = new ContainerChangeSet(persistedGraphContainer, genericGraphContainer);
+                ContainerChangeSet containerChangeSet = ContainerChangeSet.builder(persistedGraphContainer, genericGraphContainer).build();
                 if (containerChangeSet.hasChanges()) {
                     final GraphContainerEntity graphContainerEntity = graphContainerDao.findContainerById(graphContainer.getId());
 
