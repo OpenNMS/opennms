@@ -21,7 +21,7 @@ WARNING: In _Newts_ there is no information loss with data aggregation when time
 ==== Before you begin
 
 * A running instance of _{opennms-product-name}_ running on Linux
-* Working data collection and response time from _Collectd_ and _Pollerd_
+* Working data collection and response time metrics from _Collectd_ and _Pollerd_
 * _Cassandra_ cluster with access to the _Cassandra_ client port `TCP/9042`
 
 WARNING: It is currently not supported to initialize the _Newts_ keyspace from _Microsoft Windows Server_ operating system.

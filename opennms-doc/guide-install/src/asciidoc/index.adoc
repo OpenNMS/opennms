@@ -138,4 +138,4 @@ ifndef::opennms-prime[]
 include::text/time-series-storage/rrdtool/debian.adoc[]
 endif::opennms-prime[]
 
-include::text/time-series-storage/setup-newts.adoc[]
+include::text/time-series-storage/newts.adoc[]
