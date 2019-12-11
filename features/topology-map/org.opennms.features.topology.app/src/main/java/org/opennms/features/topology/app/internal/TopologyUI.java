@@ -341,9 +341,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                             @Override
                             public Component getComponent() {
                                 m_currentHudDisplay = new HudDisplay();
-                                m_currentHudDisplay.setProvider(m_graphContainer.getTopologyServiceClient().getNamespace().equals(OnmsTopology.TOPOLOGY_NAMESPACE_LINKD)
-                                        ? "Linkd"
-                                        : m_graphContainer.getTopologyServiceClient().getNamespace());
+                                m_currentHudDisplay.setProvider(m_graphContainer.getTopologyServiceClient().getNamespace());
                                 m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
                                 m_currentHudDisplay.setEdgeFocusCount(0);
                                 m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
