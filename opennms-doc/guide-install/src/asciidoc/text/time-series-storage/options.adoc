@@ -9,7 +9,7 @@ include::javaenv.adoc[]
 include::rrdtool.adoc[]
 
 // Installation Guide for Time Series Database Newts
-include::newts/introduction.adoc[]
+include::newts/setup-newts.adoc[]
 include::newts/cassandra-rhel.adoc[]
 ifndef::opennms-prime[]
 include::newts/cassandra-debian.adoc[]
