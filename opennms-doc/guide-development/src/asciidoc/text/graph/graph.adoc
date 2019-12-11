@@ -35,10 +35,13 @@ The following rules apply to the _Generic Graph Model_:
 
 - Each Graph container must be uniquely identified.
   This identifier is called a `container id`
+  The `container id` must be unique overall containers and graph namespaces.
 - Each Graph must be uniquely identified over all graphs (meaning the namespace must be unique throughout the system).
   This identifier is called a `namespace`.
+  Each `namespace` must be unique overall container ids and graph namespaces.
 - Each Vertex and Edge must be uniquely identified by an identifier.
   This identifier is called an `id`.
+  The `id` must not be unique in the system, but within the graph.
 - Each Vertex and Edge have the same `namespace` as the Graph they are part of.
   This allows to uniquely identify vertices and edges throughout the system.
 - Each Graph, Vertex or Edge have additional properties to define their nature in more detail.
@@ -48,20 +51,11 @@ The following rules apply to the _Generic Graph Model_:
   However at least one side must share the same `namespace` as the edge itself.
   This is the "owning" side, thus the edge will be a member of that Graph.
 
-===== Identifier and Namespace
 
-In order to uniquely identify each element and each graph container within the system different strategies are applied.
-
-1. The container is uniquely identified by an `id` property.
-2. The graph container is uniquely identified by a `namespace` property.
-3. Each element within the graph is uniquely identified by a `namespace` and `id` property.
-The `id` property must not be unique in the system, but within the graph.
-
-If a graph defines an `id` property as well, this SHOULD but MUST not be identically to the `namespace` property.
-However internally the `id` property is not used but provided to be more compatible with _GraphML_.
-
-The above rules allow to determine the "owner" of any given element if only that element is present.
-For example, if looking at any _Vertex_ one can tell to which graph it belongs due to the `namespace` property.
+NOTE:   A graph may define a property `id` besides the property `namespace`.
+        This is mostly only relevant, when importing graphs via GraphML as each graph element must have an `id` attribute set.
+        When importing such GraphML each imported graph will have a `namespace` and `id` property set.
+        In general, it is recommended, that the value of the attribute `id` SHOULD be identically to the `namespace` property even if it MUST NOT.
 
 Refer to module `features/graph/api` in package `org.opennms.netmgt.graph.api.generic` for implementation details.
 
