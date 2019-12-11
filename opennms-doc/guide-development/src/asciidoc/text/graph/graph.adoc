@@ -48,6 +48,21 @@ The following rules apply to the _Generic Graph Model_:
   However at least one side must share the same `namespace` as the edge itself.
   This is the "owning" side, thus the edge will be a member of that Graph.
 
+===== Identifier and Namespace
+
+In order to uniquely identify each element and each graph container within the system different strategies are applied.
+
+1. The container is uniquely identified by an `id` property.
+2. The graph container is uniquely identified by a `namespace` property.
+3. Each element within the graph is uniquely identified by a `namespace` and `id` property.
+The `id` property must not be unique in the system, but within the graph.
+
+If a graph defines an `id` property as well, this SHOULD but MUST not be identically to the `namespace` property.
+However internally the `id` property is not used but provided to be more compatible with _GraphML_.
+
+The above rules allow to determine the "owner" of any given element if only that element is present.
+For example, if looking at any _Vertex_ one can tell to which graph it belongs due to the `namespace` property.
+
 Refer to module `features/graph/api` in package `org.opennms.netmgt.graph.api.generic` for implementation details.
 
 
@@ -60,27 +75,15 @@ Therefore basic Domain Graph objects are provided to act as a view on the _Gener
 
 For the _Domain Graph Model_ the same rules apply as for the link:#ga-development-graph-service-api-generic-model[Generic Graph Model].
 
+See `features/graph/provider/bsm` for a domain model using the basic domain graph classes (`AbstractDomainGraph`, `AbstractDomainVertex`, etc).
+
+See `features/graph/provider/graphml` for a domain model using the Generic Graph Model classes.
+
 
 ==== Immutability
 
 The graph container and all it's elements are immutable once created.
 In order to fully create a container various builders are provided.
-
-
-==== Identifier and Namespace
-
-In order to uniquely identify each element and each graph container within the system different strategies are applied.
-
-1. The container is uniquely identified by an `id` property.
-2. The graph container is uniquely identified by a `namespace` property.
-3. Each element within the graph is uniquely identified by a `namespace` and `id` property.
-   The `id` property must not be unique in the system, but within the graph.
-
-If a graph defines an `id` property as well, this SHOULD but MUST not be identically to the `namespace` property.
-However internally the `id` property is not used but provided to be more compatible with _GraphML_.
-
-The above rules allow to determine the "owner" of any given element if only that element is present.
-For example, if looking at any _Vertex_ one can tell to which graph it belongs due to the `namespace` property.
 
 
 === Providers
@@ -169,7 +172,13 @@ A shorter version in form of `nodeCriteria=<foreignSource>:<foreignID>` is also 
 
 === ReST API
 
-The _Graph Service API_ provides a ReST API which is documented link:#ga-development-rest-graph[here].
+The _Graph Service API_ provides a ReST API which is documented in detail link:#ga-development-rest-graph[here].
+
+The Graph Service API ReST endpoints serializes the requested graph container, graph or view in json.
+As the container and each element within that container may contain custom properties, the type of the property is not static.
+This means, each `GraphContainerProvider` (or `GraphProvider`) can set properties on any element using a type which is only known by the domain the graph container is created in.
+However when serializing this object as JSON it is not clear to the ReST endpoint how to do that.
+In order to allow these values to be set as properties anyways, a custom `org.opennms.netmgt.graph.rest.api.PropertyConverter` can be exposed as an OSGi service.
 
 === Limitations
 
