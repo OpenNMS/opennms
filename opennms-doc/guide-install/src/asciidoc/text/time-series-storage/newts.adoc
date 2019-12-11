@@ -40,17 +40,21 @@ WARNING: It is currently not supported to initialize the _Newts_ keyspace from _
 ----
 cat << EOF | sudo tee /opt/opennms/etc/opennms.properties.d/timeseries.properties
 # Configure storage strategy
-org.opennms.rrd.storeByForeignSource=true
-org.opennms.timeseries.strategy=newts
+org.opennms.rrd.storeByForeignSource=true<1>
+org.opennms.timeseries.strategy=newts<2>
 
 # Configure Newts time series storage connection
-org.opennms.newts.config.hostname={cassandra-ip1,cassandra-ip2}
-org.opennms.newts.config.keyspace=newts
-org.opennms.newts.config.port=9042
+org.opennms.newts.config.hostname={cassandra-ip1,cassandra-ip2}<3>
+org.opennms.newts.config.keyspace=newts<4>
+org.opennms.newts.config.port=9042<5>
 EOF
 ----
 
-NOTE: The `org.opennms.newts.config.hostname` property also accepts a comma separated list of hostnames and or IP addresses.
+<1> Associate time series data by the foreign ID instead the database generated node ID
+<2> Set time series strategy to use `newts`
+<3> Host or IP addresses of the _Cassandra_ cluster nodes, can be a comma separated list
+<4> Name of the keyspace which is initialized and used
+<5> Port to connect to _Cassandra_
 
 ===== Step 2: Initialize the _Newts_ schema in _Cassandra_
 
@@ -61,9 +65,13 @@ ${OPENNMS_HOME}/bin/newts init
 
 ===== Step 3: Verify if the keyspace was properly initialized
 
+Connect to a _Cassandra_ node with a CQL shell
+
 [source, bash]
 ----
-cqlsh
+cd $CASSANDRA_HOME/bin
+./cqlsh
+
 use newts;
 describe table terms;
 describe table samples;
