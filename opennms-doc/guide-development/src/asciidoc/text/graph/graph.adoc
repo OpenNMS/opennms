@@ -149,6 +149,16 @@ The _Graph Service API_ allows to create a view on any given graph considering a
 If no focus is provided when requesting the view, the default focus is applied.
 
 
+=== Listening for Changes
+
+It is possible to listen for graph or graph container changes.
+Various listeners can be exposed as an OSGi-service.
+
+The calculation of changes must be triggered manually.
+To do so, use the `org.opennms.netmgt.graph.api.updates.GraphNotificationService` service, which is exposed as an OSGi service
+
+Refer to package `org.opennms.netmgt.graph.api.updates` in module `features/graph/api` for available options.
+
 === Persistence
 
 Each graph or graph container can be persisted to the database using the `org.opennms.netmgt.graph.api.persistence.GraphRepository`.
