@@ -433,4 +433,11 @@ class IpfixFlow extends UpdatingFlow implements Flow {
             return Optional.empty();
         }
     }
+
+    @Override
+    public String getNodeIdentifier() {
+        return getInt64(this.document, "@observationDomainId")
+                .map(String::valueOf)
+                .orElse(null);
+    }
 }

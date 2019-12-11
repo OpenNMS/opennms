@@ -292,6 +292,6 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     List<OnmsNode> findAllHavingFlows();
     
     OnmsNode getDefaultFocusPoint();
-    
 
+    List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value);
 }

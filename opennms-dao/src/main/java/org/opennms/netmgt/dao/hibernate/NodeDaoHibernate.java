@@ -55,9 +55,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -554,4 +554,24 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return null;
     }
 
+
+
+    public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value) {
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
+                .setString("context", context)
+                .setString("key", key)
+                .setString("value", value)
+                .setResultTransformer(new ResultTransformer() {
+                    @Override
+                    public Object transformTuple(Object[] tuple, String[] aliases) {
+                        return get((Integer) tuple[0]);
+                    }
+
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    public List transformList(List collection) {
+                        return collection;
+                    }
+                }).list());
+    }
 }
