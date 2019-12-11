@@ -12,6 +12,9 @@ Before setting up a production cluster make sure you consult at least the link:h
 WARNING: In _Newts_ there is no information loss with data aggregation when time series data is written to _Cassandra_.
          _RRDTool_ and _JRobin_ aggregate data by default and therefore you have usually a bigger storage capacity demand depending on your data retention needs with _Newts_.
 
+TIP: To avoid unwanted updates disable the _Cassandra_ repository on _DNF/YUM_ based distributions or use `apt-mark hold cassandra` on _APT_ based distributions.
+
+
 ==== Objectives
 
 * Configure _{opennms-product-name}_ to use an existing _Cassandra_ cluster
