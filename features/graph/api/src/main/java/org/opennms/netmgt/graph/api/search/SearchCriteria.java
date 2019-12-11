@@ -45,22 +45,18 @@ public class SearchCriteria {
     // The search criteria, usually the id of the SearchSuggestion
     private String criteria;
 
-    // TODO MVR is not required
-    private String context;
-
     public SearchCriteria() {
 
     }
 
-    public SearchCriteria(String providerId, String namespace, final String criteria, String context) {
+    public SearchCriteria(String providerId, String namespace, final String criteria) {
         this.providerId = Objects.requireNonNull(providerId);
         this.namespace = Objects.requireNonNull(namespace);
         this.criteria = Objects.requireNonNull(criteria);
-        this.context = Objects.requireNonNull(context);
     }
 
     public SearchCriteria(final SearchSuggestion suggestion, final String namespace) {
-        this(suggestion.getProvider(), namespace, suggestion.getLabel(), suggestion.getContext());
+        this(suggestion.getProvider(), namespace, suggestion.getLabel());
     }
 
     public String getProviderId() {
@@ -87,11 +83,4 @@ public class SearchCriteria {
         this.criteria = criteria;
     }
 
-    public String getContext() {
-        return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
-    }
 }

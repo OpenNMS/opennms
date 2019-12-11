@@ -204,7 +204,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().log().ifValidationFails()
                .params("providerId", "LabelSearchProvider")
                .params("criteria", "unknown")
-               .params("context", "GenericVertex")
                .accept(ContentType.JSON)
                .get("/search/results/{namespace}", "acme:regions")
                .then().log().ifValidationFails()
@@ -213,7 +212,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().log().ifValidationFails()
                .params("providerId", "LabelSearchProvider")
                .params("criteria", "North Region")
-               .params("context", "GenericVertex")
                .accept(ContentType.JSON)
                .get("/search/results/{namespace}/", "acme:regions")
                .then().log().ifValidationFails()
@@ -318,7 +316,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Verify resolution
         given().log().ifValidationFails()
                 .params("providerId", "NodeSearchProvider")
-                .params("context", "Node")
                 .params("criteria", id)
                 .accept(ContentType.JSON)
                 .get("/search/results/{namespace}/", "acme:markets")

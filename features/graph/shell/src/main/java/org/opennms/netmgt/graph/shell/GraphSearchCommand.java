@@ -82,8 +82,7 @@ public class GraphSearchCommand implements Action {
                 final SearchCriteria searchCriteria = new SearchCriteria(
                         suggestion.getProvider(),
                         namespace,
-                        suggestion.getId(),
-                        suggestion.getContext()
+                        suggestion.getId()
                 );
                 final List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
                 final String rendered = vertices.stream()

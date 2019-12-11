@@ -123,7 +123,7 @@ public class NodeSearchProviderIT {
             @Override public ImmutableGraphContainer loadGraphContainer() { return container; }
             @Override public GraphContainerInfo getContainerInfo() { return container; }
         }, new HashMap<>());
-        final SearchCriteria searchCriteria = new SearchCriteria(searchProvider.getProviderId(), NAMESPACE, nodeDao.findByForeignId("n1").get(0).getId().toString(), NodeSearchProvider.CONTEXT);
+        final SearchCriteria searchCriteria = new SearchCriteria(searchProvider.getProviderId(), NAMESPACE, nodeDao.findByForeignId("n1").get(0).getId().toString());
         final List<GenericVertex> vertices = searchProvider.resolve(graphService, searchCriteria);
         assertThat(vertices, Matchers.hasSize(1));
         assertThat(vertices, Matchers.hasItem(container.getGraph(NAMESPACE).getVertex("v1").asGenericVertex()));
