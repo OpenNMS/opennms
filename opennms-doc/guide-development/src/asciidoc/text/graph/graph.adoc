@@ -64,10 +64,10 @@ Refer to module `features/graph/api` in package `org.opennms.netmgt.graph.api.ge
 
 A _Domain Graph Model_ is a model implementing a use case in its domain using the _Generic Graph Model_.
 This can be achieved by simply using the _Generic Graph Model_ and setting the according properties.
-However in more complex use cases it may be necessary to provide a more Java-friendly way.
-Therefore basic Domain Graph objects are provided to act as a view on the _Generic Graph Model_ to provide a more convenient implementation.
+For more complex use cases a more Java-friendly way - Basic Domain objects are available - to act as a "view" on the _Generic Graph Model_ to provide a more convenient implementation.
+These domain objects don't hold information on their own but provide only access to information that can be deducted from the underlying Generic Model and it's properties.
 
-For the _Domain Graph Model_ the same rules apply as for the link:#ga-development-graph-service-api-generic-model[Generic Graph Model].
+NOTE:   For the _Domain Graph Model_ the same rules apply as for the link:#ga-development-graph-service-api-generic-model[Generic Graph Model].
 
 See `features/graph/provider/bsm` for a domain model using the basic domain graph classes (`AbstractDomainGraph`, `AbstractDomainVertex`, etc).
 
