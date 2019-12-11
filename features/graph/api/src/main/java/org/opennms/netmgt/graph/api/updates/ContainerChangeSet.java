@@ -59,15 +59,15 @@ public class ContainerChangeSet {
     }
 
     public List<ImmutableGraph<?, ?>> getGraphsAdded() {
-        return new ArrayList<>(addedGraphs);
+        return addedGraphs;
     }
 
     public List<ImmutableGraph<?, ?>> getGraphsRemoved() {
-        return new ArrayList<>(removedGraphs);
+        return removedGraphs;
     }
 
     public List<ChangeSet<?, ?, ?>> getGraphsUpdated() {
-        return new ArrayList<>(graphChanges);
+        return graphChanges;
     }
 
     public boolean hasChanges() {
