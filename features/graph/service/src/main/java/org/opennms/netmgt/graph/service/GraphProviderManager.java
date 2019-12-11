@@ -41,7 +41,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * The {@link GraphProviderManager} is converting any exposed {@link GraphProvider} to a {@@ink GraphContainerProvider}.
+ * The {@link GraphProviderManager} is converting any exposed {@link GraphProvider} to a {@link GraphContainerProvider}.
  *
  * @author mvrueden
  */
