@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.receiver;
+package org.opennms.smoketest.telemetry;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.util.Objects;
 
-/**
- * A listener may define multiple parsers, in order to dispatch it to only one queue,
- * the parser must decide if it can handle the incoming data.
- *
- * A parser implementing the {@link Dispatchable} interface is capable of making this decision.
- *
- * @author mvrueden
- */
-public interface Dispatchable {
+public interface Sender {
+    void send(final byte[] payload) throws IOException;
 
-    /**
-     * Returns true if the implementor can handle the incoming data, otherwise false.
-     *
-     * @param buffer Representing the incoming data
-     * @return true if the implementor can handle the data, otherwise false.
-     */
-    boolean handles(final ByteBuffer buffer);
+    static Sender udp(final InetSocketAddress destinationAddress) {
+        Objects.requireNonNull(destinationAddress);
+
+        return payload -> {
+            Objects.requireNonNull(payload);
+
+            try (DatagramSocket serverSocket = new DatagramSocket()) {
+                final DatagramPacket sendPacket = new DatagramPacket(payload, payload.length, destinationAddress);
+                serverSocket.send(sendPacket);
+            }
+        };
+    }
+
+    static Sender stream(final OutputStream stream) {
+        return stream::write;
+    }
 }

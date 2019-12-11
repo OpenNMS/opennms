@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct nvidia_gpu {
 //   unsigned int device_count; /* see nvmlDeviceGetCount */
@@ -74,7 +74,7 @@ public class NvidiaGpu implements CounterData {
     public final long temperature;
     public final long fan_speed;
 
-    public NvidiaGpu(final ByteBuffer buffer) throws InvalidPacketException {
+    public NvidiaGpu(final ByteBuf buffer) throws InvalidPacketException {
         this.device_count = BufferUtils.uint32(buffer);
         this.processes = BufferUtils.uint32(buffer);
         this.gpu_time = BufferUtils.uint32(buffer);

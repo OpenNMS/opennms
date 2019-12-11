@@ -28,14 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -46,6 +45,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedV
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+
+import io.netty.buffer.ByteBuf;
 
 public class Record {
 
@@ -97,7 +98,7 @@ public class Record {
     // 2nd bit of padding is set to 0x08 when this is an egress flow
     public final boolean egress;
 
-    public Record(final Packet packet, final ByteBuffer buffer) throws InvalidPacketException {
+    public Record(final Packet packet, final ByteBuf buffer) throws InvalidPacketException {
         this.packet = Objects.requireNonNull(packet);
 
         this.srcAddr = parseAddress(buffer);
@@ -161,7 +162,7 @@ public class Record {
                 .toString();
     }
 
-    private static Inet4Address parseAddress(final ByteBuffer buffer) throws InvalidPacketException {
+    private static Inet4Address parseAddress(final ByteBuf buffer) throws InvalidPacketException {
         try {
             return (Inet4Address) Inet4Address.getByAddress(bytes(buffer, 4));
         } catch (final UnknownHostException e) {

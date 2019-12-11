@@ -35,6 +35,8 @@ import java.util.function.Function;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.telemetry.Packet;
+import org.opennms.smoketest.telemetry.Payload;
+import org.opennms.smoketest.telemetry.Sender;
 
 /**
  * Verifies that sflow packets containing samples are also persisted if set up correctly
@@ -44,7 +46,7 @@ public class SFlowTelemetryAdapterIT extends AbstractAdapterIT {
     @Override
     protected void sendTelemetryMessage() throws IOException {
         final InetSocketAddress minionListenerAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
-        new Packet("/payloads/flows/sflow2.dat", minionListenerAddress).send();
+        new Packet(Payload.resource("/payloads/flows/sflow2.dat")).send(Sender.udp(minionListenerAddress));
     }
 
     @Override

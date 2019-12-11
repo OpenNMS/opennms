@@ -10,7 +10,7 @@
         <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
     </listener>
 
-    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="false">
+    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="true">
         <parameter key="port" value="4730"/>
 
         <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser" queue="IPFIX" />

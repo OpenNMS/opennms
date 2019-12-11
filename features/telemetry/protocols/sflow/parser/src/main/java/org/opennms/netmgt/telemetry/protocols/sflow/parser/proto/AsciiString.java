@@ -28,19 +28,20 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class AsciiString {
     public final int length;
     public final String value;
 
-    public AsciiString(final ByteBuffer buffer) throws InvalidPacketException {
+    public AsciiString(final ByteBuf buffer) throws InvalidPacketException {
         this.length = (int) BufferUtils.uint32(buffer);
         this.value = new String(BufferUtils.bytes(buffer, this.length), StandardCharsets.US_ASCII);
 

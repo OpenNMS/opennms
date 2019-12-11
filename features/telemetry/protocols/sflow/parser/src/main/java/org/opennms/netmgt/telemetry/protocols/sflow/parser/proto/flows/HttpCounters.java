@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct http_counters {
 //   unsigned int method_option_count;
@@ -93,7 +93,7 @@ public class HttpCounters implements CounterData {
                 .toString();
     }
 
-    public HttpCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public HttpCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.method_option_count = BufferUtils.uint32(buffer);
         this.method_get_count = BufferUtils.uint32(buffer);
         this.method_head_count = BufferUtils.uint32(buffer);

@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.*;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,15 +36,18 @@ import org.junit.Test;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.UnsignedLong;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 public class BufferUtilsTest {
 
     @Test
     public void testSignedInteger() throws Exception {
-        Assert.assertEquals(Long.valueOf(0), sint(ByteBuffer.wrap(new byte[]{0, 0, 0}), 3));
-        Assert.assertEquals(Long.valueOf(-1), sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 255}), 3));
-        Assert.assertEquals(Long.valueOf(-2), sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 254}), 3));
-        Assert.assertEquals(Long.valueOf(1), sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 1}), 3));
-        Assert.assertEquals(Long.valueOf(2), sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 2}), 3));
+        Assert.assertEquals(Long.valueOf(0), sint(from("000000"), 3));
+        Assert.assertEquals(Long.valueOf(-1), sint(from("FFFFFF"), 3));
+        Assert.assertEquals(Long.valueOf(-2), sint(from("FFFFFE"), 3));
+        Assert.assertEquals(Long.valueOf(1), sint(from("000001"), 3));
+        Assert.assertEquals(Long.valueOf(2), sint(from("000002"), 3));
     }
 
     @Test
@@ -94,7 +95,7 @@ public class BufferUtilsTest {
         Assert.assertEquals(uint64(from("207138408FABED99")), uint(from("207138408FABED99"), 8));
     }
 
-    private static ByteBuffer from(final String hex) {
-        return ByteBuffer.wrap(BaseEncoding.base16().decode(hex));
+    private static ByteBuf from(final String hex) {
+        return Unpooled.wrappedBuffer(BaseEncoding.base16().decode(hex));
     }
 }

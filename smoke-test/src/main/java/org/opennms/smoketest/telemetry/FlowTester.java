@@ -37,13 +37,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
@@ -72,6 +69,20 @@ import io.searchbox.indices.template.GetTemplate;
  */
 public class FlowTester {
 
+    public static class Delivery {
+        private final FlowPacket packet;
+        private final Sender sender;
+
+        public Delivery(final FlowPacket packet, final Sender sender) {
+            this.packet = Objects.requireNonNull(packet);
+            this.sender = Objects.requireNonNull(sender);
+        }
+
+        public void send() throws IOException {
+            this.packet.send(this.sender);
+        }
+    }
+
     private static final String TEMPLATE_NAME = "netflow";
 
     private static Logger LOG = LoggerFactory.getLogger(FlowTester.class);
@@ -79,7 +90,7 @@ public class FlowTester {
     private static final Gson gson = new Gson();
 
     /** The packets to send */
-    private final List<FlowPacket> packets;
+    private final List<Delivery> deliveries;
 
     private final List<Consumer<FlowTester>> runBefore = new ArrayList<>();
     private final List<Consumer<FlowTester>> runAfter = new ArrayList<>();
@@ -89,10 +100,10 @@ public class FlowTester {
 
     private JestClient client;
 
-    public FlowTester(InetSocketAddress elasticAddress, InetSocketAddress opennmsWebAddress, List<FlowPacket> packets) {
+    public FlowTester(InetSocketAddress elasticAddress, InetSocketAddress opennmsWebAddress, List<Delivery> deliveries) {
         this.elasticRestAddress = Objects.requireNonNull(elasticAddress);
-        this.packets = Objects.requireNonNull(packets);
-        this.totalFlowCount = packets.stream().mapToInt(p -> p.getFlowCount()).sum();
+        this.deliveries = Objects.requireNonNull(deliveries);
+        this.totalFlowCount = deliveries.stream().mapToInt(delivery -> delivery.packet.getFlowCount()).sum();
 
         if (totalFlowCount <= 0) {
             throw new IllegalStateException("Cannot verify flow creation/procession, as total flow count is <= 0, but must be > 0");
@@ -141,22 +152,22 @@ public class FlowTester {
             runBefore.forEach(rb -> rb.accept(this));
 
             // Group the packets by protocol
-            final Map<NetflowVersion, List<FlowPacket>> packetsByProtocol = packets.stream()
-                    .collect(Collectors.groupingBy(FlowPacket::getNetflowVersion));
+            final Map<NetflowVersion, List<Delivery>> delivieriesByProtocol = deliveries.stream()
+                                                                                        .collect(Collectors.groupingBy(delivery -> delivery.packet.getNetflowVersion()));
             LOG.info("Verifying flows. Expecting to persist {} flows across protocols: {}",
-                    totalFlowCount, packetsByProtocol.keySet());
+                    totalFlowCount, delivieriesByProtocol.keySet());
 
             // Send all the packets once
-            for (FlowPacket packet : packets) {
+            for (Delivery delivery : deliveries) {
                 LOG.info("Sending packet payload from {} containing {} flows to: {}",
-                        packet.getResource(), packet.getFlowCount(),
-                        packet.getDestinationAddress());
-                packet.send();
+                        delivery.packet.getPayload(), delivery.packet.getFlowCount(),
+                        delivery.sender);
+                delivery.send();
             }
 
-            for (NetflowVersion netflowVersion : packetsByProtocol.keySet()) {
-                final List<FlowPacket> packetsForProtocol = packetsByProtocol.get(netflowVersion);
-                final int numFlowsExpected = packetsForProtocol.stream().mapToInt(FlowPacket::getFlowCount).sum();
+            for (NetflowVersion netflowVersion : delivieriesByProtocol.keySet()) {
+                final List<Delivery> deliveriesForProtocol = delivieriesByProtocol.get(netflowVersion);
+                final int numFlowsExpected = deliveriesForProtocol.stream().mapToInt(delivery -> delivery.packet.getFlowCount()).sum();
 
                 LOG.info("Verifying flows for {}", netflowVersion);
                 verify(() -> {
@@ -175,11 +186,11 @@ public class FlowTester {
                         // If we haven't found them all yet, try sending all the packets for this protocol again.
                         // We do this since the flows are UDP packages and aren't 100% reliable.
                         // This test is only concerned that they eventually do make their way into ES.
-                        for (FlowPacket packet : packetsForProtocol) {
+                        for (Delivery delivery : deliveriesForProtocol) {
                             LOG.info("Sending packet payload from {} containing {} flows to: {}",
-                                    packet.getResource(), packet.getFlowCount(),
-                                    packet.getDestinationAddress());
-                            packet.send();
+                                    delivery.packet.getPayload(), delivery.packet.getFlowCount(),
+                                    delivery.sender);
+                            delivery.send();
                         }
                     }
                     return foundAllFlowsForProtocol;

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct vg_counters {
 //   unsigned int dot12InHighPriorityFrames;
@@ -71,7 +71,7 @@ public class VgCounters implements CounterData {
     public final UnsignedLong dot12HCInNormPriorityOctets;
     public final UnsignedLong dot12HCOutHighPriorityOctets;
 
-    public VgCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public VgCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.dot12InHighPriorityFrames = BufferUtils.uint32(buffer);
         this.dot12InHighPriorityOctets = BufferUtils.uint64(buffer);
         this.dot12InNormPriorityFrames = BufferUtils.uint32(buffer);
