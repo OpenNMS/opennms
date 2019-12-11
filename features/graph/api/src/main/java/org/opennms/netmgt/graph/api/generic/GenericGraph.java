@@ -238,7 +238,6 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         // A calculation of the focus
         private Focus defaultFocus = new Focus(FocusStrategy.EMPTY);
         
-        // TODO: Patrick make sure we don't change the namespace after adding edges -> they have been validated against the namespace
         private GenericGraphBuilder() {}
      
         public GenericGraphBuilder graph(GenericGraph graph) {
