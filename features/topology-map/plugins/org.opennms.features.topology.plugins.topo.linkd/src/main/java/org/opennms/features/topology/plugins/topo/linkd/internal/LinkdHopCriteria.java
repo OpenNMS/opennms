@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -64,13 +65,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((m_nodeId == null) ? 0 : m_nodeId.hashCode());
-        result = prime * result
-                + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
-        return result;
+        return Objects.hash(m_nodeId, m_namespace);
     }
 
     @Override
@@ -82,9 +77,8 @@ public class LinkdHopCriteria extends VertexHopCriteria {
 
         if (obj instanceof LinkdHopCriteria) {
             LinkdHopCriteria ref = (LinkdHopCriteria) obj;
-            return ref.m_nodeId.equals(m_nodeId) && ref.getNamespace().equals(getNamespace());
+            return Objects.equals(m_nodeId, ref.m_nodeId) && Objects.equals(m_namespace, ref.m_namespace);
         }
-
         return false;
     }
 

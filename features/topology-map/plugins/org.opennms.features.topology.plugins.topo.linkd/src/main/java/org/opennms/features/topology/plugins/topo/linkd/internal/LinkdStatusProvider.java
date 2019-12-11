@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.AbstractNodesProvider;
@@ -56,7 +57,7 @@ public class LinkdStatusProvider extends AbstractNodesProvider implements Status
     private final AlarmDao m_alarmDao;
 
     public LinkdStatusProvider(AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
+        m_alarmDao = Objects.requireNonNull(alarmDao);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdStatusProvider.class);

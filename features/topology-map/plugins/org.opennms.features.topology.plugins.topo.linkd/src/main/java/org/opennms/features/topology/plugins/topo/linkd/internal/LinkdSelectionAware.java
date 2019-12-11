@@ -47,13 +47,12 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
 public class LinkdSelectionAware implements SelectionAware {
-    private final String nameSpace;
+    private final String namespace;
 
     private static final Logger LOG = LoggerFactory.getLogger(LinkdSelectionAware.class);
 
-    public LinkdSelectionAware(String nameSpace) {
-        Objects.nonNull(nameSpace);
-        this.nameSpace = nameSpace;
+    public LinkdSelectionAware(String namespace) {
+        this.namespace = Objects.requireNonNull(namespace);
     }
 
     @Override
@@ -82,7 +81,7 @@ public class LinkdSelectionAware implements SelectionAware {
     protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
         List<Integer> nodeIdList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if (nameSpace.equals(eachRef.getNamespace())) {
+            if (namespace.equals(eachRef.getNamespace())) {
                 try {
                     nodeIdList.add(Integer.valueOf(eachRef.getId()));
                 } catch (NumberFormatException e) {
