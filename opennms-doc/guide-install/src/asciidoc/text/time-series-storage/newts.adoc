@@ -53,6 +53,12 @@ org.opennms.timeseries.strategy=newts<2>
 org.opennms.newts.config.hostname={cassandra-ip1,cassandra-ip2}<3>
 org.opennms.newts.config.keyspace=newts<4>
 org.opennms.newts.config.port=9042<5>
+
+# One year in seconds
+org.opennms.newts.config.ttl=31540000
+
+# Seven days in seconds
+org.opennms.newts.config.resource_shard=604800
 EOF
 ----
 
@@ -88,11 +94,11 @@ CREATE TABLE newts.samples (
   attributes map<text, text>,
   PRIMARY KEY((context, partition, resource), collected_at, metric_name)
 ) WITH compaction = {<2>
-  'compaction_window_size': '7',
+  'compaction_window_size': '7',<3>
   'compaction_window_unit': 'DAYS',
   'expired_sstable_check_frequency_seconds': '86400',
   'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy'
-} AND gc_grace_seconds = 604800<3>
+} AND gc_grace_seconds = 604800
   AND read_repair_chance = 0;
 
 CREATE TABLE newts.terms (
@@ -120,7 +126,7 @@ CREATE TABLE newts.resource_metrics (
 ----
 <1> Replication strategy and the number of replicas for your data in your cluster
 <2> Configuration for TWCS compaction
-<3> Keep tombstone data for 7 days after TTL expired or data is deleted
+<3> TODO
 
 ===== Step 3: Verify if the keyspace was properly initialized
 
