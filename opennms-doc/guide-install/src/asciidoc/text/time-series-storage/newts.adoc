@@ -14,11 +14,15 @@ WARNING: In _Newts_ there is no information loss with data aggregation when time
 
 TIP: To avoid unwanted updates disable the _Cassandra_ repository on _DNF/YUM_ based distributions or use `apt-mark hold cassandra` on _APT_ based distributions.
 
+By default using the `${OPENNMS_HOME}/bin/newts init` command the samples keyspace is created with the link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__stcs-compaction[Size Tiered Compaction Strategy (STSC)].
+_STSC_ is not optimal for time series data and requires additionally 50% guaranteed free disk space on the partition with SSTables to complete compactions.
+For this reason we will describe how to set up samples table with the link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__twcs[Time Window Compaction Strategy (TWCS)] which has an overhead approximately around 10-20%.
+
 
 ==== Objectives
 
 * Configure _{opennms-product-name}_ to use an existing _Cassandra_ cluster
-* Initializing the _Newts_ keyspace
+* Initializing the _Newts_ keyspace using link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__twcs[TWCS] for the samples table
 * Verify time series data is stored and can be accessed
 
 ==== Before you begin
@@ -29,6 +33,8 @@ TIP: To avoid unwanted updates disable the _Cassandra_ repository on _DNF/YUM_ b
 
 WARNING: It is currently not supported to initialize the _Newts_ keyspace from _Microsoft Windows Server_ operating system.
          _Microsoft Windows_ based _Cassandra_ server can be part of the cluster, but keyspace initialization is only possible using a _Linux_ operating system.
+
+
 
 [[gi-configure-opennms]]
 ==== Configure {opennms-product-name} to use Newts
@@ -61,10 +67,62 @@ EOF
 
 ===== Step 2: Initialize the _Newts_ schema in _Cassandra_
 
+Connect to a _Cassandra_ node with a CQL shell
+
 [source, bash]
 ----
-${OPENNMS_HOME}/bin/newts init
+cd $CASSANDRA_HOME/bin
+./cqlsh
 ----
+
+Execute the following CQL command to initialize the keyspace
+
+[source]
+----
+CREATE KEYSPACE newts WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};<1>
+
+CREATE TABLE newts.samples (
+  context text,
+  partition int,
+  resource text,
+  collected_at timestamp,
+  metric_name text,
+  value blob,
+  attributes map<text, text>,
+  PRIMARY KEY((context, partition, resource), collected_at, metric_name)
+) WITH compaction = {<2>
+  'compaction_window_size': '7',
+  'compaction_window_unit': 'DAYS',
+  'expired_sstable_check_frequency_seconds': '86400',
+  'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy'
+} AND gc_grace_seconds = 604800
+  AND read_repair_chance = 0;
+
+CREATE TABLE newts.terms (
+  context text,
+  field text,
+  value text,
+  resource text,
+  PRIMARY KEY((context, field, value), resource)
+);
+
+CREATE TABLE newts.resource_attributes (
+  context text,
+  resource text,
+  attribute text,
+  value text,
+  PRIMARY KEY((context, resource), attribute)
+);
+
+CREATE TABLE newts.resource_metrics (
+  context text,
+  resource text,
+  metric_name text,
+  PRIMARY KEY((context, resource), metric_name)
+);
+----
+<1> Replication strategy and the number of replicas for your data in your cluster
+<2> Configuration for TWCS compaction
 
 ===== Step 3: Verify if the keyspace was properly initialized
 
