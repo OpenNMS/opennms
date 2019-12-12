@@ -80,6 +80,7 @@ public final class GenericVertex extends GenericElement implements Vertex, NodeR
     	}
 
         public GenericVertexBuilder vertex(GenericVertex vertex) {
+            Objects.requireNonNull(vertex);
             properties(vertex.getProperties());
             return this;
         }

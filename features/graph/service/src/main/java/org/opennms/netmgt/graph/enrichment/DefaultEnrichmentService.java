@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.graph.api.enrichment.EnrichmentGraphBuilder;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -45,11 +46,11 @@ public class DefaultEnrichmentService implements EnrichmentService {
     public GenericGraph enrich(GenericGraph graph) {
         if (graph != null) {
             final List<EnrichmentProcessor> actualProcessors = enrichmentProcessors.stream().filter(p -> p.canEnrich(graph)).collect(Collectors.toList());
-            // TODO MVR this is probably very slow as the graph is rebuilt all the time. This should probably work on the builder instead
-            GenericGraph enrichedGraph = graph;
+            final EnrichmentGraphBuilder enrichmentGraphBuilder = new EnrichmentGraphBuilder(graph);
             for (EnrichmentProcessor processor : actualProcessors) {
-                enrichedGraph = processor.enrich(graph);
+                processor.enrich(enrichmentGraphBuilder);
             }
+            final GenericGraph enrichedGraph = enrichmentGraphBuilder.build();
             return enrichedGraph;
         }
         return null;
