@@ -34,6 +34,9 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
@@ -44,10 +47,20 @@ import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericServiceDetectorFactory<SnmpDetector> {
 
     @Autowired(required=false)
     private SnmpAgentConfigFactory m_agentConfigFactory;
+
+    private final int NUM_INSTANCES = 100;
+
+    private final ThreadFactory snmpDetectorThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("snmp-detector-%d")
+            .build();
+
+    private final ExecutorService snmpDetectorExecutor = Executors.newFixedThreadPool(NUM_INSTANCES, snmpDetectorThreadFactory);
 
     @SuppressWarnings("unchecked")
     public GenericSnmpDetectorFactory(Class<T> clazz) {
@@ -57,7 +70,9 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
     @SuppressWarnings("unchecked")
     @Override
     public T createDetector(Map<String, String> properties) {
-        return (T)super.createDetector(properties);
+        SnmpDetector detector = super.createDetector(properties);
+        detector.setSnmpDetectorExecutor(snmpDetectorExecutor);
+        return (T) detector;
     }
 
     @Override

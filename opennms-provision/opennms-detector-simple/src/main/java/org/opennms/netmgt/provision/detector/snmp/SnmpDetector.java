@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -57,7 +60,9 @@ import com.google.common.collect.Lists;
  * @author ranger
  * @version $Id: $
  */
-public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig>  {
+public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig> {
+
+    private ExecutorService snmpDetectorExecutor;
 
     public enum MatchType {
         // Service detected if 1 or more entries match an expected value
@@ -124,8 +129,10 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
             throw new IllegalArgumentException("No MatchType found for name " + input);
         }
     }
-    
-    /** Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code> */
+
+    /**
+     * Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code>
+     */
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpDetector.class);
@@ -134,12 +141,12 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
      * The system object identifier to retrieve from the remote agent.
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
-    
+
     //These are -1 so by default we use the AgentConfig
     private static final int DEFAULT_PORT = -1;
     private static final int DEFAULT_TIMEOUT = -1;
     private static final int DEFAULT_RETRIES = -1;
-    
+
     private String m_oid = DEFAULT_OID;
     private boolean m_isTable = false;
     private boolean m_hex = false;
@@ -160,7 +167,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
      * Constructor for creating a non-default service based on this protocol
      *
      * @param serviceName a {@link java.lang.String} object.
-     * @param port a int.
+     * @param port        a int.
      */
     public SnmpDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
@@ -238,6 +245,43 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         return agentConfigList;
     }
 
+    @Override
+    public boolean isServiceDetected(final InetAddress address, final List<SnmpAgentConfig> agentConfigList) {
+
+        List<CompletableFuture<Boolean>> futures = agentConfigList.stream()
+                .map(agentConfig -> runServiceDetection(address, agentConfig))
+                .collect(Collectors.toList());
+        // Combine all futures.
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+        CompletableFuture<List<Boolean>> futureList = allFutures.thenApply(result -> {
+            return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        });
+        //Resolve the future.
+        CompletableFuture<Boolean> future = futureList.thenApply((results) -> {
+            return results.stream().anyMatch(result -> result);
+        });
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("SNMP Service detection encountered an error for IPAddress {} ", address, e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private CompletableFuture<Boolean> runServiceDetection(InetAddress address, SnmpAgentConfig agentConfig) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return isServiceDetected(address, agentConfig);
+            } catch (Throwable t) {
+                LOG.warn("SNMP Service detection encountered an error for IPAddress {} with agentConfig {} ",
+                        address, agentConfig, t);
+                return false;
+            }
+
+        }, snmpDetectorExecutor);
+    }
+
 
     private boolean isServiceDetected(MatchType matchType, List<String> retrievedValues, String expectedValue) {
         matchType = matchType == null ? MatchType.Exist : matchType;
@@ -246,7 +290,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
             throw new IllegalArgumentException(getServiceName() + ": expectedValue was not defined using matchType=" + matchType + " but is required. Otherwise set matchType to " + MatchType.Exist);
         }
         boolean isServiceDetected = matchType.isServiceDetected(retrievedValues, expectedValue);
-        LOG.debug(getServiceName() + ": services detected {} using matchType={}, expectedValue={}, retrievedValues={}",isServiceDetected, matchType, expectedValue, retrievedValues);
+        LOG.debug(getServiceName() + ": services detected {} using matchType={}, expectedValue={}, retrievedValues={}", isServiceDetected, matchType, expectedValue, retrievedValues);
         return isServiceDetected;
     }
 
@@ -258,7 +302,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     protected void configureAgentVersion(SnmpAgentConfig agentConfig) {
         if (getForceVersion() != null) {
             String version = getForceVersion();
-            
+
             // TODO: Deprecate the snmpv1, snmpv2, snmpv2c, snmpv3 params in favor of more-used v1, v2c, and v3
             // @see http://issues.opennms.org/browse/NMS-7518
             if ("v1".equalsIgnoreCase(version) || "snmpv1".equalsIgnoreCase(version)) {
@@ -280,31 +324,31 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         if (getPort() > 0) {
             agentConfig.setPort(getPort());
         }
-        
+
         if (getTimeout() > 0) {
             agentConfig.setTimeout(getTimeout());
         }
-        
+
         if (getRetries() > -1) {
             agentConfig.setRetries(getRetries());
         }
     }
-    
+
     /**
      * <p>getValue</p>
      *
      * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
-     * @param oid a {@link java.lang.String} object.
+     * @param oid         a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected  static String getValue(SnmpAgentConfig agentConfig, String oid, boolean hex) {
+    protected static String getValue(SnmpAgentConfig agentConfig, String oid, boolean hex) {
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
         if (val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
             return null;
-        }  else {
+        } else {
             return hex ? val.toHexString() : val.toString();
         }
-        
+
     }
 
     /**
@@ -364,12 +408,17 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.AbstractDetector#onInit()
      */
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onInit() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose() {
     }
@@ -380,5 +429,9 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
 
     public String getMatchType() {
         return matchType.name();
+    }
+
+    public void setSnmpDetectorExecutor(ExecutorService snmpDetectorExecutor) {
+        this.snmpDetectorExecutor = snmpDetectorExecutor;
     }
 }
