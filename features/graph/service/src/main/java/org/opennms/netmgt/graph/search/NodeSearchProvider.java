@@ -46,8 +46,9 @@ import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Lists;
 
-// TODO MVR write test
 public class NodeSearchProvider implements SearchProvider {
+
+    protected static final String CONTEXT = "Node";
 
     private final NodeDao nodeDao;
 
@@ -72,7 +73,7 @@ public class NodeSearchProvider implements SearchProvider {
         for (OnmsNode eachNode : matchingNodes) {
             final SearchSuggestion suggestion = new SearchSuggestion(
                     getProviderId(),
-                    "Node",
+                    CONTEXT,
                     Integer.toString(eachNode.getId()),
                     eachNode.getLabel()
             );

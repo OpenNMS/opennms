@@ -54,7 +54,6 @@ public interface GraphSearchRestService {
             @PathParam("namespace") String namespace,
             @QueryParam("providerId") String providerId,
             // The search criteria, usually the label of the SearchSuggestion
-            @QueryParam("criteria") String criteria,
-            @QueryParam("context") String context
+            @QueryParam("criteria") String criteria
     );
 }

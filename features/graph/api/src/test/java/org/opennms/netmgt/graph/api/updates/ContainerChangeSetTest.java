@@ -68,10 +68,10 @@ public class ContainerChangeSetTest {
          * Verify no changes
          */
         final Date changeSetDate = new Date();
-        ContainerChangeSet changeSet = new ContainerChangeSet(
+        ContainerChangeSet changeSet = ContainerChangeSet.builder(
                 GenericGraphContainer.builder().id(CONTAINER_ID).build(),
                 GenericGraphContainer.builder().id(CONTAINER_ID).build(),
-                changeSetDate);
+                changeSetDate).build();
         assertEquals(Boolean.FALSE, changeSet.hasChanges());
         assertEquals(changeSetDate, changeSet.getChangeSetDate());
 
@@ -81,7 +81,7 @@ public class ContainerChangeSetTest {
         final GenericGraphContainer containerWithGraph2 = GenericGraphContainer.builder().id(CONTAINER_ID)
                 .addGraph(graph2)
                 .build();
-        changeSet = new ContainerChangeSet(GenericGraphContainer.builder().id(CONTAINER_ID).build(), containerWithGraph2);
+        changeSet = ContainerChangeSet.builder(GenericGraphContainer.builder().id(CONTAINER_ID).build(), containerWithGraph2).build();
         assertThat(changeSet.hasChanges(), Matchers.is(true));
         assertThat(changeSet.getGraphsUpdated(), Matchers.hasSize(0));
         assertThat(changeSet.getGraphsRemoved(), Matchers.hasSize(0));
@@ -95,7 +95,7 @@ public class ContainerChangeSetTest {
                 .id(CONTAINER_ID)
                 .addGraph(graph3)
                 .build();
-        changeSet = new ContainerChangeSet(containerWithGraph3, containerWithGraph2);
+        changeSet = ContainerChangeSet.builder(containerWithGraph3, containerWithGraph2).build();
         assertThat(changeSet.hasChanges(), Matchers.is(true));
         assertThat(changeSet.getGraphsUpdated(), Matchers.hasSize(0));
         assertEquals(graph2, changeSet.getGraphsAdded().get(0));
@@ -108,7 +108,7 @@ public class ContainerChangeSetTest {
                 .id(CONTAINER_ID)
                 .addGraph(graph1)
                 .build();
-        changeSet = new ContainerChangeSet(containerWithGraph1, containerWithGraph2);
+        changeSet = ContainerChangeSet.builder(containerWithGraph1, containerWithGraph2).build();
         assertThat(changeSet.hasChanges(), Matchers.is(true));
         assertThat(changeSet.getGraphsUpdated(), Matchers.hasSize(1));
         assertThat(changeSet.getGraphsAdded(), Matchers.hasSize(0));
@@ -145,7 +145,7 @@ public class ContainerChangeSetTest {
         final GenericGraphContainer oldContainer = GenericGraphContainer.builder().id(CONTAINER_ID).build();
         final GenericGraphContainer newContainer = GenericGraphContainer.builder().id(CONTAINER_ID + ".opennms").build();
         try {
-            new ContainerChangeSet(oldContainer, newContainer);
+            ContainerChangeSet.builder(oldContainer, newContainer).build();
             fail("Expected an exception to be thrown, but succeeded. Bailing");
         } catch (IllegalStateException ex) {
             // expected, as container id changes are not supported

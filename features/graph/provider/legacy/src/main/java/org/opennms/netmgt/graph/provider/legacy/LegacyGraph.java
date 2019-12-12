@@ -40,7 +40,6 @@ public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
         super(genericGraph);
     }
 
-    // TODO MVR the convert methods could be probably achieved using visitor pattern instead
     @Override
     protected ImmutableGraph<LegacyVertex, LegacyEdge> convert(GenericGraph graph) {
         return new LegacyGraph(graph);

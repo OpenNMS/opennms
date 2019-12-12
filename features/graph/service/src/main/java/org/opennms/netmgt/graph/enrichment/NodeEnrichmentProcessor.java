@@ -39,12 +39,9 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NodeEnrichmentProcessor implements EnrichmentProcessor {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final NodeService nodeService;
 
     public NodeEnrichmentProcessor(NodeService nodeService) {
@@ -53,9 +50,14 @@ public class NodeEnrichmentProcessor implements EnrichmentProcessor {
 
     @Override
     public boolean canEnrich(GenericGraph graph) {
-        // TODO MVR make it a constant
-        final Boolean value = graph.getProperty("enrichment.resolveNodes", false);
-        return value;
+        final Object value = graph.getProperties().get(GenericProperties.ENRICHMENT_RESOLVE_NODES);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
+        return false;
     }
 
     @Override

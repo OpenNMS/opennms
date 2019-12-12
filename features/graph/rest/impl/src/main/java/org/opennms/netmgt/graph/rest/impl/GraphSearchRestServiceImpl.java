@@ -60,8 +60,8 @@ public class GraphSearchRestServiceImpl implements GraphSearchRestService {
     }
 
     @Override
-    public Response search(String namespace, String providerId, String criteria, String context) {
-        SearchCriteria searchCriteria = new SearchCriteria(providerId, namespace, criteria, context);
+    public Response search(String namespace, String providerId, String criteria) {
+        final SearchCriteria searchCriteria = new SearchCriteria(providerId, namespace, criteria);
         final List<GenericVertex> result = graphSearchService.search(searchCriteria);
         if(result.size() < 1) {
             return Response.noContent().build();

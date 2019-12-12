@@ -54,7 +54,7 @@ public class DefaultGraphNotificationService implements GraphNotificationService
 
     @Override
     public void containerChanged(ImmutableGraphContainer oldContainer, ImmutableGraphContainer newContainer) {
-        final ContainerChangeSet containerChangeSet = new ContainerChangeSet(oldContainer, newContainer);
+        final ContainerChangeSet containerChangeSet = ContainerChangeSet.builder(oldContainer, newContainer).build();
         containerChanged(containerChangeSet);
     }
 
@@ -63,7 +63,6 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         Objects.requireNonNull(containerChangeSet);
         if (containerChangeSet.hasChanges()) {
             for (GraphContainerChangeSetListener listener : graphContainerChangeSetListeners) {
-                // TODO MVR the containerChangeSet should be not modifiable otherwise this may cause some weird side-effects
                 listener.graphContainerChanged(containerChangeSet);
 
                 // If a graph was updated, inform all GraphChange(Set)Listener as well
@@ -76,7 +75,7 @@ public class DefaultGraphNotificationService implements GraphNotificationService
 
     @Override
     public void graphChanged(ImmutableGraph oldGraph, ImmutableGraph newGraph) {
-        final ChangeSet changeSet = new ChangeSet(oldGraph, newGraph);
+        final ChangeSet changeSet = ChangeSet.builder(oldGraph, newGraph).build();
         graphChanged(changeSet);
     }
 
@@ -85,7 +84,6 @@ public class DefaultGraphNotificationService implements GraphNotificationService
         Objects.requireNonNull(graphChangeSet);
         if (graphChangeSet.hasChanges()) {
             for (GraphChangeSetListener listener : graphChangeSetListeners) {
-                // TODO MVR the changeSet should be not modifiable otherwise this may cause some weird side-effects
                 listener.graphChanged(graphChangeSet);
             }
         }

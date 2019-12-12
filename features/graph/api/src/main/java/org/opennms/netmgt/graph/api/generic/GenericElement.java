@@ -115,13 +115,13 @@ public abstract class GenericElement {
         	return (T) this;
         }
         
-        public T namespace(String namespace){
+        public T namespace(String namespace) {
             Objects.requireNonNull(namespace, "namespace cannot be null.");
             property(GenericProperties.NAMESPACE, namespace);
         	return (T) this;
         }
         
-        public T property(String name, Object value){
+        public T property(String name, Object value) {
             if(name == null || value == null) {
                 LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
                 return (T) this;
@@ -134,7 +134,7 @@ public abstract class GenericElement {
             return (T) this;
         }
         
-        public T properties(Map<String, Object> properties){
+        public T properties(Map<String, Object> properties) {
             Objects.requireNonNull(properties, "properties cannot be null");
             for (Map.Entry<String, Object> entry : properties.entrySet()) {
                 property(entry.getKey(), entry.getValue());

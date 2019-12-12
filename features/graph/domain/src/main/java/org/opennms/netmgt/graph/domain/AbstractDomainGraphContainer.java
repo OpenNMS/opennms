@@ -63,7 +63,7 @@ public abstract class AbstractDomainGraphContainer<G extends AbstractDomainGraph
 
     @Override
     public G getGraph(String namespace) {
-        return getGraphs().stream().filter(g -> g.getNamespace().equalsIgnoreCase(namespace))
+        return getGraphs().stream().filter(g -> g.getNamespace().equals(namespace))
                 .findFirst().orElse(null);
     }
 

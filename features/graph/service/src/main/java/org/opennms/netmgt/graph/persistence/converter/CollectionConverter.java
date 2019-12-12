@@ -54,7 +54,7 @@ import com.google.gson.JsonSerializer;
 /**
  * Transforms a {@link java.util.Collection} from and to a String to be persisted/serialized to the database. <br/>
  * The {@link java.util.Collection} may only contain elements of a type that is supported by the {@link ConverterService}.<br/>
- * The conversation follows the following pattern:<br/>
+ * The conversion follows the following pattern:<br/>
  * {@link java.util.Collection} <-> {@link SerializedCollection} <-> JSON String.
  * The {@link SerializedCollection} is the Java representation of the JSON object.<br/>
  * The elements in the Collection are converted to Strings using the {@link ConverterService}.
@@ -101,15 +101,12 @@ public class CollectionConverter implements Converter<Collection<?>> {
     }
 
     private Collection<?> recreateCollection(Class<Collection<?>> type, List values) {
-
-        // the list of possible collections should be synchronized with: AllowedValuesInPropertiesMap
-        // TODO: Patrick: find a way to keep the 2 classes consistent
         if (ImmutableList.class.isAssignableFrom(type)) {
             return ImmutableList.copyOf(values);
         } else if (ImmutableSet.class.isAssignableFrom(type)) {
             return ImmutableSet.copyOf(values);
         } else {
-            LOG.warn("Cannot recreate {}, will use ImmutableList instead.");
+            LOG.warn("Cannot recreate {}, will use ImmutableList instead.", type);
             return ImmutableList.copyOf(values);
         }
     }

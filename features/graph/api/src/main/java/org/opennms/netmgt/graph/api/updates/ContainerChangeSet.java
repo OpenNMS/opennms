@@ -29,33 +29,29 @@
 package org.opennms.netmgt.graph.api.updates;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 
-// TODO MVR enforce graph type
 public class ContainerChangeSet {
 
     private final Date changeSetDate;
     private final String containerId;
-    // TODO MVR adding and removing may be sufficient to just persist the namespace
-    private List<ImmutableGraph<?, ?>> addedGraphs = new ArrayList<>();
-    private List<ImmutableGraph<?, ?>> removedGraphs = new ArrayList<>();
-    private List<ChangeSet<?, ?, ?>> graphChanges = new ArrayList<>();
+    private final List<ImmutableGraph<?, ?>> addedGraphs;
+    private final List<ImmutableGraph<?, ?>> removedGraphs;
+    private final List<ChangeSet<?, ?, ?>> graphChanges;
 
-    public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer) {
-        this(oldGraphContainer, newGraphContainer, new Date());
-    }
-
-    public ContainerChangeSet(ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer, Date changeSetDate) {
-        this.changeSetDate = changeSetDate;
-        if (oldGraphContainer == null && newGraphContainer == null) {
-            throw new IllegalArgumentException("Cannot detect changes if both containers are null.");
-        }
-        this.containerId = oldGraphContainer == null ? newGraphContainer.getId() : oldGraphContainer.getId();
-        detectChanges(oldGraphContainer, newGraphContainer);
+    public ContainerChangeSet(ContainerChangeSetBuilder builder) {
+        Objects.requireNonNull(builder);
+        this.changeSetDate = builder.changeSetDate;
+        this.containerId = builder.getContainerId();
+        this.addedGraphs = Collections.unmodifiableList(builder.addedGraphs);
+        this.removedGraphs = Collections.unmodifiableList(builder.removedGraphs);
+        this.graphChanges = Collections.unmodifiableList(builder.graphChanges);
     }
 
     public Date getChangeSetDate() {
@@ -63,15 +59,15 @@ public class ContainerChangeSet {
     }
 
     public List<ImmutableGraph<?, ?>> getGraphsAdded() {
-        return new ArrayList<>(addedGraphs);
+        return addedGraphs;
     }
 
     public List<ImmutableGraph<?, ?>> getGraphsRemoved() {
-        return new ArrayList<>(removedGraphs);
+        return removedGraphs;
     }
 
     public List<ChangeSet<?, ?, ?>> getGraphsUpdated() {
-        return new ArrayList<>(graphChanges);
+        return graphChanges;
     }
 
     public boolean hasChanges() {
@@ -82,75 +78,110 @@ public class ContainerChangeSet {
         return containerId;
     }
 
-    protected void detectChanges(ImmutableGraphContainer<?> oldGraphContainer, ImmutableGraphContainer<?> newGraphContainer) {
-        // no old container exists, add all graphs
-        if (oldGraphContainer == null && newGraphContainer != null) {
-            newGraphContainer.getGraphs().forEach(g -> graphAdded(g));
+    public static ContainerChangeSetBuilder builder(final ImmutableGraphContainer oldGraphContainer, final ImmutableGraphContainer newGraphContainer) {
+        return builder(oldGraphContainer, newGraphContainer, new Date());
+    }
+
+    public static ContainerChangeSetBuilder builder(final ImmutableGraphContainer oldGraphContainer, ImmutableGraphContainer newGraphContainer, final Date changeSetDate) {
+        return new ContainerChangeSetBuilder(oldGraphContainer, newGraphContainer, changeSetDate);
+    }
+
+    public static final class ContainerChangeSetBuilder {
+        private final ImmutableGraphContainer oldGraphContainer;
+        private final ImmutableGraphContainer newGraphContainer;
+        private final List<ImmutableGraph<?, ?>> addedGraphs = new ArrayList<>();
+        private final List<ImmutableGraph<?, ?>> removedGraphs = new ArrayList<>();
+        private final List<ChangeSet<?, ?, ?>> graphChanges = new ArrayList<>();
+        private final Date changeSetDate;
+
+        private ContainerChangeSetBuilder(final ImmutableGraphContainer oldGraphContainer, final ImmutableGraphContainer newGraphContainer, final Date changeSetDate) {
+            this.changeSetDate = Objects.requireNonNull(changeSetDate);
+            if (oldGraphContainer == null && newGraphContainer == null) {
+                throw new IllegalArgumentException("Cannot create change set if both containers are null.");
+            }
+            this.oldGraphContainer = oldGraphContainer;
+            this.newGraphContainer = newGraphContainer;
         }
 
-        // no new graph container exists, remove all
-        if (oldGraphContainer != null && newGraphContainer == null) {
-            oldGraphContainer.getGraphs().forEach(g -> graphRemoved(g));
+        protected String getContainerId() {
+            return oldGraphContainer == null ? newGraphContainer.getId() : oldGraphContainer.getId();
         }
 
-        // nothing to do if they are the same :)
-        if (oldGraphContainer == newGraphContainer) {
-            return;
-        }
-
-        // both containers exists, so calculate changes
-        if (oldGraphContainer != null && newGraphContainer != null) {
-            // Before changes can be calculated, ensure the containers share the same id, otherwise
-            // we should bail, as this is theoretical/technical possible, but does not make sense from the
-            // domain view the container reflects.
-            if (!oldGraphContainer.getId().equalsIgnoreCase(newGraphContainer.getId())) {
-                throw new IllegalStateException("Cannot detect changes between different containers");
+        private void detectChanges(final ImmutableGraphContainer<?> oldGraphContainer, final ImmutableGraphContainer<?> newGraphContainer) {
+            // no old container exists, add all graphs
+            if (oldGraphContainer == null && newGraphContainer != null) {
+                newGraphContainer.getGraphs().forEach(g -> graphAdded(g));
             }
 
-            // Detect changes
-            final List<String> oldNamespaces = oldGraphContainer.getNamespaces();
-            final List<String> newNamespaces = newGraphContainer.getNamespaces();
+            // no new graph container exists, remove all
+            if (oldGraphContainer != null && newGraphContainer == null) {
+                oldGraphContainer.getGraphs().forEach(g -> graphRemoved(g));
+            }
 
-            // Detect removed graphs
-            final List<String> removedNamespaces = new ArrayList<>(oldNamespaces);
-            removedNamespaces.removeAll(newNamespaces);
-            removedNamespaces.forEach(ns -> {
-                final ImmutableGraph removedGraph = oldGraphContainer.getGraph(ns);
-                graphRemoved(removedGraph);
-            });
+            // nothing to do if they are the same :)
+            if (oldGraphContainer == newGraphContainer) {
+                return;
+            }
 
-            // Detect added graphs
-            final List<String> addedNamespaces = new ArrayList<>(newNamespaces);
-            addedNamespaces.removeAll(oldNamespaces);
-            addedNamespaces.forEach(ns -> {
-                final ImmutableGraph addedGraph = newGraphContainer.getGraph(ns);
-                graphAdded(addedGraph);
-            });
-
-            // Detect changes
-            final List<String> sharedNamespaces = new ArrayList<>(newNamespaces);
-            sharedNamespaces.removeAll(addedNamespaces);
-            sharedNamespaces.removeAll(removedNamespaces);
-            sharedNamespaces.forEach(ns -> {
-                final ImmutableGraph oldGraph = oldGraphContainer.getGraph(ns);
-                final ImmutableGraph newGraph = newGraphContainer.getGraph(ns);
-                final ChangeSet changeSet = new ChangeSet(oldGraph, newGraph, changeSetDate);
-                if (changeSet.hasChanges()) {
-                    graphChanged(changeSet);
+            // both containers exists, so calculate changes
+            if (oldGraphContainer != null && newGraphContainer != null) {
+                // Before changes can be calculated, ensure the containers share the same id, otherwise
+                // we should bail, as this is theoretical/technical possible, but does not make sense from the
+                // domain view the container reflects.
+                if (!oldGraphContainer.getId().equalsIgnoreCase(newGraphContainer.getId())) {
+                    throw new IllegalStateException("Cannot detect changes between different containers");
                 }
-            });
+
+                // Detect changes
+                final List<String> oldNamespaces = oldGraphContainer.getNamespaces();
+                final List<String> newNamespaces = newGraphContainer.getNamespaces();
+
+                // Detect removed graphs
+                final List<String> removedNamespaces = new ArrayList<>(oldNamespaces);
+                removedNamespaces.removeAll(newNamespaces);
+                removedNamespaces.forEach(ns -> {
+                    final ImmutableGraph removedGraph = oldGraphContainer.getGraph(ns);
+                    graphRemoved(removedGraph);
+                });
+
+                // Detect added graphs
+                final List<String> addedNamespaces = new ArrayList<>(newNamespaces);
+                addedNamespaces.removeAll(oldNamespaces);
+                addedNamespaces.forEach(ns -> {
+                    final ImmutableGraph addedGraph = newGraphContainer.getGraph(ns);
+                    graphAdded(addedGraph);
+                });
+
+                // Detect changes
+                final List<String> sharedNamespaces = new ArrayList<>(newNamespaces);
+                sharedNamespaces.removeAll(addedNamespaces);
+                sharedNamespaces.removeAll(removedNamespaces);
+                sharedNamespaces.forEach(ns -> {
+                    final ImmutableGraph oldGraph = oldGraphContainer.getGraph(ns);
+                    final ImmutableGraph newGraph = newGraphContainer.getGraph(ns);
+                    final ChangeSet changeSet = ChangeSet.builder(oldGraph, newGraph).withDate(changeSetDate).build();
+                    if (changeSet.hasChanges()) {
+                        graphChanged(changeSet);
+                    }
+                });
+            }
         }
-    }
 
-    private void graphAdded(ImmutableGraph<?, ?> newGraph) {
-        addedGraphs.add(newGraph);
-    }
+        private void graphAdded(ImmutableGraph<?, ?> newGraph) {
+            addedGraphs.add(newGraph);
+        }
 
-    private void graphRemoved(ImmutableGraph<?, ?> removedGraph) {
-        removedGraphs.add(removedGraph);
-    }
+        private void graphRemoved(ImmutableGraph<?, ?> removedGraph) {
+            removedGraphs.add(removedGraph);
+        }
 
-    private void graphChanged(ChangeSet<?, ?, ?> changeSet) {
-        graphChanges.add(changeSet);
+        private void graphChanged(ChangeSet<?, ?, ?> changeSet) {
+            graphChanges.add(changeSet);
+        }
+
+        public ContainerChangeSet build() {
+            detectChanges(oldGraphContainer, newGraphContainer);
+            return new ContainerChangeSet(this);
+        }
     }
 }
