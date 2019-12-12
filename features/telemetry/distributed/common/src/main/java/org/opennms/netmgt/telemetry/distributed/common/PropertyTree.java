@@ -136,6 +136,18 @@ public class PropertyTree {
     }
 
     /**
+     * Get the value at the given path parsed as an {@link Boolean}.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the {@link Integer} value of the node at the given path or {@link Optional#empty()} if one of the nodes in the path does not exist
+     */
+    public Optional<Boolean> getOptionalBoolean(final String... path) {
+        return this.find(path)
+                .flatMap(Node::getValue)
+                .map(Boolean::parseBoolean);
+    }
+
+    /**
      * Get the values of all children nodes at the given path. The values are mapped by the children node names.
      *
      * @param path the path of the node to return split into its elements
