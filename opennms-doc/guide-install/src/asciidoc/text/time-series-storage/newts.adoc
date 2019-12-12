@@ -15,9 +15,8 @@ WARNING: In _Newts_ there is no information loss with data aggregation when time
 TIP: To avoid unwanted updates disable the _Cassandra_ repository on _DNF/YUM_ based distributions or use `apt-mark hold cassandra` on _APT_ based distributions.
 
 By default using the `${OPENNMS_HOME}/bin/newts init` command the samples keyspace is created with the link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__stcs-compaction[Size Tiered Compaction Strategy (STSC)].
-_STSC_ is not optimal for time series data and requires additionally 50% guaranteed free disk space on the partition with SSTables to complete compactions.
+_STCS_ is not optimal for time series data and requires additionally 50% guaranteed free disk space on the partition with SSTables to complete compactions.
 For this reason we will describe how to set up samples table with the link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__twcs[Time Window Compaction Strategy (TWCS)] which has an overhead approximately around 10-20%.
-
 
 ==== Objectives
 
@@ -35,10 +34,8 @@ WARNING: It is currently not supported to initialize the _Newts_ keyspace from _
          _Microsoft Windows_ based _Cassandra_ server can be part of the cluster, but keyspace initialization is only possible using a _Linux_ operating system.
 
 
-
 [[gi-configure-opennms]]
 ==== Configure {opennms-product-name} to use Newts
-
 
 // No section numbers for step-by-step guide
 :!sectnums:
@@ -95,7 +92,7 @@ CREATE TABLE newts.samples (
   'compaction_window_unit': 'DAYS',
   'expired_sstable_check_frequency_seconds': '86400',
   'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy'
-} AND gc_grace_seconds = 604800
+} AND gc_grace_seconds = 604800<3>
   AND read_repair_chance = 0;
 
 CREATE TABLE newts.terms (
@@ -123,6 +120,7 @@ CREATE TABLE newts.resource_metrics (
 ----
 <1> Replication strategy and the number of replicas for your data in your cluster
 <2> Configuration for TWCS compaction
+<3> Keep tombstone data for 7 days after TTL expired or data is deleted
 
 ===== Step 3: Verify if the keyspace was properly initialized
 
