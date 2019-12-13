@@ -124,8 +124,12 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     public void addDowntime(long interval, long begin, long end, boolean delete) {
+        this.addDowntime(interval, begin, end, delete ? "true" : "false");
+    }
+
+    public void addDowntime(long interval, long begin, long end, String delete) {
         Downtime downtime = new Downtime();
-        downtime.setDelete(delete ? "true" : "false");
+        downtime.setDelete(delete);
         downtime.setBegin(begin);
         downtime.setInterval(interval);
         if (end >= 0)

@@ -140,7 +140,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         pack.setFilter("abc");
         pack.setRrd(new Rrd(3, "RRA:AVERAGE:0.5:1:2016"));
         pack.addService(new Service("ICMP", 3, "true", "on"));
-        pack.addDowntime(new Downtime(0, true));
+        pack.addDowntime(new Downtime(0, "managed"));
         config.addPackage(pack);
 
         config.addMonitor("ICMP", "org.opennms.netmgt.poller.monitors.IcmpMonitor");
@@ -187,7 +187,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         example1.addDowntime(new Downtime(30000, 0, 300000));
         example1.addDowntime(new Downtime(300000, 300000, 43200000));
         example1.addDowntime(new Downtime(600000, 43200000, 432000000));
-        example1.addDowntime(new Downtime(432000000, true));
+        example1.addDowntime(new Downtime(432000000, "managed"));
 
         config.addPackage(example1);
 
@@ -564,7 +564,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         example1.addDowntime(new Downtime(30000, 0, 300000));
         example1.addDowntime(new Downtime(300000, 300000, 43200000));
         example1.addDowntime(new Downtime(600000, 43200000, 432000000));
-        example1.addDowntime(new Downtime(432000000, true));
+        example1.addDowntime(new Downtime(432000000, "managed"));
 
         config.addPackage(example1);
 
@@ -582,7 +582,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                        "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
                                        "rrd-base-name", "strafeping"));
         strafer.addDowntime(new Downtime(300000, 0, 432000000));
-        strafer.addDowntime(new Downtime(432000000, true));
+        strafer.addDowntime(new Downtime(432000000, "managed"));
 
         config.addPackage(strafer);
 

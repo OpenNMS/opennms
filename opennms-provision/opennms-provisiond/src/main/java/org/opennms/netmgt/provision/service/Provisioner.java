@@ -843,14 +843,19 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
     public void handleDeleteService(Event event) {
         try {
-	    doDeleteService(event.getNodeid(), event.getInterfaceAddress() == null ? null : event.getInterfaceAddress(), event.getService());
+            boolean ignoreUnmanaged = false;
+            final Parm ignoreUnmanagedParm = event.getParm("ignoreUnmanaged");
+            if (ignoreUnmanagedParm != null) {
+                ignoreUnmanaged = Boolean.valueOf(ignoreUnmanagedParm.getValue().getContent());
+            }
+            doDeleteService(event.getNodeid(), event.getInterfaceAddress() == null ? null : event.getInterfaceAddress(), event.getService(), ignoreUnmanaged);
         } catch (Throwable e) {
             LOG.error("Unexpected exception processing event: {}", event.getUei(), e);
         }
     }
     
-    private void doDeleteService(long nodeId, InetAddress addr, String service) {
-        m_provisionService.deleteService((int)nodeId, addr, service);
+    private void doDeleteService(final long nodeId, final InetAddress addr, final String service, final boolean ignoreUnmanaged) {
+        m_provisionService.deleteService((int)nodeId, addr, service, ignoreUnmanaged);
     }
 
     private String getEventUrl(Event event) {

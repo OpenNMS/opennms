@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,6 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Downtime implements Serializable {
     private static final long serialVersionUID = -2436661386464207644L;
+    private static final List<String> s_deleteValues = Arrays.asList("always", "managed", "never");
 
     /**
      * Start of the interval.
@@ -62,14 +65,13 @@ public class Downtime implements Serializable {
 
     /**
      * Attribute that determines if service is to be deleted when down
-     * continuously until the start time.
+     * continuously since the start time.
      */
-    @XmlAttribute(name="delete")
     private String m_delete;
 
     /**
      * Interval at which service is to be polled between the specified start
-     * and end when service has been continously down.
+     * and end when service has been continuously down.
      */
     @XmlAttribute(name="interval")
     private Long m_interval;
@@ -86,10 +88,10 @@ public class Downtime implements Serializable {
         setEnd(end);
     }
 
-    public Downtime(final long begin, final boolean delete) {
+    public Downtime(final long begin, final String delete) {
         this();
         setBegin(begin);
-        setDelete(delete? "true":"false");
+        setDelete(delete);
     }
 
     /**
@@ -130,13 +132,24 @@ public class Downtime implements Serializable {
 
     /**
      * Attribute that determines if service is to be deleted when down
-     * continuously until the start time.
+     * continuously since the start time.
      */
+    @XmlAttribute(name="delete")
     public String getDelete() {
         return m_delete;
     }
 
     public void setDelete(final String delete) {
+        if ("yes".equals(delete) || "true".equals(delete)) {
+            m_delete = "managed";
+            return;
+        } else if ("no".equals(delete) || "false".equals(delete)) {
+            m_delete = "never";
+            return;
+        } else if (delete != null && !s_deleteValues.contains(delete)) {
+            throw new IllegalArgumentException("Downtime delete attribute must be one of 'always', 'managed', or 'never', but was '" + delete + "'.");
+        }
+
         m_delete = delete;
     }
 

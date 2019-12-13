@@ -119,4 +119,46 @@ public class ProvisionerTest {
         assertThat(foreignSourceRef.get(), equalTo(null));
         assertThat(locationRef.get(), equalTo(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
     }
+
+    @Test
+    public void testHandleDeleteServiceKeepUnmanaged() {
+        final Provisioner provisioner = new Provisioner();
+
+        ProvisionService provisionService = mock(ProvisionService.class);
+        when(provisionService.isDiscoveryEnabled()).thenReturn(true);
+        provisioner.setProvisionService(provisionService);
+
+        MonitoringSystemDao monitoringSystemDao = mock(MonitoringSystemDao.class);
+        provisioner.setMonitoringSystemDao(monitoringSystemDao);
+
+        final Event event = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test")
+            .setNodeid(1)
+            .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
+            .setService("ICMP").getEvent();
+
+        provisioner.handleDeleteService(event);
+
+        verify(provisionService).deleteService(1, InetAddressUtils.UNPINGABLE_ADDRESS, "ICMP", false);
+    }
+
+    @Test
+    public void testHandleDeleteServiceIgnoreUnmanaged() {
+        final Provisioner provisioner = new Provisioner();
+
+        ProvisionService provisionService = mock(ProvisionService.class);
+        when(provisionService.isDiscoveryEnabled()).thenReturn(true);
+        provisioner.setProvisionService(provisionService);
+
+        MonitoringSystemDao monitoringSystemDao = mock(MonitoringSystemDao.class);
+        provisioner.setMonitoringSystemDao(monitoringSystemDao);
+
+        final Event event = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test")
+            .setNodeid(1)
+            .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
+            .setService("ICMP").addParam("ignoreUnmanaged", "true").getEvent();
+
+        provisioner.handleDeleteService(event);
+
+        verify(provisionService).deleteService(1, InetAddressUtils.UNPINGABLE_ADDRESS, "ICMP", true);
+    }
 }
