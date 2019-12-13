@@ -126,7 +126,7 @@ CREATE TABLE newts.resource_metrics (
 ----
 <1> Replication strategy and the number of replicas for your data in your cluster
 <2> Configuration for TWCS compaction
-<3> TODO
+<3> The `compaction_window_size` and `compaction_window_unit` depend on `org.opennms.newts.config.ttl`, in this example for 1 year of data you will end up with 52 compacted _SSTables_ which is a reasonable number.
 
 ===== Step 3: Verify if the keyspace was properly initialized
 
