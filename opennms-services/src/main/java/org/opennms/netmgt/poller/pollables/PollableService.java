@@ -450,9 +450,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         final Event event = getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date(), getStatus().getReason());
         if (ignoreUnmanaged) {
             final Parm parm = new Parm();
-            parm.setParmName("ignoreUnmanaged");
+            parm.setParmName(EventConstants.PARM_IGNORE_UNMANAGED);
             parm.setValue(null);
-            event.addParm(new Parm("ignoreUnmanaged", "true"));
+            event.addParm(new Parm(EventConstants.PARM_IGNORE_UNMANAGED, "true"));
         }
         getContext().sendEvent(event);
     }

@@ -155,7 +155,7 @@ public class ProvisionerTest {
         final Event event = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test")
             .setNodeid(1)
             .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
-            .setService("ICMP").addParam("ignoreUnmanaged", "true").getEvent();
+            .setService("ICMP").addParam(EventConstants.PARM_IGNORE_UNMANAGED, "true").getEvent();
 
         provisioner.handleDeleteService(event);
 

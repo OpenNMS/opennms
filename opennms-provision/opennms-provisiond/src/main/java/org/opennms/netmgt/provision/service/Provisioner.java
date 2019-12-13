@@ -844,7 +844,7 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleDeleteService(Event event) {
         try {
             boolean ignoreUnmanaged = false;
-            final Parm ignoreUnmanagedParm = event.getParm("ignoreUnmanaged");
+            final Parm ignoreUnmanagedParm = event.getParm(EventConstants.PARM_IGNORE_UNMANAGED);
             if (ignoreUnmanagedParm != null) {
                 ignoreUnmanaged = Boolean.valueOf(ignoreUnmanagedParm.getValue().getContent());
             }

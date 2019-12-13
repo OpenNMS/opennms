@@ -212,6 +212,11 @@ public abstract class EventConstants {
     public static final String DELETE_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/deleteService";
 
     /**
+     * Whether to ignore unmanaged interfaces when cascading service delete.
+     */
+    public static final String PARM_IGNORE_UNMANAGED = "ignoreUnmanaged";
+
+    /**
      * The service deleted event UEI.
      */
     public static final String SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/serviceDeleted";

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -37,6 +36,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Downtime model. This determines the rates at which addresses are to be
@@ -48,8 +49,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name="downtime")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Downtime implements Serializable {
-    private static final long serialVersionUID = -2436661386464207644L;
-    private static final List<String> s_deleteValues = Arrays.asList("always", "managed", "never");
+    private static final long serialVersionUID = 1L;
+
+    public static final String DELETE_ALWAYS = "always";
+    public static final String DELETE_MANAGED = "managed";
+    public static final String DELETE_NEVER = "never";
+
+    private static final List<String> s_deleteValues = ImmutableList.of(DELETE_ALWAYS, DELETE_MANAGED, DELETE_NEVER);
 
     /**
      * Start of the interval.
@@ -141,10 +147,10 @@ public class Downtime implements Serializable {
 
     public void setDelete(final String delete) {
         if ("yes".equals(delete) || "true".equals(delete)) {
-            m_delete = "managed";
+            m_delete = DELETE_MANAGED;
             return;
         } else if ("no".equals(delete) || "false".equals(delete)) {
-            m_delete = "never";
+            m_delete = DELETE_NEVER;
             return;
         } else if (delete != null && !s_deleteValues.contains(delete)) {
             throw new IllegalArgumentException("Downtime delete attribute must be one of 'always', 'managed', or 'never', but was '" + delete + "'.");

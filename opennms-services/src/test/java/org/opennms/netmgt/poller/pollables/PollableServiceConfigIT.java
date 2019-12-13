@@ -339,7 +339,7 @@ public class PollableServiceConfigIT {
         assertEquals(-1, psc.getInterval());
 
         final Event sent = anticipator.getAnticipatedEventsReceived().get(0);
-        assertNull(sent.getParm("ignoreUnmanaged"));
+        assertNull(sent.getParm(EventConstants.PARM_IGNORE_UNMANAGED));
 
         anticipator.verifyAnticipated();
     }
@@ -402,8 +402,8 @@ public class PollableServiceConfigIT {
         assertEquals(-1, psc.getInterval());
 
         final Event sent = anticipator.getAnticipatedEventsReceived().get(0);
-        assertNotNull(sent.getParm("ignoreUnmanaged"));
-        assertEquals("true", sent.getParm("ignoreUnmanaged").getValue().getContent());
+        assertNotNull(sent.getParm(EventConstants.PARM_IGNORE_UNMANAGED));
+        assertEquals("true", sent.getParm(EventConstants.PARM_IGNORE_UNMANAGED).getValue().getContent());
         anticipator.verifyAnticipated();
     }
 

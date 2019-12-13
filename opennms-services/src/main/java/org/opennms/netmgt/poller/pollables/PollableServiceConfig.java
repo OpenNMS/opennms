@@ -243,11 +243,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 if (dt.getBegin() <= downFor) {
                     LOG.debug("getInterval(): begin ({}) <= {}", dt.getBegin(), downFor);
                     final String delete = dt.getDelete();
-                    if ("always".equals(delete)) {
+                    if (Downtime.DELETE_ALWAYS.equals(delete)) {
                         when = -1;
                         ignoreUnmanaged = true;
                         matched = true;
-                    } else if ("managed".equals(delete)) {
+                    } else if (Downtime.DELETE_MANAGED.equals(delete)) {
                         when = -1;
                         matched = true;
                     }
