@@ -41,6 +41,18 @@ public final class ContextKey implements Comparable<ContextKey> {
         this.key = Objects.requireNonNull(key);
     }
 
+    public ContextKey(final String contextKey) {
+        Objects.requireNonNull(contextKey , "contextKey must not be null");
+        final String arr[] = contextKey.split(":");
+
+        if (arr.length != 2) {
+            throw new IllegalArgumentException("contextKey '" + contextKey + "' must be in the format 'context:key'");
+        }
+
+        this.context = arr[0];
+        this.key = arr[1];
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

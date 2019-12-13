@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.bson.BsonWriter;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.collect.ImmutableMap;
+
+import io.netty.buffer.ByteBuf;
 
 // struct flow_record {
 //    data_format flow_format;         /* The format of sflow_data */
@@ -90,7 +91,7 @@ public class FlowRecord extends Record<FlowData> {
             .put(DataFormat.from(0, 2205), AppTarget::new)
             .build();
 
-    public FlowRecord(final ByteBuffer buffer) throws InvalidPacketException {
+    public FlowRecord(final ByteBuf buffer) throws InvalidPacketException {
         super(buffer, flowDataFormats);
     }
 

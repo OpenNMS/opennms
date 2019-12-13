@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -49,6 +49,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.Throwables;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class ParserTest {
 
@@ -80,7 +83,7 @@ public class ParserTest {
                 assertThat(p3.header.observationDomainId, is(0L));
                 assertThat(p3.header.exportTime, is(1431516028L)); // "2015-05-13T11:20:26.000Z"
 
-                assertThat(buffer.hasRemaining(), is(false));
+                assertThat(buffer.isReadable(), is(false));
 
             } catch (final Exception e) {
                 throw Throwables.propagate(e);
@@ -88,7 +91,7 @@ public class ParserTest {
         });
     }
 
-    public void execute(final String resource, final Consumer<ByteBuffer> consumer) {
+    public void execute(final String resource, final Consumer<ByteBuf> consumer) {
         Objects.requireNonNull(resource);
         Objects.requireNonNull(consumer);
 
@@ -101,7 +104,7 @@ public class ParserTest {
                 channel.read(buffer);
                 buffer.flip();
 
-                consumer.accept(buffer);
+                consumer.accept(Unpooled.wrappedBuffer(buffer));
             }
 
         } catch (final URISyntaxException | IOException e) {

@@ -51,7 +51,7 @@ import com.google.common.base.MoreObjects;
 public class Rule implements RuleDefinition {
 
     public static final int MIN_PORT_VALUE = 0;
-    public static final int MAX_PORT_VALUE = 65536;
+    public static final int MAX_PORT_VALUE = 65535;
 
     @Id
     @SequenceGenerator(name="ruleSequence", sequenceName="ruleNxtId")

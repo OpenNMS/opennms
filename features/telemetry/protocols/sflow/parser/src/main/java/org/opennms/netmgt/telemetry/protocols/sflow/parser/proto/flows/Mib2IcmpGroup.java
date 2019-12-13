@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct mib2_icmp_group {
 //   unsigned int icmpInMsgs;
@@ -92,7 +92,7 @@ public class Mib2IcmpGroup implements CounterData {
     public final long icmpOutAddrMasks;
     public final long icmpOutAddrMaskReps;
 
-    public Mib2IcmpGroup(final ByteBuffer buffer) throws InvalidPacketException {
+    public Mib2IcmpGroup(final ByteBuf buffer) throws InvalidPacketException {
         this.icmpInMsgs = BufferUtils.uint32(buffer);
         this.icmpInErrors = BufferUtils.uint32(buffer);
         this.icmpInDestUnreachs = BufferUtils.uint32(buffer);

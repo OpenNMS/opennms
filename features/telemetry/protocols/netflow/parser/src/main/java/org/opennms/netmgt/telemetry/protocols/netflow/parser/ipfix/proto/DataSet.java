@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto;
 
-import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class DataSet extends FlowSet<DataRecord> {
     private final Session.Resolver resolver;
 
@@ -52,7 +53,7 @@ public class DataSet extends FlowSet<DataRecord> {
     public DataSet(final Packet packet,
                    final FlowSetHeader header,
                    final Session.Resolver resolver,
-                   final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+                   final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
         super(packet, header);
 
         this.resolver = Objects.requireNonNull(resolver);
@@ -63,7 +64,7 @@ public class DataSet extends FlowSet<DataRecord> {
                 .mapToInt(f -> f.length() != DataRecord.VARIABLE_SIZED ? f.length() : 1).sum();
 
         final List<DataRecord> records = new LinkedList();
-        while (buffer.remaining() >= minimumRecordLength) {
+        while (buffer.isReadable(minimumRecordLength)) {
             records.add(new DataRecord(this, this.resolver, this.template, buffer));
         }
 

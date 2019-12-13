@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
@@ -39,6 +38,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // struct extended_80211_aggregation {
 //    pdu pdus<>;
 // };
@@ -46,7 +47,7 @@ import com.google.common.base.MoreObjects;
 public class Extended80211Aggregation implements FlowData {
     public final Array<Pdu> pdus;
 
-    public Extended80211Aggregation(final ByteBuffer buffer) throws InvalidPacketException {
+    public Extended80211Aggregation(final ByteBuf buffer) throws InvalidPacketException {
         this.pdus = new Array(buffer, Optional.empty(), Pdu::new);
     }
 

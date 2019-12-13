@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct if_counters {
 //    unsigned int ifIndex;
@@ -85,7 +85,7 @@ public class IfCounters implements CounterData {
     public final long ifOutErrors;
     public final long ifPromiscuousMode;
 
-    public IfCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public IfCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.ifIndex = BufferUtils.uint32(buffer);
         this.ifType = BufferUtils.uint32(buffer);
         this.ifSpeed = BufferUtils.uint64(buffer);

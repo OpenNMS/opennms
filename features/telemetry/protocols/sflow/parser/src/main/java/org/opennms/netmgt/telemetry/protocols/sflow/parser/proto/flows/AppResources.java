@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct app_resources {
 //   unsigned int user_time;      /* time spent executing application user
@@ -61,7 +61,7 @@ public class AppResources implements CounterData {
     public final long conn_open;
     public final long conn_max;
 
-    public AppResources(final ByteBuffer buffer) throws InvalidPacketException {
+    public AppResources(final ByteBuf buffer) throws InvalidPacketException {
         this.user_time = BufferUtils.uint32(buffer);
         this.system_time = BufferUtils.uint32(buffer);
         this.mem_used = BufferUtils.uint64(buffer);

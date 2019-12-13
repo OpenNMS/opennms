@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct app_initiator {
 //    actor actor;
@@ -44,7 +44,7 @@ import com.google.common.base.MoreObjects;
 public class AppInitiator implements FlowData {
     public final Actor actor;
 
-    public AppInitiator(final ByteBuffer buffer) throws InvalidPacketException {
+    public AppInitiator(final ByteBuf buffer) throws InvalidPacketException {
         this.actor = new Actor(buffer);
     }
 

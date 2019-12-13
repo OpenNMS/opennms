@@ -58,7 +58,7 @@ public class PortValueTest {
     @Test
     public void verifyRange() {
         final PortValue portValue = new PortValue("10-13");
-        assertThat(portValue.getPorts(), hasItems(10, 11, 12));
+        assertThat(portValue.getPorts(), hasItems(10, 11, 12, 13));
         assertThat(portValue.matches(10), is(true));
         assertThat(portValue.matches(11), is(true));
         assertThat(portValue.matches(12), is(true));

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_mpls_LDP_FEC {
 //    unsigned int mplsFecAddrPrefixLength;
@@ -45,7 +45,7 @@ import com.google.common.base.MoreObjects;
 public class ExtendedMplsLdpFec implements FlowData {
     public final long mplsFecAddrPrefixLength;
 
-    public ExtendedMplsLdpFec(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedMplsLdpFec(final ByteBuf buffer) throws InvalidPacketException {
         this.mplsFecAddrPrefixLength = BufferUtils.uint32(buffer);
     }
 
