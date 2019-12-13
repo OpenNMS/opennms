@@ -89,7 +89,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                     + "      <filter>abc</filter>"
                     + "      <rrd step=\"3\"><rra>RRA:AVERAGE:0.5:1:2016</rra></rrd>"
                     + "      <service name=\"ICMP\" interval=\"3\" user-defined=\"true\" status=\"on\"/>"
-                    + "      <downtime begin=\"0\" delete=\"true\"/>"
+                    + "      <downtime begin=\"0\" delete=\"managed\"/>"
                     + "   </package>"
                     + "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\"/>"
                     + "</poller-configuration>"
@@ -97,12 +97,18 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                 {
                     getSimplePollerConfiguration(),
                     new File(PollerConfigurationTest.class.getResource("simple-poller-configuration.xml").getFile())
-                },
-                {
-                    get18PollerConfiguration(),
-                    new File(PollerConfigurationTest.class.getResource("poller-configuration-1.8.xml").getFile())
                 }
         });
+    }
+
+    @Test
+    public void test18Upgrade() throws IOException {
+        final PollerConfiguration expected18config = get18PollerConfiguration();
+        final File pollerFile = new File(PollerConfigurationTest.class.getResource("poller-configuration-1.8.xml").getFile());
+
+        final PollerConfiguration actual18config = JaxbUtils.unmarshal(PollerConfiguration.class, pollerFile);
+
+        assertEquals(expected18config, actual18config);
     }
 
     @Test
