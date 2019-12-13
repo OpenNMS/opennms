@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct bst_port_buffers {
 //   int ingress_uc_pc;         /* ingress unicast buffers utilization */
@@ -56,7 +57,7 @@ public class BstPortBuffers implements CounterData {
     public final Array<Integer> egress_queue_uc_pc;
     public final Array<Integer> egress_queue_mc_pc;
 
-    public BstPortBuffers(final ByteBuffer buffer) throws InvalidPacketException {
+    public BstPortBuffers(final ByteBuf buffer) throws InvalidPacketException {
         this.ingress_uc_pc = BufferUtils.sint32(buffer);
         this.ingress_mc_pc = BufferUtils.sint32(buffer);
         this.egress_uc_pc = BufferUtils.sint32(buffer);

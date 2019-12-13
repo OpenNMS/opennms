@@ -32,8 +32,6 @@ import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
 
@@ -61,9 +59,6 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
         adapter.setThresholdingService(getThresholdingService());
         adapter.setBundleContext(getBundleContext());
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(adapterConfig.getParameterMap());
 
         return adapter;
     }

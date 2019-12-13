@@ -31,12 +31,11 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -48,6 +47,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Record;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class NetflowPacketTest {
 
@@ -222,7 +224,7 @@ public class NetflowPacketTest {
         bytes[3] = 0x01;
 
         // Parse and Verify
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        final ByteBuf buffer = Unpooled.wrappedBuffer(bytes);
 
         final Header header = new Header(buffer);
         final Packet packet = new Packet(header, buffer);
@@ -277,7 +279,7 @@ public class NetflowPacketTest {
 
         try {
             final byte[] contents = Files.readAllBytes(Paths.get(resourceURL.toURI()));
-            final ByteBuffer buffer = ByteBuffer.wrap(contents);
+            final ByteBuf buffer = Unpooled.wrappedBuffer(contents);
 
             final Header header = new Header(slice(buffer, Header.SIZE));
             final Packet packet = new Packet(header, buffer);

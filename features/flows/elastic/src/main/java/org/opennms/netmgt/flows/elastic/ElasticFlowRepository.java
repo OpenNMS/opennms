@@ -48,7 +48,13 @@ import java.util.stream.Collectors;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
-import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.SearchResultUtils;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -66,13 +72,6 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.features.jest.client.SearchResultUtils;
-import org.opennms.features.jest.client.bulk.BulkException;
-import org.opennms.features.jest.client.bulk.BulkRequest;
-import org.opennms.features.jest.client.bulk.BulkWrapper;
-import org.opennms.features.jest.client.index.IndexSelector;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,11 +128,6 @@ public class ElasticFlowRepository implements FlowRepository {
      * Flows/second throughput
      */
     private final Meter flowsPersistedMeter;
-
-    /**
-     * Time taken to convert the flows in a log
-     */
-    private final Timer logConversionTimer;
 
     /**
      * Time taken to enrich the flows in a log
@@ -194,7 +188,6 @@ public class ElasticFlowRepository implements FlowRepository {
         this.indexSettings = Objects.requireNonNull(indexSettings);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
-        logConversionTimer = metricRegistry.timer("logConversion");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
         logPersistingTimer = metricRegistry.timer("logPersisting");
         logMarkingTimer = metricRegistry.timer("logMarking");
@@ -214,28 +207,20 @@ public class ElasticFlowRepository implements FlowRepository {
 
     @Override
     public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
-        LOG.debug("Converting {} flows from {} @ {} to flow documents.", flows.size(), source.getSourceAddress(), source.getLocation());
-        final List<FlowDocument> documents;
-        try (final Timer.Context ctx = logConversionTimer.time()) {
-            documents = flows.stream()
-                    .map(FlowDocument::from)
-                    .collect(Collectors.toList());
-        }
-        enrichAndPersistFlows(documents, source);
-    }
-
-    public void enrichAndPersistFlows(final List<FlowDocument> flowDocuments, FlowSource source) throws FlowException {
         // Track the number of flows per call
-        flowsPerLog.update(flowDocuments.size());
+        flowsPerLog.update(flows.size());
 
-        if (flowDocuments.isEmpty()) {
+        if (flows.isEmpty()) {
             LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
 
-        LOG.debug("Enriching {} flow documents.", flowDocuments.size());
+        LOG.debug("Enriching {} flow documents.", flows.size());
+        final List<FlowDocument> flowDocuments;
         try (final Timer.Context ctx = logEnrichementTimer.time()) {
-            documentEnricher.enrich(flowDocuments, source);
+            flowDocuments = documentEnricher.enrich(flows, source);
+        } catch (Exception e) {
+            throw new FlowException("Failed to enrich one or more flows.", e);
         }
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());

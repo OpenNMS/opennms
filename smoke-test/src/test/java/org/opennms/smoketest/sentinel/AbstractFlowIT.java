@@ -52,6 +52,7 @@ import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Sender;
 import org.opennms.smoketest.utils.KarafShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,11 +95,13 @@ public abstract class AbstractFlowIT {
 
         waitForSentinelStartup(sentinelSshAddress);
 
+        final Sender sender = Sender.udp(minionFlowAddress);
+
         final FlowTester flowTester = new FlowTestBuilder()
-                .withNetflow5Packet(minionFlowAddress)
-                .withNetflow9Packet(minionFlowAddress)
-                .withIpfixPacket(minionFlowAddress)
-                .withSFlowPacket(minionFlowAddress)
+                .withNetflow5Packet(sender)
+                .withNetflow9Packet(sender)
+                .withIpfixPacket(sender)
+                .withSFlowPacket(sender)
                 .verifyBeforeSendingFlows(theTester -> {
                     // We don't know in which order the the tests are executed so we delete all previously created flows
                     try {
@@ -148,8 +151,7 @@ public abstract class AbstractFlowIT {
             });
 
             // Send flow
-            Packets.Netflow5.setDestinationAddress(minionFlowAddress);
-            Packets.Netflow5.send();
+            Packets.Netflow5.send(Sender.udp(minionFlowAddress));
 
             // Verify it was classified properly
             await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {
@@ -169,7 +171,7 @@ public abstract class AbstractFlowIT {
             );
 
             // Send Flow again
-            Packets.Netflow5.send();
+            Packets.Netflow5.send(Sender.udp(minionFlowAddress));
 
             // Verify it was classified according the new rule
             await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> {

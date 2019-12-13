@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct virt_node {
 //    unsigned int mhz;           /* expected CPU frequency */
@@ -53,7 +53,7 @@ public class VirtNode implements CounterData {
     public final UnsignedLong memory_free;
     public final long num_domains;
 
-    public VirtNode(final ByteBuffer buffer) throws InvalidPacketException {
+    public VirtNode(final ByteBuf buffer) throws InvalidPacketException {
         this.mhz = BufferUtils.uint32(buffer);
         this.cpus = BufferUtils.uint32(buffer);
         this.memory = BufferUtils.uint64(buffer);

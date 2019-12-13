@@ -38,6 +38,7 @@ public class MapBasedQueueDef implements QueueDefinition {
     private final Optional<Integer> queueSize;
     private final Optional<Integer> batchSize;
     private final Optional<Integer> batchInterval;
+    private final Optional<Boolean> useRoutingKey;
 
     public MapBasedQueueDef(final PropertyTree definition) {
         this.name = definition.getRequiredString("name");
@@ -45,6 +46,7 @@ public class MapBasedQueueDef implements QueueDefinition {
         this.queueSize = definition.getOptionalInteger("queue", "size");
         this.batchSize = definition.getOptionalInteger("batch", "size");
         this.batchInterval = definition.getOptionalInteger("batch", "interval");
+        this.useRoutingKey = definition.getOptionalBoolean("queue", "use-routing-key");
     }
 
     @Override
@@ -70,5 +72,10 @@ public class MapBasedQueueDef implements QueueDefinition {
     @Override
     public Optional<Integer> getQueueSize() {
         return queueSize;
+    }
+
+    @Override
+    public Optional<Boolean> getUseRoutingKey() {
+        return useRoutingKey;
     }
 }
