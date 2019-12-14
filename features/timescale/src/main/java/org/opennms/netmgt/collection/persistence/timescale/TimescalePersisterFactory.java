@@ -40,7 +40,7 @@ import org.opennms.netmgt.timescale.TimescaleWriter;
 import org.opennms.newts.api.Context;
 
 /**
- * Factory for {@link org.opennms.netmgt.collection.persistence.newts.NewtsPersister}.
+ * Factory for {@link org.opennms.netmgt.collection.persistence.timescale.TimescalePersister}.
  *
  * @author jwhite
  */

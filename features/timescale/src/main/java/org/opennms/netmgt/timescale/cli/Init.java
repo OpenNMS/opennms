@@ -80,7 +80,7 @@ public class Init implements Command {
                 System.out.println("It looks like timescale plugin is not installed. Please install: https://docs.timescale.com/latest/getting-started/installation");
             }
             System.out.println("Installing Timescale tables");
-            executeQuery(stmt,"CREATE TABLE timeseries( time TIMESTAMPTZ NOT NULL, context TEXT NOT NULL, resource TEXT NOT NULL, name TEXT NOT NULL, type TEXT NOT NULL, value DOUBLE PRECISION NULL)");
+            executeQuery(stmt,"CREATE TABLE timeseries( time TIMESTAMPTZ NOT NULL, key TEXT NOT NULL, value DOUBLE PRECISION NULL)");
             executeQuery(stmt, "SELECT create_hypertable('timeseries', 'time');");
             // double check:
             stmt.execute("select * from timeseries;"); // will throw exception if table doesn't exist

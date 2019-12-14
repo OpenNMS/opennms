@@ -160,6 +160,8 @@
 
   <bean id="newtsWriter" class="org.opennms.netmgt.timescale.TimescaleWriter" />
 
+  <bean id="timescaleStorage" class="org.opennms.netmgt.ts.TimescaleStorage" />
+
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.TimescaleResourceStorageDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />

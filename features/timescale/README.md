@@ -6,35 +6,13 @@
   ``sudo docker run -p 5432:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg11|run timescale docker container``
 * make sure the timescale plugin ist installed: ``select * from pg_extension;``
 * create opennms schema: ``sudo <opennms_home>/bin/install -dis``
-* create actual table:
-``CREATE TABLE timeseries(
-time       TIMESTAMPTZ      NOT NULL,
-                context    TEXT              NOT NULL,
-                resource   TEXT              NOT  NULL,
-                name       TEXT              NOT  NULL,
-                type       TEXT              NOT  NULL,
-                value      DOUBLE PRECISION  NULL)``
-                
-* turn table into a timescale table:
-  ``SELECT create_hypertable('timeseries', 'time');``
+* init timescale: ``sudo ./bin/timescale init``
 
 ## Newts / cassandra
 * set ```org.opennms.timeseries.strategy=timescale``` in opennms.properties
 * start cassandra docker container: ```sudo docker run -p 7199:7199 -p 7000:7000 -p 7001:7001 -p 9160:9160 -p 9042:9042 cassandra:3```
 * init newts: ``sudo ./bin/newts init``
 
-
-
-        String sql = "INSERT INTO timeseries('time', 'context', 'resource', 'name', 'type', 'value')  values (?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = this.dataSource.getConnection().prepareStatement(sql);
-        
-        for (Sample sample: batch) {
-                                ps.setDate(1, new Date(sample.getTimestamp().asMillis()));
-                                ps.setString(2, sample.getContext().getId());
-                                ps.setString(3, sample.getResource().getId());
-                                ps.setString(3, sample.getName());
-                                ps.setByte(4, sample.getType().getCode());
-                                ps.setDouble(5, sample.getValue().doubleValue());
-                                ps.addBatch();
-                            }
-                            ps.executeBatch();
+## TODOs
+* Create structure to store metadata in postgres
+* remove all Newts stuff from Abstraction layer

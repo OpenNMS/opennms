@@ -29,9 +29,7 @@
 package org.opennms.netmgt.timescale;
 
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -45,7 +43,10 @@ import javax.sql.DataSource;
 
 import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.timescale.support.TimescaleUtils;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.search.Indexer;
@@ -58,7 +59,6 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.math.DoubleMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.lmax.disruptor.EventTranslatorOneArg;
@@ -102,6 +102,9 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
 
     private Connection connection;
 
+    @Autowired
+    private TimeSeriesStorage storage;
+
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
@@ -141,6 +144,7 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
 
         LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, m_ringBufferSize);
         setUpWorkerPool();
+
     }
 
     private void setUpWorkerPool() {
@@ -207,60 +211,37 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
     public void onEvent(SampleBatchEvent event) throws Exception {
         // We'd expect the logs from this thread to be in collectd.log
         Logging.putPrefix("collectd");
-        if(this.connection == null) {
-            this.connection = this.dataSource.getConnection();
-        }
 
-        List<Sample> samples = event.getSamples();
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
 
-        // TODO: Patrick do database stuff properly
-        // CREATE TABLE timeseries (
-        //    'time'       TIMESTAMPTZ      NOT NULL,
-        //    'context'    TEXT              NOT NULL,
-        //    'resource'   TEXT              NOT  NULL,
-        //    'name'       TEXT              NOT  NULL,
-        //    'type'       TEXT              NOT  NULL,
-        //    'value'      DOUBLE PRECISION  NULL,
-        // );
-        // create_hypertable('timeseries', 'time');
-        String sql = "INSERT INTO timeseries(time, context, resource, name, type, value)  values (?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = connection.prepareStatement(sql);
+        List<org.opennms.netmgt.timeseries.api.domain.Sample> samples
+                = event.getSamples().stream().map(this::toApiSample).collect(Collectors.toList());
+        this.storage.store(samples);
+    }
 
-        // Partition the samples into collections smaller then max_batch_size
-        for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
-            try {
-                if (event.isIndexOnly() && !TimescaleUtils.DISABLE_INDEXING) {
-                    LOG.debug("Indexing {} samples", batch.size());
-                    // m_indexer.update(batch);
-                } else {
-                    LOG.debug("Inserting {} samples", batch.size());
-                    // m_sampleRepository.insert(batch);
-                    for (Sample sample: batch) {
-                        ps.setTimestamp(1, new Timestamp(sample.getTimestamp().asMillis()));
-                        ps.setString(2, sample.getContext().getId());
-                        ps.setString(3, sample.getResource().getId());
-                        ps.setString(4, sample.getName());
-                        ps.setByte(5, sample.getType().getCode());
-                        ps.setDouble(6, sample.getValue().doubleValue());
-                        ps.addBatch();
-                    }
-                    ps.executeBatch();
-                }
+    private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {
+        final Metric metric = Metric.builder()
+                .tag("resourceId", sample.getResource().getId()) // TODO: Patrick centralize OpenNMS common tag names
+                .tag("name", sample.getName())
+                .tag(typeToTag(sample.getType()))
+                .tag("unit", "ms") // TODO Patrick: how do we get the units from the sample?
+                .build();
+        final Instant time = Instant.ofEpochMilli(sample.getTimestamp().asMillis());
+        final Double value = sample.getValue().doubleValue();
+        return new org.opennms.netmgt.timeseries.api.domain.Sample(metric, time, value);
+    }
 
-                if (LOG.isDebugEnabled()) {
-                    String uniqueResourceIds = batch.stream()
-                        .map(s -> s.getResource().getId())
-                        .distinct()
-                        .collect(Collectors.joining(", "));
-                    LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
-                }
-            } catch (Throwable t) {
-                RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
-            }
+    private Tag typeToTag (MetricType type) {
+        Metric.Mtype mtype;
+        if(type == MetricType.GAUGE){
+            mtype = Metric.Mtype.gauge;
+        } else if(type == MetricType.COUNTER) {
+            mtype = Metric.Mtype.count;
+        } else {
+            throw new IllegalArgumentException("Implement me"); // TODO: Patrick are the others even relevant?
         }
-        ps.close();
+        return new Tag(Metric.MandatoryTag.mtype.name(), mtype.name());
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

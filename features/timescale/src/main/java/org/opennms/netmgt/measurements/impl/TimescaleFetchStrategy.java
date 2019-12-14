@@ -29,10 +29,7 @@
 package org.opennms.netmgt.measurements.impl;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +44,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
-
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -61,22 +56,16 @@ import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
-import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timescale.support.TimescaleUtils;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.Sample;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Duration;
-import org.opennms.newts.api.Measurement;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Results;
-import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.SampleSelectCallback;
 import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.api.query.AggregationFunction;
-import org.opennms.newts.api.query.ResultDescriptor;
-import org.opennms.newts.api.query.StandardAggregationFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,8 +122,7 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
     @Autowired
-    private DataSource dataSource;
-    private Connection connection;
+    private TimeSeriesStorage storage;
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
@@ -144,55 +132,46 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
         final Map<String, Object> constants = Maps.newHashMap();
 
         FetchResults result;
+        String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
 
-        // TODO Patrick: do db stuff proper.
+        final Metric metric = Metric.builder()
+                .tag("resourceId", resourceId) // TODO: Patrick centralize OpenNMS common tag names
+            //     .tag("name", sample.getName())
+                .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.counter.name())  // TODO Patrick: where do we get the units from?
+                .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO Patrick: where do we get the units from?
+                .build();
+
+        java.time.Duration duration = java.time.Duration.ofMillis(lag.getStep());
+
         try {
-
-            long computedStepInMillis = lag.getStep();
-            String computedStepInSeconds = (lag.getStep() / 1000 ) + " Seconds";
-            String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
-            String sql = "SELECT time_bucket_gapfill('"+computedStepInSeconds+"', time) AS step, min(value), avg(value), max(value) FROM timeseries where " +
-                    "resource=? AND time > ? AND time < ? GROUP BY step ORDER BY step ASC";
-            if(maxrows>0) {
-                sql = sql + " LIMIT " + maxrows;
-            }
-            if(connection == null) {
-                this.connection = this.dataSource.getConnection();
-
-            }
-            PreparedStatement statement = connection.prepareStatement(sql);
-            // statement.setString(1, stepInSeconds);
-            statement.setString(1, resourceId);
-            statement.setTimestamp(2, new java.sql.Timestamp(start));
-            statement.setTimestamp(3, new java.sql.Timestamp(end + computedStepInMillis));
-            ResultSet rs = statement.executeQuery();
-
+            List<Sample> samples = storage.getTimeseries(metric, Instant.ofEpochMilli(start), Instant.ofEpochMilli(end), duration);
             ArrayList<Long> timestamps = new ArrayList<>();
-            List<Double> valuesMin = new ArrayList<>();
+           // List<Double> valuesMin = new ArrayList<>();
             List<Double> valuesAvg = new ArrayList<>();
-            List<Double> valuesMax = new ArrayList<>();
+            // List<Double> valuesMax = new ArrayList<>();
 
-            while(rs.next()){
-                long timestamp = rs.getTimestamp("step").getTime();
+            for(Sample sample : samples){
+                long timestamp = sample.getTime().toEpochMilli();
                 timestamps.add(timestamp);
-                valuesAvg.add(rs.getDouble("avg"));
-                valuesMin.add(rs.getDouble("min"));
-                valuesMax.add(rs.getDouble("max"));
+                valuesAvg.add(sample.getValue());
+//                valuesMin.add(rs.getDouble("min"));
+//                valuesMax.add(rs.getDouble("max"));
             }
             long[] timestampsArray = toLongArray(timestamps);
             Map<String, double[]> columns = new HashMap<>();
-            columns.put("maxRtMicro", toDoubleArray(valuesMax));
+          //  columns.put("maxRtMicro", toDoubleArray(valuesMax));
             columns.put("rtMicro", toDoubleArray(valuesAvg));
-            columns.put("minRtMicro", toDoubleArray(valuesMin));
+          //  columns.put("minRtMicro", toDoubleArray(valuesMin));
 
             List<QueryResource> resources = getResources(sources, relaxed);
             QueryMetadata metaData = new QueryMetadata(resources);
-            result = new FetchResults(timestampsArray, columns, computedStepInMillis, new HashMap<>(), metaData);
-            rs.close();
-        } catch (SQLException e) {
+            result = new FetchResults(timestampsArray, columns, lag.getStep(), new HashMap<>(), metaData);
+
+        } catch (StorageException e) {
             LOG.error("Could not retrieve FetchResults", e);
             throw new RuntimeException(e);
         }
+
         return result;
     }
 

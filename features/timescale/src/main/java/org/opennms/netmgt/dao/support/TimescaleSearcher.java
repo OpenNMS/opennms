@@ -28,13 +28,8 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +42,9 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timescale.support.TimescaleUtils;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,51 +56,32 @@ import com.google.common.cache.LoadingCache;
 
 public class TimescaleSearcher {
 
-
-    private DataSource dataSource;
-    private Connection connection;
+    @Autowired
+    private TimeSeriesStorage storage;
 
     private LoadingCache<String, Set<ResourcePath>> allResources = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.MINUTES)
             .build(
                     new CacheLoader<String, Set<ResourcePath>>() {
-                        public Set<ResourcePath> load(String key) throws SQLException {
+                        public Set<ResourcePath> load(String key) throws StorageException {
                             return getAllResources();
                         }
                     });
 
-    @Autowired
-    public TimescaleSearcher(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    private Set<ResourcePath> getAllResources() throws StorageException {
 
-    private Set<ResourcePath> getAllResources() throws SQLException {
-        // TODO Patrick: make db stuff proper. cache?
-        String sql = "select distinct resource from timeseries";
-        if(connection == null) {
-            this.connection = this.dataSource.getConnection();
-
-        }
-        PreparedStatement statement = connection.prepareStatement(sql);
-
-        ResultSet rs = statement.executeQuery();
+        List<Metric> metrics = storage.getAllMetrics();
         Set<ResourcePath> resources = new HashSet<>();
-        while(rs.next()){
-            String resourceString = rs.getString("resource");
+        for (Metric metric : metrics){
+            String resourceString = metric.getFirstTagByKey("resourceId").getValue();
             ResourcePath resource = new ResourcePath(TimescaleUtils.toResourcePath(resourceString), TimescaleUtils.toMetricName(resourceString));
             addIncludingParent(resources, resource);
         }
-        rs.close();
-        // resources.sort(Comparator.naturalOrder());
         return  resources;
     }
     public void addIncludingParent(Set<ResourcePath> allPaths, ResourcePath newPath) {
         ResourcePath currentPath = newPath;
         allPaths.add(currentPath);
-//        while(currentPath.hasParent()) {
-//            currentPath = currentPath.getParent();
-//            allPaths.add(currentPath);
-//        }
     }
 
     public Map<String, String> getResourceAttributes(Context m_context, String toResourceId) {
