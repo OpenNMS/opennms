@@ -46,6 +46,44 @@ TIP: In case you have multiple _Adapters_, the execution order is the same as de
 === _Queues_
 _Queues_ are used to transfer data between _Parsers_ and _Adapters_ and are represented by a channel in the messaging system.
 
+==== Configuring _Queues_
+
+The following options are provided to help fine tune the behavior of the queues:
+
+[options="header, autowidth"]
+|===
+| Queue attribute (OpenNMS) | Key (Minion/Sentinel)  | Description | Default value
+| `threads`                 | `queue.threads`            | Number of threads used for consuming & dispatching messages | (2 * number of cores)
+| `queue-size`              | `queue.size`               | Maximum number of messages to keep in memory while waiting to be dispatched. | 10000
+| `use-routing-key`         | `queue.use-routing-key`    | Whether or not the routing key should be used when forwarding messages to the broker. This is used to enforce ordering of the messages. | true
+| `batch-size`              | `batch.size`               | Messages are aggregated in batches before being dispatched. When the batch reaches this size, it will be dispatched. | 1000
+| `batch-interval`          | `batch.interval`           | Messages are aggregated in batches before being dispatched. When the batch has been created for longer than this interval (ms) it will be dispatched, regardless of the current size. | 500
+|===
+
+TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` will allow the messages to be balanced across all partitions.
+This can be safely done for flows, but is not supported for metrics when using thresholding (order is required).
+
+When setting these on OpenNMS they can be added as an attribute to the `<queue>` element.
+For example:
+[source, xml]
+----
+<queue name="IPFIX" use-routing-key="false">
+    ...
+</queue>
+----
+
+When setting these on Minion they can be added as `parser` properties, and on Sentinel as `adapter` properties:
+[source]
+----
+name=IPFIX-Listener
+class-name=org.opennms.netmgt.telemetry.listeners.UdpListener
+parameters.host=0.0.0.0
+parameters.port=4738
+parsers.0.name=IPFIX
+parsers.0.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser
+parsers.0.queue.use-routing-key=false
+----
+
 === Push Sensor Data through Minion
 _Listeners_ and its _Parsers_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run on _{opennms-product-name}_ or _Sentinel_.
 If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will be automatically dispatched to the associated _Adapters_ running in _{opennms-product-name}_ or _Sentinel_ via a _Queue_.
