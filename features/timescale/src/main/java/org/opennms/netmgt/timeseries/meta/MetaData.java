@@ -26,25 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.timeseries.meta;
 
-package org.opennms.netmgt.timeseries.api;
+import java.util.Objects;
 
-import java.time.Instant;
-import java.util.List;
+import com.google.common.base.MoreObjects;
 
-import java.time.Duration;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
+public class MetaData {
 
-public interface TimeSeriesStorage {
+    private final String key;
+    private final String value;
 
-    /** Stores a list of Samples in the timeseries database. */
-    void store(List<Sample> entries) throws StorageException;
+    public MetaData(String key, String value) {
+        this.key = Objects.requireNonNull(key, "id cannot be null");
+        this.value = Objects.requireNonNull(value, "value cannot be null");
+    }
 
-    /** Returns all metrics that are stored in the time series database. */
-    List<Metric> getAllMetrics() throws StorageException;
+    public String getKey() {
+        return key;
+    }
 
+    public String getValue() {
+        return value;
+    }
 
-    List<Sample> getTimeseries(Metric metric, Instant start, Instant end, Duration step) throws StorageException;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MetaData metaData = (MetaData) o;
+        return Objects.equals(key, metaData.key) &&
+                Objects.equals(value, metaData.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, value);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", key)
+                .add("value", value)
+                .toString();
+    }
 }

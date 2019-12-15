@@ -26,25 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.timeseries.meta;
 
-package org.opennms.netmgt.timeseries.api;
+/**
+ * Classes to retrieve and store metadata that is used by OpenNMS itself.
+ */
 
-import java.time.Instant;
-import java.util.List;
-
-import java.time.Duration;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-
-public interface TimeSeriesStorage {
-
-    /** Stores a list of Samples in the timeseries database. */
-    void store(List<Sample> entries) throws StorageException;
-
-    /** Returns all metrics that are stored in the time series database. */
-    List<Metric> getAllMetrics() throws StorageException;
-
-
-    List<Sample> getTimeseries(Metric metric, Instant start, Instant end, Duration step) throws StorageException;
-}

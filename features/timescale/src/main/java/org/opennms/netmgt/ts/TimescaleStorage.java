@@ -34,24 +34,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.Period;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.joda.time.Duration;
-import org.opennms.netmgt.measurements.api.FetchResults;
-import org.opennms.netmgt.measurements.model.QueryMetadata;
-import org.opennms.netmgt.measurements.model.QueryResource;
-import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.timescale.support.TimescaleUtils;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
@@ -74,12 +63,11 @@ public class TimescaleStorage implements TimeSeriesStorage {
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
 
-
     private DataSource dataSource;
 
     private Connection connection;
 
-    private int maxBatchSize = 100;
+    private int maxBatchSize = 100; // TODO Patrick: do we need to make value configurable?
 
     @Autowired
     public TimescaleStorage(final DataSource dataSource) {

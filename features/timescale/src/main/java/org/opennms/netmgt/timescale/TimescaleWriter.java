@@ -29,8 +29,12 @@
 package org.opennms.netmgt.timescale;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -39,13 +43,16 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.sql.DataSource;
 
 import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.netmgt.timeseries.meta.AttributeIdentifier;
+import org.opennms.netmgt.timeseries.meta.MetaData;
+import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
@@ -85,14 +92,10 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
 
-    @Autowired
-    private DataSource dataSource;
-
     private WorkerPool<SampleBatchEvent> m_workerPool;
 
     private RingBuffer<SampleBatchEvent> m_ringBuffer;
 
-    private final int m_maxBatchSize;
 
     private final int m_ringBufferSize;
 
@@ -104,6 +107,9 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
 
     @Autowired
     private TimeSeriesStorage storage;
+
+    @Autowired
+    private TimeSeriesMetaDataDao timeSeriesMetaDataDao;
 
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
@@ -120,7 +126,6 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
         Preconditions.checkArgument(numWriterThreads > 0, "numWriterThreads must be positive");
         Preconditions.checkNotNull(registry, "metric registry");
 
-        m_maxBatchSize = maxBatchSize;
         m_ringBufferSize = ringBufferSize;
         m_numWriterThreads = numWriterThreads;
         m_numEntriesOnRingBuffer.set(0L);
@@ -215,9 +220,41 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
 
+        storeTimeseriesData(event);
+        storeMetadata(event);
+    }
+
+    private void storeTimeseriesData(SampleBatchEvent event) throws StorageException {
         List<org.opennms.netmgt.timeseries.api.domain.Sample> samples
                 = event.getSamples().stream().map(this::toApiSample).collect(Collectors.toList());
         this.storage.store(samples);
+    }
+
+    private void storeMetadata(SampleBatchEvent event) throws SQLException {
+        // dedouble attributes
+        HashMap<AttributeIdentifier, String> attributeMap = new HashMap<>();
+        for(Sample sample : event.getSamples()) {
+            AttributeIdentifier attributeIdentifier = AttributeIdentifier.of(
+                    sample.getResource(),
+                    sample.getContext().getId(), // TODO Patrick: is context == group?
+                    sample.getName(),
+                    sample.getType());
+
+            // attributes of sample
+            if(sample.getAttributes() != null) {
+                sample.getAttributes().forEach((key, value) -> attributeMap.put(attributeIdentifier.withAttributeName(key), value));
+            }
+
+            // attributes of resource parents
+            // TODO: Patrick: how do we get access to it? Maybe we need do this at another place?
+        }
+
+        List<MetaData> metaDataList = new ArrayList<>(attributeMap.size());
+        for(Map.Entry<AttributeIdentifier, String> entry : attributeMap.entrySet()) {
+            metaDataList.add(new MetaData(entry.getKey().toString(), entry.getValue()));
+        }
+
+        this.timeSeriesMetaDataDao.store(metaDataList);
     }
 
     private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {

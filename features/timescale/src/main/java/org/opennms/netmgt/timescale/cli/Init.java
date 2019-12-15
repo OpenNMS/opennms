@@ -84,6 +84,11 @@ public class Init implements Command {
             executeQuery(stmt, "SELECT create_hypertable('timeseries', 'time');");
             // double check:
             stmt.execute("select * from timeseries;"); // will throw exception if table doesn't exist
+
+            // TODO: Patrick: the creation of the timeseries_meta table should be moved into an update script
+            // executeQuery(stmt, "CREATE TABLE timeseries_meta(group VARCHAR NOT NULL, identifier VARCHAR NOT NULL, name VARCHAR NOT NULL, value VARCHAR NOT NULL, type VARCHAR NOT NULL)"); // varchar
+            executeQuery(stmt, "CREATE TABLE timeseries_meta(key VARCHAR NOT NULL, value VARCHAR NOT NULL)");
+
             System.out.println("Done. Enjoy!");
         }
     }
