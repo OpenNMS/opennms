@@ -56,8 +56,7 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
                 "About OpenNMS",
                 "Commercial Support",
                 "Web Chat",
-                "Mailing Lists",
-                "Questions & Answers"
+                "Discourse"
         };
         assertEquals(links.length, countElementsMatchingCss("div.card-body a"));
         for (final String text : links) {
