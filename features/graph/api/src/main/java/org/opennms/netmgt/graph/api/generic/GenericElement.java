@@ -48,7 +48,7 @@ public abstract class GenericElement {
    /**
     * All values of properties need to be immutable.
     */
-    protected GenericElement (Map<String, Object> properties) {
+    protected GenericElement(Map<String, Object> properties) {
         Objects.requireNonNull(properties);
         this.properties = ImmutableMap.copyOf(properties);
         new NamespaceValidator().validate(getNamespace());

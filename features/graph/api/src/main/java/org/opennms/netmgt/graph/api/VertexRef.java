@@ -44,13 +44,6 @@ public final class VertexRef {
         this.id = requireNotEmpty(id, "id");
     }
 
-    private String requireNotEmpty(String stringToAssert, String attributeName) {
-        if(Strings.isNullOrEmpty(stringToAssert)) {
-            throw new IllegalArgumentException(String.format("%s cannot be null or empty", attributeName));
-        }
-        return stringToAssert;
-    }
-
     public String getNamespace(){
         return namespace;
     }
@@ -79,5 +72,12 @@ public final class VertexRef {
                 .add("namespace", namespace)
                 .add("id", id)
                 .toString();
+    }
+
+    private static String requireNotEmpty(String stringToAssert, String attributeName) {
+        if (Strings.isNullOrEmpty(stringToAssert)) {
+            throw new IllegalArgumentException(String.format("%s cannot be null or empty", attributeName));
+        }
+        return stringToAssert;
     }
 }

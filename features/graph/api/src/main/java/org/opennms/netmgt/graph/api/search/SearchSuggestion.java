@@ -35,7 +35,7 @@ import com.google.common.base.MoreObjects;
 
 /**
  * A {@link SearchSuggestion} is provided to the user and was created from a (partial) search query.
- * A suggestion is a very abstract and may not directly related to a vertex. For example a category.
+ * A suggestion is a very abstract and may not directly relate to a vertex. For example a category.
  * The main idea is, that a {@link SearchSuggestion} represents an item a user can select, which
  * afterwards is resolved to a List of vertices/edges.
  */

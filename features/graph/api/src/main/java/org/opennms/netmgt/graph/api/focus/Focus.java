@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class Focus {
@@ -56,7 +57,7 @@ public class Focus {
     }
 
     public List<VertexRef> getVertexRefs() {
-        return vertexRefs;
+        return ImmutableList.copyOf(vertexRefs);
     }
 
     public List<String> getVertexIds() {
