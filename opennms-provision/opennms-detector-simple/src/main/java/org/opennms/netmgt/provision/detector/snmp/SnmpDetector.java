@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.detector.snmp;
 
 import static org.opennms.netmgt.snmp.SnmpAgentConfig.AGENT_CONFIG_PREFIX;
+import static org.opennms.netmgt.snmp.SnmpAgentConfig.PROFILE_LABEL_FOR_DEFAULT_CONFIG;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
@@ -62,7 +64,6 @@ import com.google.common.collect.Lists;
  */
 public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig> {
 
-    private ExecutorService snmpDetectorExecutor;
 
     public enum MatchType {
         // Service detected if 1 or more entries match an expected value
@@ -136,6 +137,13 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpDetector.class);
+
+    /**
+     * Used with SNMP profiles when there are multiple agent configs to be processed.
+     */
+    private ExecutorService snmpDetectorExecutor;
+
+    private String useSnmpProfiles;
 
     /**
      * The system object identifier to retrieve from the remote agent.
@@ -234,10 +242,18 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
     public List<SnmpAgentConfig> getListOfAgentConfigs(DetectRequest request) {
         List<SnmpAgentConfig> agentConfigList = new ArrayList<>();
         Map<String, String> runTimeAttributes = request.getRuntimeAttributes();
-        if (hasMultipleAgentConfigs(runTimeAttributes)) {
+
+        if (useSnmpProfiles() && hasMultipleAgentConfigs(runTimeAttributes)) {
             //Retrieve agent configs from runtime attributes.
             runTimeAttributes.forEach((label, configAsString) -> {
                 if (label.contains(AGENT_CONFIG_PREFIX)) {
+                    agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
+                }
+            });
+        } else if (hasMultipleAgentConfigs(runTimeAttributes)) {
+            //Retrieve agent configs from runtime attributes just for default profile.
+            runTimeAttributes.forEach((label, configAsString) -> {
+                if (label.contains(AGENT_CONFIG_PREFIX) && label.contains(PROFILE_LABEL_FOR_DEFAULT_CONFIG)) {
                     agentConfigList.add(SnmpAgentConfig.parseProtocolConfigurationString(configAsString));
                 }
             });
@@ -433,5 +449,14 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
 
     public void setSnmpDetectorExecutor(ExecutorService snmpDetectorExecutor) {
         this.snmpDetectorExecutor = snmpDetectorExecutor;
+    }
+
+    private boolean useSnmpProfiles() {
+        return !Strings.isNullOrEmpty(useSnmpProfiles) &&
+                useSnmpProfiles.equals(Boolean.toString(true));
+    }
+
+    public void setUseSnmpProfiles(String useSnmpProfiles) {
+        this.useSnmpProfiles = useSnmpProfiles;
     }
 }

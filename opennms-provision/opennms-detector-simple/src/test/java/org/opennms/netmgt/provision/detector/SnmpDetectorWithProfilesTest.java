@@ -83,6 +83,7 @@ public class SnmpDetectorWithProfilesTest {
         MockLogAppender.setupLogging();
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
         m_detector.setRetries(2);
+        m_detector.setUseSnmpProfiles("true");
         m_detector.setTimeout(500);
     }
 

@@ -78,7 +78,7 @@ public abstract class AgentBasedSyncAbstractDetector<T> extends AbstractDetector
         });
     }
 
-    public static boolean hasMultipleAgentConfigs(Map<String, String> runTimeAttributes) {
+    protected static boolean hasMultipleAgentConfigs(Map<String, String> runTimeAttributes) {
         return runTimeAttributes != null &&
                 runTimeAttributes.get(HAS_MULTIPLE_AGENT_CONFIGS) != null &&
                 runTimeAttributes.get(HAS_MULTIPLE_AGENT_CONFIGS).equals(Boolean.toString(true));
