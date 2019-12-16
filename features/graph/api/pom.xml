@@ -32,7 +32,6 @@
             <artifactId>org.opennms.features.graph.jung</artifactId>
             <version>${jungVersion}</version>
         </dependency>
-        <!-- TODO MVR verify this -->
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>

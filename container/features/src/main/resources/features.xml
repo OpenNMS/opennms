@@ -1596,6 +1596,7 @@
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
         <feature>guava</feature>
+        <feature>opennms-model</feature>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
     </feature>

@@ -40,6 +40,11 @@ import com.google.common.collect.Maps;
 
 public class StatusInfo {
 
+    interface Properties {
+        String Severity = "severity";
+        String Count = "count";
+    }
+
     private final ImmutableMap<String, Object> properties;
 
     public StatusInfo(final StatusInfoBuilder builder) {
@@ -47,11 +52,11 @@ public class StatusInfo {
     }
 
     public Severity getSeverity() {
-        return getProperty("severity");
+        return getProperty(Properties.Severity);
     }
 
-    public Integer getCount() {
-        return getProperty("count");
+    public Long getCount() {
+        return getProperty(Properties.Count);
     }
 
     public Map<String, Object> getProperties() {
@@ -90,13 +95,13 @@ public class StatusInfo {
         }
 
         public StatusInfoBuilder severity(Severity severity) {
-            property("severity", severity);
+            property(Properties.Severity, severity);
             return this;
         }
 
-        public StatusInfoBuilder count(int count) {
+        public StatusInfoBuilder count(long count) {
             checkArgument(count >= 0, "count must be >= 0");
-            property("count", count);
+            property(Properties.Count, count);
             return this;
         }
 
@@ -116,8 +121,25 @@ public class StatusInfo {
             return this;
         }
 
+        public <T> T getProperty(String name) {
+            Objects.requireNonNull(name);
+            return (T) properties.get(name);
+        }
+
         public StatusInfo build() {
             return new StatusInfo(this);
+        }
+
+        public Severity getSeverity() {
+            return getProperty(Properties.Severity);
+        }
+
+        public Long getCount() {
+            final Object value = getProperty(Properties.Count);
+            if (value != null) {
+                return (Long) value;
+            }
+            return 0L;
         }
     }
 }

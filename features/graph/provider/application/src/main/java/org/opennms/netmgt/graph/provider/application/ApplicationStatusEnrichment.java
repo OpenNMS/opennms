@@ -36,11 +36,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.ApplicationStatus;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
+import org.opennms.netmgt.dao.api.MonitoredServiceStatusEntity;
 import org.opennms.netmgt.graph.api.enrichment.EnrichedProperties;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentGraphBuilder;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor;
+import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.Severity;
@@ -65,53 +65,54 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
 
     @Override
     public void enrich(EnrichmentGraphBuilder graphBuilder) {
-        // The status for all child services (OnmsMonitoredServices)
-        final Map<ApplicationStatusEntity.Key, StatusInfo> childStatusMap = new HashMap<>();
-
-        // Mapping between each vertex to its status
-        final Map<GenericVertex, StatusInfo> vertexStatusMap = new HashMap<>();
-
-        // Get maximum alarm severities for all application (alarm status)
-        final List<ApplicationStatusEntity> result = applicationDao.getAlarmStatus();
-        for (ApplicationStatusEntity eachRow : result) {
-            final StatusInfo statusInfo = StatusInfo.builder(eachRow.getSeverity()).count(eachRow.getCount()).build();
-            childStatusMap.put(eachRow.getKey(), statusInfo);
-        }
-
         // Prepare calculation
         final List<GenericVertex> allVertices = graphBuilder.getView().getVertices();
         final List<GenericVertex> rootVertices = graphBuilder.getView().getVertices().stream().map(ApplicationVertex::from).filter(v -> v.getApplicationId() != null).map(AbstractDomainVertex::asGenericVertex).collect(Collectors.toList());
         List<GenericVertex> childVertices = new ArrayList<>(allVertices);
         childVertices.removeAll(rootVertices);
 
+        // The status for all child services (OnmsMonitoredServices)
+        final Map<Integer, StatusInfo> childStatusMap = new HashMap<>();
+
+        // Mapping between each vertex to its status
+        final Map<GenericVertex, StatusInfo> vertexStatusMap = new HashMap<>();
+
+        // Load applications
+        final List<OnmsApplication> applications = rootVertices.stream().map(v -> ApplicationVertex.from(v).getApplicationId()).map(id -> applicationDao.get(id)).collect(Collectors.toList());
+
+        // Get maximum alarm severities for all application (alarm status)
+        final List<MonitoredServiceStatusEntity> result = applicationDao.getAlarmStatus(applications);
+        for (MonitoredServiceStatusEntity eachRow : result) {
+            final StatusInfo statusInfo = StatusInfo.builder(eachRow.getSeverity()).count(eachRow.getCount()).build();
+            childStatusMap.put(eachRow.getNodeId(), statusInfo);
+        }
+
         // The statusMap until now contains only status for all child vertices which have alarms
         // The others are now filled with NORMAL status entries
         for (GenericVertex eachVertex : childVertices) {
-            final ApplicationStatusEntity.Key key = createKey(eachVertex);
-            childStatusMap.putIfAbsent(key, DEFAULT_STATUS);
-            vertexStatusMap.put(eachVertex, childStatusMap.get(key));
+            final int nodeId = eachVertex.getNodeRef().getNodeId();
+            childStatusMap.putIfAbsent(nodeId, DEFAULT_STATUS);
+            vertexStatusMap.put(eachVertex, childStatusMap.get(nodeId));
         }
 
         // The status of each Application (root vertices) is the maximum of its children
-        final List<OnmsApplication> applications = rootVertices.stream().map(ApplicationVertex::from).map(v -> applicationDao.get(v.getApplicationId())).collect(Collectors.toList());
-        final List<ApplicationStatus> applicationStatus = applicationDao.getApplicationStatus(applications);
-        for (ApplicationStatus status : applicationStatus) {
-            final String vertexId = ApplicationVertex.createVertexId(status.getApplication());
-            final GenericVertex vertex = graphBuilder.getView().getVertex(vertexId);
-            if (vertex != null) {
-                vertexStatusMap.put(vertex, StatusInfo.builder(status.getSeverity()).build()); // TODO MVR count is missing
+        // calculate status for root
+        for (GenericVertex eachRoot : rootVertices) {
+            final StatusInfo.StatusInfoBuilder rootStatusBuilder = StatusInfo.from(DEFAULT_STATUS);
+            // Calculate max severity
+            for (GenericEdge eachEdge : graphBuilder.getView().getConnectingEdges(eachRoot)) {
+                final GenericVertex serviceVertex = graphBuilder.getView().resolveVertex(eachEdge.getTarget());
+                final StatusInfo childStatus = childStatusMap.get(serviceVertex.getNodeRef().getNodeId());
+                if (rootStatusBuilder.getSeverity().isLessThan(childStatus.getSeverity())) {
+                    rootStatusBuilder.severity(childStatus.getSeverity()).count(childStatus.getCount());
+                } else if (rootStatusBuilder.getSeverity().isEqual(childStatus.getSeverity())) {
+                    rootStatusBuilder.count(rootStatusBuilder.getCount() + childStatus.getCount());
+                }
             }
+            vertexStatusMap.put(eachRoot, rootStatusBuilder.build());
         }
 
         // Update vertices
         vertexStatusMap.entrySet().forEach(entry -> graphBuilder.property(entry.getKey(), EnrichedProperties.STATUS, entry.getValue()));
-    }
-
-    private static ApplicationStatusEntity.Key createKey(final GenericVertex genericVertex) {
-        final ApplicationVertex applicationVertex = ApplicationVertex.from(genericVertex);
-        return new ApplicationStatusEntity.Key(
-                String.valueOf(applicationVertex.getNodeRef().getNodeId()),
-                String.valueOf(applicationVertex.getServiceTypeId()),
-                applicationVertex.getIpAddress());
     }
 }

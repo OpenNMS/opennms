@@ -54,6 +54,12 @@ public enum Severity {
     }
 
     public boolean isLessThan(Severity other) {
+        Objects.requireNonNull(other);
         return ordinal() < other.ordinal();
+    }
+
+    public boolean isEqual(Severity other) {
+        Objects.requireNonNull(other);
+        return ordinal() == other.ordinal();
     }
 }
