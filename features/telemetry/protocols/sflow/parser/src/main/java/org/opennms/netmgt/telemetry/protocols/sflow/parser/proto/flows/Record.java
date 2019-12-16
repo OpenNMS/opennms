@@ -29,12 +29,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
@@ -44,6 +43,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import io.netty.buffer.ByteBuf;
 
 // The data_format uniquely identifies the format of an opaque structure in
 // the sFlow specification. A data_format is contructed as follows:
@@ -67,7 +68,7 @@ public abstract class Record<T> {
             this.formatNumber = formatNumber;
         }
 
-        public DataFormat(final ByteBuffer buffer) throws InvalidPacketException {
+        public DataFormat(final ByteBuf buffer) throws InvalidPacketException {
             final int dataFormat = (int) BufferUtils.uint32(buffer);
             this.enterpriseNumber = (dataFormat >> 12 & (2 << 20) - 1);
             this.formatNumber = (dataFormat & (2 << 12) - 1);
@@ -111,7 +112,7 @@ public abstract class Record<T> {
     public final DataFormat dataFormat;
     public final Opaque<T> data;
 
-    public Record(final ByteBuffer buffer, final Map<DataFormat, Opaque.Parser<T>> dataFormats) throws InvalidPacketException {
+    public Record(final ByteBuf buffer, final Map<DataFormat, Opaque.Parser<T>> dataFormats) throws InvalidPacketException {
         this.dataFormat = new DataFormat(buffer);
 
         final Opaque.Parser<T> parser = dataFormats.get(this.dataFormat);

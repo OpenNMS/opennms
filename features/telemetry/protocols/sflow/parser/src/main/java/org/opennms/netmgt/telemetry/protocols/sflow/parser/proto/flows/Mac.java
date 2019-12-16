@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonBinary;
@@ -39,12 +38,14 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef opaque mac[6];
 
 public class Mac {
     public final Opaque<byte[]> mac;
 
-    public Mac(final ByteBuffer buffer) throws InvalidPacketException {
+    public Mac(final ByteBuf buffer) throws InvalidPacketException {
         this.mac = new Opaque(buffer, Optional.of(6), Opaque::parseBytes);
     }
 

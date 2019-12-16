@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct host_adapter {
 //    unsigned int ifIndex;     /* ifIndex associated with adapter
@@ -51,7 +52,7 @@ public class HostAdapter {
     public final long ifIndex;
     public final Array<Mac> mac_address;
 
-    public HostAdapter(final ByteBuffer buffer) throws InvalidPacketException {
+    public HostAdapter(final ByteBuf buffer) throws InvalidPacketException {
         this.ifIndex = BufferUtils.uint32(buffer);
         this.mac_address = new Array(buffer, Optional.empty(), Mac::new);
     }

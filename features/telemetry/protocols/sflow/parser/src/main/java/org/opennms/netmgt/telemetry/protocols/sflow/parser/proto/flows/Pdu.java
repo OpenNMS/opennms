@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // struct pdu {
 //    flow_record flow_records<>;  /* Flow records for each of the PDUs
 //                                    in the aggregation */
@@ -46,7 +47,7 @@ import com.google.common.base.MoreObjects;
 public class Pdu {
     public final Array<FlowRecord> flow_records;
 
-    public Pdu(final ByteBuffer buffer) throws InvalidPacketException {
+    public Pdu(final ByteBuf buffer) throws InvalidPacketException {
         this.flow_records = new Array(buffer, Optional.empty(), FlowRecord::new);
     }
 

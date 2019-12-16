@@ -29,13 +29,14 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 
+import io.netty.buffer.ByteBuf;
+
 public interface UdpParser extends Parser {
-    CompletableFuture<?> parse(final ByteBuffer buffer,
+    CompletableFuture<?> parse(final ByteBuf buffer,
                                final InetSocketAddress remoteAddress,
                                final InetSocketAddress localAddress) throws Exception;
 }

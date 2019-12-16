@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto;
 
-import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public final class TemplateRecord implements Record {
 
     public final TemplateRecordHeader header;
@@ -45,7 +46,7 @@ public final class TemplateRecord implements Record {
     public final List<FieldSpecifier> fields;
 
     public TemplateRecord(final TemplateRecordHeader header,
-                          final ByteBuffer buffer) throws InvalidPacketException {
+                          final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();

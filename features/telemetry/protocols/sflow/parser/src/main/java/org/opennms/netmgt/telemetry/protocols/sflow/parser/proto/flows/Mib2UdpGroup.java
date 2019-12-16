@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct mib2_udp_group {
 //   unsigned int udpInDatagrams;
@@ -56,7 +56,7 @@ public class Mib2UdpGroup implements CounterData {
     public final long udpSndbufErrors;
     public final long udpInCsumErrors;
 
-    public Mib2UdpGroup(final ByteBuffer buffer) throws InvalidPacketException {
+    public Mib2UdpGroup(final ByteBuf buffer) throws InvalidPacketException {
         this.udpInDatagrams = BufferUtils.uint32(buffer);
         this.udpNoPorts = BufferUtils.uint32(buffer);
         this.udpInErrors = BufferUtils.uint32(buffer);
