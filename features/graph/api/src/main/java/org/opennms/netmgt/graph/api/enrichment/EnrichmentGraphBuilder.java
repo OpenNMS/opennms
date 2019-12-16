@@ -32,10 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.generic.GenericElement;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 
@@ -46,6 +48,7 @@ public final class EnrichmentGraphBuilder {
     private final GenericGraph view;
     private final Map<VertexRef, Map<String, Object>> vertexRefToPropertiesMap = Maps.newHashMap();
     private final Map<String, Map<String, Object>> edgeIdToPropertiesMap = Maps.newHashMap();
+    private final Map<String, Object> graphProperties = Maps.newHashMap();
 
     public EnrichmentGraphBuilder(final GenericGraph input) {
         this.view = Objects.requireNonNull(input);
@@ -67,33 +70,42 @@ public final class EnrichmentGraphBuilder {
         return getView().resolveVertices(nodeRef);
     }
 
+    public  <T> EnrichmentGraphBuilder property(final String name, final T value) {
+        property(view, name, value, () -> graphProperties);
+        return this;
+    }
+
     public <T> EnrichmentGraphBuilder property(final GenericVertex vertex, final String name, final T value) {
         Objects.requireNonNull(vertex);
-        Objects.requireNonNull(name);
-        final Map<String, Object> vertexProperties = getVertexProperties(vertex);
-        if (vertex.getProperty(name) != null) {
-            throw new IllegalArgumentException("Cannot change existing property");
-        }
-        vertexProperties.put(name, value);
+        property(vertex, name, value, () -> getVertexProperties(vertex.getVertexRef()));
         return this;
     }
 
     public <T> EnrichmentGraphBuilder property(final GenericEdge edge, final String name, final T value) {
-        Objects.requireNonNull(edge);
-        Objects.requireNonNull(name);
-        final Map<String, Object> edgeProperties = getEdgeProperties(edge);
-        if (edge.getProperty(name) != null) {
-            throw new IllegalArgumentException("Cannot change existing property");
-        }
-        edgeProperties.put(name, value);
+        property(edge, name, value, () -> getEdgeProperties(edge));
         return this;
     }
 
-    private Map<String, Object> getVertexProperties(GenericVertex vertex) {
-        Objects.requireNonNull(vertex);
-        final VertexRef vertexRef = vertex.getVertexRef();
+    private <T> EnrichmentGraphBuilder property(final GenericElement element, final String name, final T value, Supplier<Map<String, Object>> enrichedPropertiesMapSupplier) {
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(value);
+        if (element.getProperty(name) != null) {
+            throw new IllegalArgumentException(
+                    String.format("Cannot change existing property on '%s' graph element with id '%s'", element.getClass().getSimpleName(), element.getId()));
+        }
+        final Map<String, Object> enrichedProperties = enrichedPropertiesMapSupplier.get();
+        if (enrichedProperties != null) {
+            enrichedProperties.put(name, value);
+        }
+        return this;
+    }
+
+    private Map<String, Object> getVertexProperties(VertexRef vertexRef) {
+        Objects.requireNonNull(vertexRef);
         if (view.resolveVertex(vertexRef) == null) {
-            throw new IllegalArgumentException("Vertex is unknown"); // TODO MVR ...
+            throw new IllegalArgumentException(
+                    String.format("Vertex with id '%s' does not exist", vertexRef.getId()));
         }
         if (!vertexRefToPropertiesMap.containsKey(vertexRef)) {
             vertexRefToPropertiesMap.put(vertexRef, new HashMap<>());
@@ -105,7 +117,8 @@ public final class EnrichmentGraphBuilder {
         Objects.requireNonNull(edge);
         final String edgeId = edge.getId();
         if (view.getEdge(edgeId) == null) {
-            throw new IllegalArgumentException("Edge is unknown"); // TODO MVR ...
+            throw new IllegalArgumentException(
+                    String.format("Edge with id '%s' does not exist", edgeId));
         }
         if (!edgeIdToPropertiesMap.containsKey(edgeId)) {
             edgeIdToPropertiesMap.put(edgeId, new HashMap<>());
@@ -114,9 +127,17 @@ public final class EnrichmentGraphBuilder {
     }
 
     public GenericGraph build() {
-        final GenericGraph.GenericGraphBuilder genericGraphBuilder = GenericGraph.builder().properties(view.getProperties());
-        view.getVertices().forEach(vertex -> GenericVertex.builder().vertex(vertex).properties(getVertexProperties(vertex)));
-        view.getEdges().forEach(edge -> GenericEdge.builder().edge(edge).properties(getEdgeProperties(edge)));
+        final GenericGraph.GenericGraphBuilder genericGraphBuilder = GenericGraph.builder()
+                .properties(view.getProperties())
+                .properties(graphProperties);
+        view.getVertices().forEach(vertex -> {
+            final GenericVertex enrichedVertex = GenericVertex.builder().vertex(vertex).properties(getVertexProperties(vertex.getVertexRef())).build();
+            genericGraphBuilder.addVertex(enrichedVertex);
+        });
+        view.getEdges().forEach(edge -> {
+            final GenericEdge enrichedEdge = GenericEdge.builder().edge(edge).properties(getEdgeProperties(edge)).build();
+            genericGraphBuilder.addEdge(enrichedEdge);
+        });
         return genericGraphBuilder.build();
     }
 
