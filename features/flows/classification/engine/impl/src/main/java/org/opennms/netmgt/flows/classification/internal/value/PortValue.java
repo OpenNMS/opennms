@@ -62,4 +62,8 @@ public class PortValue {
     public Set<Integer> getPorts() {
         return ports;
     }
+
+    public boolean matches(int port) {
+        return getPorts().contains(port);
+    }
 }

@@ -32,9 +32,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,20 +53,59 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.RulePositionComparator;
 
+import com.google.common.base.Throwables;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 public class DefaultClassificationEngine implements ClassificationEngine {
 
-    private final List<List<Classifier>> classifierPortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
+    // (port) -> rule mapping
+    private final List<List<RuleDefinition>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
+    // (RuleDefinition) -> Combined Classifier
+    private final Map<RuleDefinition, CombinedClassifier> ruleClassifierMap = new HashMap<>();
+    // Cache to load the list of classifiers
+    private final LoadingCache<Integer, List<Classifier>> portClassifiersCache;
     private final Comparator<RuleDefinition> ruleComparator = new RulePositionComparator();
     private final ClassificationRuleProvider ruleProvider;
-    private final FilterService filterService;
 
-    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider, FilterService filterService) {
+    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService) {
         this(ruleProvider, filterService, true);
     }
 
-    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider, FilterService filterService, boolean initialize) {
+    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService, final boolean initialize) {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
-        this.filterService = Objects.requireNonNull(filterService);
+        this.portClassifiersCache = CacheBuilder.newBuilder().build(new CacheLoader<Integer, List<Classifier>>() {
+            @Override
+            public List<Classifier> load(Integer port) throws Exception {
+                final List<RuleDefinition> ruleDefinitions = rulePortList.get(port);
+                final List<Classifier> classifiers = ruleDefinitions.stream().map(rule -> {
+                    if (!ruleClassifierMap.containsKey(rule)) {
+                        final DefaultRuleDefinition portRule = new DefaultRuleDefinition();
+                        portRule.setName(rule.getName());
+                        portRule.setProtocol(rule.getProtocol());
+                        portRule.setSrcAddress(rule.getSrcAddress());
+                        portRule.setDstAddress(rule.getDstAddress());
+                        portRule.setExporterFilter(rule.getExporterFilter());
+                        portRule.setGroupPosition(rule.getGroupPosition());
+                        portRule.setPosition(rule.getPosition());
+
+                        // If none, the value of either src or dst port may be empty, as the filtering already occurred
+                        // through the index of the rule in the classifierPortList.
+                        if (rule.hasDstPortDefinition()) {
+                            portRule.setDstPort(rule.getDstPort());
+                        }
+                        if (rule.hasSrcPortDefinition()) {
+                            portRule.setSrcPort(rule.getSrcPort());
+                        }
+                        ruleClassifierMap.put(rule, new CombinedClassifier(portRule, filterService));
+                    }
+                    return ruleClassifierMap.get(rule);
+                }).collect(Collectors.toList());
+                return classifiers;
+            }
+        });
+
         if (initialize) {
             this.reload();
         }
@@ -85,7 +127,9 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     @Override
     public void reload() {
         // Reset existing data
-        classifierPortList.clear();
+        ruleClassifierMap.clear();
+        rulePortList.clear();
+        portClassifiersCache.invalidateAll();
 
         // Load rules and expand omnidirectional rules to reversed ones
         final List<RuleDefinition> rules = ruleProvider.getRules().stream()
@@ -94,16 +138,12 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                         : Stream.of(rule))
                 .collect(Collectors.toList());
 
-        // (port) -> rule mapping
-        final List<List<RuleDefinition>> rulePortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
-
         // Rules which are not bound to a src OR dst port are stored here temporarily
         final List<RuleDefinition> anyPortRules = new ArrayList<>();
 
         // Initialize each element
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             rulePortList.add(new ArrayList<>());
-            classifierPortList.add(new ArrayList<>());
         }
 
         // Technically there are 2^16 * 2^16 combinations, but it is possible to correctly pre-sort the rules
@@ -138,46 +178,19 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             theRules.addAll(anyPortRules);
         }
 
+        // Reduce memory pressure
+        anyPortRules.clear();
+        rules.clear();
+
         // Sort rules by position
         for (int i=0; i<rulePortList.size(); i++) {
             final List<RuleDefinition> portRules = rulePortList.get(i);
             portRules.sort(ruleComparator);
         }
 
-        // Finally create classifiers
-        for (int i = 0; i < rulePortList.size(); i++) {
-            final int port = i;
-            final List<RuleDefinition> portRules = rulePortList.get(port);
-
-            // Convert rule to classifier
-            final List<Classifier> classifiers = portRules.stream().map(rule -> {
-                final DefaultRuleDefinition portRule = new DefaultRuleDefinition();
-                portRule.setName(rule.getName());
-                portRule.setProtocol(rule.getProtocol());
-                portRule.setSrcAddress(rule.getSrcAddress());
-                portRule.setDstAddress(rule.getDstAddress());
-                portRule.setExporterFilter(rule.getExporterFilter());
-                portRule.setGroupPosition(rule.getGroupPosition());
-                portRule.setPosition(rule.getPosition());
-
-                // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)
-                if (rule.hasDstPortDefinition() && rule.hasSrcPortDefinition()) {
-                    portRule.setSrcPort(rule.getSrcPort()); // keep src port as is, to apply filter
-                } else {
-                    // Only src or dst ports are defined (or none)
-                    // if none, the value of either src or dst port may be empty, as the filtering already occurred
-                    // through the index of the rule in the classifierPortList.
-                    if (rule.hasDstPortDefinition()) {
-                        portRule.setDstPort(Integer.toString(port));
-                    }
-                    if (rule.hasSrcPortDefinition()) {
-                        portRule.setSrcPort(Integer.toString(port));
-                    }
-                }
-                return new CombinedClassifier(portRule, filterService);
-            })
-            .collect(Collectors.toList());
-            classifierPortList.set(port, classifiers);
+        // pre-populate cache
+        for (int i=0; i<rulePortList.size(); i++) {
+            getClassifiers(i);
         }
     }
 
@@ -196,8 +209,8 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     }
 
     private Collection<Classifier> getClassifiers(ClassificationRequest request) {
-        final List<Classifier> srcPortClassifiers = classifierPortList.get(request.getSrcPort());
-        final List<Classifier> dstPortClassifiers = classifierPortList.get(request.getDstPort());
+        final List<Classifier> srcPortClassifiers = getClassifiers(request.getSrcPort());
+        final List<Classifier> dstPortClassifiers = getClassifiers(request.getDstPort());
 
         // If rules for either src or dst ports are empty, use the opposite
         if (srcPortClassifiers.isEmpty()) {
@@ -228,5 +241,13 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         // 2. Sort
         Collections.sort(classifiers);
         return classifiers;
+    }
+
+    private List<Classifier> getClassifiers(int port) {
+        try {
+            return portClassifiersCache.get(port);
+        } catch (ExecutionException ex) {
+            throw Throwables.propagate(ex.getCause());
+        }
     }
 }

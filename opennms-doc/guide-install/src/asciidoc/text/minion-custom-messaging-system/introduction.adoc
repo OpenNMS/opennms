@@ -1,0 +1,19 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+== Minion with custom messaging system
+
+_Minions_ and _{opennms-product-name}_  communicate via a messaging system.
+By default, an embedded _ActiveMQ_ broker is used.
+_{opennms-product-name}_ is designed to work with different messaging systems and based on the system requirements or workload, an alternative to _ActiveMQ_ can be used.
+In general, the communication between _{opennms-product-name}_ and _Minion_ is provided by two patterns:
+
+* _Remote Producer Calls (RPCs)_ are used to issue specific tasks (such as a request to poll or perform data collection) from an _{opennms-product-name}_ instance to a _Minion_ in a remote location.
+** These calls are normally self-contained and include all of the meta-data and information required for them to be performed.
+* The _Sink_ pattern is used to send unsolicited messages (i.e. _Syslog_, _SNMP Traps_ or _Flows_) received from a _Minion_ to an _{opennms-product-name}_ instance
+
+.High level components used for communication between _{opennms-product-name}_ and _Minions_
+image:minion-custom-messaging-system/minion-communication.png[]
+
+This section describes how you can setup _{opennms-product-name}_ to use other supported messaging systems for the communication with _Minions_.

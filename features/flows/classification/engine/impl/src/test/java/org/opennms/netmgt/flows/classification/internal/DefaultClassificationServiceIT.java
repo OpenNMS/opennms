@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.FilterService;
@@ -57,7 +58,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionOperations;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -82,7 +82,7 @@ public class DefaultClassificationServiceIT {
     private FilterDao filterDao;
 
     @Autowired
-    private TransactionOperations transactionOperations;
+    private SessionUtils sessionUtils;
 
     private ClassificationService classificationService;
 
@@ -98,7 +98,7 @@ public class DefaultClassificationServiceIT {
                 new DefaultClassificationEngine(
                         new DaoClassificationRuleProvider(ruleDao), filterService),
                 filterService,
-                transactionOperations);
+                sessionUtils);
         userGroupDb = new GroupBuilder().withName(Groups.USER_DEFINED).build();
         groupDao.save(userGroupDb);
         assertThat(ruleDao.countAll(), is(0));
