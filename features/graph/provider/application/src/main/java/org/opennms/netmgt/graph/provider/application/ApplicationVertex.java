@@ -79,7 +79,7 @@ public final class ApplicationVertex extends AbstractDomainVertex {
         return getProperty(Property.SERVICE_TYPE_ID);
     }
 
-    public String getApplicationId() {
+    public Integer getApplicationId() {
         return getProperty(Property.APPLICATION_ID);
     }
 

@@ -48,6 +48,8 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 public class ApplicationSearchProvider implements SearchProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationSearchProvider.class);
@@ -84,17 +86,24 @@ public class ApplicationSearchProvider implements SearchProvider {
 
     @Override
     public List<GenericVertex> resolve(GraphService graphService, SearchCriteria searchCriteria) {
-        return getVerticesOfGraph(graphService, searchCriteria.getNamespace())
-                .stream()
-                .map(ApplicationVertex::new)
-                .filter(v -> filter(v, searchCriteria.getCriteria()))
-                .map(ApplicationVertex::asGenericVertex)
-                .collect(Collectors.toList());
+        final String applicationIdString = searchCriteria.getCriteria();
+        try {
+            final int applicationId = Integer.parseInt(applicationIdString);
+            return getVerticesOfGraph(graphService, searchCriteria.getNamespace())
+                    .stream()
+                    .map(ApplicationVertex::new)
+                    .filter(v -> filter(v, applicationId))
+                    .map(ApplicationVertex::asGenericVertex)
+                    .collect(Collectors.toList());
+        } catch (NumberFormatException ex) {
+            LoggerFactory.getLogger(getClass()).error("Cannot convert string '{}' to number: {}", applicationIdString, ex.getMessage(), ex);
+            return Lists.newArrayList();
+        }
     }
 
-    private boolean filter(ApplicationVertex vertex, String input) {
+    private boolean filter(ApplicationVertex vertex, Integer applicationId) {
         if (vertex.getVertexType() == ApplicationVertexType.Application && vertex.getApplicationId() != null) {
-            return vertex.getApplicationId().contains(input);
+            return Objects.equals(vertex.getApplicationId(), applicationId);
         }
         return false;
     }
