@@ -273,7 +273,7 @@
 
   <!-- NMS-9273: Create Topology Service Updates in enlinkd Add nodeid,idindex and port -->
   <changeSet author="rssntn67" id="24.0.0-ipnettomedia-add-nodeid-ifindex-port">
-
+    
     <addColumn tableName="ipnettomedia">
       <column name="nodeid" type="integer">
       </column>
@@ -282,14 +282,14 @@
       <column name="port" type="text">
       </column>
     </addColumn>
-
-    <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid"
-    	baseTableName="ipnettomedia"
-    	baseColumnNames="nodeid"
-    	referencedTableName="node"
+    
+    <addForeignKeyConstraint constraintName="fk_ipnettomedia_nodeid" 
+    	baseTableName="ipnettomedia" 
+    	baseColumnNames="nodeid" 
+    	referencedTableName="node" 
     	referencedColumnNames="nodeid" />
-
-
+    
+    
        <rollback>
             <dropColumn tableName="ipnettomedia" columnName="nodeid" />
             <dropColumn tableName="ipnettomedia" columnName="ifindex" />
