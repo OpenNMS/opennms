@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -355,7 +356,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void deleteService(final Integer nodeId, final InetAddress addr, final String svcName) {
+    public void deleteService(final Integer nodeId, final InetAddress addr, final String svcName, final boolean ignoreUnmanaged) {
         LOG.debug("deleteService: nodeId={}, addr={}, service={}", nodeId, addr, svcName);
 
         final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, addr, svcName);
@@ -364,8 +365,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             final OnmsIpInterface iface = service.getIpInterface();
             final OnmsNode node = iface.getNode();
 
-            final boolean lastService = (iface.getMonitoredServices().size() == 1);
-            final boolean lastInterface = (node.getIpInterfaces().size() == 1);
+            Set<OnmsIpInterface> ifaces = node.getIpInterfaces();
+            Set<OnmsMonitoredService> ifaceServices = iface.getMonitoredServices();
+
+            if (ignoreUnmanaged) {
+                ifaces = ifaces.stream().filter(s -> s.isManaged()).collect(Collectors.toSet());
+                ifaceServices = ifaceServices.stream().filter(s -> s.getIpInterface().isManaged()).collect(Collectors.toSet());
+            }
+
+            final boolean lastService = (ifaceServices.size() < 2);
+            final boolean lastInterface = (ifaces.size() < 2);
 
             final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
 
@@ -1415,5 +1424,33 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
+    }
+
+    public void setMonitoringLocationDao(final MonitoringLocationDao dao) {
+        m_monitoringLocationDao = dao;
+    }
+
+    public void setNodeDao(final NodeDao dao) {
+        m_nodeDao = dao;
+    }
+
+    public void setIpInterfaceDao(final IpInterfaceDao dao) {
+        m_ipInterfaceDao = dao;
+    }
+
+    public void setSnmpInterfaceDao(final SnmpInterfaceDao dao) {
+        m_snmpInterfaceDao = dao;
+    }
+
+    public void setMonitoredServiceDao(final MonitoredServiceDao dao) {
+        m_monitoredServiceDao = dao;
+    }
+
+    public void setServiceTypeDao(final ServiceTypeDao dao) {
+        m_serviceTypeDao = dao;
+    }
+
+    public void setEventForwarder(final EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
     }
 }

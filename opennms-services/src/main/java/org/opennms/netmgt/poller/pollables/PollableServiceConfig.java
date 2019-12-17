@@ -232,6 +232,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
 
         long when = m_configService.getInterval();
+        boolean ignoreUnmanaged = false;
 
         if (m_service.getStatus().isDown()) {
             final long downFor = m_timer.getCurrentTime() - m_service.getStatusChangeTime();
@@ -241,7 +242,12 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 LOG.debug("getInterval(): Checking downtime: {}", dt);
                 if (dt.getBegin() <= downFor) {
                     LOG.debug("getInterval(): begin ({}) <= {}", dt.getBegin(), downFor);
-                    if (isTrue(dt.getDelete())) {
+                    final String delete = dt.getDelete();
+                    if (Downtime.DELETE_ALWAYS.equals(delete)) {
+                        when = -1;
+                        ignoreUnmanaged = true;
+                        matched = true;
+                    } else if (Downtime.DELETE_MANAGED.equals(delete)) {
                         when = -1;
                         matched = true;
                     }
@@ -256,7 +262,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     }
                 }
             }
-            LOG.debug("getInterval(): when={}, matched={}", when, matched);
+            LOG.debug("getInterval(): when={}, matched={}, ignoreUnmanaged={}", when, matched, ignoreUnmanaged);
             if (!matched) {
                 LOG.error("Downtime model is invalid on package {}, cannot schedule service {}", m_pkg.getName(), m_service);
                 return -1;
@@ -264,14 +270,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
 
         if (when < 0) {
-            m_service.sendDeleteEvent();
+            m_service.sendDeleteEvent(ignoreUnmanaged);
         }
 
         return when;
-    }
-
-    private boolean isTrue(final String value) {
-        return value != null && (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
     }
 
     /**
