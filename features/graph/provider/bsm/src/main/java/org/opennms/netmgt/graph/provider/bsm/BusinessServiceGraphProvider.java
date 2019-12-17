@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.*;
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.BusinessServiceVertexBuilder;
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.builder;
 
 import java.util.List;
 import java.util.Objects;
