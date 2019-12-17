@@ -81,7 +81,7 @@
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://wiki.opennms.org/wiki/Community/Welcome_Guide" target="_blank"
+                            href="https://opennms.discourse.group/t/community-welcome-guide/560" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">Welcome Guide</a></td>
                     <td style="border-top: none;">If you are new in the project, you can find useful information in your Welcome Guide to get anything you need to get started.</td>
                 </tr>
@@ -111,7 +111,7 @@
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://wiki.opennms.org/wiki/Community/Welcome_Guide" target="_blank"
+                            href="https://opennms.discourse.group/t/community-welcome-guide/560" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">Welcome Guide</a></td>
                     <td style="border-top: none;">If you are new in the project, you can find useful information in your Welcome Guide to get anything you need to get started.</td>
                 </tr>
