@@ -4,24 +4,19 @@
 link:http://newts.io/[Newts] is a time-series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
 It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontally scale] capabilities for your time series storage and is an alternative to link:http://www.opennms.org/wiki/JRobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
 
-The _Cassandra_ cluster design, setup and operation is out of scope for this section.
+The _Cassandra_ cluster design, setup, sizing, tuning and operation is out of scope for this section.
 To install and set up a _Cassandra_ cluster please follow the link:http://cassandra.apache.org/download[Cassandra installation instructions].
 For further information see link:https://cassandra.apache.org/doc/latest/getting_started/index.html[Cassandra Getting Started Guide].
-Before setting up a production cluster make sure you consult at least the link:https://docs.datastax.com/en/dse-planning/doc/planning/planningAntiPatterns.html[Anti-patterns in Cassandra].
-
-WARNING: In _Newts_ there is no information loss with data aggregation when time series data is written to _Cassandra_.
-         _RRDTool_ and _JRobin_ aggregate data by default and therefore you have usually a bigger storage capacity demand depending on your data retention needs with _Newts_.
 
 TIP: To avoid unwanted updates disable the _Cassandra_ repository on _DNF/YUM_ based distributions or use `apt-mark hold cassandra` on _APT_ based distributions.
 
-By default using the `${OPENNMS_HOME}/bin/newts init` command the samples keyspace is created with the link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__stcs-compaction[Size Tiered Compaction Strategy (STSC)].
-_STCS_ is not optimal for time series data and requires additionally 50% guaranteed free disk space on the partition with SSTables to complete compactions.
-For this reason we will describe how to set up samples table with the link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__twcs[Time Window Compaction Strategy (TWCS)] which has an overhead approximately around 10-20%.
+IMPORTANT: For simplicity we use the `${OPENNMS_HOME}/bin/newts init` command which initializes a _Newts_ keyspace for you and the defaults are not optimal tuned for a production-ready environment.
+If you want to build a production environment please consult link:https://opennms.discourse.group/t/sizing-cassandra-for-newts/771[Sizing Cassandra for Newts] and link:https://docs.datastax.com/en/dse-planning/doc/planning/planningAntiPatterns.html[planning Anti-patterns in Cassandra] articles.
 
 ==== Objectives
 
 * Configure _{opennms-product-name}_ to use an existing _Cassandra_ cluster
-* Initializing the _Newts_ keyspace using link:https://docs.datastax.com/en/dse/5.1/dse-arch/datastax_enterprise/dbInternals/dbIntHowDataMaintain.html#dbIntHowDataMaintain__twcs[TWCS] for the samples table
+* Initializing the _Newts_ keyspace using `newts init` with _STCS_ without production-ready tuning
 * Verify time series data is stored and can be accessed
 
 ==== Before you begin
@@ -31,8 +26,7 @@ For this reason we will describe how to set up samples table with the link:https
 * _Cassandra_ cluster with access to the _Cassandra_ client port `TCP/9042`
 
 WARNING: It is currently not supported to initialize the _Newts_ keyspace from _Microsoft Windows Server_ operating system.
-         _Microsoft Windows_ based _Cassandra_ server can be part of the cluster, but keyspace initialization is only possible using a _Linux_ operating system.
-
+_Microsoft Windows_ based _Cassandra_ server can be part of the cluster, but keyspace initialization is only possible using a _Linux_ operating system.
 
 [[gi-configure-opennms]]
 ==== Configure {opennms-product-name} to use Newts
@@ -62,71 +56,18 @@ org.opennms.newts.config.resource_shard=604800
 EOF
 ----
 
-<1> Associate time series data by the foreign ID instead the database generated node ID
-<2> Set time series strategy to use `newts`
-<3> Host or IP addresses of the _Cassandra_ cluster nodes, can be a comma separated list
+<1> Associate time series data by the foreign ID instead of the database generated Node-ID
+<2> Set time-series strategy to use `newts`
+<3> Host or IP addresses of the _Cassandra_ cluster nodes can be a comma-separated list
 <4> Name of the keyspace which is initialized and used
 <5> Port to connect to _Cassandra_
 
 ===== Step 2: Initialize the _Newts_ schema in _Cassandra_
 
-Connect to a _Cassandra_ node with a CQL shell
-
 [source, bash]
 ----
-cd $CASSANDRA_HOME/bin
-./cqlsh
+${OPENNMS_HOME}/bin/newts init
 ----
-
-Execute the following CQL command to initialize the keyspace
-
-[source]
-----
-CREATE KEYSPACE newts WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};<1>
-
-CREATE TABLE newts.samples (
-  context text,
-  partition int,
-  resource text,
-  collected_at timestamp,
-  metric_name text,
-  value blob,
-  attributes map<text, text>,
-  PRIMARY KEY((context, partition, resource), collected_at, metric_name)
-) WITH compaction = {<2>
-  'compaction_window_size': '7',<3>
-  'compaction_window_unit': 'DAYS',
-  'expired_sstable_check_frequency_seconds': '86400',
-  'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy'
-} AND gc_grace_seconds = 604800
-  AND read_repair_chance = 0;
-
-CREATE TABLE newts.terms (
-  context text,
-  field text,
-  value text,
-  resource text,
-  PRIMARY KEY((context, field, value), resource)
-);
-
-CREATE TABLE newts.resource_attributes (
-  context text,
-  resource text,
-  attribute text,
-  value text,
-  PRIMARY KEY((context, resource), attribute)
-);
-
-CREATE TABLE newts.resource_metrics (
-  context text,
-  resource text,
-  metric_name text,
-  PRIMARY KEY((context, resource), metric_name)
-);
-----
-<1> Replication strategy and the number of replicas for your data in your cluster
-<2> Configuration for TWCS compaction
-<3> The `compaction_window_size` and `compaction_window_unit` depend on `org.opennms.newts.config.ttl`, in this example for 1 year of data you will end up with 52 compacted _SSTables_ which is a reasonable number.
 
 ===== Step 3: Verify if the keyspace was properly initialized
 
