@@ -2,12 +2,15 @@
 	initial-sleep-time="30000" restart-sleep-time="86400000"
 	retries="1" timeout="2000">
 
-	<definition location="Minion" foreign-source="Minion-fs">
+	<definition location="MINION" foreign-source="ApexOffice">
 
 		<detectors>
 			<detector name="reverse-dns-lookup" class-name="org.opennms.netmgt.provision.detector.rdns.ReverseDNSLookupDetector"/>
 			<detector name="SNMP" class-name="org.opennms.netmgt.provision.detector.snmp.SnmpDetector">
 				<parameter key="timeout" value="5000"/>
+				<parameter key="ttl" value="120000"/>
+				<!-- use snmp profiles when detecting, defaults to false -->
+				<parameter key="useSnmpProfiles" value="true"/>
 			</detector>
 		</detectors>
 
