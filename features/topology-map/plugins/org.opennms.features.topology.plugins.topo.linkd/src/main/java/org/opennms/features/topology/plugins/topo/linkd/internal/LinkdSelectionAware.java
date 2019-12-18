@@ -81,7 +81,7 @@ public class LinkdSelectionAware implements SelectionAware {
     protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
         List<Integer> nodeIdList = new ArrayList<>();
         for (VertexRef eachRef : vertices) {
-            if (namespace.equals(eachRef.getNamespace())) {
+            if (namespace.startsWith(eachRef.getNamespace())) {
                 try {
                     nodeIdList.add(Integer.valueOf(eachRef.getId()));
                 } catch (NumberFormatException e) {
