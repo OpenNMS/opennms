@@ -35,7 +35,6 @@ import org.opennms.netmgt.graph.api.Edge;
 import org.opennms.netmgt.graph.api.VertexRef;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableMap;
 
 public final class GenericEdge extends GenericElement implements Edge {
 
@@ -43,9 +42,9 @@ public final class GenericEdge extends GenericElement implements Edge {
     private final VertexRef target;
 
     private GenericEdge(VertexRef source, VertexRef target, Map<String, Object> properties) {
-        super(ImmutableMap.<String, Object>builder()
-                .putAll(properties)
-                .put(GenericProperties.ID, properties.getOrDefault(GenericProperties.ID, source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId()))
+        super(new MapBuilder<String, Object>()
+                .withProperties(properties)
+                .withProperty(GenericProperties.ID, properties.getOrDefault(GenericProperties.ID, source.getNamespace() + ":" + source.getId() + "->" + target.getNamespace() + ":" + target.getId()))
                 .build());
         this.source = Objects.requireNonNull(source);
         this.target = Objects.requireNonNull(target);
