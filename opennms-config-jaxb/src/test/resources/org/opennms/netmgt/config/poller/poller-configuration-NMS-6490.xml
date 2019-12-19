@@ -199,7 +199,7 @@
         <downtime begin="0" end="300000" interval="30000"/>
         <downtime begin="300000" end="43200000" interval="300000"/>
         <downtime begin="43200000" end="432000000" interval="600000"/>
-        <downtime begin="432000000" delete="true"/>
+        <downtime begin="432000000" delete="managed"/>
     </package>
     <package name="strafer">
         <filter>IPADDR != '0.0.0.0'</filter>
@@ -221,7 +221,7 @@
             <parameter key="rrd-base-name" value="strafeping"/>
         </service>
         <downtime begin="0" end="432000000" interval="300000"/>
-        <downtime begin="432000000" delete="true"/>
+        <downtime begin="432000000" delete="managed"/>
     </package>
     <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
     <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>

@@ -31,7 +31,7 @@
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
     <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
     <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
-    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+    <downtime begin="432000000" delete="managed" /><!-- anything after 5 days delete -->
 
   </package>
 

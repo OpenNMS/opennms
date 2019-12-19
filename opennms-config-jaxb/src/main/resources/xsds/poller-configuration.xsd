@@ -433,13 +433,19 @@
 
       <attribute name="delete" use="optional">
         <annotation>
-          <documentation>Attribute that determines if service is to be deleted
-          when down continously until the start time.</documentation>
+          <documentation>
+            Attribute that determines if service is to be deleted when down
+            continuously since the start time.  Use 'never' to never delete
+            services, 'managed' to only delete the service if it is on an
+            interface that is managed, or 'always' to delete even if the
+            service is on an unmanaged interface.  For backwards-compatibility,
+            'yes' and 'true' are treated as 'managed'; 'no' and 'false' are
+            treated as 'never'.</documentation>
         </annotation>
 
         <simpleType>
           <restriction base="string">
-            <pattern value="(yes|true)"/>
+            <pattern value="(always|managed|never|yes|true|no|false)"/>
           </restriction>
         </simpleType>
       </attribute>
@@ -447,7 +453,7 @@
       <attribute name="interval" type="long" use="optional">
         <annotation>
           <documentation>Interval at which service is to be polled between the
-          specified start and end when service has been continously
+          specified start and end when service has been continuously
           down.</documentation>
         </annotation>
       </attribute>
