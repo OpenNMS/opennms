@@ -296,6 +296,7 @@ end
     </action-event>
 */
 rule "createTickets"
+  enabled false
   when
     $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
@@ -334,6 +335,7 @@ end
     </trigger>
 */
 rule "createCriticalTicket"
+  enabled false
   when
     $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
@@ -383,6 +385,7 @@ end
     </action-event>
 */
 rule "updateTickets"
+  enabled false
   when
     $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
@@ -423,6 +426,7 @@ end
     </action-event>
 */
 rule "closeClearedAlarmTickets"
+  enabled false
   when
     $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
@@ -458,6 +462,7 @@ end
     </action>
 */
 rule "clearAlarmsForClosedTickets"
+  enabled false
   when
     $sessionClock : SessionClock()
     AlarmTicketerService(isTicketingEnabled() == true)
