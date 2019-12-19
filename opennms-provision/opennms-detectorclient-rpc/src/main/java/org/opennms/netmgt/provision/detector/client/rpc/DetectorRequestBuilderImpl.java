@@ -46,6 +46,8 @@ import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(DetectorRequestBuilderImpl.class);
@@ -153,8 +155,13 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
         // Update ttl from metadata
-        Long ttlFromMetadata = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
-        detectorRequestDTO.setTimeToLiveMs(ttlFromMetadata);
+        String timeToLive = interpolatedAttributes.get(MetadataConstants.TTL);
+        if (!Strings.isNullOrEmpty(timeToLive)) {
+            Long ttlFromMetadata = ParameterMap.getLongValue(MetadataConstants.TTL, interpolatedAttributes.get(MetadataConstants.TTL), null);
+            detectorRequestDTO.setTimeToLiveMs(ttlFromMetadata);
+            //Remove ttl from attributes as it is not a detector attribute.
+            interpolatedAttributes.remove(MetadataConstants.TTL);
+        }
         detectorRequestDTO.addDetectorAttributes(interpolatedAttributes);
         detectorRequestDTO.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
         detectorRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(address));
