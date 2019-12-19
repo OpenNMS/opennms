@@ -46,6 +46,8 @@ This profile's SNMP parameters will be fitted only against IP addresses in the r
 NOTE: Profiles will be tried in the order they are configured.
 The first match that produces a successful SNMP `GET-REQUEST` on the scalar instance of `sysObjectID` will be saved by `Provisiond` as the SNMP configuratoin definition to use for all future SNMP operations against the fitted IP address.
 
+NOTE: `default` as profile label is reserved for default SNMP config.
+
 .Fit a SNMP profile
 
 The `opennms-snmp:fit` Karaf shell command finds a matching profile for a given IP address and prints out the resulting config.
@@ -75,3 +77,7 @@ admin@opennms()> opennms-snmp:remove-from-definition -l MINION 172.1.0.255
 
 This removes IP address `172.1.0.255` at location `MINION` from the system-wide SNMP configuration so that this IP address can be fitted to a new profile.
 This command might be useful when an IP address formerly assigned to an SNMPv2c-capable switch is reassigned to an SNMPv3-capable load balancer.
+
+.Using SNMP profiles in Snmp Detector
+
+By default SnmpDetector doesn't use SNMP profiles. Add property `useSnmpProfiles` and set it to `true` in order to use SNMP Profiles.

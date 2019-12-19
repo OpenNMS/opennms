@@ -34,6 +34,8 @@ The detector binds a service with a given _Service Name_ when a particular _SNMP
                 _ALL_: all values in the table must match against expected `vbalue` to detect service +
                 _ANY_: at least one value in the table must match against expected `vbalue` to detect service +
                 _NONE_: None of the values should match against expected value to detect service                        | optional | `EXIST`
+| `useSnmpProfiles`   | Set `true` if detector should use SNMP profiles to detect `SNMP` service.                       | optional | `false`
+| `ttl`       | Time to live in milliseconds to wait for a response from the Minion.                                    | optional | `20000`                  
 |===
 
 ===== Example for SNMP scalar value
