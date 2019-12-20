@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -97,8 +98,8 @@ public class DroolsAlarmContextIT {
     private MockTicketer ticketer = new MockTicketer();
 
     @Before
-    public void setUp() throws InterruptedException {
-        dac = new DroolsAlarmContext();
+    public void setUp() throws InterruptedException, IOException {
+        dac = new DroolsAlarmContext(AlarmdTestUtil.enableDisabledRules());
         dac.setUsePseudoClock(true);
         dac.setUseManualTick(true);
         dac.setAlarmTicketerService(ticketer);
