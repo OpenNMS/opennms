@@ -1116,6 +1116,12 @@
       <artifactId>org.opennms.features.karaf-health</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Used by the webapp, but declared here so that it is placed in the root class-loader -->
+    <dependency>
+      <groupId>org.opennms.features.alarms.history</groupId>
+      <artifactId>org.opennms.features.alarms.history.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

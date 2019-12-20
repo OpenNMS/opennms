@@ -159,7 +159,11 @@
         <argument ref="indexSettings"/>
         <property name="lookbackPeriodMs" value="${lookbackPeriodMs}"/>
     </bean>
-    <service ref="elasticAlarmHistoryRepository" interface="org.opennms.features.alarms.history.api.AlarmHistoryRepository"/>
+    <service ref="elasticAlarmHistoryRepository" interface="org.opennms.features.alarms.history.api.AlarmHistoryRepository">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
 
     <!-- Our health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">

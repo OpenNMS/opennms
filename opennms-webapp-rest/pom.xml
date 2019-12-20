@@ -270,6 +270,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.opennms.features.alarms.history</groupId>
+      <artifactId>org.opennms.features.alarms.history.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.impl</artifactId>
       <version>${project.version}</version>

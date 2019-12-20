@@ -34,13 +34,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -51,12 +54,18 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.features.alarms.history.api.AlarmHistoryRepository;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
@@ -106,6 +115,29 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Autowired
     private AlarmMapper m_alarmMapper;
 
+    @SuppressWarnings("unchecked")
+    private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+            .blocking()
+            .build();
+
+    private AtomicReference<AlarmHistoryRepository> m_alarmHistoryRepository = new AtomicReference<>();
+
+    @GET
+    @Path("history")
+    @Produces({MediaType.TEXT_PLAIN})
+    public Response getHistory(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        boolean didLookup = false;
+        AlarmHistoryRepository repo = m_alarmHistoryRepository.get();
+        if (repo == null) {
+            repo = SERVICE_LOOKUP.lookup(AlarmHistoryRepository.class, null);
+            m_alarmHistoryRepository.set(repo);
+            didLookup = true;
+        }
+        long numActiveAlarms = repo.getNumActiveAlarmsNow();
+        return Response.ok(String.format("hey, I found %d active alarms. did I have to lookup the service? %s",
+                numActiveAlarms, didLookup)).build();
+    }
+
     @Override
     protected AlarmDao getDao() {
         return m_dao;
@@ -120,6 +152,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     protected Class<SearchBean> getQueryBeanClass() {
         return SearchBean.class;
     }
+
 
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
