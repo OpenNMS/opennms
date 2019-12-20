@@ -242,17 +242,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     private void submitOrRun(KieSession.AtomicAction atomicAction) {
-        KieSession.AtomicAction actionWithTimeUpdate = kieSession -> {
-            // Always advance the clock
-            if (!isUsePseudoClock()) {
-                getClock().advanceTimeToNow();
-            }
-            atomicAction.execute(kieSession);
-        };
-
         if (fireThreadId.get() == Thread.currentThread().getId()) {
             // This is the fire thread! Let's execute the action immediately instead of deferring it.
-            actionWithTimeUpdate.execute(getKieSession());
+            atomicAction.execute(getKieSession());
         } else {
             // Submit the action for execution
             // Track the number of atomic actions waiting to be executed
@@ -265,7 +257,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 return;
             }
             getKieSession().submit(kieSession -> {
-                actionWithTimeUpdate.execute(kieSession);
+                atomicAction.execute(kieSession);
                 atomicActionsInFlight.decrementAndGet();
             });
             atomicActionsQueued.mark();
