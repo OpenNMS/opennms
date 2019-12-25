@@ -26,27 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.netmgt.ts;
 
-package org.opennms.netmgt.timeseries.api;
+import static org.junit.Assert.*;
 
-import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 
-import java.time.Duration;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.junit.Test;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 
-public interface TimeSeriesStorage {
+public class TimescaleStorageTest {
 
-    /** Stores a list of Samples in the timeseries database. */
-    void store(List<Sample> entries) throws StorageException;
-
-    /** Returns all metrics which are stored in the time series database that contain all given tags. */
-    List<Metric> getMetrics(Collection<Tag> tags) throws StorageException;
-
-    /** Returns a the data for the given metrics for the given time period. */
-    List<Sample> getTimeseries(Metric metric, Instant start, Instant end, Duration step) throws StorageException;
+    @Test
+    public void shouldGenerateSqlForMetricSql() {
+        assertEquals("select distinct fk_timescale_metric from timescale_tag;",
+                new TimescaleStorage(null).createMetricsSQL(Collections.emptyList()));
+        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=2 or (key='a' AND value='b');",
+                new TimescaleStorage(null).createMetricsSQL(Collections.singletonList(new Tag("a", "b"))));
+        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=2 or (key='a' AND value='b') or (key='c' AND value='d');",
+                new TimescaleStorage(null).createMetricsSQL(Arrays.asList(new Tag("a", "b"), new Tag("c", "d"))));
+        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=2 or (key is null AND value='b');",
+                new TimescaleStorage(null).createMetricsSQL(Collections.singletonList(new Tag(null, "b"))));
+    }
 }

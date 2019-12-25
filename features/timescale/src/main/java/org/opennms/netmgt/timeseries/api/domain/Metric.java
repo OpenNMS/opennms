@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.api.domain;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +59,13 @@ public class Metric {
         gauge, // 	values at each point in time
         counter, // 	keeps increasing over time (but might wrap/reset at some point) i.e. a gauge with the added notion of “i usually want to derive this to see the rate”
         timestamp//  	value represents a unix timestamp. so basically a gauge or counter but we know we can also render the “age” at each point.}
+    }
+
+    /** See: https://github.com/metrics20/spec/blob/master/spec.md#glossary */
+    public enum TagType {
+        /** Part of the metrics identity (key). Change a value and you get a different metric. */
+        intrinsic,
+        meta
     }
 
     private final String key;
@@ -143,7 +151,20 @@ public class Metric {
         }
 
         public MetricBuilder tag(String value) {
-            return this.tag(new Tag(value));
+            return this.metaTag(new Tag(value));
+        }
+
+        public MetricBuilder metaTag(Tag tag) {
+            this.metaTags.add(tag);
+            return this;
+        }
+
+        public MetricBuilder metaTag(String key, String value) {
+            return this.metaTag(new Tag(key, value));
+        }
+
+        public MetricBuilder metaTag(String value) {
+            return this.metaTag(new Tag(value));
         }
 
         public Metric build() {

@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timescale.TimescaleWriter;
 import org.opennms.netmgt.timescale.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timescale.support.TimescaleUtils;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
@@ -282,17 +283,14 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
     }
 
     private SearchResults searchFor(ResourcePath path, int depth, boolean fetchMetrics) {
-        final Query q = findResourcesWithMetricsAtDepth(path, depth);
-        // LOG.trace("Searching for '{}'.", q);
         final SearchResults results;
         try {
             results = m_searcher.search(path, depth, fetchMetrics);
             LOG.trace("Found {} results.", results.size());
-        } catch (SQLException e) {
+        } catch (StorageException e) {
             // TODO Patrick
             throw new RuntimeException(e);
         }
-
         return results;
     }
 

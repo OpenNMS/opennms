@@ -35,7 +35,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -45,6 +49,7 @@ import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,25 +81,27 @@ public class TimescaleStorage implements TimeSeriesStorage {
 
     @Override
     public void store(List<Sample> entries) throws StorageException {
-        String sql = "INSERT INTO timeseries(time, key, value)  values (?, ?, ?)";
+        String sql = "INSERT INTO timescale_time_series(time, key, value)  values (?, ?, ?)";
 
         try {
-            if(this.connection == null) {
+            if (this.connection == null) {
                 this.connection = this.dataSource.getConnection();
             }
+
             PreparedStatement ps = connection.prepareStatement(sql);
             // Partition the samples into collections smaller then max_batch_size
             for (List<Sample> batch : Lists.partition(entries, maxBatchSize)) {
                 try {
-                        LOG.debug("Inserting {} samples", batch.size());
-                        // m_sampleRepository.insert(batch);
-                        for (Sample sample: batch) {
-                            ps.setTimestamp(1, new Timestamp(sample.getTime().toEpochMilli()));
-                            ps.setString(2, sample.getMetric().getTagsByKey("resourceId").iterator().next().getValue()); // TODO Patrick: this should be getKey instead
-                            ps.setDouble(3, sample.getValue());
-                            ps.addBatch();
-                        }
-                        ps.executeBatch();
+                    LOG.debug("Inserting {} samples", batch.size());
+                    for (Sample sample : batch) {
+                        ps.setTimestamp(1, new Timestamp(sample.getTime().toEpochMilli()));
+                        ps.setString(2, sample.getMetric().getKey());
+                        ps.setDouble(3, sample.getValue());
+                        ps.addBatch();
+                        saveTags(sample.getMetric(), Metric.TagType.intrinsic, sample.getMetric().getTags());
+                        saveTags(sample.getMetric(), Metric.TagType.meta, sample.getMetric().getMetaTags());
+                    }
+                    ps.executeBatch();
 
                     if (LOG.isDebugEnabled()) {
                         String keys = batch.stream()
@@ -107,37 +114,91 @@ public class TimescaleStorage implements TimeSeriesStorage {
                     RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
                 }
             }
-            ps.close();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new StorageException(e);
         }
     }
 
-    public List<Metric> getAllMetrics() throws StorageException {
+    private void saveTags(final Metric metric, final Metric.TagType tagType, final Collection<Tag> tags) throws SQLException {
+        final String sql = "INSERT INTO timescale_tag(fk_timescale_metric, key, value, type)  values (?, ?, ?, ?) ON CONFLICT (fk_timescale_metric, key, value, type) DO NOTHING;";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        for (Tag tag : tags) {
+            ps.setString(1, metric.getKey());
+            ps.setString(2, tag.getKey());
+            ps.setString(3, tag.getValue());
+            ps.setString(4, tagType.name());
+            ps.addBatch();
+        }
+        ps.executeBatch();
+        ps.close();
+    }
+
+    public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
+        Objects.requireNonNull(tags, "tags collection can not be null");
         try {
-        // TODO: Patrick: do db stuff properly
-        final String sql = "select distinct key from timeseries";
-        if(connection == null) {
-            this.connection = this.dataSource.getConnection();
+            // TODO: Patrick: do db stuff properly
 
-        }
-        PreparedStatement statement = connection.prepareStatement(sql);
+            String sql = createMetricsSQL(tags);
+            if (connection == null) {
+                this.connection = this.dataSource.getConnection();
+            }
 
-        ResultSet rs = statement.executeQuery();
-        List<Metric> metrics = new ArrayList<>(rs.getFetchSize());
-        while(rs.next()){
-            String resourceString = rs.getString("key");
-            Metric metric = Metric.builder()
-                    .tag("resourceId", resourceString)
-                    .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO: Patrick: remove hard coded value
-                    .tag(Metric.MandatoryTag.mtype.name(), "gauge").build(); // TODO: Patrick: remove hard coded value
-            metrics.add(metric);
-        }
-        rs.close();
-        return metrics;
-        } catch(SQLException e) {
+            // Get all relevant metricKeys
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            Set<String> metricKeys = new HashSet<>();
+            while (rs.next()) {
+                metricKeys.add(rs.getString("fk_timescale_metric"));
+            }
+            rs.close();
+
+            // Load the actual metrics
+            List<Metric> metrics = new ArrayList<>();
+            sql = "SELECT * FROM timescale_tag WHERE fk_timescale_metric=?";
+            for(String metricKey : metricKeys) {
+                ps = connection.prepareStatement(sql);
+                ps.setString(1, metricKey);
+                rs = ps.executeQuery();
+                Metric.MetricBuilder metric = Metric.builder();
+                while (rs.next()) {
+                    Tag tag = new Tag(rs.getString("key"), rs.getString("value"));
+                    Metric.TagType type = Metric.TagType.valueOf(rs.getString("type"));
+                    if ((type == Metric.TagType.intrinsic)) {
+                        metric.tag(tag);
+                    } else {
+                        metric.metaTag(tag);
+                    }
+                }
+                metrics.add(metric.build());
+                rs.close();
+            }
+
+            return metrics;
+        } catch (SQLException e) {
             throw new StorageException(e);
         }
+    }
+
+    String createMetricsSQL(Collection<Tag> tags) {
+        Objects.requireNonNull(tags, "tags collection can not be null");
+        StringBuilder b = new StringBuilder("select distinct fk_timescale_metric from timescale_tag");
+        if (!tags.isEmpty()) {
+            b.append(" where 1=2");
+            for (Tag tag : tags) {
+                b.append(" or");
+                b.append(" (key").append(handleNull(tag.getKey())).append(" AND ");
+                b.append("value").append(handleNull(tag.getValue())).append(")");
+            }
+        }
+        b.append(";");
+        return b.toString();
+    }
+
+    private String handleNull(String input) {
+        if (input == null) {
+            return " is null";
+        }
+        return "='" + input + "'";
     }
 
     @Override
@@ -146,14 +207,14 @@ public class TimescaleStorage implements TimeSeriesStorage {
         // TODO: Patrick: do db stuff properly
         ArrayList<Sample> samples;
         try {
-            long stepInSeconds = step.getSeconds() ;
+            long stepInSeconds = step.getSeconds();
             String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
-            String sql = "SELECT time_bucket_gapfill('" + stepInSeconds + " Seconds', time) AS step, min(value), avg(value), max(value) FROM timeseries where " +
+            String sql = "SELECT time_bucket_gapfill('" + stepInSeconds + " Seconds', time) AS step, min(value), avg(value), max(value) FROM timescale_time_series where " +
                     "key=? AND time > ? AND time < ? GROUP BY step ORDER BY step ASC";
 //            if(maxrows>0) {
 //                sql = sql + " LIMIT " + maxrows;
 //            }
-            if(connection == null) {
+            if (connection == null) {
                 this.connection = this.dataSource.getConnection();
 
             }
@@ -164,7 +225,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
             ResultSet rs = statement.executeQuery();
 
             samples = new ArrayList<>();
-            while(rs.next()) {
+            while (rs.next()) {
                 long timestamp = rs.getTimestamp("step").getTime();
                 samples.add(new Sample(metric, Instant.ofEpochMilli(timestamp), rs.getDouble("avg")));
             }

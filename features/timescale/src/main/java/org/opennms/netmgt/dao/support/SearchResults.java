@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.opennms.newts.api.Resource;
 
-/** TODO: Patrick: was directly copied from Newts -> we propably can get rid of it. */
+/** TODO: Patrick: was directly copied from Newts -> we probably can get rid of it. */
 public class SearchResults implements Iterable<SearchResults.Result> {
     private final List<Result> m_results = Lists.newArrayList();
 
@@ -44,6 +44,10 @@ public class SearchResults implements Iterable<SearchResults.Result> {
 
     public void addResult(Resource resource, Collection<String> metrics) {
         this.m_results.add(new Result(resource, metrics));
+    }
+
+    public void addResult(Result result) {
+        this.m_results.add(result);
     }
 
     public int size() {
@@ -62,9 +66,9 @@ public class SearchResults implements Iterable<SearchResults.Result> {
         private final Resource m_resource;
         private final Collection<String> m_metrics;
 
-        private Result(Resource resource, Collection<String> metrics) {
-            this.m_resource = (Resource)Preconditions.checkNotNull(resource, "resource argument");
-            this.m_metrics = (Collection)Preconditions.checkNotNull(metrics, "metrics argument");
+        Result(Resource resource, Collection<String> metrics) {
+            this.m_resource = Preconditions.checkNotNull(resource, "resource argument");
+            this.m_metrics = Preconditions.checkNotNull(metrics, "metrics argument");
         }
 
         public Resource getResource() {

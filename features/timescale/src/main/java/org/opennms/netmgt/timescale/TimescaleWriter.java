@@ -258,14 +258,21 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
     }
 
     private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {
-        final Metric metric = Metric.builder()
+
+        Metric.MetricBuilder builder = Metric.builder()
                 .tag("resourceId", sample.getResource().getId()) // TODO: Patrick centralize OpenNMS common tag names
                 .tag("name", sample.getName())
                 .tag(typeToTag(sample.getType()))
-                .tag("unit", "ms") // TODO Patrick: how do we get the units from the sample?
-                .build();
+                .tag("unit", "ms"); // TODO Patrick: how do we get the units from the sample?
+
+        if(sample.getResource().getAttributes().isPresent()) {
+            sample.getResource().getAttributes().get().forEach(builder::metaTag);
+        }
+
+        final Metric metric = builder.build();
         final Instant time = Instant.ofEpochMilli(sample.getTimestamp().asMillis());
         final Double value = sample.getValue().doubleValue();
+        // sample.getContext() TODO: Patrick: not sure if we need the context?
         return new org.opennms.netmgt.timeseries.api.domain.Sample(metric, time, value);
     }
 

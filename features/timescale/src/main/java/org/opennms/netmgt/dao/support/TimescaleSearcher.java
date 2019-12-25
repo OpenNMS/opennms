@@ -28,23 +28,23 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.sql.SQLException;
-import java.util.Arrays;
+import static org.opennms.netmgt.timescale.support.TimescaleUtils.toResourceId;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.sql.DataSource;
 
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timescale.support.TimescaleUtils;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class TimescaleSearcher {
 
     private Set<ResourcePath> getAllResources() throws StorageException {
 
-        List<Metric> metrics = storage.getAllMetrics();
+        List<Metric> metrics = storage.getMetrics(new ArrayList<>());
         Set<ResourcePath> resources = new HashSet<>();
         for (Metric metric : metrics){
             String resourceString = metric.getFirstTagByKey("resourceId").getValue();
@@ -92,19 +92,38 @@ public class TimescaleSearcher {
         return map;
     }
 
-    public SearchResults search(ResourcePath path, int depth, boolean fetchMetrics) throws SQLException {
+    public SearchResults search(ResourcePath path, int depth, boolean fetchMetrics) throws StorageException {
 
-        Set<ResourcePath> all = allResources.getUnchecked("doesntmatter");
-        List<ResourcePath> relevantResources = all.stream()
-                .filter(p -> path.relativeDepth(p)>-1)
-                .filter(p -> path.relativeDepth(p) == depth +1 )
-                .collect(Collectors.toList());
-        SearchResults results = new SearchResults();
-        for(ResourcePath relevantPath : relevantResources) {
-            Resource resource = new Resource(TimescaleUtils.toResourceId(relevantPath),
-                    Optional.of(getResourceAttributes(null, relevantPath.toString())));
-            results.addResult(resource, Arrays.asList("metrics 1", "metrics 2")); // TODO Patrick get real values
+        // Numeric suffix for the index name, based on the length of parent path
+        int idxSuffix = path.elements().length - 1;
+        // The length of the resource ids we're interested in finding
+        int targetLen = idxSuffix + depth + 2;
+
+        String key = "_idx"+idxSuffix;
+        String value = String.format("(%s,%d)", toResourceId(path), targetLen);
+        Tag indexTag = new Tag(key, value);
+
+        List<Metric> metrics = storage.getMetrics(Collections.singletonList(indexTag));
+
+        Map<String, SearchResults.Result> resultPerResources = new HashMap<>();
+
+
+        for(Metric metric : metrics) {
+            String resourceId = metric.getFirstTagByKey("resourceId").getValue();
+            SearchResults.Result result = resultPerResources.get(resourceId);
+            if(result == null) {
+                Map<String, String> attributes = new HashMap<>();
+                metric.getMetaTags().forEach(entry -> attributes.put(entry.getKey(), entry.getValue()));
+                Resource resource = new Resource(metric.getFirstTagByKey("resourceId").getValue(),
+                        Optional.of(attributes));
+                result = new SearchResults.Result(resource, new ArrayList<>());
+                resultPerResources.put(resourceId, result);
+            }
+            result.getMetrics().add(metric.getFirstTagByKey("name").getValue());
         }
+
+        SearchResults results = new SearchResults();
+        resultPerResources.values().forEach(results::addResult);
         return results;
     }
 }
