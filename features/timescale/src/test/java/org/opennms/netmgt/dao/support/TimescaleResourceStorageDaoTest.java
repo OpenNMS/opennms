@@ -81,7 +81,6 @@ public class TimescaleResourceStorageDaoTest {
         m_searcher = EasyMock.createNiceMock(CassandraSearcher.class);
 
         m_nrs = new TimescaleResourceStorageDao();
-        m_nrs.setSearcher(m_searcher);
         m_nrs.setSearchableCache(m_cache);
         m_nrs.setContext(Context.DEFAULT_CONTEXT);
     }
