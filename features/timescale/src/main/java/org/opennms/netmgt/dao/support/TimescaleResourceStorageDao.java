@@ -28,12 +28,10 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.opennms.netmgt.timescale.support.TimescaleUtils.findResourcesWithMetricsAtDepth;
 import static org.opennms.netmgt.timescale.support.TimescaleUtils.toMetricName;
 import static org.opennms.netmgt.timescale.support.TimescaleUtils.toResourceId;
 import static org.opennms.netmgt.timescale.support.TimescaleUtils.toResourcePath;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +43,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.sql.DataSource;
-
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.SearchResults.Result;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -57,14 +53,15 @@ import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timescale.TimescaleWriter;
 import org.opennms.netmgt.timescale.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timescale.support.TimescaleUtils;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.search.Query;
 import org.opennms.newts.cassandra.search.CassandraIndexer;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
-import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,25 +90,19 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
     private static final Logger LOG = LoggerFactory.getLogger(TimescaleResourceStorageDao.class);
 
     @Autowired
+    private TimeSeriesStorage storage;
+
+    @Autowired
     private Context m_context;
 
     @Autowired
-    private TimescaleSearcher m_searcher;
+    private TimescaleSearcher searcher;
 
     @Autowired
-    private CassandraSampleRepository m_sampleRepository;
-
-    @Autowired
-    private CassandraIndexer m_indexer;
-
-    @Autowired
-    private TimescaleWriter m_newtsWriter;
+    private TimescaleWriter newtsWriter;
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
-
-    @Autowired
-    private DataSource dataSource;
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -168,8 +159,20 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
         }
 
         for (final Result result : results) {
-            m_sampleRepository.delete(m_context, result.getResource());
-            m_indexer.delete(m_context, result.getResource());
+            for(String metricName: result.getMetrics()) {
+                Metric metric = Metric.builder()
+                        .tag(CommonTagNames.resourceId, result.getResource().getId())
+                        .tag(CommonTagNames.name, metricName)
+                        .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name()) // TODO Patrick: where do we get the type from?
+                        .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO Patrick: where do we get the unit from?
+                        .build();
+                try {
+                    storage.delete(metric);
+                } catch (StorageException e) {
+                    LOG.error("Could not delete {}, will ignore problem and continue ", metric, e); // TODO Patrick: is this the expected behaviour?
+                }
+            }
+
         }
 
         return true;
@@ -238,7 +241,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
 
         // Index, but do not insert the sample(s)
         // The key/value pair specified in the attributes map will be merged with the others.
-        m_newtsWriter.index(Lists.newArrayList(sample));
+        newtsWriter.index(Lists.newArrayList(sample));
     }
 
     @Override
@@ -253,14 +256,14 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return m_searcher.getResourceAttributes(m_context, toResourceId(path));
+        return searcher.getResourceAttributes(m_context, toResourceId(path));
     }
 
     private Callable<Map<String, String>> getResourceAttributesCallable(final ResourcePath path) {
         return new Callable<Map<String, String>>() {
             @Override
             public Map<String, String> call() throws Exception {
-                return m_searcher.getResourceAttributes(m_context, toResourceId(path));
+                return searcher.getResourceAttributes(m_context, toResourceId(path));
             }
         };
     }
@@ -285,7 +288,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
     private SearchResults searchFor(ResourcePath path, int depth, boolean fetchMetrics) {
         final SearchResults results;
         try {
-            results = m_searcher.search(path, depth, fetchMetrics);
+            results = searcher.search(path, depth, fetchMetrics);
             LOG.trace("Found {} results.", results.size());
         } catch (StorageException e) {
             // TODO Patrick
@@ -315,24 +318,12 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
         m_searchableCache = searchableCache;
     }
 
-    public void setSearcher(CassandraSearcher searcher) {
-        // m_searcher = searcher;
-    }
-
     public void setContext(Context context) {
         m_context = context;
     }
 
     public void setNewtsWriter(TimescaleWriter newtsWriter) {
-        m_newtsWriter = newtsWriter;
-    }
-
-    public void setIndexer(CassandraIndexer indexer) {
-        m_indexer = indexer;
-    }
-
-    public void setSampleRepository(CassandraSampleRepository sampleRepository) {
-        m_sampleRepository = sampleRepository;
+        this.newtsWriter = newtsWriter;
     }
 
 }

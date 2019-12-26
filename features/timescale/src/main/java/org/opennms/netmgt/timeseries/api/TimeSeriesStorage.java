@@ -49,4 +49,7 @@ public interface TimeSeriesStorage {
 
     /** Returns a the data for the given metrics for the given time period. */
     List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException;
+
+    /** Deletes the given metric. */
+    void delete(Metric metric) throws StorageException;
 }

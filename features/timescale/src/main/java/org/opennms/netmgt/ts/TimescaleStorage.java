@@ -204,7 +204,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
     }
 
     @Override
-    public List<Sample> getTimeseries(TimeSeriesFetchRequest request) {
+    public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException  {
 
         // TODO: Patrick: do db stuff properly
         ArrayList<Sample> samples;
@@ -236,9 +236,35 @@ public class TimescaleStorage implements TimeSeriesStorage {
             rs.close();
         } catch (SQLException e) {
             LOG.error("Could not retrieve FetchResults", e);
-            throw new RuntimeException(e);
+            throw new StorageException(e);
         }
         return samples;
+    }
+
+    @Override
+    public void delete(final Metric metric) throws StorageException {
+
+        // TODO: Patrick: do db stuff properly
+        try {
+           if (connection == null) {
+                this.connection = this.dataSource.getConnection();
+
+            }
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM timescale_time_series where key=?");
+            statement.setString(1, metric.getKey());
+            int deletedTimeseriesEntries = statement.executeUpdate();
+            statement.close();
+
+            statement = connection.prepareStatement("DELETE FROM timescale_tag where fk_timescale_metric=?");
+            statement.setString(1, metric.getKey());
+            int deletedTimeseriesTags = statement.executeUpdate();
+            statement.close();
+
+            LOG.debug("Deleted {} timeseries entries and {} timeseries tags for metric {}", deletedTimeseriesEntries, deletedTimeseriesTags, metric);
+        } catch (SQLException e) {
+            LOG.error("Could not retrieve FetchResults", e);
+            throw new StorageException(e);
+        }
     }
 
     private String toSql(final Aggregation aggregation) {

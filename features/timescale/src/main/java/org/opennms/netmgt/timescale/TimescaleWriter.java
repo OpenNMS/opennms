@@ -103,8 +103,6 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
 
     private final Meter m_droppedSamples;
 
-    private Connection connection;
-
     @Autowired
     private TimeSeriesStorage storage;
 
