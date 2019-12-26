@@ -102,6 +102,12 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency><!-- TODO: Patrick: remove if we don't like it -->
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.10</version>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Testing -->
     <dependency>

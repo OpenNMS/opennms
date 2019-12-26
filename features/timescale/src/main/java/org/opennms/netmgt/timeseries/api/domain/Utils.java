@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
-package org.opennms.netmgt.timeseries.api;
+package org.opennms.netmgt.timeseries.api.domain;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+public class Utils {
 
-public interface TimeSeriesStorage {
-
-
-    /** Stores a list of Samples in the timeseries database. */
-    void store(List<Sample> entries) throws StorageException;
-
-    /** Returns all metrics which are stored in the time series database that contain all given tags. */
-    List<Metric> getMetrics(Collection<Tag> tags) throws StorageException;
-
-    /** Returns a the data for the given metrics for the given time period. */
-    List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException;
+    public static Map<String, String> asMap (Collection<Tag> tags) {
+        Map<String, String> map = new HashMap<>();
+        for (Tag tag : tags) {
+            map.put(tag.getKey(), tag.getValue());
+        }
+        return map;
+    }
 }

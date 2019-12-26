@@ -29,54 +29,14 @@
 package org.opennms.netmgt.timeseries.api.domain;
 
 import java.time.Instant;
-import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
+import lombok.Builder;
+import lombok.Data;
 
+@Data
+@Builder
 public class Sample {
-    private Metric metric;
-    private Instant time;
-    private Double value;
-
-    public Sample(final Metric metric, final Instant time, final Double value) {
-        this.metric = Objects.requireNonNull(metric);
-        this.time = Objects.requireNonNull(time);
-        this.value = Objects.requireNonNull(value);
-    }
-
-    public Metric getMetric() {
-        return metric;
-    }
-
-    public Instant getTime() {
-        return time;
-    }
-
-    public Double getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("metric", metric)
-                .add("time", time)
-                .add("value", value)
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sample entry = (Sample) o;
-        return Objects.equals(metric, entry.metric) &&
-                Objects.equals(time, entry.time) &&
-                Objects.equals(value, entry.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(metric, time, value);
-    }
+    private final Metric metric;
+    private final Instant time;
+    private final Double value;
 }

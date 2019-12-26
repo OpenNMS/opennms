@@ -46,10 +46,12 @@ import javax.sql.DataSource;
 
 import org.joda.time.Duration;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Aggregation;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,15 +204,16 @@ public class TimescaleStorage implements TimeSeriesStorage {
     }
 
     @Override
-    public List<Sample> getTimeseries(Metric metric, Instant start, Instant end, java.time.Duration step) {
+    public List<Sample> getTimeseries(TimeSeriesFetchRequest request) {
 
         // TODO: Patrick: do db stuff properly
         ArrayList<Sample> samples;
         try {
-            long stepInSeconds = step.getSeconds();
-            String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
-            String sql = "SELECT time_bucket_gapfill('" + stepInSeconds + " Seconds', time) AS step, min(value), avg(value), max(value) FROM timescale_time_series where " +
-                    "key=? AND time > ? AND time < ? GROUP BY step ORDER BY step ASC";
+            long stepInSeconds = request.getStep().getSeconds();
+
+            String sql = String.format("SELECT time_bucket_gapfill('%s Seconds', time) AS step, "
+                    + "%s(value) as aggregation, avg(value), max(value) FROM timescale_time_series where "
+                    + "key=? AND time > ? AND time < ? GROUP BY step ORDER BY step ASC", stepInSeconds, toSql(request.getAggregation()) );
 //            if(maxrows>0) {
 //                sql = sql + " LIMIT " + maxrows;
 //            }
@@ -219,15 +222,15 @@ public class TimescaleStorage implements TimeSeriesStorage {
 
             }
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, resourceId);
-            statement.setTimestamp(2, new java.sql.Timestamp(start.toEpochMilli()));
-            statement.setTimestamp(3, new java.sql.Timestamp(end.toEpochMilli()));
+            statement.setString(1, request.getMetric().getKey());
+            statement.setTimestamp(2, new java.sql.Timestamp(request.getStart().toEpochMilli()));
+            statement.setTimestamp(3, new java.sql.Timestamp(request.getEnd().toEpochMilli()));
             ResultSet rs = statement.executeQuery();
 
             samples = new ArrayList<>();
             while (rs.next()) {
                 long timestamp = rs.getTimestamp("step").getTime();
-                samples.add(new Sample(metric, Instant.ofEpochMilli(timestamp), rs.getDouble("avg")));
+                samples.add(Sample.builder().metric(request.getMetric()).time(Instant.ofEpochMilli(timestamp)).value(rs.getDouble("aggregation")).build());
             }
 
             rs.close();
@@ -236,5 +239,17 @@ public class TimescaleStorage implements TimeSeriesStorage {
             throw new RuntimeException(e);
         }
         return samples;
+    }
+
+    private String toSql(final Aggregation aggregation) {
+        if(Aggregation.AVERAGE == aggregation) {
+            return "avg";
+        } else if (Aggregation.MAX == aggregation) {
+            return "max";
+        } else if(Aggregation.MIN == aggregation) {
+            return "min";
+        } else {
+            throw new IllegalArgumentException("Unknown aggregation " + aggregation);
+        }
     }
 }

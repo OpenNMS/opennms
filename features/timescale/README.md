@@ -18,3 +18,4 @@
 ## TODOs
 * Create structure to store metadata in postgres
 * remove all Newts stuff from Abstraction layer
+* The code makes heavy use of the lombok library. This makes for much faster prototyping by remvoving lots of boilerplate code. Since we haven't agreed on using this library we might need to remove it (shouldn't be a problem)

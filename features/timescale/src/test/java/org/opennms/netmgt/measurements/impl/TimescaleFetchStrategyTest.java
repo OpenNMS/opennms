@@ -85,9 +85,7 @@ public class TimescaleFetchStrategyTest {
         m_sampleRepository = EasyMock.createNiceMock(SampleRepository.class);
  
         m_newtsFetchStrategy = new TimescaleFetchStrategy();
-        m_newtsFetchStrategy.setContext(m_context);
         m_newtsFetchStrategy.setResourceDao(m_resourceDao);
-        m_newtsFetchStrategy.setSampleRepository(m_sampleRepository);
     }
 
     @After

@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.measurements.impl;
 
+import static org.opennms.netmgt.timeseries.api.domain.Utils.asMap;
+
 import java.io.File;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,10 +62,15 @@ import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Aggregation;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.opennms.newts.api.Context;
+import org.opennms.newts.api.Measurement;
+import org.opennms.newts.api.Resource;
+import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.SampleSelectCallback;
 import org.opennms.newts.api.Timestamp;
@@ -106,13 +114,7 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
     public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
 
     @Autowired
-    private Context m_context;
-
-    @Autowired
     private ResourceDao m_resourceDao;
-
-    @Autowired
-    private SampleRepository m_sampleRepository;
 
     private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("NewtsFetchStrateg-%d").build();
 
@@ -129,73 +131,6 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
         final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
-        final Map<String, Object> constants = Maps.newHashMap();
-
-        FetchResults result;
-        String resourceId = "response:127.0.0.1:response-time"; // TODO Patrick: deduct from sources
-
-        final Metric metric = Metric.builder()
-                .tag("resourceId", resourceId) // TODO: Patrick centralize OpenNMS common tag names
-            //     .tag("name", sample.getName())
-                .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.counter.name())  // TODO Patrick: where do we get the units from?
-                .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO Patrick: where do we get the units from?
-                .build();
-
-        java.time.Duration duration = java.time.Duration.ofMillis(lag.getStep());
-
-        try {
-            List<Sample> samples = storage.getTimeseries(metric, Instant.ofEpochMilli(start), Instant.ofEpochMilli(end), duration);
-            ArrayList<Long> timestamps = new ArrayList<>();
-           // List<Double> valuesMin = new ArrayList<>();
-            List<Double> valuesAvg = new ArrayList<>();
-            // List<Double> valuesMax = new ArrayList<>();
-
-            for(Sample sample : samples){
-                long timestamp = sample.getTime().toEpochMilli();
-                timestamps.add(timestamp);
-                valuesAvg.add(sample.getValue());
-//                valuesMin.add(rs.getDouble("min"));
-//                valuesMax.add(rs.getDouble("max"));
-            }
-            long[] timestampsArray = toLongArray(timestamps);
-            Map<String, double[]> columns = new HashMap<>();
-          //  columns.put("maxRtMicro", toDoubleArray(valuesMax));
-            columns.put("rtMicro", toDoubleArray(valuesAvg));
-          //  columns.put("minRtMicro", toDoubleArray(valuesMin));
-
-            List<QueryResource> resources = getResources(sources, relaxed);
-            QueryMetadata metaData = new QueryMetadata(resources);
-            result = new FetchResults(timestampsArray, columns, lag.getStep(), new HashMap<>(), metaData);
-
-        } catch (StorageException e) {
-            LOG.error("Could not retrieve FetchResults", e);
-            throw new RuntimeException(e);
-        }
-
-        return result;
-    }
-
-    private long[] toLongArray(List<Long> longs) {
-        long[] longArray = new long[longs.size()];
-        for(int i=0; i<longs.size(); i++){
-            longArray[i] = longs.get(i);
-        }
-        return longArray;
-    }
-
-    private double[] toDoubleArray(List<Double> values) {
-        double[] array = new double[values.size()];
-        for(int i=0; i<values.size(); i++) {
-            Double value = values.get(i);
-//            if(value.longValue()==0) {
-//                value = Double.NaN;
-//            }
-            array[i] = value * 100;
-        }
-        return array;
-    }
-
-    private List<QueryResource> getResources(List<Source> sources, boolean relaxed) {
         final Map<String, Object> constants = Maps.newHashMap();
         final List<QueryResource> resources = new ArrayList<>();
 
@@ -268,7 +203,128 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
                 listOfSources.add(source);
             }
         }
-        return resources;
+
+        // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
+        // so we perform multiple queries in parallel, and aggregate the results.
+        Map<String, Future<Collection<Row<Measurement>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
+        for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
+            measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
+                    getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
+        }
+
+        long[] timestamps = null;
+        Map<String, double[]> columns = Maps.newHashMap();
+
+        for (Entry<String, Future<Collection<Row<Measurement>>>> entry : measurementsByNewtsResourceId.entrySet()) {
+            Collection<Row<Measurement>> rows;
+            try {
+                rows = entry.getValue().get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw Throwables.propagate(e);
+            }
+
+            final int N = rows.size();
+
+            if (timestamps == null) {
+                timestamps = new long[N];
+                int k = 0;
+                for (final Row<Measurement> row : rows) {
+                    timestamps[k] = row.getTimestamp().asMillis();
+                    k++;
+                }
+            }
+
+            int k = 0;
+            for (Row<Measurement> row : rows) {
+                for (Measurement measurement : row.getElements()) {
+                    double[] column = columns.get(measurement.getName());
+                    if (column == null) {
+                        column = new double[N];
+                        columns.put(measurement.getName(), column);
+                    }
+                    column[k] = measurement.getValue();
+                }
+                k += 1;
+            }
+        }
+
+        FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants, new QueryMetadata(resources));
+        if (relaxed) {
+            Utils.fillMissingValues(fetchResults, sources);
+        }
+        LOG.trace("Fetch results: {}", fetchResults);
+        return fetchResults;
+    }
+
+    private Callable<Collection<Row<Measurement>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
+        return new Callable<Collection<Row<Measurement>>>() {
+            @Override
+            public Collection<Row<Measurement>> call() throws Exception {
+
+                List<List<Sample>> allSamples = new ArrayList<>();
+
+                // Get results for all sources
+                for (Source source : listOfSources) {
+                    // Use the datasource as the metric name if set, otherwise use the name of the attribute
+                    final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
+                    final Aggregation aggregation = toAggregation(source.getAggregation());
+
+                    final Metric metric = Metric.builder()
+                            .tag(CommonTagNames.resourceId, resourceId)
+                            .tag(CommonTagNames.name, metricName)
+                            .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())  // TODO Patrick: where do we get the type from?
+                            .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO Patrick: where do we get the units from?
+                            .build();
+
+                    TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+                            .metric(metric)
+                            .start(Instant.ofEpochMilli(start.or(Timestamp.fromEpochMillis(0)).asMillis()))
+                            .end(Instant.ofEpochMilli(end.or(Timestamp.now()).asMillis()))
+                            .step(Duration.ofMillis(lag.getStep()))
+                            .aggregation(aggregation)
+                            .build();
+
+                    LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
+                    List<Sample> samples = storage.getTimeseries(request);
+                    allSamples.add(samples);
+                }
+
+                // build Rows from the results. One row can contain multiple columns. A Sample represents a cell in the "table"
+                List<Row<Measurement>> rows =  new ArrayList<>();
+                for(int rowIndex = 0; rowIndex < allSamples.get(0).size(); rowIndex++) {
+                    Sample sampleOfFirstList = allSamples.get(0).get(rowIndex);
+
+                    Timestamp timestamp = Timestamp.fromEpochMillis(sampleOfFirstList.getTime().toEpochMilli());
+                    Resource resource = new Resource(sampleOfFirstList.getMetric().getFirstTagByKey("resourceId").getValue(),  Optional.of(asMap(sampleOfFirstList.getMetric().getMetaTags())));
+                    Row<Measurement> row = new Row<>(timestamp, resource);
+
+                    // Let's iterate over all lists and add the samples of row i
+                    for(int columnIndex = 0; columnIndex < allSamples.size(); columnIndex++) {
+                        List<Sample> list = allSamples.get(columnIndex);
+                        Sample sampleOfCurrentList = list.get(rowIndex);
+                        final String name = listOfSources.get(columnIndex).getLabel();
+                        row.addElement(new Measurement(timestamp, resource, name, sampleOfCurrentList.getValue()));
+                    }
+
+                    rows.add(row);
+                }
+
+                LOG.debug("Found {} rows.", rows.size());
+                return rows;
+            }
+        };
+    }
+
+    private static Aggregation toAggregation(String fn) {
+        if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
+            return Aggregation.AVERAGE;
+        } else if ("max".equalsIgnoreCase(fn)) {
+            return Aggregation.MAX;
+        } else if ("min".equalsIgnoreCase(fn)) {
+            return Aggregation.MIN;
+        } else {
+            throw new IllegalArgumentException("Unsupported aggregation function: " + fn);
+        }
     }
 
 
@@ -392,16 +448,6 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
     @VisibleForTesting
     protected void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
-    }
-
-    @VisibleForTesting
-    protected void setSampleRepository(SampleRepository sampleRepository) {
-        m_sampleRepository = sampleRepository;
-    }
-
-    @VisibleForTesting
-    protected void setContext(Context context) {
-        m_context = context;
     }
 
     private OnmsNode getNode(final OnmsResource resource, final Source source) {

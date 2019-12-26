@@ -273,7 +273,7 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
         final Instant time = Instant.ofEpochMilli(sample.getTimestamp().asMillis());
         final Double value = sample.getValue().doubleValue();
         // sample.getContext() TODO: Patrick: not sure if we need the context?
-        return new org.opennms.netmgt.timeseries.api.domain.Sample(metric, time, value);
+        return org.opennms.netmgt.timeseries.api.domain.Sample.builder().metric(metric).time(time).value(value).build();
     }
 
     private Tag typeToTag (MetricType type) {
