@@ -41,27 +41,26 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timescale.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timescale.support.TimescaleUtils;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.search.BooleanQuery;
 import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.api.search.TermQuery;
-import org.opennms.newts.cassandra.search.CassandraSearcher;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * Used to verify the {@link org.opennms.netmgt.dao.support.ResourceStorageDao} interface implemented
- * by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
+ * Used to verify the {@link org.opennms.netmgt.dao.support.TimescaleResourceStorageDao} interface implemented
+ * by the {@link org.opennms.netmgt.dao.support.TimescaleResourceStorageDao}.
  *
  * Resources are indexed using {@link TimescaleUtils#addIndicesToAttributes} and primitive searching is
  * performed using a mock {@link org.opennms.newts.cassandra.search.CassandraSearcher}.
@@ -72,74 +71,75 @@ public class TimescaleResourceStorageDaoTest {
 
     private SearchableResourceMetadataCache m_cache = new MockSearchableResourceMetadataCache2();
     private Context m_context = Context.DEFAULT_CONTEXT;
-    private TimescaleResourceStorageDao m_nrs;
-    private CassandraSearcher m_searcher;
-    private Map<ResourcePath, Set<String>> m_indexedPaths = Maps.newHashMap();
+    private TimescaleResourceStorageDao resourceStorageDao;
+    private TimescaleSearcher searcher;
+    private Map<ResourcePath, Set<String>> indexedPaths = Maps.newHashMap();
 
     @Before
     public void setUp() {
-        m_searcher = EasyMock.createNiceMock(CassandraSearcher.class);
+        searcher = EasyMock.createNiceMock(TimescaleSearcher.class);
 
-        m_nrs = new TimescaleResourceStorageDao();
-        m_nrs.setSearchableCache(m_cache);
-        m_nrs.setContext(Context.DEFAULT_CONTEXT);
+        resourceStorageDao = new TimescaleResourceStorageDao();
+        resourceStorageDao.setSearcher(searcher);
+        resourceStorageDao.setSearchableCache(m_cache);
+        resourceStorageDao.setContext(Context.DEFAULT_CONTEXT);
     }
 
     @Test
-    public void exists() {
+    public void exists() throws StorageException {
         // Path is missing when the resource does not exist
         replay();
-        assertFalse(m_nrs.exists(ResourcePath.get("should", "not", "exist"), 1));
+        assertFalse(resourceStorageDao.exists(ResourcePath.get("should", "not", "exist"), 1));
         verify();
 
         // Path is missing when the resource exists, but does not have a bucket
         index(ResourcePath.get("a"));
         replay();
-        assertFalse(m_nrs.exists(ResourcePath.get("a"), 1));
+        assertFalse(resourceStorageDao.exists(ResourcePath.get("a"), 1));
         verify();
 
         // Path exists when a child resource with a bucket exists
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
-        assertTrue(m_nrs.exists(ResourcePath.get("a"), 1));
+        assertTrue(resourceStorageDao.exists(ResourcePath.get("a"), 1));
         verify();
 
         // Path exists when the resource with a bucket exists
         index(ResourcePath.get("a", "bucket"));
         replay();
-        assertTrue(m_nrs.exists(ResourcePath.get("a"), 0));
+        assertTrue(resourceStorageDao.exists(ResourcePath.get("a"), 0));
         verify();
     }
 
     @Test
-    public void existsWithin() {
+    public void existsWithin() throws StorageException {
         index(ResourcePath.get("a", "b", "c", "bucket"));
         replay();
-        assertTrue(m_nrs.exists(ResourcePath.get("a", "b", "c"), 0));
-        assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b", "c"), 0));
-        assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b", "c"), 1));
-        assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b"), 1));
-        assertFalse(m_nrs.existsWithin(ResourcePath.get("a", "b"), 0));
+        assertTrue(resourceStorageDao.exists(ResourcePath.get("a", "b", "c"), 0));
+        assertTrue(resourceStorageDao.existsWithin(ResourcePath.get("a", "b", "c"), 0));
+        assertTrue(resourceStorageDao.existsWithin(ResourcePath.get("a", "b", "c"), 1));
+        assertTrue(resourceStorageDao.existsWithin(ResourcePath.get("a", "b"), 1));
+        assertFalse(resourceStorageDao.existsWithin(ResourcePath.get("a", "b"), 0));
         verify();
     }
 
     @Test
-    public void children() {
+    public void children() throws StorageException {
         // Children are empty when the resource id does not exist
         replay();
-        assertEquals(0, m_nrs.children(ResourcePath.get("should", "not", "exist"), 1).size());
+        assertEquals(0, resourceStorageDao.children(ResourcePath.get("should", "not", "exist"), 1).size());
         verify();
 
         // Children are empty when there are no child resources
         index(ResourcePath.get("a"));
         replay();
-        assertEquals(0, m_nrs.children(ResourcePath.get("a"), 1).size());
+        assertEquals(0, resourceStorageDao.children(ResourcePath.get("a"), 1).size());
         verify();
 
         // Child exists when the is a child resource
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
-        Set<ResourcePath> children = m_nrs.children(ResourcePath.get("a"), 1);
+        Set<ResourcePath> children = resourceStorageDao.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
         verify();
@@ -147,7 +147,7 @@ public class TimescaleResourceStorageDaoTest {
         // Same call but specifying the depth
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
-        children = m_nrs.children(ResourcePath.get("a"), 1);
+        children = resourceStorageDao.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
         verify();
@@ -155,7 +155,7 @@ public class TimescaleResourceStorageDaoTest {
         // Only returns the next level
         index(ResourcePath.get("a", "b", "c", "bucket"));
         replay();
-        children = m_nrs.children(ResourcePath.get("a"), 2);
+        children = resourceStorageDao.children(ResourcePath.get("a"), 2);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
         verify();
@@ -163,23 +163,23 @@ public class TimescaleResourceStorageDaoTest {
         // No children when depth is 0
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
-        children = m_nrs.children(ResourcePath.get("a"), 0);
+        children = resourceStorageDao.children(ResourcePath.get("a"), 0);
         assertEquals(0, children.size());
         verify();
     }
 
     @Test
-    public void getAttributes() {
+    public void getAttributes() throws StorageException {
         // Attributes are empty when the resource does not exist
         replay();
-        assertEquals(0, m_nrs.getAttributes(ResourcePath.get("should", "not", "exist")).size());
+        assertEquals(0, resourceStorageDao.getAttributes(ResourcePath.get("should", "not", "exist")).size());
         verify();
 
         // Metrics from all buckets should be present
         index(ResourcePath.get("a", "bucket1"), Sets.newHashSet("metric11", "metric12"));
         index(ResourcePath.get("a", "bucket2"), Sets.newHashSet("metric21", "metric22"));
         replay();
-        Set<OnmsAttribute> attributes = m_nrs.getAttributes(ResourcePath.get("a"));
+        Set<OnmsAttribute> attributes = resourceStorageDao.getAttributes(ResourcePath.get("a"));
         assertEquals(4, attributes.size());
 
         // Verify the properties of a specific attribute
@@ -198,10 +198,10 @@ public class TimescaleResourceStorageDaoTest {
     }
 
     @Test
-    public void getResponseTimeAttributes() {
+    public void getResponseTimeAttributes() throws StorageException {
         index(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1", "strafeping"), Sets.newHashSet("ping1", "ping2"));
         replay();
-        Set<OnmsAttribute> attributes = m_nrs.getAttributes(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1"));
+        Set<OnmsAttribute> attributes = resourceStorageDao.getAttributes(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1"));
 
         // Response time metrics should be treated as a single attribute
         assertEquals(1, attributes.size());
@@ -215,12 +215,13 @@ public class TimescaleResourceStorageDaoTest {
     }
 
     private void index(ResourcePath path, Set<String> metrics) {
-        m_indexedPaths.put(path, metrics);
+        indexedPaths.put(path, metrics);
     }
 
-    private void replay() {
-        EasyMock.expect(m_searcher.search(EasyMock.eq(m_context), EasyMock.anyObject(), EasyMock.anyBoolean())).andAnswer(new IAnswer<SearchResults>() {
-            public SearchResults answer() throws Throwable {
+    private void replay() throws StorageException {
+        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyBoolean())).andAnswer(new IAnswer<org.opennms.netmgt.dao.support.SearchResults>() {
+            public org.opennms.netmgt.dao.support.SearchResults
+            answer() throws Throwable {
                 // Assume there is a single term query
                 Query q = (Query)EasyMock.getCurrentArguments()[1];
                 BooleanQuery bq = (BooleanQuery)q;
@@ -228,8 +229,8 @@ public class TimescaleResourceStorageDaoTest {
                 String field = tq.getTerm().getField("");
                 String value = tq.getTerm().getValue();
 
-                SearchResults searchResults = new SearchResults();
-                for (Entry<ResourcePath, Set<String>> entry : m_indexedPaths.entrySet()) {
+                org.opennms.netmgt.dao.support.SearchResults searchResults = new org.opennms.netmgt.dao.support.SearchResults();
+                for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
                     Map<String, String> attributes = Maps.newHashMap();
                     // Build the indexed attributes and attempt to match them against the given query
                     TimescaleUtils.addIndicesToAttributes(entry.getKey(), attributes);
@@ -240,13 +241,13 @@ public class TimescaleResourceStorageDaoTest {
                 return searchResults;
             }
         }).atLeastOnce();
-        EasyMock.expect(m_searcher.getResourceAttributes(EasyMock.eq(m_context), EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
-        EasyMock.replay(m_searcher);
+        EasyMock.expect(searcher.getResourceAttributes(EasyMock.eq(m_context), EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
+        EasyMock.replay(searcher);
     }
 
     private void verify() {
-        EasyMock.verify(m_searcher);
-        EasyMock.reset(m_searcher);
-        m_indexedPaths.clear();
+        EasyMock.verify(searcher);
+        EasyMock.reset(searcher);
+        indexedPaths.clear();
     }
 }

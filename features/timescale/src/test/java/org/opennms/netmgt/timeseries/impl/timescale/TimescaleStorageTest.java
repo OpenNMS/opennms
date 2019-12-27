@@ -26,9 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.ts;
+package org.opennms.netmgt.timeseries.impl.timescale;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,12 +41,12 @@ public class TimescaleStorageTest {
     @Test
     public void shouldGenerateSqlForMetricSql() {
         assertEquals("select distinct fk_timescale_metric from timescale_tag;",
-                new TimescaleStorage(null).createMetricsSQL(Collections.emptyList()));
-        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=2 or (key='a' AND value='b');",
-                new TimescaleStorage(null).createMetricsSQL(Collections.singletonList(new Tag("a", "b"))));
-        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=2 or (key='a' AND value='b') or (key='c' AND value='d');",
-                new TimescaleStorage(null).createMetricsSQL(Arrays.asList(new Tag("a", "b"), new Tag("c", "d"))));
-        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=2 or (key is null AND value='b');",
-                new TimescaleStorage(null).createMetricsSQL(Collections.singletonList(new Tag(null, "b"))));
+                new TimescaleStorage().createMetricsSQL(Collections.emptyList()));
+        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=1 AND (key='a' AND value='b');",
+                new TimescaleStorage().createMetricsSQL(Collections.singletonList(new Tag("a", "b"))));
+        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=1 AND (key='a' AND value='b') AND (key='c' AND value='d');",
+                new TimescaleStorage().createMetricsSQL(Arrays.asList(new Tag("a", "b"), new Tag("c", "d"))));
+        assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=1 AND (key is null AND value='b');",
+                new TimescaleStorage().createMetricsSQL(Collections.singletonList(new Tag(null, "b"))));
     }
 }

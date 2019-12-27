@@ -32,13 +32,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -54,43 +55,41 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.newts.api.Context;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.Sample;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
-import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.api.query.ResultDescriptor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class TimescaleFetchStrategyTest {
-    private Context m_context;
     private ResourceDao m_resourceDao;
-    private SampleRepository m_sampleRepository;
+    private TimeSeriesStorage timeSeriesStorage;
 
-    private TimescaleFetchStrategy m_newtsFetchStrategy;
+    private TimescaleFetchStrategy fetchStrategy;
 
     private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
 
-    private Capture<ResultDescriptor> lastCapturedResultDescriptor = new Capture<>();
-
     @Before
     public void setUp() throws Exception {
-        m_context = new Context("test");
         m_resourceDao = EasyMock.createNiceMock(ResourceDao.class);
-        m_sampleRepository = EasyMock.createNiceMock(SampleRepository.class);
+        timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
  
-        m_newtsFetchStrategy = new TimescaleFetchStrategy();
-        m_newtsFetchStrategy.setResourceDao(m_resourceDao);
+        fetchStrategy = new TimescaleFetchStrategy();
+        fetchStrategy.setResourceDao(m_resourceDao);
+        fetchStrategy.setTimeseriesStorage(timeSeriesStorage);
     }
 
     @After
     public void tearDown() throws Exception {
-        EasyMock.verify(m_resourceDao, m_sampleRepository);
+        EasyMock.verify(m_resourceDao, timeSeriesStorage);
     }
 
     @Test
@@ -105,7 +104,7 @@ public class TimescaleFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
+        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -123,14 +122,14 @@ public class TimescaleFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
+        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
     }
 
     @Test
-    public void cannotRetrieveUnknownAttributeAndUnknownFallbackAttribute() {
+    public void cannotRetrieveUnknownAttributeAndUnknownFallbackAttribute() throws StorageException {
         createMockResource("icmplocalhost", "shouldNotBeFound", "127.0.0.1", false);
         replay();
 
@@ -141,7 +140,7 @@ public class TimescaleFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
+        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertNull(fetchResults);
     }
 
@@ -154,7 +153,7 @@ public class TimescaleFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
+        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
         assertEquals(3, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertTrue(fetchResults.getColumns().containsKey("snmplocalhost"));
@@ -170,7 +169,7 @@ public class TimescaleFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
+        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
     }
@@ -210,29 +209,26 @@ public class TimescaleFetchStrategyTest {
     }
 
     @Test
-    public void canRetrieveValuesByDatasource() {
+    public void canRetrieveValuesByDatasource() throws StorageException {
         List<Source> sources = Collections.singletonList(
                 createMockResource("ping1Micro", "strafeping",  "ping1", "127.0.0.1", true));
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L,
+        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L,
                 300 * 1000, 0, null, null, sources, false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("ping1Micro"));
-
-        // Verify that the name of the source matches the name of the DS provided in the source definition
-        assertEquals("ping1", lastCapturedResultDescriptor.getValue().getDatasources().get("ping1Micro").getSource());
     }
 
-    public Source createMockResource(final String label, final String attr, final String node) {
+    public Source createMockResource(final String label, final String attr, final String node) throws StorageException {
         return createMockResource(label, attr, node, true);
     }
 
-    public Source createMockResource(final String label, final String attr, final String node, boolean expect) {
+    public Source createMockResource(final String label, final String attr, final String node, boolean expect) throws StorageException {
         return createMockResource(label, attr, null, node, expect);
     }
 
-    public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) {
+    public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) throws StorageException {
         OnmsResourceType nodeType = EasyMock.createMock(OnmsResourceType.class);
         EasyMock.expect(nodeType.getName()).andReturn("nodeSource").anyTimes();
         EasyMock.expect(nodeType.getLabel()).andReturn("nodeSourceTypeLabel").anyTimes();
@@ -267,17 +263,29 @@ public class TimescaleFetchStrategyTest {
         Set<OnmsAttribute> attributes = resource.getAttributes();
         attributes.add(new RrdGraphAttribute(attr, "", newtsResourceId));
 
-        Results<Measurement> results = new Results<>();
+        List<Sample> results = new ArrayList<>();
+
         Resource res = new Resource(newtsResourceId);
         Row<Measurement> row = new Row<Measurement>(Timestamp.fromEpochSeconds(0), res);
         Measurement measurement = new Measurement(Timestamp.fromEpochSeconds(0), res, label, 0.0d);
         row.addElement(measurement);
-        results.addRow(row);
+
+        Metric metric = Metric.builder()
+                .tag(CommonTagNames.resourceId, newtsResourceId)
+                .tag(CommonTagNames.name, label)
+                .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())
+                .tag(Metric.MandatoryTag.unit.name(), "ms")
+                .build();
+        Sample sample = Sample.builder()
+                .metric(metric)
+                .time(Instant.ofEpochMilli(0))
+                .value(0.0)
+                .build();
+
+        results.add(sample);
 
         if (expect) {
-            EasyMock.expect(m_sampleRepository.select(
-                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.capture(lastCapturedResultDescriptor), EasyMock.anyObject(), EasyMock.anyObject()
-            )).andReturn(results);
+            EasyMock.expect(timeSeriesStorage.getTimeseries(EasyMock.anyObject())).andReturn(results);
         }
 
         final Source source = new Source();
@@ -295,6 +303,6 @@ public class TimescaleFetchStrategyTest {
             EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
         }
 
-        EasyMock.replay(m_resourceDao, m_sampleRepository);
+        EasyMock.replay(m_resourceDao, timeSeriesStorage);
     }
 }

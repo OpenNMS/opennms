@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.ts;
+package org.opennms.netmgt.timeseries.impl.timescale;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,16 +70,12 @@ public class TimescaleStorage implements TimeSeriesStorage {
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
 
+    @Autowired
     private DataSource dataSource;
 
     private Connection connection;
 
     private int maxBatchSize = 100; // TODO Patrick: do we need to make value configurable?
-
-    @Autowired
-    public TimescaleStorage(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     @Override
     public void store(List<Sample> entries) throws StorageException {
@@ -185,9 +181,9 @@ public class TimescaleStorage implements TimeSeriesStorage {
         Objects.requireNonNull(tags, "tags collection can not be null");
         StringBuilder b = new StringBuilder("select distinct fk_timescale_metric from timescale_tag");
         if (!tags.isEmpty()) {
-            b.append(" where 1=2");
+            b.append(" where 1=1");
             for (Tag tag : tags) {
-                b.append(" or");
+                b.append(" AND");
                 b.append(" (key").append(handleNull(tag.getKey())).append(" AND ");
                 b.append("value").append(handleNull(tag.getValue())).append(")");
             }

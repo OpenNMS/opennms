@@ -42,9 +42,9 @@ public interface TimeSeriesStorage {
 
 
     /** Stores a list of Samples in the timeseries database. */
-    void store(List<Sample> entries) throws StorageException;
+    void store(List<Sample> samples) throws StorageException;
 
-    /** Returns all metrics which are stored in the time series database that contain all given tags. */
+    /** Returns all metrics which are stored in the time series database which contain all given tags. */
     List<Metric> getMetrics(Collection<Tag> tags) throws StorageException;
 
     /** Returns a the data for the given metrics for the given time period. */

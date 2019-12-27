@@ -302,7 +302,8 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
                     for(int columnIndex = 0; columnIndex < allSamples.size(); columnIndex++) {
                         List<Sample> list = allSamples.get(columnIndex);
                         Sample sampleOfCurrentList = list.get(rowIndex);
-                        final String name = listOfSources.get(columnIndex).getLabel();
+                        // final String name = listOfSources.get(columnIndex).getLabel();
+                        final String name = sampleOfCurrentList.getMetric().getFirstTagByKey(CommonTagNames.name).getValue();
                         row.addElement(new Measurement(timestamp, resource, name, sampleOfCurrentList.getValue()));
                     }
 
@@ -448,6 +449,11 @@ public class TimescaleFetchStrategy implements MeasurementFetchStrategy {
     @VisibleForTesting
     protected void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
+    }
+
+    @VisibleForTesting
+    protected void setTimeseriesStorage(final TimeSeriesStorage timeseriesStorage) {
+        this.storage = timeseriesStorage;
     }
 
     private OnmsNode getNode(final OnmsResource resource, final Source source) {

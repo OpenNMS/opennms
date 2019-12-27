@@ -31,27 +31,25 @@ package org.opennms.netmgt.timescale;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Test;
-import org.opennms.newts.api.Context;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.opennms.newts.api.Counter;
-import org.opennms.newts.api.Duration;
-import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.SampleRepository;
-import org.opennms.newts.api.SampleSelectCallback;
 import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.api.query.ResultDescriptor;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
@@ -66,10 +64,10 @@ public class TimescaleWriterTest {
         int ringBufferSize = 1024;
         int numWriterThreads = 8;
 
-        LatchedSampleRepository sampleRepo = new LatchedSampleRepository(numWriterThreads);
+        LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
         TimescaleWriter writer = new TimescaleWriter(1, ringBufferSize, numWriterThreads, registry);
-        writer.setSampleRepository(sampleRepo);
+        writer.setTimeSeriesStorage(store);
 
         for (int i = 0; i < ringBufferSize*2; i++) {
             Resource x = new Resource("x");
@@ -89,10 +87,10 @@ public class TimescaleWriterTest {
         int numWriterThreads = 8;
 
         Lock lock = new ReentrantLock();
-        LockedSampleRepository sampleRepo = new LockedSampleRepository(lock);
+        LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
         TimescaleWriter writer = new TimescaleWriter(1, ringBufferSize, numWriterThreads, registry);
-        writer.setSampleRepository(sampleRepo);
+        writer.setTimeSeriesStorage(timeseriesStorage);
 
         lock.lock();
         for (int i = 0; i < ringBufferSize; i++) {
@@ -102,7 +100,7 @@ public class TimescaleWriterTest {
 
         // The ring buffer should be full, and all of the threads should be locked
         Thread.sleep(250);
-        assertEquals(numWriterThreads, sampleRepo.getNumThreadsLocked());
+        assertEquals(numWriterThreads, timeseriesStorage.getNumThreadsLocked());
 
         // Attempt to insert another batch of samples
         for (int i = 0; i < 8; i++) {
@@ -115,19 +113,19 @@ public class TimescaleWriterTest {
         writer.destroy();
 
         // Verify the number of inserted samples
-        assertEquals(0, sampleRepo.getNumThreadsLocked());
-        assertEquals(ringBufferSize, sampleRepo.getNumSamplesInserted());
+        assertEquals(0, timeseriesStorage.getNumThreadsLocked());
+        assertEquals(ringBufferSize, timeseriesStorage.getNumSamplesInserted());
     }
 
-    private static class LatchedSampleRepository extends MockSampleRepository {
+    private static class LatchedTimeseriesStorage extends MockTimeSeriesStorage {
         private final CountDownLatch latch;
 
-        public LatchedSampleRepository(int N) {
+        public LatchedTimeseriesStorage(int N) {
             latch = new CountDownLatch(N);
         }
 
         @Override
-        public void insert(Collection<Sample> samples, boolean calculateTimeToLive) {
+        public void store(List<org.opennms.netmgt.timeseries.api.domain.Sample> samples) {
             latch.countDown();
             try {
                 latch.await();
@@ -137,22 +135,13 @@ public class TimescaleWriterTest {
         }
     }
 
-    private static class LockedSampleRepository extends MockSampleRepository {
+    private static class LockedTimeseriesStorage extends MockTimeSeriesStorage {
         private final Lock lock;
         private final AtomicInteger numThreadsLocked = new AtomicInteger(0);
         private final AtomicInteger numSamplesInserted = new AtomicInteger(0);
 
-        public LockedSampleRepository(Lock lock) {
+        public LockedTimeseriesStorage(Lock lock) {
             this.lock = lock;
-        }
-
-        @Override
-        public void insert(Collection<Sample> samples, boolean calculateTimeToLive) {
-            numThreadsLocked.incrementAndGet();
-            lock.lock();
-            numSamplesInserted.addAndGet(samples.size());
-            lock.unlock();
-            numThreadsLocked.decrementAndGet();
         }
 
         public int getNumThreadsLocked() {
@@ -162,41 +151,37 @@ public class TimescaleWriterTest {
         public int getNumSamplesInserted() {
             return numSamplesInserted.get();
         }
+
+        @Override
+        public void store(List<org.opennms.netmgt.timeseries.api.domain.Sample> samples) throws StorageException {
+            numThreadsLocked.incrementAndGet();
+            lock.lock();
+            numSamplesInserted.addAndGet(samples.size());
+            lock.unlock();
+            numThreadsLocked.decrementAndGet();
+        }
     }
 
-    private static class MockSampleRepository implements SampleRepository {
+    private static class MockTimeSeriesStorage implements TimeSeriesStorage {
+
         @Override
-        public void insert(Collection<Sample> samples) {
-            insert(samples, false);
+        public void store(List<org.opennms.netmgt.timeseries.api.domain.Sample> samples) throws StorageException {
+            // Do nothing, we are a mock
         }
 
         @Override
-        public void insert(Collection<Sample> samples, boolean calculateTimeToLive) {
-            // pass
-        }
-
-        @Override
-        public Results<Measurement> select(Context context, Resource resource, Optional<Timestamp> start,
-                Optional<Timestamp> end, ResultDescriptor descriptor, Optional<Duration> resolution) {
+        public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
             return null;
         }
 
         @Override
-        public Results<Measurement> select(Context context, Resource resource, Optional<Timestamp> start,
-                Optional<Timestamp> end, ResultDescriptor descriptor, Optional<Duration> resolution,
-                SampleSelectCallback callback) {
+        public List<org.opennms.netmgt.timeseries.api.domain.Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
             return null;
         }
 
         @Override
-        public Results<Sample> select(Context context, Resource resource, Optional<Timestamp> start,
-                Optional<Timestamp> end) {
-            return null;
-        }
-
-        @Override
-        public void delete(Context context, Resource resource) {
-            // pass
+        public void delete(Metric metric) throws StorageException {
+            // Do nothing, we are a mock
         }
     }
 }

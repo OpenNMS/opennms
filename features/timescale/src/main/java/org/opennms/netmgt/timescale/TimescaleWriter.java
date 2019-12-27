@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.timescale;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,13 +49,12 @@ import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.meta.AttributeIdentifier;
 import org.opennms.netmgt.timeseries.meta.MetaData;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.SampleRepository;
-import org.opennms.newts.api.search.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -252,14 +250,14 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
             metaDataList.add(new MetaData(entry.getKey().toString(), entry.getValue()));
         }
 
-        this.timeSeriesMetaDataDao.store(metaDataList);
+        // TODO: Patrick this.timeSeriesMetaDataDao.store(metaDataList);
     }
 
     private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {
 
         Metric.MetricBuilder builder = Metric.builder()
-                .tag("resourceId", sample.getResource().getId()) // TODO: Patrick centralize OpenNMS common tag names
-                .tag("name", sample.getName())
+                .tag(CommonTagNames.resourceId, sample.getResource().getId()) // TODO: Patrick centralize OpenNMS common tag names
+                .tag(CommonTagNames.name, sample.getName())
                 .tag(typeToTag(sample.getType()))
                 .tag("unit", "ms"); // TODO Patrick: how do we get the units from the sample?
 
@@ -302,11 +300,7 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
                 }
             };
 
-    public void setSampleRepository(SampleRepository sampleRepository) {
-        // TODO: Patrick: remove me
-    }
-
-    public void setIndexer(Indexer indexer) {
-        // TODO: Patrick: remove me
+    public void setTimeSeriesStorage(final TimeSeriesStorage timeseriesStorage) {
+        this.storage =timeseriesStorage;
     }
 }
