@@ -55,7 +55,7 @@
   </bean>
 
   <!-- This bean provides the pool configuration beans which are used to wire up the Newts context -->
-  <bean id="cassandraPoolConfiguration" class="org.opennms.netmgt.timescale.support.CassandraPoolConfiguration"/>
+  <bean id="cassandraPoolConfiguration" class="org.opennms.netmgt.timeseries.integration.support.CassandraPoolConfiguration"/>
 
   <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31540000}" />
@@ -89,9 +89,9 @@
     </bean>
   -->
 
-  <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.timescale.support.TimescaleUtils.TTL" />
+  <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.TTL" />
 
-  <util:constant id="cassandraIndexingOptions" static-field="org.opennms.netmgt.timescale.support.TimescaleUtils.INDEXING_OPTIONS" />
+  <util:constant id="cassandraIndexingOptions" static-field="org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.INDEXING_OPTIONS" />
 
   <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
         <!-- This options should always match the number of writer threads. See NMS-8439. -->
@@ -113,7 +113,7 @@
   <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
 
   <bean id="contextConfigurations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod" value="org.opennms.netmgt.timescale.support.ContextConfigurationFactory.getContextConfigurations"/>
+    <property name="staticMethod" value="org.opennms.netmgt.timeseries.integration.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
 
   <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -136,11 +136,11 @@
 
   <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
 
-  <bean id="timescaleSearcher" class="org.opennms.netmgt.dao.support.TimescaleSearcher" />
+  <bean id="timescaleSearcher" class="org.opennms.netmgt.dao.support.TimeseriesSearcher" />
 
-  <bean id="resourceMetadataCache" class="${org.opennms.timescale.config.cache.strategy:org.opennms.netmgt.timescale.support.GuavaSearchableResourceMetadataCache}" />
+  <bean id="resourceMetadataCache" class="${org.opennms.timescale.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
-  <bean id="cachePrimer" class="org.opennms.netmgt.timescale.support.CachePrimer"/>
+  <bean id="cachePrimer" class="org.opennms.netmgt.timeseries.integration.support.CachePrimer"/>
 
   <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" depends-on="search.cassandra.time-to-live,search.resourceMetadata.maxCacheEntries" />
 
@@ -150,7 +150,7 @@
     <constructor-arg index="0" ref="cassandraIndexerSampleProcessor" />
   </bean>
 
-  <bean id="sampleProcessorService" class="org.opennms.netmgt.timescale.support.SimpleSampleProcessorService" >
+  <bean id="sampleProcessorService" class="org.opennms.netmgt.timeseries.integration.support.SimpleSampleProcessorService" >
     <constructor-arg index="0" ref="sampleProcessors" />
   </bean>
 
@@ -158,17 +158,17 @@
 
   <onmsgi:service interface="org.opennms.newts.api.SampleRepository" ref="cassandraSampleRepository" />
 
-  <bean id="newtsWriter" class="org.opennms.netmgt.timescale.TimescaleWriter" />
+  <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimescaleWriter" />
 
   <bean id="timescaleStorage" class="org.opennms.netmgt.timeseries.impl.timescale.TimescaleStorage" />
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.TimescaleResourceStorageDao" />
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.TimeseriesResourceStorageDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-  <bean id="timescalePersisterFactory" class="org.opennms.netmgt.collection.persistence.timescale.TimescalePersisterFactory" />
+  <bean id="timescalePersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 

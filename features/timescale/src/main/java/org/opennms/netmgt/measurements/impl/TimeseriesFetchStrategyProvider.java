@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.measurements.impl;
 
-import java.util.Collections;
-import java.util.List;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyProvider;
 
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.cassandra.search.ResourceMetadata;
+/**
+ * Provides a reference to the {@link TimeseriesFetchStrategy}
+ * when using the 'newts' time-series series strategy.
+ *
+ * @author jwhite
+ */
+public class TimeseriesFetchStrategyProvider implements MeasurementFetchStrategyProvider {
 
-import com.google.common.base.Optional;
-
-public class MockSearchableResourceMetadataCache2 implements SearchableResourceMetadataCache {
-    @Override
-    public void merge(Context context, Resource resource,
-            ResourceMetadata rMetadata) {
-        // pass
-    }
+    public static final String TIME_SERIES_STRATEGY_NAME = "timescale";
 
     @Override
-    public Optional<ResourceMetadata> get(Context context,
-            Resource resource) {
-        return Optional.absent();
-    }
-
-    @Override
-    public void delete(final Context context, final Resource resource) {
-
-    }
-
-    @Override
-    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        return Collections.emptyList();
+    public Class<? extends MeasurementFetchStrategy> getStrategyClass(String timeSeriesStrategyName, String rrdStrategyClass) {
+        if (!TIME_SERIES_STRATEGY_NAME.equalsIgnoreCase(timeSeriesStrategyName)) {
+            return null;
+        }
+        return TimeseriesFetchStrategy.class;
     }
 }

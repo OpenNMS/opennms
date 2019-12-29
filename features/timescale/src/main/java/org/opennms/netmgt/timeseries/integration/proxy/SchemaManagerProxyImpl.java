@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,38 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.proxy;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.cassandra.search.ResourceMetadata;
+import org.opennms.newts.cassandra.SchemaManager;
 
-import com.google.common.base.Optional;
+public class SchemaManagerProxyImpl implements SchemaManagerProxy {
+    private final SchemaManager schemaManager;
 
-public class MockSearchableResourceMetadataCache2 implements SearchableResourceMetadataCache {
-    @Override
-    public void merge(Context context, Resource resource,
-            ResourceMetadata rMetadata) {
-        // pass
+    public SchemaManagerProxyImpl(SchemaManager schemaManager) {
+        this.schemaManager = Objects.requireNonNull(schemaManager);
     }
 
     @Override
-    public Optional<ResourceMetadata> get(Context context,
-            Resource resource) {
-        return Optional.absent();
-    }
-
-    @Override
-    public void delete(final Context context, final Resource resource) {
-
-    }
-
-    @Override
-    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        return Collections.emptyList();
+    public void create(InputStream schema) throws IOException {
+        schemaManager.create(() -> schema);
     }
 }

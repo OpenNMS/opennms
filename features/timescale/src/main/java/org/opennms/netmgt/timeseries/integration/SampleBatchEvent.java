@@ -26,38 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.cassandra.search.ResourceMetadata;
+import org.opennms.newts.api.Sample;
 
-import com.google.common.base.Optional;
+/**
+ * Wrapper class for a {@list java.util.List} of {@link org.opennms.newts.api.Sample} objects.
+ *
+ * Instances of this class are preallocated by the {@link com.lmax.disruptor.dsl.Disruptor}.
+ *
+ * @author jwhite
+ */
+public class SampleBatchEvent {
+    private List<Sample> m_samples;
+    private boolean m_indexOnly;
 
-public class MockSearchableResourceMetadataCache2 implements SearchableResourceMetadataCache {
-    @Override
-    public void merge(Context context, Resource resource,
-            ResourceMetadata rMetadata) {
-        // pass
+    public void setSamples(List<Sample> samples) {
+        m_samples = samples;
     }
 
-    @Override
-    public Optional<ResourceMetadata> get(Context context,
-            Resource resource) {
-        return Optional.absent();
+    public List<Sample> getSamples() {
+        return m_samples;
     }
 
-    @Override
-    public void delete(final Context context, final Resource resource) {
-
+    public void setIndexOnly(boolean indexOnly) {
+        m_indexOnly = indexOnly;
     }
 
-    @Override
-    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        return Collections.emptyList();
+    public boolean isIndexOnly() {
+        return m_indexOnly;
     }
 }

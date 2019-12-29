@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,38 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.support.osgi;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.cassandra.search.ResourceMetadata;
+import org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache;
 
-import com.google.common.base.Optional;
+import com.codahale.metrics.MetricRegistry;
 
-public class MockSearchableResourceMetadataCache2 implements SearchableResourceMetadataCache {
-    @Override
-    public void merge(Context context, Resource resource,
-            ResourceMetadata rMetadata) {
-        // pass
+public class GuavaCacheFactory implements CacheFactory<GuavaSearchableResourceMetadataCache> {
+
+    private final long cacheSize;
+    private final MetricRegistry metricRegistry;
+
+    public GuavaCacheFactory(long cacheSize, MetricRegistry metricRegistry) {
+        this.cacheSize = cacheSize;
+        this.metricRegistry = Objects.requireNonNull(metricRegistry);
     }
 
     @Override
-    public Optional<ResourceMetadata> get(Context context,
-            Resource resource) {
-        return Optional.absent();
+    public Class<GuavaSearchableResourceMetadataCache> supportedType() {
+        return GuavaSearchableResourceMetadataCache.class;
     }
 
     @Override
-    public void delete(final Context context, final Resource resource) {
-
-    }
-
-    @Override
-    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        return Collections.emptyList();
+    public GuavaSearchableResourceMetadataCache createCache() {
+        return new GuavaSearchableResourceMetadataCache(cacheSize, metricRegistry);
     }
 }

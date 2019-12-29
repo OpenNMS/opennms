@@ -26,38 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.support;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.cassandra.search.ResourceMetadata;
+import org.opennms.newts.cassandra.search.ResourceMetadataCache;
 
-import com.google.common.base.Optional;
+/**
+ * A cache that supports searching by resource id prefix.
+ *
+ * @author jwhite
+ */
+public interface SearchableResourceMetadataCache extends ResourceMetadataCache {
 
-public class MockSearchableResourceMetadataCache2 implements SearchableResourceMetadataCache {
-    @Override
-    public void merge(Context context, Resource resource,
-            ResourceMetadata rMetadata) {
-        // pass
-    }
+    List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix);
 
-    @Override
-    public Optional<ResourceMetadata> get(Context context,
-            Resource resource) {
-        return Optional.absent();
-    }
-
-    @Override
-    public void delete(final Context context, final Resource resource) {
-
-    }
-
-    @Override
-    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        return Collections.emptyList();
-    }
 }

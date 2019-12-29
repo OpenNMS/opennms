@@ -4,7 +4,7 @@ JAVA_OPTIONS="-Xmx256m"
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-APP_CLASS=org.opennms.netmgt.timescale.cli.Timescale
+APP_CLASS=org.opennms.netmgt.timeseries.impl.timescale.cli.Timescale
 
 # If you want to enable DEBUG, edit $OPENNMS_HOME/etc/log4j2-tools.xml
 

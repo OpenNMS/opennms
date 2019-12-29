@@ -43,6 +43,7 @@ import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.integration.TimescaleWriter;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
