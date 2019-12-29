@@ -60,8 +60,6 @@ import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.cassandra.search.CassandraIndexer;
-import org.opennms.newts.cassandra.search.CassandraSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +100,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
     private TimescaleSearcher searcher;
 
     @Autowired
-    private TimescaleWriter newtsWriter;
+    private TimescaleWriter writer;
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
@@ -244,7 +242,7 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
 
         // Index, but do not insert the sample(s)
         // The key/value pair specified in the attributes map will be merged with the others.
-        newtsWriter.index(Lists.newArrayList(sample));
+        writer.index(Lists.newArrayList(sample));
     }
 
     @Override
@@ -325,8 +323,8 @@ public class TimescaleResourceStorageDao implements ResourceStorageDao {
         m_context = context;
     }
 
-    public void setNewtsWriter(TimescaleWriter newtsWriter) {
-        this.newtsWriter = newtsWriter;
+    public void setWriter(TimescaleWriter writer) {
+        this.writer = writer;
     }
 
 }

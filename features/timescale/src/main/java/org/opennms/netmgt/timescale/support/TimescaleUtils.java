@@ -93,7 +93,7 @@ public abstract class TimescaleUtils {
     private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
 
     /**
-     * Extends the attribute map with indices used by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
+     * Extends the attribute map with indices used by the {@link org.opennms.netmgt.dao.support.TimescaleResourceStorageDao}.
      *
      * A resource path of the form [a, b, c, d] will be indexed with:
      * <ul>

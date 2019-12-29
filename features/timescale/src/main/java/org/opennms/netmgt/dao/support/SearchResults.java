@@ -39,9 +39,6 @@ import org.opennms.newts.api.Resource;
 public class SearchResults implements Iterable<SearchResults.Result> {
     private final List<Result> m_results = Lists.newArrayList();
 
-    public SearchResults() {
-    }
-
     public void addResult(Resource resource, Collection<String> metrics) {
         this.m_results.add(new Result(resource, metrics));
     }

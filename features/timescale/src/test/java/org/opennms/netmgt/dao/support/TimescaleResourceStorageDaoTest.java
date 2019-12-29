@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.timescale.support.TimescaleUtils.toResourceId;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,10 +51,6 @@ import org.opennms.netmgt.timescale.support.TimescaleUtils;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.search.BooleanQuery;
-import org.opennms.newts.api.search.Query;
-import org.opennms.newts.api.search.SearchResults;
-import org.opennms.newts.api.search.TermQuery;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -219,15 +216,16 @@ public class TimescaleResourceStorageDaoTest {
     }
 
     private void replay() throws StorageException {
-        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyBoolean())).andAnswer(new IAnswer<org.opennms.netmgt.dao.support.SearchResults>() {
+        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt(), EasyMock.anyBoolean())).andAnswer(new IAnswer<org.opennms.netmgt.dao.support.SearchResults>() {
             public org.opennms.netmgt.dao.support.SearchResults
-            answer() throws Throwable {
-                // Assume there is a single term query
-                Query q = (Query)EasyMock.getCurrentArguments()[1];
-                BooleanQuery bq = (BooleanQuery)q;
-                TermQuery tq = (TermQuery)bq.getClauses().get(0).getQuery();
-                String field = tq.getTerm().getField("");
-                String value = tq.getTerm().getValue();
+            answer() {
+                ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
+                int depth = (Integer)EasyMock.getCurrentArguments()[1];
+
+                int idxSuffix = resourcePath.elements().length - 1;
+                int targetLen = idxSuffix + depth + 2;
+                String field = "_idx"+idxSuffix; // key
+                String value = String.format("(%s,%d)", toResourceId(resourcePath), targetLen); // value
 
                 org.opennms.netmgt.dao.support.SearchResults searchResults = new org.opennms.netmgt.dao.support.SearchResults();
                 for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
@@ -235,7 +233,7 @@ public class TimescaleResourceStorageDaoTest {
                     // Build the indexed attributes and attempt to match them against the given query
                     TimescaleUtils.addIndicesToAttributes(entry.getKey(), attributes);
                     if (value.equals(attributes.get(field))) {
-                        searchResults.addResult(new Resource(TimescaleUtils.toResourceId(entry.getKey())), entry.getValue());
+                        searchResults.addResult(new Resource(toResourceId(entry.getKey())), entry.getValue());
                     }
                 }
                 return searchResults;

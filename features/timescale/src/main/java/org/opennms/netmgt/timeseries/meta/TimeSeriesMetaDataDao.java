@@ -55,7 +55,7 @@ public class TimeSeriesMetaDataDao {
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     private Connection connection;
 
