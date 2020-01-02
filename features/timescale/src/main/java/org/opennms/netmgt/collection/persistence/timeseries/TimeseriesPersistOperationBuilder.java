@@ -80,8 +80,8 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
-    public TimeseriesPersistOperationBuilder(TimescaleWriter newtsWriter, Context context, RrdRepository repository, ResourceIdentifier resource, String name) {
-        writer = newtsWriter;
+    public TimeseriesPersistOperationBuilder(TimescaleWriter writer, Context context, RrdRepository repository, ResourceIdentifier resource, String name) {
+        this.writer = writer;
         this.context = context;
         rrepository = repository;
         this.resource = resource;

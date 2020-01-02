@@ -30,10 +30,9 @@ package org.opennms.netmgt.timeseries.integration;
 
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -49,6 +48,7 @@ import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
 import org.opennms.netmgt.timeseries.meta.AttributeIdentifier;
 import org.opennms.netmgt.timeseries.meta.MetaData;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
@@ -215,8 +215,12 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
 
-        storeTimeseriesData(event);
-        storeMetadata(event);
+        // TODO Patrick: discuss with Jesse if indexOnly means insert String attribute?
+        if (event.isIndexOnly() && !TimeseriesUtils.DISABLE_INDEXING) {
+            storeTimeseriesData(event);
+        } else {
+            storeMetadata(event);
+        }
     }
 
     private void storeTimeseriesData(SampleBatchEvent event) throws StorageException {
@@ -227,7 +231,7 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
 
     private void storeMetadata(SampleBatchEvent event) throws SQLException {
         // dedouble attributes
-        HashMap<AttributeIdentifier, String> attributeMap = new HashMap<>();
+        Set<MetaData> metaData = new HashSet<>();
         for(Sample sample : event.getSamples()) {
             AttributeIdentifier attributeIdentifier = AttributeIdentifier.of(
                     sample.getResource(),
@@ -236,20 +240,12 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
                     sample.getType());
 
             // attributes of sample
-            if(sample.getAttributes() != null) {
-                sample.getAttributes().forEach((key, value) -> attributeMap.put(attributeIdentifier.withAttributeName(key), value));
+            if(sample.getResource().getAttributes().isPresent()) {
+                sample.getResource().getAttributes().get().forEach((key, value) -> metaData.add(new MetaData(sample.getResource().getId(), key, value)));
             }
-
-            // attributes of resource parents
-            // TODO: Patrick: how do we get access to it? Maybe we need do this at another place?
         }
 
-        List<MetaData> metaDataList = new ArrayList<>(attributeMap.size());
-        for(Map.Entry<AttributeIdentifier, String> entry : attributeMap.entrySet()) {
-            metaDataList.add(new MetaData(entry.getKey().toString(), entry.getValue()));
-        }
-
-        // TODO: Patrick this.timeSeriesMetaDataDao.store(metaDataList);
+        this.timeSeriesMetaDataDao.store(metaData);
     }
 
     private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {

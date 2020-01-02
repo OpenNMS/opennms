@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -294,16 +295,18 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     Sample sampleOfFirstList = allSamples.get(0).get(rowIndex);
 
                     Timestamp timestamp = Timestamp.fromEpochMillis(sampleOfFirstList.getTime().toEpochMilli());
-                    Resource resource = new Resource(sampleOfFirstList.getMetric().getFirstTagByKey("resourceId").getValue(),  Optional.of(asMap(sampleOfFirstList.getMetric().getMetaTags())));
+                    Optional<Map<String, String>> resourceAttributes = sampleOfFirstList.getMetric().getMetaTags().isEmpty() ?
+                            Optional.absent() : Optional.of(asMap(sampleOfFirstList.getMetric().getMetaTags()));
+                    Resource resource = new Resource(sampleOfFirstList.getMetric().getFirstTagByKey("resourceId").getValue(), resourceAttributes);
                     Row<Measurement> row = new Row<>(timestamp, resource);
 
                     // Let's iterate over all lists and add the samples of row i
                     for(int columnIndex = 0; columnIndex < allSamples.size(); columnIndex++) {
                         List<Sample> list = allSamples.get(columnIndex);
                         Sample sampleOfCurrentList = list.get(rowIndex);
-                        // final String name = listOfSources.get(columnIndex).getLabel();
-                        final String name = sampleOfCurrentList.getMetric().getFirstTagByKey(CommonTagNames.name).getValue();
-                        row.addElement(new Measurement(timestamp, resource, name, sampleOfCurrentList.getValue()));
+                        final String name = listOfSources.get(columnIndex).getLabel();
+                        // final String name = sampleOfCurrentList.getMetric().getFirstTagByKey(CommonTagNames.name).getValue();
+                        row.addElement(new Measurement(timestamp, resource, name, sampleOfCurrentList.getValue(), new HashMap<>()));
                     }
 
                     rows.add(row);

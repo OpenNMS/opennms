@@ -39,14 +39,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
+import org.opennms.netmgt.timeseries.integration.TimescaleWriter;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
@@ -56,8 +62,13 @@ import com.google.common.cache.LoadingCache;
 
 public class TimeseriesSearcher {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TimeseriesSearcher.class);
+
     @Autowired
     private TimeSeriesStorage storage;
+
+    @Autowired
+    private TimeSeriesMetaDataDao metaDataDao;
 
     private LoadingCache<String, Set<ResourcePath>> allResources = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.MINUTES)
@@ -84,12 +95,13 @@ public class TimeseriesSearcher {
         allPaths.add(currentPath);
     }
 
-    public Map<String, String> getResourceAttributes(Context m_context, String toResourceId) {
-        // TODO: Patrick: where do we save the resource attributes?
-        Map<String, String> map = new HashMap<>();
-        map.put("fakeAttribute1", "fakeValue1");
-        map.put("fakeAttribute2", "fakeValue2");
-        return map;
+    public Map<String, String> getResourceAttributes(ResourcePath path) {
+        try {
+            return metaDataDao.getForResourcePath(path);
+        } catch (StorageException e) {
+            LOG.warn("can not retrieve meta data for path: {}", path, e);
+        }
+        return new HashMap<>();
     }
 
     public SearchResults search(ResourcePath path, int depth, boolean fetchMetrics) throws StorageException {
@@ -109,17 +121,17 @@ public class TimeseriesSearcher {
 
 
         for(Metric metric : metrics) {
-            String resourceId = metric.getFirstTagByKey("resourceId").getValue();
+            String resourceId = metric.getFirstTagByKey(CommonTagNames.resourceId).getValue();
             SearchResults.Result result = resultPerResources.get(resourceId);
             if(result == null) {
                 Map<String, String> attributes = new HashMap<>();
                 metric.getMetaTags().forEach(entry -> attributes.put(entry.getKey(), entry.getValue()));
-                Resource resource = new Resource(metric.getFirstTagByKey("resourceId").getValue(),
+                Resource resource = new Resource(metric.getFirstTagByKey(CommonTagNames.resourceId).getValue(),
                         Optional.of(attributes));
                 result = new SearchResults.Result(resource, new ArrayList<>());
                 resultPerResources.put(resourceId, result);
             }
-            result.getMetrics().add(metric.getFirstTagByKey("name").getValue());
+            result.getMetrics().add(metric.getFirstTagByKey(CommonTagNames.name).getValue());
         }
 
         SearchResults results = new SearchResults();

@@ -103,7 +103,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     private TimescaleWriter writer;
 
     @Autowired
-    private SearchableResourceMetadataCache m_searchableCache;
+    private SearchableResourceMetadataCache searchableCache;
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -257,14 +257,14 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return searcher.getResourceAttributes(m_context, toResourceId(path));
+        return searcher.getResourceAttributes(path);
     }
 
     private Callable<Map<String, String>> getResourceAttributesCallable(final ResourcePath path) {
         return new Callable<Map<String, String>>() {
             @Override
-            public Map<String, String> call() throws Exception {
-                return searcher.getResourceAttributes(m_context, toResourceId(path));
+            public Map<String, String> call() {
+                return searcher.getResourceAttributes(path);
             }
         };
     }
@@ -275,7 +275,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     }
 
     private boolean hasCachedEntry(ResourcePath path, int minDepth, int maxDepth) {
-        List<String> cachedResourceIds = m_searchableCache.getResourceIdsWithPrefix(
+        List<String> cachedResourceIds = searchableCache.getResourceIdsWithPrefix(
                 m_context, toResourceId(path));
         for (String resourceId : cachedResourceIds) {
             int relativeDepth = path.relativeDepth(toResourcePath(resourceId));
@@ -316,7 +316,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     }
 
     public void setSearchableCache(SearchableResourceMetadataCache searchableCache) {
-        m_searchableCache = searchableCache;
+        this.searchableCache = searchableCache;
     }
 
     public void setContext(Context context) {

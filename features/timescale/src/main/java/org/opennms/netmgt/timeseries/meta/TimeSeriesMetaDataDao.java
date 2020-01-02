@@ -28,20 +28,27 @@
 
 package org.opennms.netmgt.timeseries.meta;
 
+import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.sql.DataSource;
 
 import org.joda.time.Duration;
+import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 @Service
@@ -67,33 +74,56 @@ public class TimeSeriesMetaDataDao {
     }
 
 
-    public void store(List<MetaData> metaData) throws SQLException {
+    public void store(final Collection<MetaData> metaDataCollection) throws SQLException {
+        Objects.requireNonNull(metaDataCollection);
 
-        // TODO: Patrick: can we simplify this? Right now it reflects the fields in StringAttribute
-
-        String sql = "INSERT INTO timeseries_meta(id, value)  values (?, ?)";
+        String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?)";
 
         if (this.connection == null) {
             this.connection = this.dataSource.getConnection();
         }
 
         PreparedStatement ps = connection.prepareStatement(sql);
-        // Partition the samples into collections smaller then max_batch_size
-        for (List<MetaData> batch : Lists.partition(metaData, maxBatchSize)) {
-            try {
-                LOG.debug("Inserting {} attributes", batch.size());
-                // m_sampleRepository.insert(batch);
-                for (MetaData data : batch) {
-                    ps.setString(1, data.getKey());
-                    ps.setString(2, data.getValue());
-                    ps.addBatch();
-                }
-                ps.executeBatch();
-            } catch (Throwable t) {
-                RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
-            }
+        LOG.debug("Inserting {} attributes", metaDataCollection.size());
+        for (MetaData metaData : metaDataCollection) {
+            ps.setString(1, metaData.getResourceId());
+            ps.setString(2, metaData.getName());
+            ps.setString(3, metaData.getValue());
+            ps.addBatch();
         }
+        ps.executeBatch();
         ps.close();
+    }
+
+    public Map<String, String> getForResourcePath(final ResourcePath path) throws StorageException {
+        Objects.requireNonNull(path);
+        String resourceId = toResourceId(path);
+
+        // TODO: Patrick: do db stuff properly
+        Map<String, String> metaData;
+        try {
+
+            String sql = "SELECT name, value FROM timescale_meta where resourceid = ?";
+            if (connection == null) {
+                this.connection = this.dataSource.getConnection();
+
+            }
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, toResourceId(path));
+            ResultSet rs = statement.executeQuery();
+
+            metaData = new HashMap<>();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                String value = rs.getString("value");
+                metaData.put(name, value);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOG.error("Could not retrieve meta data for resourceId={}", resourceId, e);
+            throw new StorageException(e);
+        }
+        return metaData;
     }
 
 //    public void store(List<StringAttribute> attributes) throws SQLException {

@@ -28,47 +28,13 @@
 
 package org.opennms.netmgt.timeseries.meta;
 
-import java.util.Objects;
+import lombok.Data;
+import lombok.NonNull;
 
-import com.google.common.base.MoreObjects;
-
+@Data
+@NonNull
 public class MetaData {
-
-    private final String key;
+    private final String resourceId;
+    private final String name;
     private final String value;
-
-    public MetaData(String key, String value) {
-        this.key = Objects.requireNonNull(key, "id cannot be null");
-        this.value = Objects.requireNonNull(value, "value cannot be null");
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MetaData metaData = (MetaData) o;
-        return Objects.equals(key, metaData.key) &&
-                Objects.equals(value, metaData.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, value);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", key)
-                .add("value", value)
-                .toString();
-    }
 }
