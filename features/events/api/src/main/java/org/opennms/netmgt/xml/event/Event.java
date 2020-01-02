@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -59,8 +60,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.core.utils.MutableCollections;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.DateTimeAdapter;
+import org.opennms.netmgt.events.api.model.IEvent;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -300,6 +303,55 @@ public class Event implements Message,Serializable {
 		_loggroupList = new CopyOnWriteArrayList<>();
 		_forwardList = new CopyOnWriteArrayList<>();
 		_scriptList = new CopyOnWriteArrayList<>();
+	}
+
+	public static Event copyFrom(IEvent source) {
+		if (source == null) {
+			return null;
+		}
+
+		Event event = new Event();
+		event.setUuid(source.getUuid());
+		event.setDbid(source.getDbid());
+		event.setDistPoller(source.getDistPoller());
+		event.setCreationTime(source.getCreationTime());
+		event.setMasterStation(source.getMasterStation());
+		event.setMask(source.getMask() == null ? null : Mask.copyFrom(source.getMask()));
+		event.setUei(source.getUei());
+		event.setSource(source.getSource());
+		event.setNodeid(source.getNodeid());
+		event.setTime(source.getTime());
+		event.setHost(source.getHost());
+		event.setInterface(source.getInterface());
+		event.setInterfaceAddress(source.getInterfaceAddress());
+		event.setSnmphost(source.getSnmphost());
+		event.setService(source.getService());
+		event.setSnmp(source.getSnmp() == null ? null : Snmp.copyFrom(source.getSnmp()));
+		event.setParmCollection(
+				source.getParmCollection().stream().map(Parm::copyFrom).collect(Collectors.toList()));
+		event.setDescr(source.getDescr());
+		event.setLogmsg(source.getLogmsg() == null ? null : Logmsg.copyFrom(source.getLogmsg()));
+		event.setSeverity(source.getSeverity());
+		event.setPathoutage(source.getPathoutage());
+		event.setCorrelation(source.getCorrelation() == null ? null : Correlation.copyFrom(source.getCorrelation()));
+		event.setOperinstruct(source.getOperinstruct());
+		event.getAutoactionCollection().addAll(
+				source.getAutoactionCollection().stream().map(Autoaction::copyFrom).collect(Collectors.toList()));
+		event.getOperactionCollection().addAll(
+				source.getOperactionCollection().stream().map(Operaction::copyFrom).collect(Collectors.toList()));
+		event.setAutoacknowledge(
+				source.getAutoacknowledge() == null ? null : Autoacknowledge.copyFrom(source.getAutoacknowledge()));
+		event.getLoggroupCollection().addAll(MutableCollections.copyListFromNullable(source.getLoggroupCollection()));
+		event.setTticket(source.getTticket() == null ? null : Tticket.copyFrom(source.getTticket()));
+		event.getForwardCollection().addAll(
+				source.getForwardCollection().stream().map(Forward::copyFrom).collect(Collectors.toList()));
+		event.getScriptCollection().addAll(
+				source.getScriptCollection().stream().map(Script::copyFrom).collect(Collectors.toList()));
+		event.setIfIndex(source.getIfIndex());
+		event.setIfAlias(source.getIfAlias());
+		event.setMouseovertext(source.getMouseovertext());
+		event.setAlarmData(source.getAlarmData() == null ? null : AlarmData.copyFrom(source.getAlarmData()));
+		return event;
 	}
 
 	// -----------/
