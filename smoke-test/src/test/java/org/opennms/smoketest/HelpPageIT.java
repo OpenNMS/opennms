@@ -59,8 +59,7 @@ public class HelpPageIT extends OpenNMSSeleniumIT {
                 "Welcome Guide",
                 "Commercial Support",
                 "Web Chat",
-                "Mailing Lists",
-                "Questions & Answers",
+                "Discourse",
                 "OpenNMS on GitHub",
                 "Issue Tracker",
                 "Continuous Integration"

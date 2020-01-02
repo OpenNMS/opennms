@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.flows.classification.internal;
 
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.springframework.transaction.support.TransactionOperations;
 
 // Is required to initialize the classification engine properly, as it requires a transaction to load correctly.
 // While starting the bundle, the initialization occurs from within the blueprint container, thus no transaction is available
 // This bean wraps the loading in a transaction, ensuring loading can occurr correctly
 public class ClassificationEngineInitializer {
 
-    public ClassificationEngineInitializer(ClassificationEngine engine, TransactionOperations transactionOperations) {
-        transactionOperations.execute(callback -> {
+    public ClassificationEngineInitializer(ClassificationEngine engine, SessionUtils sessionUtils) {
+        sessionUtils.withReadOnlyTransaction(() -> {
             engine.reload();
             return null;
         });
