@@ -35,4 +35,9 @@ public class WriteFailedException extends Exception {
     public WriteFailedException(String message) {
         super(message);
     }
+
+    public WriteFailedException(Throwable t) {
+        super(t);
+    }
+
 }

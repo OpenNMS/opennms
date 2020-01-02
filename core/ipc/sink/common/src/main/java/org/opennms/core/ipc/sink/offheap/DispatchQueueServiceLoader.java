@@ -28,25 +28,50 @@
 
 package org.opennms.core.ipc.sink.offheap;
 
-import org.osgi.framework.BundleActivator;
+import java.util.Optional;
+
+import org.opennms.core.ipc.sink.api.DispatchQueueFactory;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Activator implements BundleActivator {
+import com.google.common.annotations.VisibleForTesting;
 
-    private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
+public class DispatchQueueServiceLoader {
 
-    @Override
-    public void start(BundleContext context) throws Exception {
-        LOG.info("Set bundle context in OffHeapServiceLoader");
-         DispatchQueueServiceLoader.setBundleContext(context);
+    private static final Logger LOG = LoggerFactory.getLogger(DispatchQueueServiceLoader.class);
+    private static BundleContext context;
+    private static volatile DispatchQueueFactory dispatchQueueFactory;
+
+    public BundleContext getBundleContext() {
+        return context;
     }
 
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        LOG.info("Clear bundle context in OffHeapServiceLoader");
-        DispatchQueueServiceLoader.setBundleContext(null);
+    public static void setBundleContext(BundleContext bundleContext) {
+        context = bundleContext;
+    }
+
+    public static Optional<DispatchQueueFactory> getDispatchQueueFactory() {
+        if (dispatchQueueFactory != null) {
+            return Optional.of(dispatchQueueFactory);
+        }
+
+        if (context != null) {
+            try {
+                dispatchQueueFactory = context.getService(context.getServiceReference(DispatchQueueFactory.class));
+                return Optional.of(dispatchQueueFactory);
+            } catch (Exception e) {
+                LOG.error("Exception while retrieving DispatchQueueFactory Service from registry", e);
+                throw e;
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @VisibleForTesting
+    public static void setDispatchQueue(DispatchQueueFactory factory) {
+        dispatchQueueFactory = factory;
     }
 
 }
