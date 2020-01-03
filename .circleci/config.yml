@@ -691,6 +691,7 @@ jobs:
           minimal: true
   publish-cloudsmith:
     executor: cloudsmith/default
+    resource_class: small
     steps:
       - attach_workspace:
           at: ~/
