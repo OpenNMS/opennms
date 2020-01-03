@@ -13,6 +13,9 @@ executors:
     machine:
       image: ubuntu-1604:201903-01
 
+orbs:
+  cloudsmith: cloudsmith/cloudsmith@1.0.3
+
 commands:
   cached-checkout:
       description: "Checkout with caching"
@@ -225,8 +228,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Integration Tests
           no_output_timeout: 1.0h
@@ -273,6 +274,14 @@ commands:
           when: always
           path: ~/generated-tests
           destination: generated-tests
+  publish-cloudsmith:
+    steps:
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - run:
+          name: Publish Packages
+          command: |
+            .circleci/scripts/publish-cloudsmith.sh
 
 workflows:
   weekly-coverage:
@@ -397,6 +406,22 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+      - publish-cloudsmith:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
 
 jobs:
   build:
@@ -436,6 +461,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
+            - project/target/rpm/RPMS/noarch/
             - project/opennms-container/horizon/images/
   minion-rpm-build:
     executor: centos-build-executor
@@ -468,6 +494,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
+            - project/target/rpm/RPMS/noarch/
             - project/opennms-container/minion/images/
   sentinel-rpm-build:
     executor: centos-build-executor
@@ -500,6 +527,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
+            - project/target/rpm/RPMS/noarch/
             - project/opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
@@ -514,14 +542,13 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             .circleci/scripts/makedeb.sh opennms
-      - run:
-          name: Move Debian Files
-          command: |
-            mkdir -p ~/project/target/debs && \
-            mv ~/*.deb ~/*.changes ~/project/target/debs
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/debs/
   minion-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -535,14 +562,13 @@ jobs:
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh minion
-      - run:
-          name: Move Debian Files
-          command: |
-            mkdir -p ~/project/target/debs && \
-            mv ~/*.deb ~/*.changes ~/project/target/debs
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/debs/
   sentinel-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -556,14 +582,13 @@ jobs:
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh sentinel
-      - run:
-          name: Move Debian Files
-          command: |
-            mkdir -p ~/project/target/debs && \
-            mv ~/*.deb ~/*.changes ~/project/target/debs
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/debs/
   horizon-publish-oci:
     executor: centos-build-executor
     steps:
@@ -613,12 +638,16 @@ jobs:
     executor: integration-test-executor
     parallelism: 4
     steps:
+      - attach_workspace:
+          at: ~/
       - run-integration-tests:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 12
     steps:
+      - attach_workspace:
+          at: ~/
       - run-integration-tests:
           run-code-coverage: true
           rerun-failtest-count: 0
@@ -660,4 +689,11 @@ jobs:
           at: ~/
       - run-smoke-tests:
           minimal: true
+  publish-cloudsmith:
+    executor: cloudsmith/default
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: ~/
+      - publish-cloudsmith
 
