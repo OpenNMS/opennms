@@ -38,12 +38,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.TimescaleWriter;
+import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
@@ -92,6 +94,7 @@ public class TimescaleWriterTest {
         MetricRegistry registry = new MetricRegistry();
         TimescaleWriter writer = new TimescaleWriter(1, ringBufferSize, numWriterThreads, registry);
         writer.setTimeSeriesStorage(timeseriesStorage);
+        writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
 
         lock.lock();
         for (int i = 0; i < ringBufferSize; i++) {

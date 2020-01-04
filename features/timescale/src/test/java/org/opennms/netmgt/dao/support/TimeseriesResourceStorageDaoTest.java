@@ -239,7 +239,7 @@ public class TimeseriesResourceStorageDaoTest {
                 return searchResults;
             }
         }).atLeastOnce();
-        EasyMock.expect(searcher.getResourceAttributes(EasyMock.eq(m_context), EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
+        EasyMock.expect(searcher.getResourceAttributes(EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
         EasyMock.replay(searcher);
     }
 

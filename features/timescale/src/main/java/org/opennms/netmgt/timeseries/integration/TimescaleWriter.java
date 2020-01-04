@@ -217,8 +217,9 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
 
         // TODO Patrick: discuss with Jesse if indexOnly means insert String attribute?
         if (event.isIndexOnly() && !TimeseriesUtils.DISABLE_INDEXING) {
-            storeTimeseriesData(event);
+            storeMetadata(event);
         } else {
+            storeTimeseriesData(event);
             storeMetadata(event);
         }
     }
@@ -296,6 +297,10 @@ public class TimescaleWriter implements WorkHandler<SampleBatchEvent>, Disposabl
             };
 
     public void setTimeSeriesStorage(final TimeSeriesStorage timeseriesStorage) {
-        this.storage =timeseriesStorage;
+        this.storage = timeseriesStorage;
+    }
+
+    public void setTimeSeriesMetaDataDao(final TimeSeriesMetaDataDao timeSeriesMetaDataDao) {
+        this.timeSeriesMetaDataDao = timeSeriesMetaDataDao;
     }
 }
