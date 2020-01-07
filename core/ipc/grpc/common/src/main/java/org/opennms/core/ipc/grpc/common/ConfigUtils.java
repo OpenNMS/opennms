@@ -45,7 +45,7 @@ public class ConfigUtils {
                 final Enumeration<String> keys = config.keys();
                 while (keys.hasMoreElements()) {
                     final String key = keys.nextElement();
-                    properties.put(key, properties.get(key));
+                    properties.put(key, config.get(key));
                 }
             }
         } catch (IOException e) {

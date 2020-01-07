@@ -30,20 +30,25 @@ package org.opennms.core.ipc.grpc.client;
 
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.DEFAULT_GRPC_HOST;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.DEFAULT_GRPC_PORT;
+import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.DEFAULT_MESSAGE_SIZE;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_CLIENT_PID;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_HOST;
+import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_MAX_INBOUND_SIZE;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_PORT;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.TLS_ENABLED;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 import static org.opennms.core.ipc.sink.api.SinkModule.HEARTBEAT_MODULE_ID;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.net.ssl.SSLException;
 
 import org.opennms.core.ipc.grpc.common.ConfigUtils;
 import org.opennms.core.ipc.grpc.common.OnmsIpcGrpc;
@@ -69,6 +74,10 @@ import com.google.protobuf.ByteString;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.stub.StreamObserver;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -78,6 +87,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(MinionGrpcClient.class);
     private ManagedChannel channel;
     private OnmsIpcGrpc.OnmsIpcStub asyncStub;
+    private Properties properties;
     private BundleContext bundleContext;
     private MinionIdentity minionIdentity;
     private ConfigurationAdmin configAdmin;
@@ -94,21 +104,44 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
 
     public void start() throws IOException {
-        Properties properties = ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_CLIENT_PID);
+        properties = ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_CLIENT_PID);
         String host = PropertiesUtils.getProperty(properties, GRPC_HOST, DEFAULT_GRPC_HOST);
         int port = PropertiesUtils.getProperty(properties, GRPC_PORT, DEFAULT_GRPC_PORT);
         boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
-        ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(host, port)
-                .keepAliveWithoutCalls(true);
+        int maxInboundMessageSize =  PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
+
         if (!tlsEnabled) {
+            ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(host, port)
+                    .keepAliveWithoutCalls(true)
+                    .maxInboundMessageSize(maxInboundMessageSize);
             channelBuilder.usePlaintext();
+            channel = channelBuilder.build();
+        } else {
+            channel = NettyChannelBuilder.forAddress(host, port)
+                    .negotiationType(NegotiationType.TLS)
+                    .sslContext(buildSslContext().build())
+                    .keepAliveWithoutCalls(true)
+                    .build();
         }
-        channel = channelBuilder.build();
         asyncStub = OnmsIpcGrpc.newStub(channel);
         initializeRpcStub();
         initializeSinkStub();
         LOG.info("Minion at location {} with systemId {} started", minionIdentity.getLocation(), minionIdentity.getId());
 
+    }
+
+    private SslContextBuilder buildSslContext() throws SSLException {
+        SslContextBuilder builder = GrpcSslContexts.forClient();
+        String clientCertChainFilePath = properties.getProperty("clientCertChainFilePath");
+        String clientPrivateKeyFilePath = properties.getProperty("clientPrivateKeyFilePath");
+        String trustCertCollectionFilePath = properties.getProperty("trustCertCollectionFilePath");
+        if (trustCertCollectionFilePath != null) {
+            builder.trustManager(new File(trustCertCollectionFilePath));
+        }
+        if (clientCertChainFilePath != null && clientPrivateKeyFilePath != null) {
+            builder.keyManager(new File(clientCertChainFilePath), new File(clientPrivateKeyFilePath));
+        }
+        return builder;
     }
 
     private void initializeRpcStub() {

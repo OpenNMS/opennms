@@ -36,4 +36,6 @@ public interface GrpcClientConstants {
     String GRPC_PORT = "port";
     int DEFAULT_GRPC_PORT = 8990;
     String TLS_ENABLED = "tlsEnabled";
+    String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
+    int DEFAULT_MESSAGE_SIZE = 10485760;
 }

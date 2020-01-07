@@ -28,14 +28,22 @@
 
 package org.opennms.core.ipc.grpc.server;
 
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.CLIENT_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_ACK_TIMEOUT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_PORT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_TTL;
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_MESSAGE_SIZE;
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_MAX_INBOUND_SIZE;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_SERVER_PID;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_SERVER_PORT;
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.PRIVATE_KEY_FILE_PATH;
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH;
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TLS_ENABLED;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -83,7 +91,11 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
 import io.grpc.stub.StreamObserver;
 
 public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements RpcClientFactory {
@@ -93,6 +105,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private Server server;
     private String location;
     private Identity identity;
+    private Properties properties;
     private final ThreadFactory responseHandlerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-response-handler-%d")
             .build();
@@ -113,10 +126,22 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private final ExecutorService responseHandlerExecutor = Executors.newCachedThreadPool(responseHandlerThreadFactory);
 
     public void start() throws IOException {
-        Properties properties = ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_SERVER_PID);
+        properties = ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_SERVER_PID);
         int port = PropertiesUtils.getProperty(properties, GRPC_SERVER_PORT, DEFAULT_GRPC_PORT);
-        server = ServerBuilder.forPort(port)
-                .addService(new OnmsIpcService()).build();
+        int maxInboundMessageSize =  PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
+        boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
+
+        NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
+                .addService(new OnmsIpcService())
+                .maxInboundMessageSize(maxInboundMessageSize);
+        if(tlsEnabled) {
+            SslContextBuilder sslContextBuilder = getSslContextBuilder();
+            if(sslContextBuilder != null) {
+                serverBuilder.sslContext(sslContextBuilder.build());
+            }
+        }
+        server = serverBuilder.build();
+
         rpcTimeoutExecutor.execute(this::handleRpcTimeouts);
         rpcTimeoutExecutor.execute(this::handleDelayedRequests);
         rpcTimeoutExecutor.execute(this::handleRpcAcknowledgement);
@@ -129,6 +154,24 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         rpcTimeoutExecutor.shutdown();
         responseHandlerExecutor.shutdown();
         LOG.info("OpenNMS gRPC server stopped");
+    }
+
+    private SslContextBuilder getSslContextBuilder() {
+        String certChainFilePath = properties.getProperty(SERVER_CERTIFICATE_FILE_PATH);
+        String privateKeyFilePath = properties.getProperty(PRIVATE_KEY_FILE_PATH);
+        String clientCertChainFilePath = properties.getProperty(CLIENT_CERTIFICATE_FILE_PATH);
+        if (Strings.isNullOrEmpty(certChainFilePath) || Strings.isNullOrEmpty(privateKeyFilePath)) {
+            return null;
+        }
+
+        SslContextBuilder sslClientContextBuilder = SslContextBuilder.forServer(new File(certChainFilePath),
+                new File(privateKeyFilePath));
+        if (!Strings.isNullOrEmpty(clientCertChainFilePath)) {
+            sslClientContextBuilder.trustManager(new File(clientCertChainFilePath));
+            sslClientContextBuilder.clientAuth(ClientAuth.OPTIONAL);
+        }
+        return GrpcSslContexts.configure(sslClientContextBuilder,
+                SslProvider.OPENSSL);
     }
 
     @Override
@@ -246,7 +289,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private boolean sendRequest(RpcMessage rpcMessage) {
         StreamObserver<RpcMessage> rpcHandler = getRpcHandler(rpcMessage.getLocation(), rpcMessage.getSystemId());
         if (rpcHandler == null) {
-            LOG.warn("No RPC handlers found for location {}", getLocation());
+            LOG.warn("No RPC handlers found for location {}", rpcMessage.getLocation());
             return false;
         }
         try {

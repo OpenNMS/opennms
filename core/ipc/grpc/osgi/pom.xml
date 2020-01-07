@@ -47,13 +47,18 @@
           <instructions>
             <Import-Package>
               javax.net.ssl,
-              javax.security.cert
+              javax.security.cert,
+              javax.security.auth.x500,
             </Import-Package>
             <Export-Package>
+              com.google.protobuf,
               io.grpc,
               io.grpc.stub,
               io.grpc.protobuf,
-              com.google.protobuf,
+              io.grpc.internal,
+              io.grpc.netty.shaded.io.netty.util.collection,
+              io.grpc.netty.shaded.io.grpc.netty,
+              io.grpc.netty.shaded.io.netty.handler.ssl,
               io.grpc.netty.shaded.io.netty.util.collection
             </Export-Package>
           </instructions>
