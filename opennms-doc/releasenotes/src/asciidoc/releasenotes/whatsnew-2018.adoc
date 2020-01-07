@@ -85,6 +85,18 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.15]
+
+==== Release Meridian-2018.1.15
+
+Release 2018.1.15 is a tiny update containing a logging fix in Provisiond and an update to allow for choosing a layer when linking to the topology UI.
+
+The codename for 2018.1.15 is _Cyclone_.
+
+===== Bug
+
+* Cannot define a specific layer in topology app URL (Issue http://issues.opennms.org/browse/NMS-12431[NMS-12431])
+
 [releasenotes-changelog-Meridian-2018.1.14]
 
 ==== Release Meridian-2018.1.14
