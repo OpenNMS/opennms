@@ -92,6 +92,35 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.2]
+
+==== Release Meridian-2019.1.2
+
+Release 2019.1.2 is the third release in the Meridian 2019 series.
+
+It contains a number of alarm classification bug fixes and performance improvements, flow enhancements, and more.
+
+The link:https://i.ytimg.com/vi/psiq5imRIj8/maxresdefault.jpg[c]odename for 2019.1.2 is _link:$$https://en.wikipedia.org/wiki/Earth$$[Earth]_
+
+===== Bug
+
+* possible issue in JCIFS Monitor - contiously increase of threads - finally heap dump (Issue http://issues.opennms.org/browse/NMS-12407[NMS-12407])
+* Wrong links in the Help/Support page (Issue http://issues.opennms.org/browse/NMS-12418[NMS-12418])
+* Classification Engine reload causes OOM when defining a bunch of rules (Issue http://issues.opennms.org/browse/NMS-12429[NMS-12429])
+* Cannot define a specific layer in topology app URL (Issue http://issues.opennms.org/browse/NMS-12431[NMS-12431])
+* Classification UI: Error responses are not shown properly (Issue http://issues.opennms.org/browse/NMS-12432[NMS-12432])
+* Classification Engine: The end of the range is excluded, which is not intuitive (Issue http://issues.opennms.org/browse/NMS-12433[NMS-12433])
+* Ticket-creating automations are incorrectly enabled by default (Issue http://issues.opennms.org/browse/NMS-12439[NMS-12439])
+* Enable downtime model-based node deletion to happen when unmanaged interfaces exist (Issue http://issues.opennms.org/browse/NMS-12442[NMS-12442])
+* Improve alarmd Drools engine performance by using STREAM mode (Issue http://issues.opennms.org/browse/NMS-12455[NMS-12455])
+
+===== Enhancement
+
+* Refactoring of the Cassandra installation instructions (Issue http://issues.opennms.org/browse/NMS-12397[NMS-12397])
+* Allow telemetry flows to balance across Kafka partitions (Issue http://issues.opennms.org/browse/NMS-12427[NMS-12427])
+* Add system test for IpfixTcpParser (Issue http://issues.opennms.org/browse/NMS-12434[NMS-12434])
+* Associate exporter node using Observation Domain Id (Issue http://issues.opennms.org/browse/NMS-12435[NMS-12435])
+
 [releasenotes-changelog-Meridian-2019.1.1]
 
 ==== Release Meridian-2019.1.1
