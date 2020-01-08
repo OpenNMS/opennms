@@ -158,6 +158,12 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                         .put("acks", "1")
                         .build());
 
+        writeProps(etc.resolve("org.opennms.core.ipc.grpc.client.cfg"),
+                ImmutableMap.<String,String>builder()
+                        .put("host", OpenNMSContainer.ALIAS)
+                        .put("port", "8990")
+                        .build());
+
         // Features boot
         Path bootD = etc.resolve("featuresBoot.d");
         Files.createDirectories(bootD);
@@ -183,6 +189,12 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
             featuresOnBoot.addAll(Arrays.asList("!opennms-core-ipc-rpc-jms", "opennms-core-ipc-rpc-kafka"));
             // Sink
             featuresOnBoot.addAll(Arrays.asList("!opennms-core-ipc-sink-camel", "opennms-core-ipc-sink-kafka"));
+            // Disable JMS
+            featuresOnBoot.add("!minion-jms");
+        }
+        if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            // GRPC IPC
+            featuresOnBoot.addAll(Arrays.asList("!opennms-core-ipc-rpc-jms", "!opennms-core-ipc-sink-camel", "opennms-core-ipc-grpc-client"));
             // Disable JMS
             featuresOnBoot.add("!minion-jms");
         }
