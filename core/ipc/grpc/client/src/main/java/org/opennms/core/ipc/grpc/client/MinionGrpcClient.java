@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.grpc.client;
 
+import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.CLIENT_CERTIFICATE_FILE_PATH;
+import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.CLIENT_PRIVATE_KEY_FILE_PATH;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.DEFAULT_GRPC_HOST;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.DEFAULT_GRPC_PORT;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.DEFAULT_MESSAGE_SIZE;
@@ -36,6 +38,7 @@ import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_HOST;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_MAX_INBOUND_SIZE;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.GRPC_PORT;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.TLS_ENABLED;
+import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.TRUST_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 import static org.opennms.core.ipc.sink.api.SinkModule.HEARTBEAT_MODULE_ID;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS;
@@ -73,7 +76,6 @@ import com.google.protobuf.ByteString;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
@@ -108,21 +110,22 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         String host = PropertiesUtils.getProperty(properties, GRPC_HOST, DEFAULT_GRPC_HOST);
         int port = PropertiesUtils.getProperty(properties, GRPC_PORT, DEFAULT_GRPC_PORT);
         boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
-        int maxInboundMessageSize =  PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
+        int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
 
-        if (!tlsEnabled) {
-            ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(host, port)
-                    .keepAliveWithoutCalls(true)
-                    .maxInboundMessageSize(maxInboundMessageSize);
-            channelBuilder.usePlaintext();
-            channel = channelBuilder.build();
-        } else {
-            channel = NettyChannelBuilder.forAddress(host, port)
+        NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress(host, port)
+                .keepAliveWithoutCalls(true)
+                .maxInboundMessageSize(maxInboundMessageSize);
+
+        if (tlsEnabled) {
+            channel = channelBuilder
                     .negotiationType(NegotiationType.TLS)
                     .sslContext(buildSslContext().build())
-                    .keepAliveWithoutCalls(true)
                     .build();
+            LOG.info("TLS enabled for gRPC");
+        } else {
+            channel = channelBuilder.usePlaintext().build();
         }
+
         asyncStub = OnmsIpcGrpc.newStub(channel);
         initializeRpcStub();
         initializeSinkStub();
@@ -132,9 +135,10 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     private SslContextBuilder buildSslContext() throws SSLException {
         SslContextBuilder builder = GrpcSslContexts.forClient();
-        String clientCertChainFilePath = properties.getProperty("clientCertChainFilePath");
-        String clientPrivateKeyFilePath = properties.getProperty("clientPrivateKeyFilePath");
-        String trustCertCollectionFilePath = properties.getProperty("trustCertCollectionFilePath");
+        String clientCertChainFilePath = properties.getProperty(CLIENT_CERTIFICATE_FILE_PATH);
+        String clientPrivateKeyFilePath = properties.getProperty(CLIENT_PRIVATE_KEY_FILE_PATH);
+        String trustCertCollectionFilePath = properties.getProperty(TRUST_CERTIFICATE_FILE_PATH);
+
         if (trustCertCollectionFilePath != null) {
             builder.trustManager(new File(trustCertCollectionFilePath));
         }
@@ -172,7 +176,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                 LOG.warn(" {} module is already registered", rpcModule.getId());
             } else {
                 registerdModules.put(rpcModule.getId(), rpcModule);
-                LOG.info("Registered module {} with RPC message receivers.", rpcModule.getId());
+                LOG.info("Registered module {} with gRPC client", rpcModule.getId());
             }
         }
     }
@@ -182,7 +186,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         if (module != null) {
             final RpcModule<RpcRequest, RpcResponse> rpcModule = (RpcModule<RpcRequest, RpcResponse>) module;
             registerdModules.remove(rpcModule.getId());
-            LOG.info("Removing module {} from RPC message receivers.", rpcModule.getId());
+            LOG.info("Removing module {} from gRPC client.", rpcModule.getId());
         }
     }
 
@@ -266,7 +270,6 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         sendRpcMessage(rpcMessage);
         LOG.info("Sending Minion Headers to gRPC server");
 
-
     }
 
 
@@ -303,7 +306,10 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
         private void processRpcMessage(RpcMessage request) {
             String moduleId = request.getModuleId();
-            LOG.debug("Received message for module {} with Id {}, message {}", moduleId, request.getRpcId(), request.getRpcContent().toStringUtf8());
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Received rpc message for module {} with Id {}, message {}", moduleId, request.getRpcId(),
+                        request.getRpcContent().toStringUtf8());
+            }
             RpcModule<RpcRequest, RpcResponse> rpcModule = registerdModules.get(moduleId);
             if (rpcModule == null) {
                 return;
@@ -332,7 +338,9 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                 if (getChannelState().equals(ConnectivityState.READY)) {
                     try {
                         sendRpcMessage(response);
-                        LOG.debug("Response sent for module {} with Id {} and response = {}", moduleId, request.getRpcId(), responseAsString);
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("Response sent for module {} with Id {} and response = {}", moduleId, request.getRpcId(), responseAsString);
+                        }
                     } catch (Throwable e) {
                         LOG.error("Error while sending response {}", responseAsString, e);
                     }
@@ -352,7 +360,8 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
             if (getChannelState().equals(ConnectivityState.READY)) {
                 sendRpcMessage(response);
-                LOG.debug("Sending Ack for rpcId {}", request.getRpcId());
+                LOG.trace("Sending Ack for rpcId {}", request.getRpcId());
+
             } else {
                 LOG.debug("gRPC server is not in ready state");
             }

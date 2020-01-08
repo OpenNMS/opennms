@@ -26,19 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.grpc.client;
+package org.opennms.core.ipc.grpc;
 
-public interface GrpcClientConstants {
+import org.opennms.core.ipc.sink.api.AggregationPolicy;
+import org.opennms.core.ipc.sink.api.AsyncPolicy;
+import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 
-    String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
-    String GRPC_HOST = "host";
-    String DEFAULT_GRPC_HOST  = "localhost";
-    String GRPC_PORT = "port";
-    int DEFAULT_GRPC_PORT = 8990;
-    String TLS_ENABLED = "tlsEnabled";
-    String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
-    int DEFAULT_MESSAGE_SIZE = 10485760;
-    String CLIENT_CERTIFICATE_FILE_PATH = "clientCertChainFilePath";
-    String CLIENT_PRIVATE_KEY_FILE_PATH = "clientPrivateKeyFilePath";
-    String TRUST_CERTIFICATE_FILE_PATH = "trustCertCollectionFilePath";
+public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat,Heartbeat> {
+
+    public static final HeartbeatModule INSTANCE = new HeartbeatModule();
+
+    public HeartbeatModule() {
+        super(Heartbeat.class);
+    }
+
+    @Override
+    public int getNumConsumerThreads() {
+        return 1;
+    }
+
+    @Override
+    public String getId() {
+        return HEARTBEAT_MODULE_ID;
+    }
+
+    @Override
+    public AggregationPolicy<Heartbeat, Heartbeat, Heartbeat> getAggregationPolicy() {
+        // No aggregation
+        return null;
+    }
+
+    @Override
+    public AsyncPolicy getAsyncPolicy() {
+        // Only synchronous dispatching
+        return null;
+    }
 }

@@ -26,19 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.grpc.client;
+package org.opennms.core.ipc.grpc;
 
-public interface GrpcClientConstants {
+import java.util.concurrent.CompletableFuture;
 
-    String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
-    String GRPC_HOST = "host";
-    String DEFAULT_GRPC_HOST  = "localhost";
-    String GRPC_PORT = "port";
-    int DEFAULT_GRPC_PORT = 8990;
-    String TLS_ENABLED = "tlsEnabled";
-    String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
-    int DEFAULT_MESSAGE_SIZE = 10485760;
-    String CLIENT_CERTIFICATE_FILE_PATH = "clientCertChainFilePath";
-    String CLIENT_PRIVATE_KEY_FILE_PATH = "clientPrivateKeyFilePath";
-    String TRUST_CERTIFICATE_FILE_PATH = "trustCertCollectionFilePath";
+import org.opennms.core.rpc.api.RpcClient;
+import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.core.rpc.api.RpcModule;
+import org.opennms.core.rpc.echo.EchoRequest;
+import org.opennms.core.rpc.echo.EchoResponse;
+import org.opennms.core.rpc.echo.EchoRpcModule;
+
+public class MockEchoClient implements RpcClient<EchoRequest, EchoResponse> {
+
+    private final RpcClientFactory rpcProxy;
+
+    private RpcModule<EchoRequest, EchoResponse> rpcModule;
+
+    public MockEchoClient(RpcClientFactory rpcProxy) {
+        this(rpcProxy, new EchoRpcModule());
+    }
+
+    public MockEchoClient(RpcClientFactory rpcProxy, RpcModule<EchoRequest, EchoResponse> rpcModule) {
+        this.rpcProxy = rpcProxy;
+        this.rpcModule = rpcModule;
+    }
+
+    @Override
+    public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+        return getRpcProxy().getClient(rpcModule).execute(request);
+    }
+
+    public RpcClientFactory getRpcProxy() {
+        return rpcProxy;
+    }
+
 }

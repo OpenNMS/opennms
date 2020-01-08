@@ -31,6 +31,7 @@ package org.opennms.core.ipc.grpc.server;
 public interface GrpcServerConstants {
 
     String GRPC_SERVER_PID = "org.opennms.core.ipc.grpc.server";
+    String  GRPC_TTL_PROPERTY = "ttl";
     long DEFAULT_GRPC_TTL = 20000;
     long DEFAULT_ACK_TIMEOUT = 30000;
     String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";

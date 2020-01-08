@@ -26,7 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.grpc.server;
+package org.opennms.core.ipc.grpc;
 
-public class GrpcIpcRpcIT {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.ipc.sink.api.Message;
+
+@XmlRootElement(name="heartbeat")
+@XmlAccessorType(XmlAccessType.NONE)
+public class Heartbeat implements Message {
 }

@@ -26,19 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.grpc.client;
+package org.opennms.core.ipc.grpc;
 
-public interface GrpcClientConstants {
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 
-    String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
-    String GRPC_HOST = "host";
-    String DEFAULT_GRPC_HOST  = "localhost";
-    String GRPC_PORT = "port";
-    int DEFAULT_GRPC_PORT = 8990;
-    String TLS_ENABLED = "tlsEnabled";
-    String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
-    int DEFAULT_MESSAGE_SIZE = 10485760;
-    String CLIENT_CERTIFICATE_FILE_PATH = "clientCertChainFilePath";
-    String CLIENT_PRIVATE_KEY_FILE_PATH = "clientPrivateKeyFilePath";
-    String TRUST_CERTIFICATE_FILE_PATH = "trustCertCollectionFilePath";
+public class MockMinionIdentity implements MinionIdentity {
+
+    private final String location;
+
+    public MockMinionIdentity(String location) {
+        this.location = location;
+    }
+
+    @Override
+    public String getId() {
+        return "minionId";
+    }
+
+    @Override
+    public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public String getType() {
+        return SystemType.Minion.name();
+    }
 }

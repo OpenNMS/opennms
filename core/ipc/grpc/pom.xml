@@ -17,6 +17,7 @@
     <module>client</module>
     <module>common</module>
     <module>osgi</module>
+    <module>itests</module>
   </modules>
 
 
