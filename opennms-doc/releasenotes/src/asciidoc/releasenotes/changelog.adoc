@@ -2,6 +2,69 @@
 
 === Changelog
 
+[releasenotes-changelog-25.1.2]
+
+==== Release 25.1.2
+
+Release 25.1.2 is the fourth release in the Horizon 25 series.
+
+It contains a number of alarm classification bug fixes and performance improvements, flow enhancements, and more.
+
+The codename for 25.1.2 is _link:$$https://en.wikipedia.org/wiki/Pierogi$$[Pierogi]_.
+
+===== Bug
+
+* possible issue in JCIFS Monitor - contiously increase of threads - finally heap dump (Issue http://issues.opennms.org/browse/NMS-12407[NMS-12407])
+* Wrong links in the Help/Support page (Issue http://issues.opennms.org/browse/NMS-12418[NMS-12418])
+* Classification Engine reload causes OOM when defining a bunch of rules (Issue http://issues.opennms.org/browse/NMS-12429[NMS-12429])
+* TCP Listeners are broken (Issue http://issues.opennms.org/browse/NMS-12430[NMS-12430])
+* Cannot define a specific layer in topology app URL (Issue http://issues.opennms.org/browse/NMS-12431[NMS-12431])
+* Classification UI: Error responses are not shown properly (Issue http://issues.opennms.org/browse/NMS-12432[NMS-12432])
+* Classification Engine: The end of the range is excluded, which is not intuitive (Issue http://issues.opennms.org/browse/NMS-12433[NMS-12433])
+* Ticket-creating automations are incorrectly enabled by default (Issue http://issues.opennms.org/browse/NMS-12439[NMS-12439])
+* Enable downtime model-based node deletion to happen when unmanaged interfaces exist (Issue http://issues.opennms.org/browse/NMS-12442[NMS-12442])
+* Improve alarmd Drools engine performance by using STREAM mode (Issue http://issues.opennms.org/browse/NMS-12455[NMS-12455])
+
+===== Enhancement
+
+* Refactoring of the Cassandra installation instructions (Issue http://issues.opennms.org/browse/NMS-12397[NMS-12397])
+* SNMP detector should use snmp profiles (Issue http://issues.opennms.org/browse/NMS-12406[NMS-12406])
+* Allow telemetry flows to balance across Kafka partitions (Issue http://issues.opennms.org/browse/NMS-12427[NMS-12427])
+* Add system test for IpfixTcpParser (Issue http://issues.opennms.org/browse/NMS-12434[NMS-12434])
+* Associate exporter node using Observation Domain Id (Issue http://issues.opennms.org/browse/NMS-12435[NMS-12435])
+
+[releasenotes-changelog-25.1.1]
+
+==== Release 25.1.1
+
+Release 25.1.1 is the third release in the Horizon 25 series.
+
+It contains a number of bug fixes mostly related to alarm and event processing and potential resource leaks, as well as provisioning enhancements to SNMP profiles.
+
+The codename for 25.1.1 is _link:$$https://en.wikipedia.org/wiki/B%C3%A1nh_b%E1%BB%99t_l%E1%BB%8Dc$$[Bánh bột lọc]_.
+
+===== Bug
+
+* Readiness probe with Minion in Kubernetes with health:check does not work (Issue http://issues.opennms.org/browse/NMS-12120[NMS-12120])
+* AlarmLifecycleListenerManagerIT and AlarmdIT flapping (Issue http://issues.opennms.org/browse/NMS-12309[NMS-12309])
+* Strange behavior on used threads and file descriptors on Minion (Issue http://issues.opennms.org/browse/NMS-12366[NMS-12366])
+* Upstream Drools Bug: From with modify fires unexpected rule (Issue http://issues.opennms.org/browse/NMS-12367[NMS-12367])
+* Build failure during release for 25.1.0 in CircleCI (Issue http://issues.opennms.org/browse/NMS-12380[NMS-12380])
+* Discovery does not honor exclude-range inside a definition (Issue http://issues.opennms.org/browse/NMS-12385[NMS-12385])
+* Discovery exclude-range is not location-aware (Issue http://issues.opennms.org/browse/NMS-12386[NMS-12386])
+* Update OpenJDK 11.0.4 to 11.0.5 (Issue http://issues.opennms.org/browse/NMS-12387[NMS-12387])
+* Elasticsearch event forwarder manipulates in-flight event (Issue http://issues.opennms.org/browse/NMS-12390[NMS-12390])
+* send-event.pl is broken after OpenNMS 25.1.0 update (Issue http://issues.opennms.org/browse/NMS-12392[NMS-12392])
+* SNMP profile fitting is not triggered in some cases when MINION is involved (Issue http://issues.opennms.org/browse/NMS-12399[NMS-12399])
+* Alarmd fails intermittently and OOMs (Issue http://issues.opennms.org/browse/NMS-12412[NMS-12412])
+* SNMP Remove from definitions fails for definitions with profile label (Issue http://issues.opennms.org/browse/NMS-12413[NMS-12413])
+
+===== Enhancement
+
+* Migrate guide to run with Docker from GitHub repo to Installation guide (Issue http://issues.opennms.org/browse/NMS-12375[NMS-12375])
+* Enhance new snmp profiles to allow fitting to nodes inside requisitions without SNMP service associated to any IPs configured (Issue http://issues.opennms.org/browse/NMS-12396[NMS-12396])
+* Use OpenJDK 8 JDK for build environment (Issue http://issues.opennms.org/browse/NMS-12398[NMS-12398])
+
 [releasenotes-changelog-25.1.0]
 
 ==== Release 25.1.0

@@ -107,13 +107,6 @@ function parseEnvironment() {
                 echo "opennms-core-ipc-sink-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
             fi
         fi
-
-        if [[ $env_var =~ ^UDP_ ]]; then
-            udp_data=$(echo "$env_var" | cut -d_ -f2- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            udp_port=$(echo $udp_data | sed 's/\..*//')
-            udp_key=$(echo $udp_data | sed -r 's/^[0-9]+\.//')
-            updateConfig "$udp_key" "${!env_var}" "${MINION_HOME}/etc/org.opennms.features.telemetry.listeners-udp-$udp_port.cfg"
-        fi
     done
 }
 

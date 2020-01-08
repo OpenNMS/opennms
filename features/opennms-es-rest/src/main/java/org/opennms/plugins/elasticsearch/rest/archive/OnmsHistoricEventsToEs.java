@@ -29,10 +29,12 @@
 package org.opennms.plugins.elasticsearch.rest.archive;
 
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Header;
@@ -152,10 +154,14 @@ public class OnmsHistoricEventsToEs {
 				// remove node label param if included in event
 				if (!useNodeLabel) {
 					events.forEach(event -> {
+						// clone the event so we don't modify the original
+						event = new EventBuilder(event).getEvent();
+						List<Parm> parmCollection = new ArrayList<>(event.getParmCollection());
 						final Parm parm = event.getParm(OnmsRestEventsClient.NODE_LABEL);
 						if (parm != null) {
 							event.getParmCollection().remove(parm);
 						}
+						event.setParmCollection(parmCollection);
 					});
 				}
 

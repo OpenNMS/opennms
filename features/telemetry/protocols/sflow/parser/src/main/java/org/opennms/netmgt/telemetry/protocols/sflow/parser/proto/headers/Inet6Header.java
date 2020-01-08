@@ -30,15 +30,16 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers;
 
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.Throwables;
+
+import io.netty.buffer.ByteBuf;
 
 public class Inet6Header {
 
@@ -54,7 +55,7 @@ public class Inet6Header {
 
     public final Integer tcpFlags;
 
-    public Inet6Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Inet6Header(final ByteBuf buffer) throws InvalidPacketException {
         final long version_tc_fl = BufferUtils.uint32(buffer);
         if (version_tc_fl >> 28 != 0x06) {
             // First four bits must be 0x06

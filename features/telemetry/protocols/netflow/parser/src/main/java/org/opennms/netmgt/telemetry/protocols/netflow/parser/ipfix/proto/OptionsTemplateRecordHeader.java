@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public final class OptionsTemplateRecordHeader {
 
@@ -54,7 +54,7 @@ public final class OptionsTemplateRecordHeader {
     public final int fieldCount; // uint16
     public final int scopeFieldCount; // uint16
 
-    public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public OptionsTemplateRecordHeader(final ByteBuf buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
         if (this.templateId <= 255 && this.templateId != FlowSetHeader.OPTIONS_TEMPLATE_SET_ID) {
             // Since Template IDs are used as Set IDs in the Sets they describe

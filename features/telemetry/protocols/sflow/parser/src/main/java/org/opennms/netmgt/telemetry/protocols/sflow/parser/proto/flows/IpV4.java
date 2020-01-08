@@ -30,22 +30,23 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef opaque ip_v4[4];
 
 public class IpV4 {
     public final Inet4Address ip_v4;
 
-    public IpV4(final ByteBuffer buffer) {
+    public IpV4(final ByteBuf buffer) {
         try {
             this.ip_v4 = (Inet4Address) Inet4Address.getByAddress(BufferUtils.bytes(buffer, 4));
         } catch (final UnknownHostException e) {

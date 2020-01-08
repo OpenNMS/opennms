@@ -266,4 +266,11 @@ class Netflow5Flow implements Flow {
     private long getBootTime() {
         return this.getTimestamp() - this.getSysUpTime();
     }
+
+    @Override
+    public String getNodeIdentifier() {
+        return getInt64(this.document, "@engineId")
+                .map(String::valueOf)
+                .orElse(null);
+    }
 }

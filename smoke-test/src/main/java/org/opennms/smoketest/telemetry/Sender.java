@@ -26,24 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
+package org.opennms.smoketest.telemetry;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.util.Objects;
 
-import java.util.concurrent.TimeUnit;
+public interface Sender {
+    void send(final byte[] payload) throws IOException;
 
-import org.junit.Test;
-import org.opennms.netmgt.alarmd.drools.SessionClock;
+    static Sender udp(final InetSocketAddress destinationAddress) {
+        Objects.requireNonNull(destinationAddress);
 
-public class SessionClockTest {
+        return payload -> {
+            Objects.requireNonNull(payload);
 
-    @Test
-    public void canConvertStringToDuration() {
-        assertThat(SessionClock.getMsFromTimePeriod(null), equalTo(0L));
-        assertThat(SessionClock.getMsFromTimePeriod("  "), equalTo(0L));
-        assertThat(SessionClock.getMsFromTimePeriod("5m"), equalTo(TimeUnit.MINUTES.toMillis(5)));
-        assertThat(SessionClock.getMsFromTimePeriod("1d"), equalTo(TimeUnit.DAYS.toMillis(1)));
-        assertThat(SessionClock.getMsFromTimePeriod(" 2d "), equalTo(TimeUnit.DAYS.toMillis(2)));
+            try (DatagramSocket serverSocket = new DatagramSocket()) {
+                final DatagramPacket sendPacket = new DatagramPacket(payload, payload.length, destinationAddress);
+                serverSocket.send(sendPacket);
+            }
+        };
+    }
+
+    static Sender stream(final OutputStream stream) {
+        return stream::write;
     }
 }

@@ -1,3 +1,24 @@
+opennms (25.1.2-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of alarm classification bug fixes
+    and performance improvements, flow enhancements, and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/25.1.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Jan 2020 10:00:00 -0400
+
+opennms (25.1.1-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of bug fixes mostly related to alarm
+    and event processing and potential resource leaks, as well as provisioning
+    enhancements to SNMP profiles.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/25.1.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 03 Dec 2019 10:00:00 -0400
+
 opennms (25.1.0-1) stable; urgency=medium
 
   * New stable release.  It contains a bunch of bug fixes and enhancements,
@@ -5,6 +26,8 @@ opennms (25.1.0-1) stable; urgency=medium
     
     For details on what has changed, see:
     http://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 06 Nov 2019 10:00:00 -0400
 
 opennms (25.0.0-1) stable; urgency=medium
 

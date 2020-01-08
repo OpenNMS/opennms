@@ -1,0 +1,14 @@
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp"  read-community="horizon" timeout="3000" retry="1">
+  <profiles>
+    <profile version="v1" timeout="5000" ttl="10000">
+      <label>profile1</label>
+      <filter>IPADDR IPLIKE 192.0.*.*</filter>
+    </profile>
+    <profile version="v1" timeout="4000" ttl="8000">
+      <label>profile2</label>
+    </profile>
+    <profile version="v2c" timeout="6000" ttl="7000">
+      <label>profile3</label>
+    </profile>
+  </profiles>
+</snmp-config>

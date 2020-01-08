@@ -127,6 +127,8 @@ public class RuleValidatorTest {
         verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80,a"), Errors.RULE_PORT_DEFINITION_NOT_VALID);
         verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "100-80"), Errors.RULE_PORT_RANGE_BOUNDS_NOT_VALID);
         verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "0-70000"), Errors.RULE_PORT_VALUE_NOT_IN_RANGE);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "65536"), Errors.RULE_PORT_VALUE_NOT_IN_RANGE);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "0-65536"), Errors.RULE_PORT_VALUE_NOT_IN_RANGE);
 
         // Succeed
         verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80"));

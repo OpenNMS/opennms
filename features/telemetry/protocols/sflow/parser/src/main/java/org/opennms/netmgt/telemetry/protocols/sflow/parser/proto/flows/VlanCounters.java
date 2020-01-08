@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct vlan_counters {
 //   unsigned int vlan_id;
@@ -55,7 +55,7 @@ public class VlanCounters implements CounterData {
     public final long broadcastPkts;
     public final long discards;
 
-    public VlanCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public VlanCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.vlan_id = BufferUtils.uint32(buffer);
         this.octets = BufferUtils.uint64(buffer);
         this.ucastPkts = BufferUtils.uint32(buffer);

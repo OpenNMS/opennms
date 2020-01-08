@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // union address switch (address_type type) {
 //    case UNKNOWN:
@@ -51,7 +51,7 @@ public class Address {
     public final IpV4 ipV4;
     public final IpV6 ipV6;
 
-    public Address(final ByteBuffer buffer) throws InvalidPacketException {
+    public Address(final ByteBuf buffer) throws InvalidPacketException {
         this.type = AddressType.from(buffer);
         switch (this.type) {
             case IP_V4:

@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.rnorth.ducttape.unreliables.Unreliables;
+import org.opennms.smoketest.utils.KarafShell;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -68,18 +68,21 @@ public class HealthCheckRestIT {
 
     @Test
     public void verifyProbeHealthWithoutAuthenticationError() {
-        // Try multiple times, as it is not ensured that the t=0 actually fails
-        Unreliables.retryUntilSuccess(10, () -> {
-            final String response = RestAssured.get("probe?t=0")
-                    .then().assertThat()
-                    .statusCode(599)
-                    .statusLine("HTTP/1.1 599 Unhealthy")
-                    .contentType(ContentType.TEXT)
-                    .header("Health", "Oh no, something is wrong")
-                    .extract().response().asString();
-            assertThat(response, Matchers.is("Oh no, something is wrong"));
-            return null;
-        });
+        // Configure the elastic url incorrectly, so the rest health probe returns 599
+        final KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+        karafShell.runCommand("config:edit org.opennms.features.flows.persistence.elastic\n" +
+            "config:property-set elasticUrl 192.0.2.200\n" +
+            "config:update");
+
+        // Execute the request, but limit the timeout to 1 second
+        final String response = RestAssured.get("probe?t=1000")
+                .then().assertThat()
+                .statusCode(599)
+                .statusLine("HTTP/1.1 599 Unhealthy")
+                .contentType(ContentType.TEXT)
+                .header("Health", "Oh no, something is wrong")
+                .extract().response().asString();
+        assertThat(response, Matchers.is("Oh no, something is wrong"));
     }
 
     @Test

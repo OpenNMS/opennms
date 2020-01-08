@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,6 +39,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class MacAddressValue extends Value<byte[]> {
     public final byte[] value;
@@ -66,7 +67,7 @@ public class MacAddressValue extends Value<byte[]> {
     public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
                 return new MacAddressValue(name, semantics, bytes(buffer, 6));
             }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.receiver;
+package org.opennms.smoketest.telemetry;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
-/**
- * A listener may define multiple parsers, in order to dispatch it to only one queue,
- * the parser must decide if it can handle the incoming data.
- *
- * A parser implementing the {@link Dispatchable} interface is capable of making this decision.
- *
- * @author mvrueden
- */
-public interface Dispatchable {
+import org.jetbrains.annotations.NotNull;
 
-    /**
-     * Returns true if the implementor can handle the incoming data, otherwise false.
-     *
-     * @param buffer Representing the incoming data
-     * @return true if the implementor can handle the data, otherwise false.
-     */
-    boolean handles(final ByteBuffer buffer);
+import com.google.common.io.ByteStreams;
+
+public interface Payload {
+
+    @NotNull byte[] load() throws IOException;
+
+    static Payload resource(final String filename) {
+        Objects.requireNonNull(filename);
+
+        return () -> {
+            try (final InputStream is = Packet.class.getResourceAsStream(filename)) {
+                return ByteStreams.toByteArray(is);
+            }
+        };
+    }
+
+    static Payload direct(final byte... payload) {
+        Objects.requireNonNull(payload);
+        return () -> payload;
+    }
 }

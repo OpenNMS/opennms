@@ -53,7 +53,7 @@ public class PortValue {
         final Set<Integer> rangedPorts = rangedPortValues.stream()
                 .flatMap(v -> {
                     final RangedValue rangedValue = new RangedValue(v);
-                    return IntStream.range(rangedValue.getStart(), rangedValue.getEnd()).boxed();
+                    return IntStream.range(rangedValue.getStart(), rangedValue.getEnd() + 1).boxed();
                 })
                 .collect(Collectors.toSet());
         this.ports.addAll(rangedPorts);
@@ -61,5 +61,9 @@ public class PortValue {
 
     public Set<Integer> getPorts() {
         return ports;
+    }
+
+    public boolean matches(int port) {
+        return getPorts().contains(port);
     }
 }

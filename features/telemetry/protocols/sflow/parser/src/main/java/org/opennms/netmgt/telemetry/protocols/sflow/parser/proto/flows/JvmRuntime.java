@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct jvm_runtime {
 //   string vm_name<64>;      /* vm name */
@@ -57,7 +57,7 @@ public class JvmRuntime implements CounterData {
                 .toString();
     }
 
-    public JvmRuntime(final ByteBuffer buffer) throws InvalidPacketException {
+    public JvmRuntime(final ByteBuf buffer) throws InvalidPacketException {
         this.vm_name = new AsciiString(buffer);
         this.vm_vendor = new AsciiString(buffer);
         this.vm_version = new AsciiString(buffer);

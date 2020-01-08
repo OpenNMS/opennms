@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct jvm_statistics {
 //   unsigned hyper heap_initial;    /* initial heap memory requested */
@@ -91,7 +91,7 @@ public class JvmStatistics implements CounterData {
     public final long fd_open_count;
     public final long fd_max_count;
 
-    public JvmStatistics(final ByteBuffer buffer) throws InvalidPacketException {
+    public JvmStatistics(final ByteBuf buffer) throws InvalidPacketException {
         this.heap_initial = BufferUtils.uint64(buffer);
         this.heap_used = BufferUtils.uint64(buffer);
         this.heap_committed = BufferUtils.uint64(buffer);
