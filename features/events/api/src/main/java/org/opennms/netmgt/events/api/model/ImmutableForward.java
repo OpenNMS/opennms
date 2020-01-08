@@ -113,7 +113,7 @@ public final class ImmutableForward implements IForward {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableForward that = (ImmutableForward) o;
-        return content.equals(that.content) &&
+        return Objects.equals(content, that.content) &&
                 Objects.equals(state, that.state) &&
                 Objects.equals(mechanism, that.mechanism);
     }

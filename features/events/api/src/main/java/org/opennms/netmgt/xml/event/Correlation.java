@@ -112,6 +112,10 @@ public class Correlation implements Serializable {
     }
 
     public static Correlation copyFrom(ICorrelation source) {
+        if (source == null) {
+            return null;
+        }
+
         Correlation correlation = new Correlation();
         correlation.setState(source.getState());
         correlation.setPath(source.getPath());

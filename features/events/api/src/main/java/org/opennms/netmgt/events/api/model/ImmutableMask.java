@@ -90,7 +90,7 @@ public final class ImmutableMask implements IMask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableMask that = (ImmutableMask) o;
-        return maskElements.equals(that.maskElements);
+        return Objects.equals(maskElements, that.maskElements);
     }
 
     @Override

@@ -100,8 +100,8 @@ public final class ImmutableParm implements IParm {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableParm that = (ImmutableParm) o;
-        return parmName.equals(that.parmName) &&
-                value.equals(that.value);
+        return Objects.equals(parmName, that.parmName) &&
+                Objects.equals(value, that.value);
     }
 
     @Override

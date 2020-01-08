@@ -113,9 +113,9 @@ public final class ImmutableOperAction implements IOperAction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableOperAction that = (ImmutableOperAction) o;
-        return content.equals(that.content) &&
+        return Objects.equals(content, that.content) &&
                 Objects.equals(state, that.state) &&
-                menutext.equals(that.menutext);
+                Objects.equals(menutext, that.menutext);
     }
 
     @Override

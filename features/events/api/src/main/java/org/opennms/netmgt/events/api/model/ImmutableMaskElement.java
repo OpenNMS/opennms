@@ -103,8 +103,8 @@ public final class ImmutableMaskElement implements IMaskElement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableMaskElement that = (ImmutableMaskElement) o;
-        return meName.equals(that.meName) &&
-                meValues.equals(that.meValues);
+        return Objects.equals(meName, that.meName) &&
+                Objects.equals(meValues, that.meValues);
     }
 
     @Override

@@ -113,7 +113,7 @@ public final class ImmutableLogMsg implements ILogMsg {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableLogMsg that = (ImmutableLogMsg) o;
-        return content.equals(that.content) &&
+        return Objects.equals(content, that.content) &&
                 Objects.equals(notify, that.notify) &&
                 Objects.equals(dest, that.dest);
     }

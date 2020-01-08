@@ -85,7 +85,7 @@ public final class ImmutableManagedObject implements IManagedObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableManagedObject that = (ImmutableManagedObject) o;
-        return type.equals(that.type);
+        return Objects.equals(type, that.type);
     }
 
     @Override

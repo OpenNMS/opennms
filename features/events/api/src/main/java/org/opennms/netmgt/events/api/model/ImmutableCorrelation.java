@@ -32,6 +32,7 @@ import org.opennms.core.utils.ImmutableCollections;
 import org.opennms.core.utils.MutableCollections;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An immutable implementation of '{@link ICorrelation}'.
@@ -151,5 +152,35 @@ public final class ImmutableCorrelation implements ICorrelation {
     @Override
     public String getCtime() {
         return ctime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImmutableCorrelation that = (ImmutableCorrelation) o;
+        return Objects.equals(state, that.state) &&
+                Objects.equals(path, that.path) &&
+                Objects.equals(cueiList, that.cueiList) &&
+                Objects.equals(cmin, that.cmin) &&
+                Objects.equals(cmax, that.cmax) &&
+                Objects.equals(ctime, that.ctime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(state, path, cueiList, cmin, cmax, ctime);
+    }
+
+    @Override
+    public String toString() {
+        return "ImmutableCorrelation{" +
+                "state='" + state + '\'' +
+                ", path='" + path + '\'' +
+                ", cueiList=" + cueiList +
+                ", cmin='" + cmin + '\'' +
+                ", cmax='" + cmax + '\'' +
+                ", ctime='" + ctime + '\'' +
+                '}';
     }
 }

@@ -99,7 +99,7 @@ public final class ImmutableAutoAction implements IAutoAction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableAutoAction that = (ImmutableAutoAction) o;
-        return content.equals(that.content) &&
+        return Objects.equals(content, that.content) &&
                 Objects.equals(state, that.state);
     }
 

@@ -200,8 +200,8 @@ public final class ImmutableAlarmData implements IAlarmData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableAlarmData that = (ImmutableAlarmData) o;
-        return reductionKey.equals(that.reductionKey) &&
-                alarmType.equals(that.alarmType) &&
+        return Objects.equals(reductionKey, that.reductionKey) &&
+                Objects.equals(alarmType, that.alarmType) &&
                 Objects.equals(clearKey, that.clearKey) &&
                 Objects.equals(autoClean, that.autoClean) &&
                 Objects.equals(x733AlarmType, that.x733AlarmType) &&

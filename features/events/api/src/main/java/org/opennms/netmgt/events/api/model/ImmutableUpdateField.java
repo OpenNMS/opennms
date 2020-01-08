@@ -113,7 +113,7 @@ public final class ImmutableUpdateField implements IUpdateField {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableUpdateField that = (ImmutableUpdateField) o;
-        return fieldName.equals(that.fieldName) &&
+        return Objects.equals(fieldName, that.fieldName) &&
                 Objects.equals(updateOnReduction, that.updateOnReduction) &&
                 Objects.equals(valueExpression, that.valueExpression);
     }

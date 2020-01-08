@@ -184,9 +184,9 @@ public final class ImmutableSnmp implements ISnmp {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableSnmp that = (ImmutableSnmp) o;
-        return id.equals(that.id) &&
+        return Objects.equals(id, that.id) &&
                 Objects.equals(idText, that.idText) &&
-                version.equals(that.version) &&
+                Objects.equals(version, that.version) &&
                 Objects.equals(specific, that.specific) &&
                 Objects.equals(generic, that.generic) &&
                 Objects.equals(community, that.community) &&

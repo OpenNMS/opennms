@@ -99,8 +99,8 @@ public final class ImmutableScript implements IScript {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmutableScript that = (ImmutableScript) o;
-        return content.equals(that.content) &&
-                language.equals(that.language);
+        return Objects.equals(content, that.content) &&
+                Objects.equals(language, that.language);
     }
 
     @Override
