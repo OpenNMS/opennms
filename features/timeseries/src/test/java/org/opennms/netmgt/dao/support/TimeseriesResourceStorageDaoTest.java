@@ -67,7 +67,6 @@ import com.google.common.collect.Sets;
 public class TimeseriesResourceStorageDaoTest {
 
     private SearchableResourceMetadataCache m_cache = new MockSearchableResourceMetadataCache2();
-    private Context m_context = Context.DEFAULT_CONTEXT;
     private TimeseriesResourceStorageDao resourceStorageDao;
     private TimeseriesSearcher searcher;
     private Map<ResourcePath, Set<String>> indexedPaths = Maps.newHashMap();

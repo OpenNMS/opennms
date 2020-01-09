@@ -68,6 +68,7 @@ import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
@@ -272,8 +273,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     final Metric metric = Metric.builder()
                             .tag(CommonTagNames.resourceId, resourceId)
                             .tag(CommonTagNames.name, metricName)
-                            .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())  // TODO Patrick: where do we get the type from?
-                            .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO Patrick: where do we get the units from?
+                            .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())  // TODO Patrick: discuss with Jesse: where do we get the type from?
+                            .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                             .build();
 
                     TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()

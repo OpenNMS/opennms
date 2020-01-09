@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.joda.time.Duration;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Aggregation;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
@@ -73,77 +74,85 @@ public class TimescaleStorage implements TimeSeriesStorage {
     @Autowired
     private DataSource dataSource;
 
-    private Connection connection;
-
     private int maxBatchSize = 100; // TODO Patrick: do we need to make value configurable?
 
     @Override
     public void store(List<Sample> entries) throws StorageException {
         String sql = "INSERT INTO timescale_time_series(time, key, value)  values (?, ?, ?)";
 
+        final DBUtils db = new DBUtils(this.getClass());
         try {
-            if (this.connection == null) {
-                this.connection = this.dataSource.getConnection();
-            }
-
+            Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
             PreparedStatement ps = connection.prepareStatement(sql);
+            db.watch(ps);
+
             // Partition the samples into collections smaller then max_batch_size
             for (List<Sample> batch : Lists.partition(entries, maxBatchSize)) {
-                try {
-                    LOG.debug("Inserting {} samples", batch.size());
-                    for (Sample sample : batch) {
-                        ps.setTimestamp(1, new Timestamp(sample.getTime().toEpochMilli()));
-                        ps.setString(2, sample.getMetric().getKey());
-                        ps.setDouble(3, sample.getValue());
-                        ps.addBatch();
-                        saveTags(sample.getMetric(), Metric.TagType.intrinsic, sample.getMetric().getTags());
-                        saveTags(sample.getMetric(), Metric.TagType.meta, sample.getMetric().getMetaTags());
-                    }
-                    ps.executeBatch();
+                LOG.debug("Inserting {} samples", batch.size());
+                for (Sample sample : batch) {
+                    ps.setTimestamp(1, new Timestamp(sample.getTime().toEpochMilli()));
+                    ps.setString(2, sample.getMetric().getKey());
+                    ps.setDouble(3, sample.getValue());
+                    ps.addBatch();
+                    saveTags(sample.getMetric(), Metric.TagType.intrinsic, sample.getMetric().getTags());
+                    saveTags(sample.getMetric(), Metric.TagType.meta, sample.getMetric().getMetaTags());
+                }
+                ps.executeBatch();
 
-                    if (LOG.isDebugEnabled()) {
-                        String keys = batch.stream()
-                                .map(s -> s.getMetric().getKey())
-                                .distinct()
-                                .collect(Collectors.joining(", "));
-                        LOG.debug("Successfully inserted samples for resources with ids {}", keys);
-                    }
-                } catch (Throwable t) {
-                    RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
+                if (LOG.isDebugEnabled()) {
+                    String keys = batch.stream()
+                            .map(s -> s.getMetric().getKey())
+                            .distinct()
+                            .collect(Collectors.joining(", "));
+                    LOG.debug("Successfully inserted samples for resources with ids {}", keys);
                 }
             }
         } catch (SQLException e) {
+            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", e);
+            db.cleanUp();
             throw new StorageException(e);
         }
     }
 
     private void saveTags(final Metric metric, final Metric.TagType tagType, final Collection<Tag> tags) throws SQLException {
         final String sql = "INSERT INTO timescale_tag(fk_timescale_metric, key, value, type)  values (?, ?, ?, ?) ON CONFLICT (fk_timescale_metric, key, value, type) DO NOTHING;";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        for (Tag tag : tags) {
-            ps.setString(1, metric.getKey());
-            ps.setString(2, tag.getKey());
-            ps.setString(3, tag.getValue());
-            ps.setString(4, tagType.name());
-            ps.addBatch();
+
+        final DBUtils db = new DBUtils(this.getClass());
+        try {
+            Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
+            PreparedStatement ps = connection.prepareStatement(sql);
+            db.watch(ps);
+            for (Tag tag : tags) {
+                ps.setString(1, metric.getKey());
+                ps.setString(2, tag.getKey());
+                ps.setString(3, tag.getValue());
+                ps.setString(4, tagType.name());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            ps.close();
+        } finally {
+            db.cleanUp();
         }
-        ps.executeBatch();
-        ps.close();
     }
 
     public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
         Objects.requireNonNull(tags, "tags collection can not be null");
+
+        final DBUtils db = new DBUtils(this.getClass());
         try {
-            // TODO: Patrick: do db stuff properly
 
             String sql = createMetricsSQL(tags);
-            if (connection == null) {
-                this.connection = this.dataSource.getConnection();
-            }
+            Connection connection =  this.dataSource.getConnection();
+            db.watch(connection);
 
             // Get all relevant metricKeys
             PreparedStatement ps = connection.prepareStatement(sql);
+            db.watch(ps);
             ResultSet rs = ps.executeQuery();
+            db.watch(rs);
             Set<String> metricKeys = new HashSet<>();
             while (rs.next()) {
                 metricKeys.add(rs.getString("fk_timescale_metric"));
@@ -155,6 +164,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
             sql = "SELECT * FROM timescale_tag WHERE fk_timescale_metric=?";
             for(String metricKey : metricKeys) {
                 ps = connection.prepareStatement(sql);
+                db.watch(ps);
                 ps.setString(1, metricKey);
                 rs = ps.executeQuery();
                 Metric.MetricBuilder metric = Metric.builder();
@@ -170,9 +180,9 @@ public class TimescaleStorage implements TimeSeriesStorage {
                 metrics.add(metric.build());
                 rs.close();
             }
-
             return metrics;
         } catch (SQLException e) {
+            db.cleanUp();
             throw new StorageException(e);
         }
     }
@@ -202,9 +212,11 @@ public class TimescaleStorage implements TimeSeriesStorage {
     @Override
     public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException  {
 
-        // TODO: Patrick: do db stuff properly
+        DBUtils db = new DBUtils();
         ArrayList<Sample> samples;
         try {
+            final Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
             long stepInSeconds = request.getStep().getSeconds();
 
             String sql = String.format("SELECT time_bucket_gapfill('%s Seconds', time) AS step, "
@@ -213,24 +225,22 @@ public class TimescaleStorage implements TimeSeriesStorage {
 //            if(maxrows>0) {
 //                sql = sql + " LIMIT " + maxrows;
 //            }
-            if (connection == null) {
-                this.connection = this.dataSource.getConnection();
-
-            }
             PreparedStatement statement = connection.prepareStatement(sql);
+            db.watch(statement);
             statement.setString(1, request.getMetric().getKey());
             statement.setTimestamp(2, new java.sql.Timestamp(request.getStart().toEpochMilli()));
             statement.setTimestamp(3, new java.sql.Timestamp(request.getEnd().toEpochMilli()));
             ResultSet rs = statement.executeQuery();
+            db.watch(rs);
 
             samples = new ArrayList<>();
             while (rs.next()) {
                 long timestamp = rs.getTimestamp("step").getTime();
                 samples.add(Sample.builder().metric(request.getMetric()).time(Instant.ofEpochMilli(timestamp)).value(rs.getDouble("aggregation")).build());
             }
-
             rs.close();
         } catch (SQLException e) {
+            db.cleanUp();
             LOG.error("Could not retrieve FetchResults", e);
             throw new StorageException(e);
         }
@@ -240,18 +250,19 @@ public class TimescaleStorage implements TimeSeriesStorage {
     @Override
     public void delete(final Metric metric) throws StorageException {
 
-        // TODO: Patrick: do db stuff properly
+        DBUtils db = new DBUtils(this.getClass());
         try {
-           if (connection == null) {
-                this.connection = this.dataSource.getConnection();
+            Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
 
-            }
             PreparedStatement statement = connection.prepareStatement("DELETE FROM timescale_time_series where key=?");
+            db.watch(statement);
             statement.setString(1, metric.getKey());
             int deletedTimeseriesEntries = statement.executeUpdate();
             statement.close();
 
             statement = connection.prepareStatement("DELETE FROM timescale_tag where fk_timescale_metric=?");
+            db.watch(statement);
             statement.setString(1, metric.getKey());
             int deletedTimeseriesTags = statement.executeUpdate();
             statement.close();
@@ -259,6 +270,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
             LOG.debug("Deleted {} timeseries entries and {} timeseries tags for metric {}", deletedTimeseriesEntries, deletedTimeseriesTags, metric);
         } catch (SQLException e) {
             LOG.error("Could not retrieve FetchResults", e);
+            db.cleanUp();
             throw new StorageException(e);
         }
     }

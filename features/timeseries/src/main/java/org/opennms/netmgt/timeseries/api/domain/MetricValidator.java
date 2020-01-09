@@ -34,14 +34,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// TODO: patrick add test for this class
 class MetricValidator {
 
     private final Set<Tag> tags;
     private final Set<Tag> metaTags;
 
     public MetricValidator(final Set<Tag> tags, final Set<Tag> metaTags) {
-
         this.tags = tags;
         this.metaTags = metaTags;
     }

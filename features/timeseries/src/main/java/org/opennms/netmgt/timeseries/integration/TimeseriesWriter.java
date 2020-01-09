@@ -215,8 +215,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         // Decrement our entry counter
         m_numEntriesOnRingBuffer.decrementAndGet();
 
-        // TODO Patrick: discuss with Jesse if indexOnly means insert String attribute?
-        if (event.isIndexOnly() && !TimeseriesUtils.DISABLE_INDEXING) {
+        if (event.isIndexOnly()) {
             storeMetadata(event);
         } else {
             storeTimeseriesData(event);
@@ -245,17 +244,17 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
                 sample.getResource().getAttributes().get().forEach((key, value) -> metaData.add(new MetaData(sample.getResource().getId(), key, value)));
             }
         }
-
+        // TODO: Patrick: build Integration test: collection set pass it to our integration layer and read it again.
         this.timeSeriesMetaDataDao.store(metaData);
     }
 
     private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {
 
         Metric.MetricBuilder builder = Metric.builder()
-                .tag(CommonTagNames.resourceId, sample.getResource().getId()) // TODO: Patrick centralize OpenNMS common tag names
+                .tag(CommonTagNames.resourceId, sample.getResource().getId())
                 .tag(CommonTagNames.name, sample.getName())
                 .tag(typeToTag(sample.getType()))
-                .tag("unit", "ms"); // TODO Patrick: how do we get the units from the sample?
+                .tag("unit", CommonTagValues.unknown);
 
         if(sample.getResource().getAttributes().isPresent()) {
             sample.getResource().getAttributes().get().forEach(builder::metaTag);
@@ -264,7 +263,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         final Metric metric = builder.build();
         final Instant time = Instant.ofEpochMilli(sample.getTimestamp().asMillis());
         final Double value = sample.getValue().doubleValue();
-        // sample.getContext() TODO: Patrick: not sure if we need the context?
+
         return org.opennms.netmgt.timeseries.api.domain.Sample.builder().metric(metric).time(time).value(value).build();
     }
 
@@ -275,7 +274,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         } else if(type == MetricType.COUNTER) {
             mtype = Metric.Mtype.count;
         } else {
-            throw new IllegalArgumentException("Implement me"); // TODO: Patrick are the others even relevant?
+            throw new IllegalArgumentException("Implement me"); // no other tyes exist
         }
         return new Tag(Metric.MandatoryTag.mtype.name(), mtype.name());
     }

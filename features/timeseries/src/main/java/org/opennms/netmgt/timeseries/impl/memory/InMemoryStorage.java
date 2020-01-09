@@ -44,7 +44,8 @@ import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 
-/** Simulates a timeseries storage in memory. The implementation is super simple and not very efficient.
+/**
+ * Simulates a timeseries storage in memory. The implementation is super simple and not very efficient.
  * For testing and evaluating purposes only, not for production.
  */
 public class InMemoryStorage implements TimeSeriesStorage {

@@ -50,6 +50,7 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
@@ -164,13 +165,13 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                 Metric metric = Metric.builder()
                         .tag(CommonTagNames.resourceId, result.getResource().getId())
                         .tag(CommonTagNames.name, metricName)
-                        .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name()) // TODO Patrick: where do we get the type from?
-                        .tag(Metric.MandatoryTag.unit.name(), "ms") // TODO Patrick: where do we get the unit from?
+                        .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name()) // TODO Patrick: discuss with Jesse: where do we get the type from?
+                        .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                         .build();
                 try {
                     storage.delete(metric);
                 } catch (StorageException e) {
-                    LOG.error("Could not delete {}, will ignore problem and continue ", metric, e); // TODO Patrick: is this the expected behaviour?
+                    LOG.error("Could not delete {}, will ignore problem and continue ", metric, e);
                 }
             }
 

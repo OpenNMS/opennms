@@ -42,6 +42,7 @@ import java.util.Objects;
 import javax.sql.DataSource;
 
 import org.joda.time.Duration;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.slf4j.Logger;
@@ -64,8 +65,6 @@ public class TimeSeriesMetaDataDao {
 
     private final DataSource dataSource;
 
-    private Connection connection;
-
     private int maxBatchSize = 100; // TODO Patrick: do we need to make value configurable?
 
     @Autowired
@@ -77,41 +76,49 @@ public class TimeSeriesMetaDataDao {
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException {
         Objects.requireNonNull(metaDataCollection);
 
-        String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?)";
+        // TODO Patrick add caching and only push changes, similar to GuavaSearchableResourceMetadataCache
+        final String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT DO UPDATE SET value=?";
+        final DBUtils db = new DBUtils(this.getClass());
+        try {
 
-        if (this.connection == null) {
-            this.connection = this.dataSource.getConnection();
-        }
+            Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
 
-        PreparedStatement ps = connection.prepareStatement(sql);
-        LOG.debug("Inserting {} attributes", metaDataCollection.size());
-        for (MetaData metaData : metaDataCollection) {
-            ps.setString(1, metaData.getResourceId());
-            ps.setString(2, metaData.getName());
-            ps.setString(3, metaData.getValue());
-            ps.addBatch();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            db.watch(ps);
+
+            LOG.debug("Inserting {} attributes", metaDataCollection.size());
+            for (MetaData metaData : metaDataCollection) {
+                ps.setString(1, metaData.getResourceId());
+                ps.setString(2, metaData.getName());
+                ps.setString(3, metaData.getValue());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            ps.close();
+        } finally{
+            db.cleanUp();
         }
-        ps.executeBatch();
-        ps.close();
     }
 
     public Map<String, String> getForResourcePath(final ResourcePath path) throws StorageException {
         Objects.requireNonNull(path);
         String resourceId = toResourceId(path);
 
-        // TODO: Patrick: do db stuff properly
         Map<String, String> metaData;
+        final DBUtils db = new DBUtils(this.getClass());
         try {
 
             String sql = "SELECT name, value FROM timescale_meta where resourceid = ?";
-            if (connection == null) {
-                this.connection = this.dataSource.getConnection();
 
-            }
+            final Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
+
             PreparedStatement statement = connection.prepareStatement(sql);
+            db.watch(statement);
             statement.setString(1, toResourceId(path));
             ResultSet rs = statement.executeQuery();
-
+            db.watch(rs);
             metaData = new HashMap<>();
             while (rs.next()) {
                 String name = rs.getString("name");
@@ -121,6 +128,7 @@ public class TimeSeriesMetaDataDao {
             rs.close();
         } catch (SQLException e) {
             LOG.error("Could not retrieve meta data for resourceId={}", resourceId, e);
+            db.cleanUp();
             throw new StorageException(e);
         }
         return metaData;

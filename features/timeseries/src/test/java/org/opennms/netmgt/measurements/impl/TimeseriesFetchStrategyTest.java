@@ -106,7 +106,7 @@ public class TimeseriesFetchStrategyTest {
 
         FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
-        assertTrue(fetchResults.getColumns().containsKey("icmplocalhost")); // TODO: Patrick: what is the right logic: from where des the name come? Isn't it from sources?
+        assertTrue(fetchResults.getColumns().containsKey("icmp"));
         assertEquals(1, fetchResults.getTimestamps().length);
     }
 
@@ -124,7 +124,7 @@ public class TimeseriesFetchStrategyTest {
 
         FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
-        assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
+        assertTrue(fetchResults.getColumns().containsKey("icmp"));
         assertEquals(1, fetchResults.getTimestamps().length);
     }
 
