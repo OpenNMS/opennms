@@ -54,7 +54,7 @@ import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-public class GrpcTlsMutualAuthIT {
+public class GrpcTLSMutualAuthIT {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
     private static final String MAX_BUFFER_SIZE_COUNTER = "1000000";
@@ -66,11 +66,11 @@ public class GrpcTlsMutualAuthIT {
     @Before
     public void setup() throws Exception {
 
-        String serverCertFilePath = GrpcTlsMutualAuthIT.class.getResource("/tls/server.crt").getPath();
-        String serverKeyFilePath = GrpcTlsMutualAuthIT.class.getResource("/tls/server.pem").getPath();
-        String trustCertFilePath = GrpcTlsMutualAuthIT.class.getResource("/tls/ca.crt").getPath();
-        String clientCertFilePath = GrpcTlsMutualAuthIT.class.getResource("/tls/client.crt").getPath();
-        String clientPrivateKeyFilePath = GrpcTlsMutualAuthIT.class.getResource("/tls/client.pem").getPath();
+        String serverCertFilePath = this.getClass().getResource("/tls/server.crt").getPath();
+        String serverKeyFilePath = this.getClass().getResource("/tls/server.pem").getPath();
+        String trustCertFilePath = this.getClass().getResource("/tls/ca.crt").getPath();
+        String clientCertFilePath = this.getClass().getResource("/tls/client.crt").getPath();
+        String clientPrivateKeyFilePath = this.getClass().getResource("/tls/client.pem").getPath();
 
         Hashtable<String, Object> serverConfig = new Hashtable<>();
         int port = getAvailablePort(new AtomicInteger(GrpcServerConstants.DEFAULT_GRPC_PORT), 9090);

@@ -36,8 +36,16 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat,Heartbeat> 
 
     public static final HeartbeatModule INSTANCE = new HeartbeatModule();
 
+    private final boolean async;
+
+    public HeartbeatModule(boolean async) {
+        super(Heartbeat.class);
+        this.async = async;
+    }
+
     public HeartbeatModule() {
         super(Heartbeat.class);
+        this.async = false;
     }
 
     @Override
@@ -58,7 +66,24 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat,Heartbeat> 
 
     @Override
     public AsyncPolicy getAsyncPolicy() {
-        // Only synchronous dispatching
-        return null;
+        if(!async) {
+            return null;
+        }
+        return  new AsyncPolicy() {
+            @Override
+            public int getQueueSize() {
+                return 10;
+            }
+
+            @Override
+            public int getNumThreads() {
+                return 1;
+            }
+
+            @Override
+            public boolean isBlockWhenFull() {
+                return true;
+            }
+        };
     }
 }

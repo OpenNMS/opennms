@@ -39,5 +39,12 @@
     <reference-listener bind-method="bind" unbind-method="unbind" ref="grpcClient"/>
   </reference-list>
 
+  <!-- GRPC Health Check -->
+  <bean id="grpcHealthCheck" class="org.opennms.core.ipc.grpc.client.GrpcHealthCheck">
+    <argument ref="grpcClient"/>
+  </bean>
+
+  <service ref="grpcHealthCheck" interface="org.opennms.core.health.api.HealthCheck"/>
+
 
 </blueprint>

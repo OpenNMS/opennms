@@ -51,6 +51,8 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiIpcManager.class);
 
+    private static final String SINK_CONSUMER_REGISTER_RUNNER = "sink-consumer-register-runner";
+
     private final ServiceLookup<Class<?>, String> blockingServiceLookup;
 
 
@@ -65,19 +67,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
     public <R extends RpcRequest, S extends RpcResponse> RpcClient<R, S> getClient(RpcModule<R, S> module) {
 
         // create RpcClient here and postpone calling delegate to execute call.
-        return new RpcClient<R, S>() {
-            @Override
-            public CompletableFuture<S> execute(R request) {
-                RpcClient rpcClient = getRpcClient(module);
-                if (rpcClient != null) {
-                    return rpcClient.execute(request);
-                } else {
-                    CompletableFuture<S> future = new CompletableFuture();
-                    future.completeExceptionally(new RuntimeException("No RPC client found"));
-                    return future;
-                }
-            }
-        };
+        return new RpcClientDelegate(module);
     }
 
 
@@ -123,7 +113,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
     public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer)
             throws Exception {
         // Don't block registering consumer.
-        new Thread(() -> registerConsumerRunner(consumer)).start();
+        new Thread(() -> registerConsumerRunner(consumer), SINK_CONSUMER_REGISTER_RUNNER).start();
     }
 
     private <S extends Message, T extends Message> void registerConsumerRunner(MessageConsumer<S, T> consumer) {
@@ -146,4 +136,29 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
         }
     }
 
+    private class RpcClientDelegate<R extends RpcRequest, S extends RpcResponse> implements RpcClient {
+
+        private RpcModule<R, S> module;
+
+        private RpcClient delegate;
+
+        private RpcClientDelegate(RpcModule<R, S> module) {
+            this.module = module;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public CompletableFuture execute(RpcRequest request) {
+            if (delegate == null) {
+                delegate = getRpcClient(module);
+            }
+            if (delegate != null) {
+                return delegate.execute(request);
+            } else {
+                CompletableFuture<S> future = new CompletableFuture();
+                future.completeExceptionally(new RuntimeException("No RPC client found"));
+                return future;
+            }
+        }
+    }
 }

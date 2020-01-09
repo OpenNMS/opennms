@@ -50,9 +50,14 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.SSLException;
 
@@ -91,6 +96,7 @@ import io.opentracing.util.GlobalTracer;
 public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionGrpcClient.class);
+    private static final long SINK_BLOCKING_TIMEOUT = 3000;
     private ManagedChannel channel;
     private OnmsIpcGrpc.OnmsIpcStub asyncStub;
     private Properties properties;
@@ -105,6 +111,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             .build();
     private final ExecutorService requestHandlerExecutor = Executors.newCachedThreadPool(requestHandlerThreadFactory);
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
 
     public MinionGrpcClient(MinionIdentity identity, ConfigurationAdmin configAdmin) {
@@ -163,7 +170,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             sendMinionHeaders();
             LOG.info("Initialized RPC stream");
         } else {
-            LOG.warn("gRPC server is not in ready state");
+            LOG.warn("gRPC IPC server is not in ready state");
         }
     }
 
@@ -172,7 +179,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             sinkStream = asyncStub.sinkStreaming(new EmptyMessageReceiver());
             LOG.info("Initialized Sink stream");
         } else {
-            LOG.warn("gRPC server is not in ready state");
+            LOG.warn("gRPC IPC server is not in ready state");
         }
     }
 
@@ -185,7 +192,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                 LOG.warn(" {} module is already registered", rpcModule.getId());
             } else {
                 registerdModules.put(rpcModule.getId(), rpcModule);
-                LOG.info("Registered module {} with gRPC client", rpcModule.getId());
+                LOG.info("Registered module {} with gRPC IPC client", rpcModule.getId());
             }
         }
     }
@@ -195,7 +202,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         if (module != null) {
             final RpcModule<RpcRequest, RpcResponse> rpcModule = (RpcModule<RpcRequest, RpcResponse>) module;
             registerdModules.remove(rpcModule.getId());
-            LOG.info("Removing module {} from gRPC client.", rpcModule.getId());
+            LOG.info("Removing module {} from gRPC IPC client.", rpcModule.getId());
         }
     }
 
@@ -205,6 +212,8 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     public void shutdown() {
+        closed.set(true);
+        registerdModules.clear();
         if (rpcStream != null) {
             rpcStream.onCompleted();
         }
@@ -232,7 +241,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         return GlobalTracer.get();
     }
 
-    private ConnectivityState getChannelState() {
+    ConnectivityState getChannelState() {
         return currentChannelState = channel.getState(true);
     }
 
@@ -255,20 +264,53 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                     initializeRpcStub();
                 }
             }
-            if (getChannelState().equals(ConnectivityState.READY)) {
-                sendSinkMessage(sinkMessageBuilder.build());
+            // If module has asyncpolicy, keep attempting to send message.
+            if(module.getAsyncPolicy() != null) {
+                sendBlockingSinkMessage(sinkMessageBuilder.build());
             } else {
-                LOG.info("gRPC server is not in ready state");
+                sendSinkMessage(sinkMessageBuilder.build());
             }
         }
     }
 
-    private synchronized void sendSinkMessage(SinkMessage sinkMessage) {
-        if (sinkStream != null) {
-            sinkStream.onNext(sinkMessage);
-        } else {
-            throw new RuntimeException("Sink handler not found");
+    private void sendBlockingSinkMessage(SinkMessage sinkMessage) {
+        boolean succeeded = sendSinkMessage(sinkMessage);
+        if(succeeded) {
+            return;
         }
+        //Recursively try to send sink message until it succeeds with scheduled executor.
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduleSinkMessageAfterDelay(scheduler, sinkMessage);
+    }
+
+    private boolean scheduleSinkMessageAfterDelay(ScheduledExecutorService scheduler, SinkMessage sinkMessage) {
+        ScheduledFuture<Boolean> future = scheduler.schedule(() -> sendSinkMessage(sinkMessage), SINK_BLOCKING_TIMEOUT, TimeUnit.MILLISECONDS);
+        try {
+            boolean succeeded = future.get();
+            if(succeeded) {
+                return true;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Error while attempting to send sink message to gRPC IPC server", e);
+        }
+        return scheduleSinkMessageAfterDelay(scheduler, sinkMessage);
+    }
+
+
+    private synchronized boolean sendSinkMessage(SinkMessage sinkMessage) {
+        if (getChannelState().equals(ConnectivityState.READY)) {
+            if (sinkStream != null) {
+                try {
+                    sinkStream.onNext(sinkMessage);
+                    return true;
+                } catch (Throwable e) {
+                    LOG.error("Exception while sending sinkMessage to gRPC IPC server", e);
+                }
+            }
+        } else {
+            LOG.info("gRPC IPC server is not in ready state");
+        }
+        return false;
     }
 
 
@@ -321,7 +363,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                     LOG.error("Error while sending response {}", responseAsString, e);
                 }
             } else {
-                LOG.warn("gRPC server is not in ready state");
+                LOG.warn("gRPC IPC server is not in ready state");
             }
         });
     }
@@ -360,6 +402,5 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         }
 
     }
-
 
 }
