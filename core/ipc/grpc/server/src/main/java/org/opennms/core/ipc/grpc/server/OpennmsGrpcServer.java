@@ -29,7 +29,6 @@
 package org.opennms.core.ipc.grpc.server;
 
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.CLIENT_CERTIFICATE_FILE_PATH;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_ACK_TIMEOUT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_PORT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_TTL;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_MESSAGE_SIZE;
@@ -40,7 +39,7 @@ import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_TTL_PROP
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.PRIVATE_KEY_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TLS_ENABLED;
-import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS;
+import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,12 +114,9 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private final ThreadFactory timerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-timeout-tracker-%d")
             .build();
-    private final ExecutorService rpcTimeoutExecutor = Executors.newCachedThreadPool(timerThreadFactory);
+    private final ExecutorService rpcTimeoutExecutor = Executors.newSingleThreadExecutor(timerThreadFactory);
     private final Map<String, RpcResponseHandler> rpcResponseMap = new ConcurrentHashMap<>();
     private DelayQueue<RpcResponseHandler> rpcTimeoutQueue = new DelayQueue<>();
-    private DelayQueue<RpcId> rpcIdDelayQueue = new DelayQueue<>();
-    private Map<String, RpcMessage> rpcRequestMap = new ConcurrentHashMap<>();
-    private DelayQueue<DelayedRpcMessage> delayedRequestQueue = new DelayQueue<>();
     private Map<String, StreamObserver<RpcMessage>> rpcHandlerByMinionId = new HashMap<>();
     private Multimap<String, StreamObserver<RpcMessage>> rpcHandlerByLocation = LinkedListMultimap.create();
     private Map<Collection<StreamObserver<RpcMessage>>, Iterator<StreamObserver<RpcMessage>>> observerIteratorMap = new ConcurrentHashMap<>();
@@ -131,16 +127,16 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     public void start() throws IOException {
         properties = ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_SERVER_PID);
         int port = PropertiesUtils.getProperty(properties, GRPC_SERVER_PORT, DEFAULT_GRPC_PORT);
-        int maxInboundMessageSize =  PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
+        int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
         ttl = PropertiesUtils.getProperty(properties, GRPC_TTL_PROPERTY, DEFAULT_GRPC_TTL);
         boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
 
         NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
                 .addService(new OnmsIpcService())
                 .maxInboundMessageSize(maxInboundMessageSize);
-        if(tlsEnabled) {
+        if (tlsEnabled) {
             SslContextBuilder sslContextBuilder = getSslContextBuilder();
-            if(sslContextBuilder != null) {
+            if (sslContextBuilder != null) {
                 serverBuilder.sslContext(sslContextBuilder.build());
                 LOG.info("tls enabled for gRPC");
             }
@@ -148,18 +144,10 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         server = serverBuilder.build();
 
         rpcTimeoutExecutor.execute(this::handleRpcTimeouts);
-        rpcTimeoutExecutor.execute(this::handleDelayedRequests);
-        rpcTimeoutExecutor.execute(this::handleRpcAcknowledgement);
         server.start();
         LOG.info("OpenNMS gRPC server started");
     }
 
-    public void shutdown() {
-        server.shutdown();
-        rpcTimeoutExecutor.shutdown();
-        responseHandlerExecutor.shutdown();
-        LOG.info("OpenNMS gRPC server stopped");
-    }
 
     private SslContextBuilder getSslContextBuilder() {
         String certChainFilePath = properties.getProperty(SERVER_CERTIFICATE_FILE_PATH);
@@ -178,6 +166,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         return GrpcSslContexts.configure(sslClientContextBuilder,
                 SslProvider.OPENSSL);
     }
+
 
     @Override
     public void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
@@ -221,12 +210,10 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 RpcMessage rpcMessage = builder.build();
                 boolean succeeded = sendRequest(rpcMessage);
                 if (!succeeded) {
-                    long delayedTime = System.currentTimeMillis() + DEFAULT_ACK_TIMEOUT;
-                    delayedRequestQueue.offer(new DelayedRpcMessage(rpcMessage, delayedTime));
+                    future.completeExceptionally(new RuntimeException("No minion found at location " + request.getLocation()));
+                    return future;
                 }
-                if(LOG.isTraceEnabled()) {
-                    LOG.trace("RPC request {} sent to minion at location {}", request, request.getLocation());
-                }
+                LOG.debug("RPC request with RpcId {} sent to minion at location {}", rpcId, request.getLocation());
                 return future;
             }
         };
@@ -251,45 +238,15 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         }
     }
 
-    private void handleDelayedRequests() {
-        while (true) {
-            try {
-                DelayedRpcMessage delayedRpcMessage = delayedRequestQueue.take();
-                LOG.debug("DelayedRequest : Re-attempting RPC request with Id {}", delayedRpcMessage.getRpcMessage().getRpcId());
-                sendRequest(delayedRpcMessage.getRpcMessage());
-            } catch (InterruptedException e) {
-                LOG.info("interrupted while waiting for an element from rpcTimeoutQueue", e);
-                break;
-            } catch (Exception e) {
-                LOG.warn("error while sending response from timeout handler", e);
-            }
-        }
-    }
-
-    private void handleRpcAcknowledgement() {
-        while (true) {
-            try {
-                RpcId rpcId = rpcIdDelayQueue.take();
-                RpcMessage rpcMessage = rpcRequestMap.get(rpcId.getRpcId());
-                if (rpcMessage != null) {
-                    LOG.debug("AckMissed : Re-attempting RPC request with Id {}", rpcId.getRpcId());
-                    sendRequest(rpcMessage);
-                }
-            } catch (InterruptedException e) {
-                LOG.info("interrupted while waiting for an element from rpcTimeoutQueue", e);
-                break;
-            } catch (Exception e) {
-                LOG.warn("error while sending response from timeout handler", e);
-            }
-        }
-    }
-
 
     private void handleResponse(RpcMessage rpcMessage) {
         // Handle response from the Minion.
         RpcResponseHandler responseHandler = rpcResponseMap.get(rpcMessage.getRpcId());
         if (responseHandler != null) {
             responseHandler.sendResponse(rpcMessage.getRpcContent().toStringUtf8());
+        } else {
+            LOG.debug("Received a response for request with ID:{}, but no outstanding request was found with this id." +
+                    "The request may have timed out", rpcMessage.getRpcId());
         }
     }
 
@@ -301,16 +258,9 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         }
         try {
             sendRpcRequest(rpcHandler, rpcMessage);
-            long expirationTime = System.currentTimeMillis() + DEFAULT_ACK_TIMEOUT;
-            if (rpcRequestMap.get(rpcMessage.getRpcId()) == null) {
-                rpcIdDelayQueue.offer(new RpcId(rpcMessage.getRpcId(), expirationTime));
-                rpcRequestMap.put(rpcMessage.getRpcId(), rpcMessage);
-            }
-            LOG.debug("Request with id {} being sent", rpcMessage.getRpcId(), rpcMessage.getModuleId());
             return true;
         } catch (Throwable e) {
             LOG.error("Encountered exception while sending request {}", rpcMessage, e);
-            removeRpcHandler(rpcHandler);
         }
         return false;
     }
@@ -348,28 +298,10 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         }
     }
 
-    private synchronized void removeRpcHandler(StreamObserver<RpcMessage> rpcHandler) {
-
-        if (rpcHandlerByLocation.containsValue(rpcHandler)) {
-            rpcHandlerByLocation.values().remove(rpcHandler);
-            rpcHandlerByMinionId.values().remove(rpcHandler);
-            try {
-                rpcHandler.onCompleted();
-            } catch (Throwable e) {
-                LOG.error("Exception while closing rpc handler", e);
-            }
-            LOG.info("Removed rpc observer");
-        }
-    }
-
 
     private boolean isHeaders(RpcMessage rpcMessage) {
         return !Strings.isNullOrEmpty(rpcMessage.getModuleId()) &&
-                rpcMessage.getModuleId().equals(MINION_HEADERS);
-    }
-
-    Server getServer() {
-        return server;
+                rpcMessage.getModuleId().equals(MINION_HEADERS_MODULE);
     }
 
     public String getLocation() {
@@ -395,6 +327,14 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         this.configAdmin = configAdmin;
     }
 
+
+    public void shutdown() {
+        server.shutdown();
+        rpcTimeoutExecutor.shutdown();
+        responseHandlerExecutor.shutdown();
+        LOG.info("OpenNMS gRPC server stopped");
+    }
+
     @VisibleForTesting
     public Multimap<String, StreamObserver<RpcMessage>> getRpcHandlerByLocation() {
         return rpcHandlerByLocation;
@@ -411,15 +351,8 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 @Override
                 public void onNext(RpcMessage rpcMessage) {
                     // Register client when message is metadata.
-                    if(LOG.isTraceEnabled()) {
-                        LOG.trace("Received RPC message {} from module {}", rpcMessage, rpcMessage.getModuleId());
-                    }
                     if (isHeaders(rpcMessage)) {
-                        if (!Strings.isNullOrEmpty(rpcMessage.getSystemId()) && rpcMessage.getRpcId().equals(rpcMessage.getSystemId())) {
-                            addRpcHandler(rpcMessage.getLocation(), rpcMessage.getSystemId(), responseObserver);
-                        } else {
-                            rpcRequestMap.remove(rpcMessage.getRpcId());
-                        }
+                        addRpcHandler(rpcMessage.getLocation(), rpcMessage.getSystemId(), responseObserver);
                     } else {
                         responseHandlerExecutor.execute(() -> handleResponse(rpcMessage));
                     }
@@ -428,13 +361,11 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 @Override
                 public void onError(Throwable throwable) {
                     LOG.error("Error in rpc streaming", throwable);
-                    removeRpcHandler(responseObserver);
                 }
 
                 @Override
                 public void onCompleted() {
-                    LOG.info("Minion is shutting down, received onCompleted event");
-                    removeRpcHandler(responseObserver);
+                    LOG.info("Minion RPC handler closed");
                 }
             };
         }
@@ -446,7 +377,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
 
                 @Override
                 public void onNext(SinkMessage sinkMessage) {
-                    if(LOG.isTraceEnabled()) {
+                    if (LOG.isTraceEnabled()) {
                         LOG.trace("Received sink message {} from module {}", sinkMessage, sinkMessage.getModuleId());
                     }
                     SinkModule<?, Message> sinkModule = sinkModulesById.get(sinkMessage.getModuleId());
@@ -496,9 +427,9 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                     if (response.getErrorMessage() != null) {
                         responseFuture.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
                     } else {
-                        LOG.trace("Response handled successfully");
                         responseFuture.complete(response);
                     }
+                    LOG.debug("RPC Response handled successfully for RpcId = {}", rpcId);
                     isProcessed = true;
                 } else {
                     LOG.warn("RPC request with id {} timedout", rpcId);

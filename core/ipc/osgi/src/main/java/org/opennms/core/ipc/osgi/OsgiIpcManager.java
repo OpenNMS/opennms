@@ -44,21 +44,17 @@ import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OsgiIpcManager extends AbstractMessageConsumerManager implements RpcClientFactory {
 
-
-    private final ServiceLookup<Class<?>, String> serviceLookup;
+    private static final Logger LOG = LoggerFactory.getLogger(OsgiIpcManager.class);
 
     private final ServiceLookup<Class<?>, String> blockingServiceLookup;
 
-    private RpcClientFactory rpcClientFactory;
-
 
     public OsgiIpcManager() {
-        serviceLookup = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
-                .build();
-
         blockingServiceLookup = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
                 .blocking()
                 .build();
@@ -67,14 +63,8 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
     @SuppressWarnings("unchecked")
     @Override
     public <R extends RpcRequest, S extends RpcResponse> RpcClient<R, S> getClient(RpcModule<R, S> module) {
-        if (rpcClientFactory == null) {
-            rpcClientFactory = getRpcClientFactory(false);
-        }
-        if (rpcClientFactory != null) {
-            return rpcClientFactory.getClient(module);
-        }
-        // No RPC client factory found yet, create RpcClient here and
-        // delegate execute call to registered client factory
+
+        // create RpcClient here and postpone calling delegate to execute call.
         return new RpcClient<R, S>() {
             @Override
             public CompletableFuture<S> execute(R request) {
@@ -91,11 +81,8 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
     }
 
 
-    private RpcClientFactory getRpcClientFactory(boolean blocking) {
-        if (blocking) {
-            return blockingServiceLookup.lookup(RpcClientFactory.class, "(!(strategy=delegate))");
-        }
-        return serviceLookup.lookup(RpcClientFactory.class, "(!(strategy=delegate))");
+    private RpcClientFactory getRpcClientFactory() {
+        return blockingServiceLookup.lookup(RpcClientFactory.class, "(!(strategy=delegate))");
     }
 
 
@@ -105,7 +92,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
 
 
     private <R extends RpcRequest, S extends RpcResponse> RpcClient getRpcClient(RpcModule<R, S> module) {
-        RpcClientFactory clientFactory = getRpcClientFactory(true);
+        RpcClientFactory clientFactory = getRpcClientFactory();
         if (clientFactory != null) {
             return clientFactory.getClient(module);
         }
@@ -145,7 +132,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
             try {
                 consumerManagerDelegate.registerConsumer(consumer);
             } catch (Exception e) {
-                //pass
+                LOG.error("Exception while registering consumer for module {}", consumer.getModule(), e);
             }
         }
     }

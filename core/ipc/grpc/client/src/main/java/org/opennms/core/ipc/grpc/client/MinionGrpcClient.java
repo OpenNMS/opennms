@@ -41,7 +41,7 @@ import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.TLS_ENABLED;
 import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.TRUST_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 import static org.opennms.core.ipc.sink.api.SinkModule.HEARTBEAT_MODULE_ID;
-import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS;
+import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +50,9 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javax.net.ssl.SSLException;
 
@@ -72,6 +75,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
 import io.grpc.ConnectivityState;
@@ -96,6 +100,10 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private StreamObserver<RpcMessage> rpcStream;
     private StreamObserver<SinkMessage> sinkStream;
     private ConnectivityState currentChannelState;
+    private final ThreadFactory requestHandlerThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("rpc-request-handler-%d")
+            .build();
+    private final ExecutorService requestHandlerExecutor = Executors.newCachedThreadPool(requestHandlerThreadFactory);
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
 
 
@@ -153,7 +161,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             rpcStream = asyncStub.rpcStreaming(new RpcMessageHandler());
             // Need to send minion headers to gRPC server in order to register.
             sendMinionHeaders();
-            LOG.info("Initialized RPC stub");
+            LOG.info("Initialized RPC stream");
         } else {
             LOG.warn("gRPC server is not in ready state");
         }
@@ -162,6 +170,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private void initializeSinkStub() {
         if (getChannelState().equals(ConnectivityState.READY)) {
             sinkStream = asyncStub.sinkStreaming(new EmptyMessageReceiver());
+            LOG.info("Initialized Sink stream");
         } else {
             LOG.warn("gRPC server is not in ready state");
         }
@@ -223,7 +232,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         return GlobalTracer.get();
     }
 
-    public ConnectivityState getChannelState() {
+    private ConnectivityState getChannelState() {
         return currentChannelState = channel.getState(true);
     }
 
@@ -255,27 +264,73 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     private synchronized void sendSinkMessage(SinkMessage sinkMessage) {
-        sinkStream.onNext(sinkMessage);
+        if (sinkStream != null) {
+            sinkStream.onNext(sinkMessage);
+        } else {
+            throw new RuntimeException("Sink handler not found");
+        }
     }
 
 
     private void sendMinionHeaders() {
-
         RpcMessage rpcMessage = RpcMessage.newBuilder()
                 .setLocation(minionIdentity.getLocation())
                 .setSystemId(minionIdentity.getId())
-                .setModuleId(MINION_HEADERS)
+                .setModuleId(MINION_HEADERS_MODULE)
                 .setRpcId(minionIdentity.getId())
                 .build();
         sendRpcMessage(rpcMessage);
-        LOG.info("Sending Minion Headers to gRPC server");
-
+        LOG.info("Sending Minion Headers from SystemId {} to gRPC server", minionIdentity.getId());
     }
 
+    private void processRpcRequest(RpcMessage request) {
+        String moduleId = request.getModuleId();
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Received rpc message for module {} with Id {}, message {}", moduleId, request.getRpcId(),
+                    request.getRpcContent().toStringUtf8());
+        }
+        RpcModule<RpcRequest, RpcResponse> rpcModule = registerdModules.get(moduleId);
+        if (rpcModule == null) {
+            return;
+        }
+        RpcRequest rpcRequest = rpcModule.unmarshalRequest(request.getRpcContent().toStringUtf8());
+        CompletableFuture<RpcResponse> future = rpcModule.execute(rpcRequest);
+        future.whenComplete((res, ex) -> {
+            final RpcResponse rpcResponse;
+            if (ex != null) {
+                // An exception occurred, store the exception in a new response
+                LOG.warn("An error occured while executing a call in {}.", rpcModule.getId(), ex);
+                rpcResponse = rpcModule.createResponseWithException(ex);
+            } else {
+                // No exception occurred, use the given response
+                rpcResponse = res;
+            }
+            // Construct response using the same rpcId;
+            String responseAsString = rpcModule.marshalResponse(rpcResponse);
+            RpcMessage response = RpcMessage.newBuilder()
+                    .setRpcId(request.getRpcId())
+                    .setSystemId(minionIdentity.getId())
+                    .setLocation(request.getLocation())
+                    .setModuleId(request.getModuleId())
+                    .setRpcContent(ByteString.copyFrom(responseAsString.getBytes()))
+                    .build();
+            if (getChannelState().equals(ConnectivityState.READY)) {
+                try {
+                    sendRpcMessage(response);
+                } catch (Throwable e) {
+                    LOG.error("Error while sending response {}", responseAsString, e);
+                }
+            } else {
+                LOG.warn("gRPC server is not in ready state");
+            }
+        });
+    }
 
     private synchronized void sendRpcMessage(RpcMessage rpcMessage) {
         if (rpcStream != null) {
             rpcStream.onNext(rpcMessage);
+        } else {
+            throw new RuntimeException("RPC response handler not found");
         }
     }
 
@@ -285,10 +340,10 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         public void onNext(RpcMessage rpcMessage) {
 
             try {
-                sendAck(rpcMessage);
-                processRpcMessage(rpcMessage);
+                // Run processing of RPC request in a different thread.
+                requestHandlerExecutor.execute(() -> processRpcRequest(rpcMessage));
             } catch (Throwable e) {
-                LOG.error("Error while processing the RPC Request", e);
+                LOG.error("Error while processing the RPC Request {}", rpcMessage, e);
             }
         }
 
@@ -304,69 +359,6 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             rpcStream = null;
         }
 
-        private void processRpcMessage(RpcMessage request) {
-            String moduleId = request.getModuleId();
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Received rpc message for module {} with Id {}, message {}", moduleId, request.getRpcId(),
-                        request.getRpcContent().toStringUtf8());
-            }
-            RpcModule<RpcRequest, RpcResponse> rpcModule = registerdModules.get(moduleId);
-            if (rpcModule == null) {
-                return;
-            }
-            RpcRequest rpcRequest = rpcModule.unmarshalRequest(request.getRpcContent().toStringUtf8());
-            CompletableFuture<RpcResponse> future = rpcModule.execute(rpcRequest);
-            future.whenComplete((res, ex) -> {
-                final RpcResponse rpcResponse;
-                if (ex != null) {
-                    // An exception occurred, store the exception in a new response
-                    LOG.warn("An error occured while executing a call in {}.", rpcModule.getId(), ex);
-                    rpcResponse = rpcModule.createResponseWithException(ex);
-                } else {
-                    // No exception occurred, use the given response
-                    rpcResponse = res;
-                }
-                // Construct response using the same rpcId;
-                String responseAsString = rpcModule.marshalResponse(rpcResponse);
-                RpcMessage response = RpcMessage.newBuilder()
-                        .setRpcId(request.getRpcId())
-                        .setSystemId(minionIdentity.getId())
-                        .setLocation(request.getLocation())
-                        .setModuleId(request.getModuleId())
-                        .setRpcContent(ByteString.copyFrom(responseAsString.getBytes()))
-                        .build();
-                if (getChannelState().equals(ConnectivityState.READY)) {
-                    try {
-                        sendRpcMessage(response);
-                        if (LOG.isTraceEnabled()) {
-                            LOG.trace("Response sent for module {} with Id {} and response = {}", moduleId, request.getRpcId(), responseAsString);
-                        }
-                    } catch (Throwable e) {
-                        LOG.error("Error while sending response {}", responseAsString, e);
-                    }
-                }
-            });
-        }
-
-
-        private void sendAck(RpcMessage request) {
-
-            RpcMessage response = RpcMessage.newBuilder()
-                    .setLocation(request.getLocation())
-                    .setModuleId(MINION_HEADERS)
-                    .setRpcId(request.getRpcId())
-                    .setSystemId(minionIdentity.getId())
-                    .build();
-
-            if (getChannelState().equals(ConnectivityState.READY)) {
-                sendRpcMessage(response);
-                LOG.trace("Sending Ack for rpcId {}", request.getRpcId());
-
-            } else {
-                LOG.debug("gRPC server is not in ready state");
-            }
-
-        }
     }
 
 
