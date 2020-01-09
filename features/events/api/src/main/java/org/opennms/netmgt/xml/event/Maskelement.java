@@ -32,7 +32,6 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.opennms.core.utils.MutableCollections;
 import org.opennms.netmgt.events.api.model.IMaskElement;
 
 import java.io.Serializable;
@@ -93,7 +92,7 @@ public class Maskelement implements Serializable {
 
         Maskelement maskelement = new Maskelement();
         maskelement.setMename(copy.getMename());
-        maskelement.setMevalue(MutableCollections.copyListFromNullable(copy.getMevalueCollection()));
+        maskelement.getMevalueCollection().addAll(copy.getMevalueCollection());
         return maskelement;
     }
 

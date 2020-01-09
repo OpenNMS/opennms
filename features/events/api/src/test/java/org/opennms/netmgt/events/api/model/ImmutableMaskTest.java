@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.xml.event.*;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -51,7 +50,7 @@ public class ImmutableMaskTest {
         mask.getMaskelementCollection().add(maskElement);
 
         // Mutable to Immutable
-        IMask immutableMask = Mapper.fromMutableMask(mask);
+        IMask immutableMask = ImmutableMapper.fromMutableMask(mask);
 
         // Attempt to add to immutable list.
         try {

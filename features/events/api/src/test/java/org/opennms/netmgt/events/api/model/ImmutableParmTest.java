@@ -51,7 +51,7 @@ public class ImmutableParmTest {
         parm.setValue(value);
 
         // Mutable to Immutable
-        IParm immutableParm = Mapper.fromMutableParm(parm);
+        IParm immutableParm = ImmutableMapper.fromMutableParm(parm);
 
         // Immutable to Mutable
         Parm convertedParm = Parm.copyFrom(immutableParm);

@@ -32,7 +32,6 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.opennms.core.utils.MutableCollections;
 import org.opennms.netmgt.events.api.model.ICorrelation;
 
 import java.io.Serializable;
@@ -119,7 +118,7 @@ public class Correlation implements Serializable {
         Correlation correlation = new Correlation();
         correlation.setState(source.getState());
         correlation.setPath(source.getPath());
-        correlation.getCueiCollection().addAll(MutableCollections.copyListFromNullable(source.getCueiCollection()));
+        correlation.getCueiCollection().addAll(source.getCueiCollection());
         correlation.setCmin(source.getCmin());
         correlation.setCmax(source.getCmax());
         correlation.setCtime(source.getCtime());

@@ -45,7 +45,7 @@ public class ImmutableForwardTest {
         forward.setState("off");
 
         // Mutable to Immutable
-        IForward immutableForward = Mapper.fromMutableForward(forward);
+        IForward immutableForward = ImmutableMapper.fromMutableForward(forward);
 
         // Immutable to Mutable
         Forward convertedForward = Forward.copyFrom(immutableForward);

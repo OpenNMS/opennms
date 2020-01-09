@@ -66,7 +66,7 @@ public class ImmutableAlarmDataTest {
         alarmData.setManagedObject(managedObject);
 
         // Mutable to Immutable
-        IAlarmData immutableAlarmData = Mapper.fromMutableAlarmData(alarmData);
+        IAlarmData immutableAlarmData = ImmutableMapper.fromMutableAlarmData(alarmData);
 
         // Attempt to add to immutable list.
         try {

@@ -48,7 +48,7 @@ public class ImmutableCorrelationTest {
         correlation.setCtime("");
 
         // Mutable to Immutable
-        ICorrelation immutableCorrelation = Mapper.fromMutableCorrelation(correlation);
+        ICorrelation immutableCorrelation = ImmutableMapper.fromMutableCorrelation(correlation);
 
         // Attempt to add to immutable list.
         try {

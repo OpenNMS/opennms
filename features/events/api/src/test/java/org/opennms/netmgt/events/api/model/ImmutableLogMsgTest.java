@@ -45,7 +45,7 @@ public class ImmutableLogMsgTest {
         logMsg.setNotify(true);
 
         // Mutable to Immutable
-        ILogMsg immutableLogMsg = Mapper.fromMutableLogMsg(logMsg);
+        ILogMsg immutableLogMsg = ImmutableMapper.fromMutableLogMsg(logMsg);
 
         // Immutable to Mutable
         Logmsg convertedLogMsg = Logmsg.copyFrom(immutableLogMsg);

@@ -45,7 +45,7 @@ public class ImmutableEventTest {
         Event event = createEvent();
 
         // Mutable to Immutable
-        IEvent immutableEvent = Mapper.fromMutableEvent(event);
+        IEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
 
         // Attempt to add to immutable list.
         try {
@@ -103,7 +103,7 @@ public class ImmutableEventTest {
         event.setParmCollection(Collections.emptyList());
 
         // Mutable to Immutable
-        IEvent immutableEvent = Mapper.fromMutableEvent(event);
+        IEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
 
         // Immutable to Mutable
         Event convertedEvent = Event.copyFrom(immutableEvent);

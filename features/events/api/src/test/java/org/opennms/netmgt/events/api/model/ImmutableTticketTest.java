@@ -44,7 +44,7 @@ public class ImmutableTticketTest {
         tticket.setState("on");
 
         // Mutable to Immutable
-        ITticket immutableTticket = Mapper.fromMutableTticket(tticket);
+        ITticket immutableTticket = ImmutableMapper.fromMutableTticket(tticket);
 
         // Immutable to Mutable
         Tticket convertedTticket = Tticket.copyFrom(immutableTticket);

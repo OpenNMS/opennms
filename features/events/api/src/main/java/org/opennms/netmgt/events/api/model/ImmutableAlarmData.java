@@ -30,11 +30,9 @@ package org.opennms.netmgt.events.api.model;
 
 import org.opennms.core.utils.ImmutableCollections;
 import org.opennms.core.utils.MutableCollections;
-import org.opennms.netmgt.xml.event.AlarmData;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * An immutable implementation of '{@link IAlarmData}'.

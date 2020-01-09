@@ -44,7 +44,7 @@ public class ImmutableScriptTest {
         script.setLanguage("test");
 
         // Mutable to Immutable
-        IScript immutableScript = Mapper.fromMutableScript(script);
+        IScript immutableScript = ImmutableMapper.fromMutableScript(script);
 
         // Immutable to Mutable
         Script convertedScript = Script.copyFrom(immutableScript);

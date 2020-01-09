@@ -49,7 +49,7 @@ public class ImmutableSnmpTest {
         snmp.setTimeStamp(0L);
 
         // Mutable to Immutable
-        ISnmp immutableSnmp = Mapper.fromMutableSnmp(snmp);
+        ISnmp immutableSnmp = ImmutableMapper.fromMutableSnmp(snmp);
 
         // Immutable to Mutable
         Snmp convertedSnmp = Snmp.copyFrom(immutableSnmp);

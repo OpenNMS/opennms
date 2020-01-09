@@ -44,7 +44,7 @@ public class ImmutableAutoAcknowledgeTest {
         autoacknowledge.setState("on");
 
         // Mutable to Immutable
-        IAutoAcknowledge immutableAutoAcknowledge = Mapper.fromMutableAutoAcknowledge(autoacknowledge);
+        IAutoAcknowledge immutableAutoAcknowledge = ImmutableMapper.fromMutableAutoAcknowledge(autoacknowledge);
 
         // Immutable to Mutable
         Autoacknowledge convertedAutoAcknowledge = Autoacknowledge.copyFrom(immutableAutoAcknowledge);

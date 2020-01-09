@@ -44,7 +44,7 @@ public class ImmutableAutoActionTest {
         autoaction.setState("on");
 
         // Mutable to Immutable
-        IAutoAction immutableAutoAction = Mapper.fromMutableAutoAction(autoaction);
+        IAutoAction immutableAutoAction = ImmutableMapper.fromMutableAutoAction(autoaction);
 
         // Immutable to Mutable
         Autoaction convertedAutoAction = Autoaction.copyFrom(immutableAutoAction);

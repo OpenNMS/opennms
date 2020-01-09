@@ -35,7 +35,6 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -60,7 +59,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.network.InetAddressXmlAdapter;
-import org.opennms.core.utils.MutableCollections;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.DateTimeAdapter;
 import org.opennms.netmgt.events.api.model.IEvent;
@@ -316,7 +314,7 @@ public class Event implements Message,Serializable {
 		event.setDistPoller(source.getDistPoller());
 		event.setCreationTime(source.getCreationTime());
 		event.setMasterStation(source.getMasterStation());
-		event.setMask(source.getMask() == null ? null : Mask.copyFrom(source.getMask()));
+		event.setMask(Mask.copyFrom(source.getMask()));
 		event.setUei(source.getUei());
 		event.setSource(source.getSource());
 		event.setNodeid(source.getNodeid());
@@ -326,23 +324,22 @@ public class Event implements Message,Serializable {
 		event.setInterfaceAddress(source.getInterfaceAddress());
 		event.setSnmphost(source.getSnmphost());
 		event.setService(source.getService());
-		event.setSnmp(source.getSnmp() == null ? null : Snmp.copyFrom(source.getSnmp()));
+		event.setSnmp(Snmp.copyFrom(source.getSnmp()));
 		event.setParmCollection(
 				source.getParmCollection().stream().map(Parm::copyFrom).collect(Collectors.toList()));
 		event.setDescr(source.getDescr());
-		event.setLogmsg(source.getLogmsg() == null ? null : Logmsg.copyFrom(source.getLogmsg()));
+		event.setLogmsg(Logmsg.copyFrom(source.getLogmsg()));
 		event.setSeverity(source.getSeverity());
 		event.setPathoutage(source.getPathoutage());
-		event.setCorrelation(source.getCorrelation() == null ? null : Correlation.copyFrom(source.getCorrelation()));
+		event.setCorrelation(Correlation.copyFrom(source.getCorrelation()));
 		event.setOperinstruct(source.getOperinstruct());
 		event.getAutoactionCollection().addAll(
 				source.getAutoactionCollection().stream().map(Autoaction::copyFrom).collect(Collectors.toList()));
 		event.getOperactionCollection().addAll(
 				source.getOperactionCollection().stream().map(Operaction::copyFrom).collect(Collectors.toList()));
-		event.setAutoacknowledge(
-				source.getAutoacknowledge() == null ? null : Autoacknowledge.copyFrom(source.getAutoacknowledge()));
-		event.getLoggroupCollection().addAll(MutableCollections.copyListFromNullable(source.getLoggroupCollection()));
-		event.setTticket(source.getTticket() == null ? null : Tticket.copyFrom(source.getTticket()));
+		event.setAutoacknowledge(Autoacknowledge.copyFrom(source.getAutoacknowledge()));
+		event.getLoggroupCollection().addAll(source.getLoggroupCollection());
+		event.setTticket(Tticket.copyFrom(source.getTticket()));
 		event.getForwardCollection().addAll(
 				source.getForwardCollection().stream().map(Forward::copyFrom).collect(Collectors.toList()));
 		event.getScriptCollection().addAll(
@@ -350,7 +347,7 @@ public class Event implements Message,Serializable {
 		event.setIfIndex(source.getIfIndex());
 		event.setIfAlias(source.getIfAlias());
 		event.setMouseovertext(source.getMouseovertext());
-		event.setAlarmData(source.getAlarmData() == null ? null : AlarmData.copyFrom(source.getAlarmData()));
+		event.setAlarmData(AlarmData.copyFrom(source.getAlarmData()));
 		return event;
 	}
 

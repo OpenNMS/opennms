@@ -45,7 +45,7 @@ public class ImmutableOperActionTest {
         operaction.setMenutext("text");
 
         // Mutable to Immutable
-        IOperAction immutableOperAction = Mapper.fromMutableOperAction(operaction);
+        IOperAction immutableOperAction = ImmutableMapper.fromMutableOperAction(operaction);
 
         // Immutable to Mutable
         Operaction convertedOperaction = Operaction.copyFrom(immutableOperAction);

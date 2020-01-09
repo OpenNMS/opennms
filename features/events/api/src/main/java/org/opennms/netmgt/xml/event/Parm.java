@@ -92,7 +92,7 @@ public class Parm implements Serializable {
 
         Parm parm = new Parm();
         parm.setParmName(source.getParmName());
-        parm.setValue(source.getValue() == null ? null : Value.copyFrom(source.getValue()));
+        parm.setValue(Value.copyFrom(source.getValue()));
         return parm;
     }
 

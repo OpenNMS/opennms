@@ -34,9 +34,9 @@ import org.opennms.netmgt.xml.event.*;
 import java.util.stream.Collectors;
 
 /**
- * A mapper to/from mutable and immutable types for Event (and related objects).
+ * A mapper from mutable to immutable types for Event (and related objects).
  */
-public class Mapper {
+public class ImmutableMapper {
 
     public static ImmutableAlarmData fromMutableAlarmData(AlarmData alarmData) {
         if (alarmData == null) {
@@ -52,7 +52,7 @@ public class Mapper {
                 .setX733ProbableCause(alarmData.getX733ProbableCause())
                 .setUpdateFieldList(
                         alarmData.getUpdateFieldList()
-                                .stream().map(Mapper::fromMutableUpdateField)
+                                .stream().map(ImmutableMapper::fromMutableUpdateField)
                                 .collect(Collectors.toList()))
                 .setManagedObject(fromMutableManagedObject(alarmData.getManagedObject()))
                 .build();
@@ -107,7 +107,7 @@ public class Mapper {
                 .setDistPoller(event.getDistPoller())
                 .setCreationTime(event.getCreationTime())
                 .setMasterStation(event.getMasterStation())
-                .setMask(Mapper.fromMutableMask(event.getMask()))
+                .setMask(ImmutableMapper.fromMutableMask(event.getMask()))
                 .setUei(event.getUei())
                 .setSource(event.getSource())
                 .setNodeid(event.getNodeid())
@@ -117,35 +117,35 @@ public class Mapper {
                 .setInterfaceAddress(event.getInterfaceAddress())
                 .setSnmpHost(event.getSnmphost())
                 .setService(event.getService())
-                .setSnmp(Mapper.fromMutableSnmp(event.getSnmp()))
+                .setSnmp(ImmutableMapper.fromMutableSnmp(event.getSnmp()))
                 .setParms(ImmutableCollections.newListOfImmutableType(
                         event.getParmCollection().stream().map(
-                                Mapper::fromMutableParm).collect(Collectors.toList())))
+                                ImmutableMapper::fromMutableParm).collect(Collectors.toList())))
                 .setDescr(event.getDescr())
-                .setLogMsg(Mapper.fromMutableLogMsg(event.getLogmsg()))
+                .setLogMsg(ImmutableMapper.fromMutableLogMsg(event.getLogmsg()))
                 .setSeverity(event.getSeverity())
                 .setPathOutage(event.getPathoutage())
-                .setCorrelation(Mapper.fromMutableCorrelation(event.getCorrelation()))
+                .setCorrelation(ImmutableMapper.fromMutableCorrelation(event.getCorrelation()))
                 .setOperInstruct(event.getOperinstruct())
                 .setAutoActionList(ImmutableCollections.newListOfImmutableType(
                         event.getAutoactionCollection().stream().map(
-                                Mapper::fromMutableAutoAction).collect(Collectors.toList())))
+                                ImmutableMapper::fromMutableAutoAction).collect(Collectors.toList())))
                 .setOperActionList(ImmutableCollections.newListOfImmutableType(
                         event.getOperactionCollection().stream().map(
-                                Mapper::fromMutableOperAction).collect(Collectors.toList())))
-                .setAutoAcknowledge(Mapper.fromMutableAutoAcknowledge(event.getAutoacknowledge()))
+                                ImmutableMapper::fromMutableOperAction).collect(Collectors.toList())))
+                .setAutoAcknowledge(ImmutableMapper.fromMutableAutoAcknowledge(event.getAutoacknowledge()))
                 .setLogGroupList(ImmutableCollections.newListOfImmutableType(event.getLoggroupCollection()))
-                .settTicket(Mapper.fromMutableTticket(event.getTticket()))
+                .settTicket(ImmutableMapper.fromMutableTticket(event.getTticket()))
                 .setForwardList(ImmutableCollections.newListOfImmutableType(
                         event.getForwardCollection().stream().map(
-                                Mapper::fromMutableForward).collect(Collectors.toList())))
+                                ImmutableMapper::fromMutableForward).collect(Collectors.toList())))
                 .setScriptList(ImmutableCollections.newListOfImmutableType(
                         event.getScriptCollection().stream().map(
-                                Mapper::fromMutableScript).collect(Collectors.toList())))
+                                ImmutableMapper::fromMutableScript).collect(Collectors.toList())))
                 .setIfIndex(event.getIfIndex())
                 .setIfAlias(event.getIfAlias())
                 .setMouseOverText(event.getMouseovertext())
-                .setAlarmData(Mapper.fromMutableAlarmData(event.getAlarmData()))
+                .setAlarmData(ImmutableMapper.fromMutableAlarmData(event.getAlarmData()))
                 .build();
     }
 
@@ -200,7 +200,7 @@ public class Mapper {
 
         return ImmutableMask.newBuilder()
                 .setMaskElements(mask.getMaskelementCollection().stream().map(
-                        Mapper::fromMutableMaskElement).collect(Collectors.toList()))
+                        ImmutableMapper::fromMutableMaskElement).collect(Collectors.toList()))
                 .build();
     }
 
@@ -223,7 +223,7 @@ public class Mapper {
 
         return ImmutableParm.newBuilder()
                 .setParmName(parm.getParmName())
-                .setValue(Mapper.fromMutableValue(parm.getValue()))
+                .setValue(ImmutableMapper.fromMutableValue(parm.getValue()))
                 .build();
     }
 

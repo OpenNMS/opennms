@@ -133,8 +133,7 @@ public class AlarmData implements Serializable {
         alarmData.setX733ProbableCause(source.getX733ProbableCause());
         alarmData.getUpdateFieldList().addAll(
                 source.getUpdateFieldList().stream().map(UpdateField::copyFrom).collect(Collectors.toList()));
-        alarmData.setManagedObject(
-                source.getManagedObject() == null ? null : ManagedObject.copyFrom(source.getManagedObject()));
+        alarmData.setManagedObject(ManagedObject.copyFrom(source.getManagedObject()));
         return alarmData;
     }
 
