@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -128,7 +129,7 @@ public class TrapdReloadDaemonIT implements InitializingBean {
         reloadDaemonBuilder.addParam(EventConstants.PARM_DAEMON_NAME, m_trapd.getName());
         m_eventMgr.getEventAnticipator().anticipateEvent(reloadDaemonBuilder.getEvent());
         // Send reload event to trapd
-        m_trapd.handleReloadEvent(eventBuilder.getEvent());
+        m_trapd.handleReloadEvent(ImmutableMapper.fromMutableEvent(eventBuilder.getEvent()));
         m_eventMgr.getEventAnticipator().verifyAnticipated(5000, 0, 0, 0, 0);
         m_eventMgr.getEventAnticipator().reset();
 

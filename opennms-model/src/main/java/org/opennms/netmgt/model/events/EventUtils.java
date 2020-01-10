@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,6 +60,9 @@ import java.util.Objects;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
@@ -823,4 +826,81 @@ public abstract class EventUtils {
 
     }
 
+    public static String getParm(IEvent e, String parmName) {
+        return getParm(e, parmName, null);
+    }
+
+    public static String getParm(IEvent e, String parmName, String defaultValue) {
+        if (e.getParmCollection().isEmpty()) {
+            return defaultValue;
+        }
+
+        IParm parm = e.getParmCollection()
+                .stream()
+                .filter(p -> Objects.equals(p.getParmName(), parmName))
+                .findFirst()
+                .orElse(null);
+
+        if (parm != null && parm.getValue() != null) {
+            return parm.getValue().getContent();
+        }
+
+        return defaultValue;
+    }
+
+    public static void requireParm(IEvent e, String parmName) throws InsufficientInformationException {
+        IParm parm = e.getParmCollection()
+                .stream()
+                .filter(p -> Objects.equals(p.getParmName(), parmName))
+                .findFirst()
+                .orElse(null);
+
+        if (parm != null) {
+            IValue value = parm.getValue();
+            if (value != null && value.getContent() != null) {
+                return;
+            }
+            throw new InsufficientInformationException("parameter " + parmName +
+                    " required but only null valued parms available");
+        }
+
+        throw new InsufficientInformationException("parameter " + parmName + " required but was not available");
+    }
+
+    public static void checkInterface(IEvent e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("Event is null");
+        } else if (e.getInterface() == null) {
+            throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
+    }
+
+    public static void checkNodeId(IEvent e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (!e.hasNodeid()) {
+            throw new InsufficientInformationException("nodeid for event is unavailable");
+        }
+    }
+
+    public static void checkService(IEvent e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (e.getService() == null || e.getService().isEmpty()) {
+            throw new InsufficientInformationException("service for event is unavailable");
+        }
+    }
+
+    public static int getIntParm(IEvent e, String parmName, int defaultValue) {
+        String intVal = getParm(e, parmName);
+
+        if (intVal == null)
+            return defaultValue;
+
+        try {
+            return Integer.parseInt(intVal);
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
 }

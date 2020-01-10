@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,25 +30,20 @@ package org.opennms.netmgt.alarmd;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.dao.api.AlarmEntityListener;
 import org.opennms.netmgt.dao.api.DefaultAlarmEntityListener;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsMemo;
-import org.opennms.netmgt.model.OnmsReductionKeyMemo;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,9 +118,9 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         onNorthboundersChanged();
     }
 
-    public void handleReloadEvent(Event e) {
-        List<Parm> parmCollection = e.getParmCollection();
-        for (Parm parm : parmCollection) {
+    public void handleReloadEvent(IEvent e) {
+        List<IParm> parmCollection = e.getParmCollection();
+        for (IParm parm : parmCollection) {
             String parmName = parm.getParmName();
             if ("daemonName".equals(parmName)) {
                 if (parm.getValue() == null || parm.getValue().getContent() == null) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -288,19 +289,19 @@ public class MockNetworkTest extends TestCase {
         Event sentEvent2 = MockEventUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
 
         class MockListener implements EventListener {
-            private Event receivedEvent;
+            private IEvent receivedEvent;
 
             @Override
             public String getName() {
                 return "MockListener";
             }
 
-            public Event getReceivedEvent() {
+            public IEvent getReceivedEvent() {
                 return receivedEvent;
             }
 
             @Override
-            public void onEvent(Event event) {
+            public void onEvent(IEvent event) {
                 System.err.println("onEvent: " + event.getUei());
                 receivedEvent = event;
             }
@@ -314,11 +315,13 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.addEventListener(listener, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
         m_eventMgr.sendEventToListeners(sentEvent);
-        assertTrue(EventUtils.eventsMatch(sentEvent, listener.getReceivedEvent()));
+        assertTrue(EventUtils.eventsMatch(sentEvent, listener.getReceivedEvent() == null ? null :
+                Event.copyFrom(listener.getReceivedEvent())));
 
         listener.reset();
         m_eventMgr.sendEventToListeners(sentEvent2);
-        assertFalse(EventUtils.eventsMatch(sentEvent2, listener.getReceivedEvent()));
+        assertFalse(EventUtils.eventsMatch(sentEvent2, listener.getReceivedEvent() == null ? null :
+                Event.copyFrom(listener.getReceivedEvent())));
 
     }
 
