@@ -80,6 +80,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
@@ -106,6 +107,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private StreamObserver<RpcMessage> rpcStream;
     private StreamObserver<SinkMessage> sinkStream;
     private ConnectivityState currentChannelState;
+    private MetricRegistry metrics;
     private final ThreadFactory requestHandlerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-request-handler-%d")
             .build();
@@ -239,6 +241,15 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     @Override
     public Tracer getTracer() {
         return GlobalTracer.get();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 
     ConnectivityState getChannelState() {

@@ -38,6 +38,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -45,6 +47,8 @@ public class GrpcLocalDispatcherFactory extends AbstractMessageDispatcherFactory
 
     @Autowired
     private OpennmsGrpcServer onmsGrpcServer;
+
+    private MetricRegistry metrics;
 
     public GrpcLocalDispatcherFactory(OpennmsGrpcServer onmsGrpcServer) {
         this.onmsGrpcServer = onmsGrpcServer;
@@ -74,6 +78,14 @@ public class GrpcLocalDispatcherFactory extends AbstractMessageDispatcherFactory
         return GlobalTracer.get();
     }
 
+    @Override
+    public MetricRegistry getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
 
     @Override
     public void afterPropertiesSet() {

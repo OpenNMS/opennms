@@ -31,6 +31,7 @@
         init-method="start" destroy-method="shutdown">
     <argument ref="minionIdentity"/>
     <argument ref="configAdmin"/>
+    <property name="metrics" ref="gRpcSinkMetricRegistry"/>
   </bean>
 
   <service ref="grpcClient" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
@@ -45,6 +46,16 @@
   </bean>
 
   <service ref="grpcHealthCheck" interface="org.opennms.core.health.api.HealthCheck"/>
+
+  <!-- Sink Metrics -->
+  <bean id="gRpcSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+  <service ref="gRpcSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <service-properties>
+      <entry key="name" value="Camel Sink" />
+      <entry key="description" value="Metrics related to Sink messages between OpenNMS and Minion" />
+    </service-properties>
+  </service>
 
 
 </blueprint>

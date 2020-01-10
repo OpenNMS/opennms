@@ -36,6 +36,8 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -43,6 +45,8 @@ public class OsgiLocalDispatcherFactory extends AbstractMessageDispatcherFactory
 
     @Autowired
     private OsgiIpcManager osgiIpcManager;
+
+    private MetricRegistry metrics;
 
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
@@ -62,5 +66,14 @@ public class OsgiLocalDispatcherFactory extends AbstractMessageDispatcherFactory
     @Override
     public Tracer getTracer() {
         return GlobalTracer.get();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 }

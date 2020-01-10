@@ -37,5 +37,10 @@
       <artifactId>core-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+      <version>${dropwizardMetricsVersion}</version>
+    </dependency>
   </dependencies>
 </project>

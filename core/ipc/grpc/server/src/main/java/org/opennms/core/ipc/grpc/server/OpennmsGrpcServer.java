@@ -39,6 +39,7 @@ import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_TTL_PROP
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.PRIVATE_KEY_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TLS_ENABLED;
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 
 import java.io.File;
@@ -66,6 +67,7 @@ import org.opennms.core.ipc.grpc.common.OnmsIpcGrpc;
 import org.opennms.core.ipc.grpc.common.RpcMessage;
 import org.opennms.core.ipc.grpc.common.SinkMessage;
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
 import org.opennms.core.logging.Logging;
@@ -83,6 +85,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
@@ -108,6 +113,10 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private Identity identity;
     private Properties properties;
     private long ttl;
+    private MetricRegistry rpcMetrics;
+    private MetricRegistry sinkMetrics;
+    private JmxReporter rpcMetricsReporter;
+    private JmxReporter sinkMetricsReporter;
     private final ThreadFactory responseHandlerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-response-handler-%d")
             .build();
@@ -142,8 +151,15 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
             }
         }
         server = serverBuilder.build();
-
         rpcTimeoutExecutor.execute(this::handleRpcTimeouts);
+        rpcMetricsReporter = JmxReporter.forRegistry(getRpcMetrics())
+                .inDomain(JMX_DOMAIN_RPC)
+                .build();
+        rpcMetricsReporter.start();
+        sinkMetricsReporter = JmxReporter.forRegistry(getRpcMetrics())
+                .inDomain(SINK_METRIC_CONSUMER_DOMAIN)
+                .build();
+        sinkMetricsReporter.start();
         server.start();
         LOG.info("OpenNMS gRPC server started");
     }
@@ -209,12 +225,20 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 }
                 RpcMessage rpcMessage = builder.build();
                 boolean succeeded = sendRequest(rpcMessage);
+
+                addMetrics(request, rpcMessage.getSerializedSize());
                 if (!succeeded) {
+                    RpcClientFactory.markFailed(getRpcMetrics(), request.getLocation(), module.getId());
                     future.completeExceptionally(new RuntimeException("No minion found at location " + request.getLocation()));
                     return future;
                 }
                 LOG.debug("RPC request with RpcId {} sent to minion at location {}", rpcId, request.getLocation());
                 return future;
+            }
+
+            private void addMetrics(RpcRequest request, int messageLen) {
+                RpcClientFactory.markRpcCount(getRpcMetrics(), request.getLocation(), module.getId());
+                RpcClientFactory.updateRequestSize(getRpcMetrics(), request.getLocation(), module.getId(), messageLen);
             }
         };
     }
@@ -327,9 +351,32 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         this.configAdmin = configAdmin;
     }
 
+    private MetricRegistry getRpcMetrics() {
+        return rpcMetrics;
+    }
+
+    public void setRpcMetrics(MetricRegistry metricRegistry) {
+        this.rpcMetrics = metricRegistry;
+    }
+
+    public MetricRegistry getSinkMetrics() {
+        return sinkMetrics;
+    }
+
+    public void setSinkMetrics(MetricRegistry sinkMetrics) {
+        this.sinkMetrics = sinkMetrics;
+    }
 
     public void shutdown() {
-        server.shutdown();
+        if (rpcMetricsReporter != null) {
+            rpcMetricsReporter.close();
+        }
+        if(sinkMetricsReporter != null) {
+            sinkMetricsReporter.close();
+        }
+        if (server != null) {
+            server.shutdown();
+        }
         rpcTimeoutExecutor.shutdown();
         responseHandlerExecutor.shutdown();
         LOG.info("OpenNMS gRPC server stopped");
@@ -373,6 +420,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         public io.grpc.stub.StreamObserver<SinkMessage> sinkStreaming(
                 io.grpc.stub.StreamObserver<Empty> responseObserver) {
 
+
             return new StreamObserver<SinkMessage>() {
 
                 @Override
@@ -383,7 +431,13 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                     SinkModule<?, Message> sinkModule = sinkModulesById.get(sinkMessage.getModuleId());
                     if (sinkModule != null) {
                         Message message = sinkModule.unmarshal(sinkMessage.getContent().toByteArray());
-                        dispatch(sinkModule, message);
+                        MessageConsumerManager.updateMessageSize(getSinkMetrics(), sinkMessage.getLocation(),
+                                sinkMessage.getModuleId(), sinkMessage.getSerializedSize());
+                        Timer dispatchTime = MessageConsumerManager.getDispatchTimerMetric(getSinkMetrics(),
+                                sinkMessage.getLocation(), sinkMessage.getModuleId());
+                        try (Timer.Context context = dispatchTime.time()) {
+                            dispatch(sinkModule, message);
+                        }
                     }
                 }
 
@@ -408,6 +462,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         private final long expirationTime;
         private final Map<String, String> loggingContext;
         private boolean isProcessed = false;
+        private final Long requestCreationTime;
 
         private RpcResponseHandlerImpl(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
                                        long timeout, Map<String, String> loggingContext) {
@@ -416,6 +471,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
             this.rpcId = rpcId;
             this.expirationTime = timeout;
             this.loggingContext = loggingContext;
+            this.requestCreationTime = System.currentTimeMillis();
         }
 
         @Override
@@ -431,10 +487,12 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                     }
                     LOG.debug("RPC Response handled successfully for RpcId = {}", rpcId);
                     isProcessed = true;
+                    RpcClientFactory.updateResponseSize(getRpcMetrics(), location, rpcModule.getId(), message.getBytes().length);
                 } else {
                     LOG.warn("RPC request with id {} timedout", rpcId);
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                 }
+                RpcClientFactory.updateDuration(getRpcMetrics(), location, rpcModule.getId(), System.currentTimeMillis() - requestCreationTime);
                 rpcResponseMap.remove(rpcId);
             } catch (Throwable e) {
                 LOG.error("Error while processing response {}", message, e);
