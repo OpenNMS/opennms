@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Queue;
@@ -406,13 +407,14 @@ public class DefaultPollContext implements PollContext, EventListener {
 
         for (final PendingPollEvent pollEvent : m_pendingPollEvents) {
             LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
-            if (event.equals(pollEvent.getEvent())) {
+            if (Comparator.comparing(IEvent::getUei)
+                    .thenComparing(IEvent::getNodeid)
+                    .thenComparing(IEvent::getService)
+                    .compare(pollEvent.getEvent(), event) == 0) {
                 LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
                 // Thread-safe and idempotent
                 pollEvent.complete();
-                // TODO: Can we break here? I think there should only be one 
-                // instance of any given event in m_pendingPollEvents
-                // break;
+                break;
             }
         }
 
