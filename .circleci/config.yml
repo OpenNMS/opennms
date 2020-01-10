@@ -644,6 +644,7 @@ jobs:
           at: ~/
       - run-integration-tests:
           rerun-failtest-count: 1
+          failure-option: -fn
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 12
