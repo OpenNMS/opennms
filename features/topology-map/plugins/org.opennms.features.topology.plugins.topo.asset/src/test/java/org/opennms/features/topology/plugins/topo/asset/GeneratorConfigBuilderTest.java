@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.asset;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -57,7 +58,7 @@ public class GeneratorConfigBuilderTest {
         expectedConfig.setLayerHierarchies(Lists.newArrayList("a", "b", "c"));
         expectedConfig.setFilters(Lists.newArrayList("a=x","b=y"));
 
-        final GeneratorConfig actualConfig = GeneratorConfigBuilder.buildFrom(e);
+        final GeneratorConfig actualConfig = GeneratorConfigBuilder.buildFrom(ImmutableMapper.fromMutableEvent(e));
         Assert.assertEquals(expectedConfig, actualConfig);
     }
 }
