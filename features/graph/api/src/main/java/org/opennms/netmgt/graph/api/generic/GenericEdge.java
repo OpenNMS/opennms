@@ -105,12 +105,21 @@ public final class GenericEdge extends GenericElement implements Edge {
         
         private GenericEdgeBuilder() {}
 
+        public GenericEdgeBuilder edge(GenericEdge edge) {
+            Objects.requireNonNull(edge);
+            properties(edge.getProperties());
+            source(edge.getSource());
+            target(edge.getTarget());
+            return this;
+        }
+
         public GenericEdgeBuilder source(String namespace, String id) {
             source(new VertexRef(namespace, id));
             return this;
         }
 
         public GenericEdgeBuilder source(VertexRef source) {
+            Objects.requireNonNull(source);
             this.source = source;
             return this;
         }
@@ -121,6 +130,7 @@ public final class GenericEdge extends GenericElement implements Edge {
         }
         
         public GenericEdgeBuilder target(VertexRef target) {
+            Objects.requireNonNull(target);
             this.target = target;
             return this;
         }

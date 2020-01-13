@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.NodeService;
+import org.opennms.netmgt.graph.api.enrichment.EnrichmentGraphBuilder;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
@@ -61,21 +62,14 @@ public class NodeEnrichmentProcessor implements EnrichmentProcessor {
     }
 
     @Override
-    public GenericGraph enrich(GenericGraph graph) {
-        final List<NodeRef> nodeRefs = graph.getVertices().stream().map(v -> v.getNodeRef()).filter(ref -> ref != null).collect(Collectors.toList());
+    public void enrich(EnrichmentGraphBuilder graphBuilder) {
+        final List<NodeRef> nodeRefs = graphBuilder.getVertices().stream().map(v -> v.getNodeRef()).filter(ref -> ref != null).collect(Collectors.toList());
         final List<NodeInfo> nodeInfos = nodeService.resolveNodes(nodeRefs);
-        final GenericGraph.GenericGraphBuilder enrichedGraphBuilder = GenericGraph.builder().graph(graph);
         nodeInfos.forEach(ni -> {
-            final List<GenericVertex> vertices = enrichedGraphBuilder.resolveVertices(ni.getNodeRef());
+            final List<GenericVertex> vertices = graphBuilder.resolveVertices(ni.getNodeRef());
             for (GenericVertex eachVertex : vertices) {
-                GenericVertex enrichedVertex = GenericVertex.builder()
-                        .vertex(eachVertex)
-                        .property(GenericProperties.NODE_INFO, ni)
-                        .build();
-                enrichedGraphBuilder.removeVertex(eachVertex);
-                enrichedGraphBuilder.addVertex(enrichedVertex);
+                graphBuilder.property(eachVertex, GenericProperties.NODE_INFO, ni);
             }
         });
-        return enrichedGraphBuilder.build();
     }
 }

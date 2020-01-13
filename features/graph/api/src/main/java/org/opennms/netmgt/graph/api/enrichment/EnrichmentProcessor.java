@@ -34,5 +34,5 @@ public interface EnrichmentProcessor {
 
     boolean canEnrich(GenericGraph graph);
 
-    GenericGraph enrich(GenericGraph graph);
+    void enrich(EnrichmentGraphBuilder graphBuilder);
 }

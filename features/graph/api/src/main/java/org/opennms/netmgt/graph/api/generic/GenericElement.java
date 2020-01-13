@@ -120,7 +120,7 @@ public abstract class GenericElement {
             property(GenericProperties.NAMESPACE, namespace);
         	return (T) this;
         }
-        
+
         public T property(String name, Object value) {
             if(name == null || value == null) {
                 LOG.debug("Property name ({}) or value ({}) is null => ignoring it.", name, value);
@@ -140,6 +140,14 @@ public abstract class GenericElement {
                 property(entry.getKey(), entry.getValue());
             }
             return (T) this;
+        }
+
+        public String getNamespace() {
+            return (String) properties.get(GenericProperties.NAMESPACE);
+        }
+
+        public String getId() {
+            return (String) properties.get(GenericProperties.ID);
         }
     }
 }
