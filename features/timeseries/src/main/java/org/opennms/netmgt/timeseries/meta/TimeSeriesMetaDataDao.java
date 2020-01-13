@@ -77,7 +77,7 @@ public class TimeSeriesMetaDataDao {
         Objects.requireNonNull(metaDataCollection);
 
         // TODO Patrick add caching and only push changes, similar to GuavaSearchableResourceMetadataCache
-        final String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT DO UPDATE SET value=?";
+        final String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
         final DBUtils db = new DBUtils(this.getClass());
         try {
 
@@ -92,6 +92,7 @@ public class TimeSeriesMetaDataDao {
                 ps.setString(1, metaData.getResourceId());
                 ps.setString(2, metaData.getName());
                 ps.setString(3, metaData.getValue());
+                ps.setString(4, metaData.getValue());
                 ps.addBatch();
             }
             ps.executeBatch();

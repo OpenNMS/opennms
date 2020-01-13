@@ -62,7 +62,7 @@ public class TimeseriesSearcher {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesSearcher.class);
 
     @Autowired
-    private TimeSeriesStorage storage;
+    private TimeSeriesStorage timeSeriesStorage;
 
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
@@ -78,7 +78,7 @@ public class TimeseriesSearcher {
 
     private Set<ResourcePath> getAllResources() throws StorageException {
 
-        List<Metric> metrics = storage.getMetrics(new ArrayList<>());
+        List<Metric> metrics = timeSeriesStorage.getMetrics(new ArrayList<>());
         Set<ResourcePath> resources = new HashSet<>();
         for (Metric metric : metrics){
             String resourceString = metric.getFirstTagByKey("resourceId").getValue();
@@ -112,7 +112,7 @@ public class TimeseriesSearcher {
         String value = String.format("(%s,%d)", toResourceId(path), targetLen);
         Tag indexTag = new Tag(key, value);
 
-        List<Metric> metrics = storage.getMetrics(Collections.singletonList(indexTag));
+        List<Metric> metrics = timeSeriesStorage.getMetrics(Collections.singletonList(indexTag));
 
         Map<String, SearchResults.Result> resultPerResources = new HashMap<>();
 

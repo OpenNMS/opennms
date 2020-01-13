@@ -91,7 +91,7 @@ public class Init implements Command {
 
             // TODO: Patrick: the creation of the timeseries_meta table should be moved into an update script
             // executeQuery(stmt, "CREATE TABLE timeseries_meta(group VARCHAR NOT NULL, identifier VARCHAR NOT NULL, name VARCHAR NOT NULL, value VARCHAR NOT NULL, type VARCHAR NOT NULL)"); // varchar
-            executeQuery(stmt, "CREATE TABLE timescale_meta(resourceid VARCHAR NOT NULL, name VARCHAR NOT NULL, value VARCHAR NOT NULL, UNIQUE (resourceid, name))");
+            // executeQuery(stmt, "CREATE TABLE timeseries_meta(resourceid VARCHAR NOT NULL, name VARCHAR NOT NULL, value VARCHAR NOT NULL, UNIQUE (resourceid, name))");
 
             System.out.println("Done. Enjoy!");
         }

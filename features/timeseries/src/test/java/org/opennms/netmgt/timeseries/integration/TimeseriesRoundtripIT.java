@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.persistence.timeseries;
+
+package org.opennms.netmgt.timeseries.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,8 +36,6 @@ import static org.mockito.Mockito.when;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -46,30 +45,29 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory;
+import org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterIT;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.support.NodeSnmpResourceType;
+import org.opennms.netmgt.measurements.impl.TimeseriesFetchStrategy;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;
-import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.cassandra.NewtsInstance;
-import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.base.Optional;
-
-/**
- * Used to verify that numeric attributes in CollectionSets are persisted
- * in Cassandra as Samples when using the NewtsPersister.
- *
- * @author jwhite
- */
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -77,30 +75,23 @@ import com.google.common.base.Optional;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
-
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=timescale",
-      //   "mock.db.adminPassword=password" // TODO Patrick: remove
+        //   "mock.db.adminPassword=password" // TODO Patrick: remove
 })
 @JUnitTemporaryDatabase(dirtiesContext=true)
-public class TimeseriesPersisterIT {
-
-    @ClassRule
-    public static NewtsInstance s_newtsInstance = new NewtsInstance();
-
-    @BeforeClass
-    public static void setUpClass() {
-        System.setProperty("org.opennms.newts.config.hostname", s_newtsInstance.getHost());
-        System.setProperty("org.opennms.newts.config.port", Integer.toString(s_newtsInstance.getPort()));
-        System.setProperty("org.opennms.newts.config.keyspace", s_newtsInstance.getKeyspace());
-    }
+public class TimeseriesRoundtripIT {
 
     @Autowired
-    private TimeseriesPersisterFactory m_persisterFactory;
+    private TimeseriesPersisterFactory persisterFactory;
 
     @Autowired
-    private CassandraSampleRepository m_sampleRepository;
+    private ResourceDao resourceDao;
+
+//    @Autowired
+//    private TimeseriesFetchStrategy fetchStrategy;
+
 
     @Test
     public void canPersist() throws InterruptedException {
@@ -108,11 +99,12 @@ public class TimeseriesPersisterIT {
         RrdRepository repo = new RrdRepository();
         // Only the last element of the path matters here
         repo.setRrdBaseDir(Paths.get("a","path","that","ends","with","snmp").toFile());
-        Persister persister = m_persisterFactory.createPersister(params, repo);
+        Persister persister = persisterFactory.createPersister(params, repo);
 
         int nodeId = 1;
         CollectionAgent agent = mock(CollectionAgent.class);
-        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get(Integer.toString(nodeId)));
+        ResourcePath path = ResourcePath.get(Integer.toString(nodeId));
+        when(agent.getStorageResourcePath()).thenReturn(path);
         NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeId);
 
         // Build a collection set with a single sample
@@ -128,13 +120,23 @@ public class TimeseriesPersisterIT {
         // Wait for the sample(s) to be flushed
         Thread.sleep(5 * 1000);
 
+        // TODO: Patrick get results again and compare with original Collection
+
         // Fetch the (persisted) sample
         Resource resource = new Resource("snmp:1:metrics");
         Timestamp end = Timestamp.now();
-        Results<Sample> samples = m_sampleRepository.select(Context.DEFAULT_CONTEXT, resource, Optional.of(now), Optional.of(end));
 
-        assertEquals(1, samples.getRows().size());
-        Row<Sample> row = samples.getRows().iterator().next();
-        assertEquals(900, row.getElement("metric").getValue().doubleValue(), 0.00001);
+        ResourceId parentResourceId = ResourceId.get("node", "1");
+        ResourceId resourceId = ResourceId.get(parentResourceId, "nodeSnmp", "");
+        final OnmsResource resourceFromStorage = resourceDao.getResourceById(resourceId);
+        // assertEquals(resource.getId(), resourceFromStorage.getId().toString());
+
+        // Fetch the (persisted) sample
+//        Results<Sample> samples = m_sampleRepository.select(Context.DEFAULT_CONTEXT, resource, Optional.of(now), Optional.of(end));
+//
+//        assertEquals(1, samples.getRows().size());
+//        Row<Sample> row = samples.getRows().iterator().next();
+//        assertEquals(900, row.getElement("metric").getValue().doubleValue(), 0.00001);
     }
+
 }

@@ -46,14 +46,14 @@ import org.opennms.newts.api.Context;
  */
 public class TimeseriesPersisterFactory implements PersisterFactory {
 
-    private final TimeseriesWriter m_newtsWriter;
+    private final TimeseriesWriter timeseriesWriter;
 
     private final Context m_context;
 
     @Inject
-    public TimeseriesPersisterFactory(Context context, TimeseriesWriter newtsWriter) {
+    public TimeseriesPersisterFactory(Context context, TimeseriesWriter timeseriesWriter) {
         m_context = Objects.requireNonNull(context);
-        m_newtsWriter = newtsWriter;
+        this.timeseriesWriter = timeseriesWriter;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, m_newtsWriter, m_context);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, m_context);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

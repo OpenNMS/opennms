@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timescale;
+package org.opennms.netmgt.timeseries.integration;
 
 import static org.junit.Assert.assertEquals;
 
