@@ -190,7 +190,7 @@ public class MockPollContext implements PollContext, EventListener {
         synchronized (m_pendingPollEvents) {
             for (PendingPollEvent pollEvent : m_pendingPollEvents) {
                 if (e.equals(pollEvent.getEvent())) {
-                    pollEvent.complete();
+                    pollEvent.complete(e);
                 }
             }
             

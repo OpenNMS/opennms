@@ -31,7 +31,6 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Queue;
@@ -52,6 +51,7 @@ import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingSequence;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -407,13 +407,10 @@ public class DefaultPollContext implements PollContext, EventListener {
 
         for (final PendingPollEvent pollEvent : m_pendingPollEvents) {
             LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
-            if (Comparator.comparing(IEvent::getUei)
-                    .thenComparing(IEvent::getNodeid)
-                    .thenComparing(IEvent::getService)
-                    .compare(pollEvent.getEvent(), event) == 0) {
+            if (EventUtils.eventsMatch(event, pollEvent.getEvent())) {
                 LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
                 // Thread-safe and idempotent
-                pollEvent.complete();
+                pollEvent.complete(event);
                 break;
             }
         }

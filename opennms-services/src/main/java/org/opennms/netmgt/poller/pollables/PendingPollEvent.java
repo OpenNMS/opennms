@@ -51,7 +51,7 @@ public class PendingPollEvent extends PollEvent {
     // how long to wait, in milliseconds, before giving up on waiting for a poll event to get an event ID, defaults to 10 minutes
     private static final long PENDING_EVENT_TIMEOUT = SystemProperties.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
 
-    private final IEvent m_event;
+    private IEvent m_event;
     private final Date m_date;
     private long m_expirationTimeInMillis;
     private final AtomicBoolean m_pending = new AtomicBoolean(true);
@@ -134,10 +134,13 @@ public class PendingPollEvent extends PollEvent {
     /**
      * Changes the state of this event from "pending" to "not pending".
      * It is important that this call be thread-safe and idempotent because
-     * it may be invoked by multiple {@link DefaultPollContext#onEvent(Event)}
+     * it may be invoked by multiple {@link DefaultPollContext#onEvent(IEvent)}
      * threads.
+     *
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
-    public void complete() {
+    public void complete(IEvent e) {
+        m_event = e;
         m_pending.set(false);
     }
     

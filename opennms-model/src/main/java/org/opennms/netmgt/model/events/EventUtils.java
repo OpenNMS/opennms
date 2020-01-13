@@ -635,6 +635,36 @@ public abstract class EventUtils {
     }
 
     /**
+     * <p>eventsMatch</p>
+     *
+     * @param e1 a {@link org.opennms.netmgt.events.api.model.IEvent} object.
+     * @param e2 a {@link org.opennms.netmgt.events.api.model.IEvent} object.
+     * @return a boolean.
+     */
+    public static boolean eventsMatch(final IEvent e1, final IEvent e2) {
+        if (e1 == e2) {
+            return true;
+        }
+        if (e1 == null || e2 == null) {
+            return false;
+        }
+        if (!Objects.equals(e1.getUei(), e2.getUei())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getNodeid(), e2.getNodeid())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getInterface(), e2.getInterface())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getService(), e2.getService())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Ensures the given event has an interface
      *
      * @param e
