@@ -44,6 +44,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
@@ -189,7 +190,7 @@ public class MockPollContext implements PollContext, EventListener {
     public synchronized void onEvent(IEvent e) {
         synchronized (m_pendingPollEvents) {
             for (PendingPollEvent pollEvent : m_pendingPollEvents) {
-                if (e.equals(pollEvent.getEvent())) {
+                if (EventUtils.eventsMatch(e, pollEvent.getEvent())) {
                     pollEvent.complete(e);
                 }
             }
