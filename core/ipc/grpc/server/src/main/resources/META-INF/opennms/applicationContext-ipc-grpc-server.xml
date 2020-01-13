@@ -30,7 +30,9 @@
   </bean>
 
 
-  <bean id="grpcLocalDispatcherFactory" class="org.opennms.core.ipc.grpc.server.GrpcLocalDispatcherFactory" />
+  <bean id="grpcLocalDispatcherFactory" class="org.opennms.core.ipc.grpc.server.GrpcLocalDispatcherFactory" >
+    <property name="metrics" ref="grpcLocalSinkMetricRegistry"/>
+  </bean>
 
   <onmsgi:service ref="grpcLocalDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
 
@@ -48,6 +50,21 @@
       <entry>
         <key><value>strategy</value></key>
         <value>grpc</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <!-- Sink Metrics -->
+  <bean id="grpcLocalSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <onmsgi:service ref="grpcLocalSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>gRPC Sink Producer</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Sink Producer Metrics on OpenNMS</value>
       </entry>
     </onmsgi:service-properties>
   </onmsgi:service>

@@ -42,9 +42,13 @@ import static org.opennms.core.ipc.grpc.client.GrpcClientConstants.TRUST_CERTIFI
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 import static org.opennms.core.ipc.sink.api.SinkModule.HEARTBEAT_MODULE_ID;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -57,7 +61,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.SSLException;
 
@@ -73,6 +76,9 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.tracing.api.TracerConstants;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.framework.BundleContext;
@@ -81,6 +87,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
@@ -91,13 +98,18 @@ import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.stub.StreamObserver;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
 import io.opentracing.util.GlobalTracer;
 
 public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionGrpcClient.class);
     private static final long SINK_BLOCKING_TIMEOUT = 3000;
+    private static final int SINK_BLOCKING_THREAD_POOL_SIZE = 100;
     private ManagedChannel channel;
     private OnmsIpcGrpc.OnmsIpcStub asyncStub;
     private Properties properties;
@@ -108,12 +120,17 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private StreamObserver<SinkMessage> sinkStream;
     private ConnectivityState currentChannelState;
     private MetricRegistry metrics;
+    private TracerRegistry tracerRegistry;
     private final ThreadFactory requestHandlerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-request-handler-%d")
             .build();
+    private final ThreadFactory blockingSinkMessageThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("blocking-sink-message-%d")
+            .build();
     private final ExecutorService requestHandlerExecutor = Executors.newCachedThreadPool(requestHandlerThreadFactory);
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final ScheduledExecutorService blockingSinkMessageScheduler = Executors.newScheduledThreadPool(SINK_BLOCKING_THREAD_POOL_SIZE,
+            blockingSinkMessageThreadFactory);
 
 
     public MinionGrpcClient(MinionIdentity identity, ConfigurationAdmin configAdmin) {
@@ -146,6 +163,9 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         asyncStub = OnmsIpcGrpc.newStub(channel);
         initializeRpcStub();
         initializeSinkStub();
+        if(tracerRegistry != null) {
+            tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
+        }
         LOG.info("Minion at location {} with systemId {} started", minionIdentity.getLocation(), minionIdentity.getId());
 
     }
@@ -214,7 +234,8 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     public void shutdown() {
-        closed.set(true);
+        requestHandlerExecutor.shutdownNow();
+        blockingSinkMessageScheduler.shutdownNow();
         registerdModules.clear();
         if (rpcStream != null) {
             rpcStream.onCompleted();
@@ -240,16 +261,30 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     @Override
     public Tracer getTracer() {
+        if (tracerRegistry != null) {
+            return tracerRegistry.getTracer();
+        }
         return GlobalTracer.get();
     }
 
     @Override
     public MetricRegistry getMetrics() {
+        if (metrics == null) {
+            return new MetricRegistry();
+        }
         return metrics;
     }
 
     public void setMetrics(MetricRegistry metrics) {
         this.metrics = metrics;
+    }
+
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        this.tracerRegistry = tracerRegistry;
     }
 
     ConnectivityState getChannelState() {
@@ -275,8 +310,9 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                     initializeRpcStub();
                 }
             }
+            setTagsForSink(sinkMessageBuilder);
             // If module has asyncpolicy, keep attempting to send message.
-            if(module.getAsyncPolicy() != null) {
+            if (module.getAsyncPolicy() != null) {
                 sendBlockingSinkMessage(sinkMessageBuilder.build());
             } else {
                 sendSinkMessage(sinkMessageBuilder.build());
@@ -286,25 +322,25 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     private void sendBlockingSinkMessage(SinkMessage sinkMessage) {
         boolean succeeded = sendSinkMessage(sinkMessage);
-        if(succeeded) {
+        if (succeeded) {
             return;
         }
-        //Recursively try to send sink message until it succeeds with scheduled executor.
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduleSinkMessageAfterDelay(scheduler, sinkMessage);
+        //Recursively try to send sink message until it succeeds.
+        scheduleSinkMessageAfterDelay(sinkMessage);
     }
 
-    private boolean scheduleSinkMessageAfterDelay(ScheduledExecutorService scheduler, SinkMessage sinkMessage) {
-        ScheduledFuture<Boolean> future = scheduler.schedule(() -> sendSinkMessage(sinkMessage), SINK_BLOCKING_TIMEOUT, TimeUnit.MILLISECONDS);
+    private boolean scheduleSinkMessageAfterDelay(SinkMessage sinkMessage) {
+        ScheduledFuture<Boolean> future = blockingSinkMessageScheduler.schedule(
+                () -> sendSinkMessage(sinkMessage), SINK_BLOCKING_TIMEOUT, TimeUnit.MILLISECONDS);
         try {
             boolean succeeded = future.get();
-            if(succeeded) {
+            if (succeeded) {
                 return true;
             }
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error while attempting to send sink message to gRPC IPC server", e);
         }
-        return scheduleSinkMessageAfterDelay(scheduler, sinkMessage);
+        return scheduleSinkMessageAfterDelay(sinkMessage);
     }
 
 
@@ -337,15 +373,24 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     private void processRpcRequest(RpcMessage request) {
-        String moduleId = request.getModuleId();
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Received rpc message for module {} with Id {}, message {}", moduleId, request.getRpcId(),
-                    request.getRpcContent().toStringUtf8());
+        long currentTime = request.getExpirationTime();
+        if(request.getExpirationTime() < currentTime) {
+            return;
         }
+        String moduleId = request.getModuleId();
+        if(Strings.isNullOrEmpty(moduleId)) {
+            return;
+        }
+        LOG.debug("Received RPC request with RpcID:{} for module:{}", request.getRpcId(), request.getModuleId());
         RpcModule<RpcRequest, RpcResponse> rpcModule = registerdModules.get(moduleId);
         if (rpcModule == null) {
             return;
         }
+        //Build child span from rpcMessage and start minion span.
+        Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(request);
+        Span minionSpan = spanBuilder.start();
+        setTagsForRpc(request, minionSpan);
+
         RpcRequest rpcRequest = rpcModule.unmarshalRequest(request.getRpcContent().toStringUtf8());
         CompletableFuture<RpcResponse> future = rpcModule.execute(rpcRequest);
         future.whenComplete((res, ex) -> {
@@ -354,10 +399,13 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                 // An exception occurred, store the exception in a new response
                 LOG.warn("An error occured while executing a call in {}.", rpcModule.getId(), ex);
                 rpcResponse = rpcModule.createResponseWithException(ex);
+                minionSpan.log(ex.getMessage());
+                minionSpan.setTag(TAG_RPC_FAILED, "true");
             } else {
                 // No exception occurred, use the given response
                 rpcResponse = res;
             }
+            minionSpan.finish();
             // Construct response using the same rpcId;
             String responseAsString = rpcModule.marshalResponse(rpcResponse);
             RpcMessage response = RpcMessage.newBuilder()
@@ -370,8 +418,9 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             if (getChannelState().equals(ConnectivityState.READY)) {
                 try {
                     sendRpcMessage(response);
+                    LOG.debug("Request with RpcId:{} for module:{} handled successfully, and response was sent",request.getRpcId(), request.getModuleId());
                 } catch (Throwable e) {
-                    LOG.error("Error while sending response {}", responseAsString, e);
+                    LOG.error("Error while sending response {}", response, e);
                 }
             } else {
                 LOG.warn("gRPC IPC server is not in ready state");
@@ -379,9 +428,50 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         });
     }
 
+    private Tracer.SpanBuilder buildSpanFromRpcMessage(RpcMessage rpcMessage) {
+        // Initializer tracer and extract parent tracer context from TracingInfo
+        final Tracer tracer = getTracer();
+        Tracer.SpanBuilder spanBuilder;
+        Map<String, String> tracingInfoMap = new HashMap<>();
+        rpcMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
+        SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
+        if (context != null) {
+            spanBuilder = tracer.buildSpan(rpcMessage.getModuleId()).asChildOf(context);
+        } else {
+            spanBuilder = tracer.buildSpan(rpcMessage.getModuleId());
+        }
+        return spanBuilder;
+    }
+
+    private void setTagsForRpc(RpcMessage rpcMessage, Span minionSpan) {
+        // Retrieve custom tags from rpcMessage and add them as tags.
+        rpcMessage.getTracingInfoMap().forEach(minionSpan::setTag);
+        // Set tags for minion span
+        minionSpan.setTag(TAG_LOCATION, rpcMessage.getLocation());
+        if (!Strings.isNullOrEmpty(rpcMessage.getSystemId())) {
+            minionSpan.setTag(TAG_SYSTEM_ID, rpcMessage.getSystemId());
+        }
+    }
+
+    private void setTagsForSink(SinkMessage.Builder sinkMessageBuilder) {
+        // Add tracing info
+        final Tracer tracer = getTracer();
+        if (tracer.activeSpan() != null) {
+            TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
+            tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
+            tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, minionIdentity.getLocation());
+            tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            tracingInfoCarrier.getTracingInfoMap().forEach(sinkMessageBuilder::putTracingInfo);
+        }
+    }
+
     private synchronized void sendRpcMessage(RpcMessage rpcMessage) {
         if (rpcStream != null) {
-            rpcStream.onNext(rpcMessage);
+            try {
+                rpcStream.onNext(rpcMessage);
+            } catch (Exception e) {
+                LOG.error("Exception while sending RPC message : {}", rpcMessage);
+            }
         } else {
             throw new RuntimeException("RPC response handler not found");
         }

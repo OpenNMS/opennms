@@ -67,7 +67,7 @@ public interface RpcClientFactory {
     }
 
     static void updateResponseSize(MetricRegistry metricRegistry, String location, String moduleId, int responseSize) {
-        Histogram histogram = metricRegistry.histogram(MetricRegistry.name(location, moduleId, RPC_REQUEST_SIZE));
+        Histogram histogram = metricRegistry.histogram(MetricRegistry.name(location, moduleId, RPC_RESPONSE_SIZE));
         histogram.update(responseSize);
     }
 

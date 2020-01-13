@@ -306,6 +306,9 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     @Override
     public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
         return metrics;
     }
 

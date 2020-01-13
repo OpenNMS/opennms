@@ -52,8 +52,8 @@
 
     <service ref="kafkaSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
         <service-properties>
-            <entry key="name" value="Camel Sink" />
-            <entry key="description" value="Metrics related to Sink messages between OpenNMS and Minion" />
+            <entry key="name" value="Kafka Sink Producer" />
+            <entry key="description" value="Sink Producer Metrics" />
         </service-properties>
     </service>
 

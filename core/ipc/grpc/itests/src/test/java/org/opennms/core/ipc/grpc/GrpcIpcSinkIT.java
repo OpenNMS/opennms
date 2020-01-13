@@ -53,6 +53,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.codahale.metrics.Meter;
 
+/**
+ * This test verifies that if there is no gRPC server available, sink message dispatch will block until it succeeds.
+ */
 public class GrpcIpcSinkIT {
 
     private static final String REMOTE_LOCATION_NAME = "remote";

@@ -27,11 +27,14 @@
   <!-- Provided by minion-core -->
   <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
+  <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
   <bean id="grpcClient" class="org.opennms.core.ipc.grpc.client.MinionGrpcClient"
         init-method="start" destroy-method="shutdown">
     <argument ref="minionIdentity"/>
     <argument ref="configAdmin"/>
     <property name="metrics" ref="gRpcSinkMetricRegistry"/>
+    <property name="tracerRegistry" ref="tracerRegistry"/>
   </bean>
 
   <service ref="grpcClient" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
@@ -52,8 +55,8 @@
 
   <service ref="gRpcSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
     <service-properties>
-      <entry key="name" value="Camel Sink" />
-      <entry key="description" value="Metrics related to Sink messages between OpenNMS and Minion" />
+      <entry key="name" value="gRPC Sink Producer" />
+      <entry key="description" value="Sink Producer Metrics on Minion" />
     </service-properties>
   </service>
 

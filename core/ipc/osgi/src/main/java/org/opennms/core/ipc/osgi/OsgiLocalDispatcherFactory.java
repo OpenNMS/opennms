@@ -70,6 +70,9 @@ public class OsgiLocalDispatcherFactory extends AbstractMessageDispatcherFactory
 
     @Override
     public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            new MetricRegistry();
+        }
         return metrics;
     }
 

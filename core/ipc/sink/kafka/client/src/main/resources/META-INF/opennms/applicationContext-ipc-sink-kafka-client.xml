@@ -26,11 +26,11 @@
     <onmsgi:service-properties>
       <entry>
         <key><value>name</value></key>
-        <value>Camel Sink</value>
+        <value>Kafka Sink</value>
       </entry>
       <entry>
         <key><value>description</value></key>
-        <value>Metrics related to Sink messages between OpenNMS and Minion</value>
+        <value>Sink Producer Metrics on OpenNMS</value>
       </entry>
     </onmsgi:service-properties>
   </onmsgi:service>

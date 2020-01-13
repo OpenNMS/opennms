@@ -35,10 +35,10 @@ public interface GrpcClientConstants {
     String DEFAULT_GRPC_HOST  = "localhost";
     String GRPC_PORT = "port";
     int DEFAULT_GRPC_PORT = 8990;
-    String TLS_ENABLED = "tlsEnabled";
+    String TLS_ENABLED = "tls.enabled";
     String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
     int DEFAULT_MESSAGE_SIZE = 10485760;
-    String CLIENT_CERTIFICATE_FILE_PATH = "clientCertChainFilePath";
-    String CLIENT_PRIVATE_KEY_FILE_PATH = "clientPrivateKeyFilePath";
-    String TRUST_CERTIFICATE_FILE_PATH = "trustCertCollectionFilePath";
+    String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
+    String CLIENT_PRIVATE_KEY_FILE_PATH = "client.private.key.filepath";
+    String TRUST_CERTIFICATE_FILE_PATH = "trust.cert.filepath";
 }

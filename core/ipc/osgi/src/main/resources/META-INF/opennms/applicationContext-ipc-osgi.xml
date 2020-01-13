@@ -17,7 +17,24 @@
   <bean id="osgiRpcServer" class="org.opennms.core.ipc.osgi.OsgiIpcManager" primary="true">
   </bean>
 
-  <bean id="osgiLocalDispatcherFactory" class="org.opennms.core.ipc.osgi.OsgiLocalDispatcherFactory" />
+  <bean id="osgiLocalDispatcherFactory" class="org.opennms.core.ipc.osgi.OsgiLocalDispatcherFactory" >
+    <property name="metrics" ref="osgiLocalSinkMetricRegistry"/>
+  </bean>
 
+
+  <!-- Sink Metrics -->
+  <bean id="osgiLocalSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <onmsgi:service ref="osgiLocalSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>Osgi Sink Producer</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Sink Producer Metrics on OpenNMS</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
 
 </beans>

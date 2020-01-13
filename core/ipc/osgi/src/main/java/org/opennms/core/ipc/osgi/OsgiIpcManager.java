@@ -29,6 +29,9 @@
 package org.opennms.core.ipc.osgi;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -46,14 +49,22 @@ import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 
-public class OsgiIpcManager extends AbstractMessageConsumerManager implements RpcClientFactory {
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+public class OsgiIpcManager extends AbstractMessageConsumerManager implements RpcClientFactory, DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiIpcManager.class);
 
-    private static final String SINK_CONSUMER_REGISTER_RUNNER = "sink-consumer-register-runner";
+    private final ThreadFactory sinkRegisterConsumerThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("sink-register-consumer-delegate-%d")
+            .build();
+    private final ExecutorService sinkRegisterConsumerExecutor = Executors.newCachedThreadPool(sinkRegisterConsumerThreadFactory);
 
     private final ServiceLookup<Class<?>, String> blockingServiceLookup;
+
+    private MessageConsumerManager consumerManagerDelegate;
 
 
     public OsgiIpcManager() {
@@ -77,7 +88,8 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
 
 
     private MessageConsumerManager getConsumerManager() {
-        return blockingServiceLookup.lookup(MessageConsumerManager.class, "(!(strategy=delegate))");
+        consumerManagerDelegate = blockingServiceLookup.lookup(MessageConsumerManager.class, "(!(strategy=delegate))");
+        return consumerManagerDelegate;
     }
 
 
@@ -112,11 +124,12 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
     @Override
     public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer)
             throws Exception {
-        // Don't block registering consumer.
-        new Thread(() -> registerConsumerRunner(consumer), SINK_CONSUMER_REGISTER_RUNNER).start();
+        // Register consumer in a separate thread.
+        sinkRegisterConsumerExecutor.execute(()-> loadManagerAndRegisterConsumer(consumer));
     }
 
-    private <S extends Message, T extends Message> void registerConsumerRunner(MessageConsumer<S, T> consumer) {
+    private <S extends Message, T extends Message> void loadManagerAndRegisterConsumer(MessageConsumer<S, T> consumer) {
+
         MessageConsumerManager consumerManagerDelegate = getConsumerManager();
         if (consumerManagerDelegate != null) {
             try {
@@ -130,10 +143,14 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
 
     @Override
     public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
-        MessageConsumerManager consumerManagerDelegate = getConsumerManager();
         if (consumerManagerDelegate != null) {
             consumerManagerDelegate.unregisterConsumer(consumer);
         }
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        sinkRegisterConsumerExecutor.shutdownNow();
     }
 
     private class RpcClientDelegate<R extends RpcRequest, S extends RpcResponse> implements RpcClient {

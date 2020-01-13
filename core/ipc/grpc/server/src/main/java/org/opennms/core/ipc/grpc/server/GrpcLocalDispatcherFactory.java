@@ -80,6 +80,9 @@ public class GrpcLocalDispatcherFactory extends AbstractMessageDispatcherFactory
 
     @Override
     public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
         return metrics;
     }
 

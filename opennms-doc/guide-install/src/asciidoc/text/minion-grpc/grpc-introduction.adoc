@@ -1,0 +1,13 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+== Minion with GRPC strategy
+
+_Minions_ and _{opennms-product-name}_  can communicate via link:https://grpc.io/[gRPC] for both _RPC_ and _Sink_ Pattern.
+While using `GRPC` strategy minion runs a _gRPC_ client which connects to _{opennms-product-name}_ gRPC server on a custom port.
+
+RPC pattern on GRPC strategy uses bi-directional streaming to send requests from _{opennms-product-name}_ and get response back from Minion.
+Sink pattern on GRPC strategy uses uni-directional streaming to send sink messages from minion to _{opennms-product-name}_.
+
+This section describes how you can setup _{opennms-product-name}_ to use `gRPC` for the communication with _Minions_.

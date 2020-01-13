@@ -33,15 +33,12 @@ public interface GrpcServerConstants {
     String GRPC_SERVER_PID = "org.opennms.core.ipc.grpc.server";
     String  GRPC_TTL_PROPERTY = "ttl";
     long DEFAULT_GRPC_TTL = 20000;
-    long DEFAULT_ACK_TIMEOUT = 30000;
     String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
     int DEFAULT_MESSAGE_SIZE = 10485760; //10MB
     int DEFAULT_GRPC_PORT = 8990;
     String GRPC_SERVER_PORT = "port";
-    String GRPC_SERVER_HOST = "host";
-    String DEFAULT_HOST_ADDRESS = "localhost";
-    String TLS_ENABLED = "tlsEnabled";
-    String SERVER_CERTIFICATE_FILE_PATH = "certChainFilePath";
-    String CLIENT_CERTIFICATE_FILE_PATH = "clientCertChainFilePath";
-    String PRIVATE_KEY_FILE_PATH = "privateKeyFilePath";
+    String TLS_ENABLED = "tls.enabled";
+    String SERVER_CERTIFICATE_FILE_PATH = "server.cert.filepath";
+    String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
+    String PRIVATE_KEY_FILE_PATH = "server.private.key.filepath";
 }
