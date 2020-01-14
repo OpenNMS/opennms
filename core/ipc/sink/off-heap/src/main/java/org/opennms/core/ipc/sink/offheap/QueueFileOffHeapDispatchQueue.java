@@ -82,7 +82,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
     private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5)
-            .every(Duration.standardSeconds(5))
+            .every(Duration.standardSeconds(30))
             .build();
 
     // This must match the size of the HEADER_LENGTH in QueueFile's Element class

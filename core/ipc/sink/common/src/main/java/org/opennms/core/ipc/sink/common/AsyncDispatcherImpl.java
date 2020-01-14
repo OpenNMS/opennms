@@ -74,7 +74,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     
     private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(5))
+            .maxRate(5).every(Duration.standardSeconds(30))
             .build();
 
     private final ExecutorService executor;
@@ -113,26 +113,26 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private void dispatchFromQueue() {
         while (true) {
             try {
-                RATE_LIMITED_LOGGER.trace("Asking dispatch queue for the next entry...");
+                LOG.trace("Asking dispatch queue for the next entry...");
                 Map.Entry<String, S> messageEntry = dispatchQueue.dequeue();
-                RATE_LIMITED_LOGGER.trace("Received message entry from dispatch queue {}", messageEntry);
+                LOG.trace("Received message entry from dispatch queue {}", messageEntry);
                 activeDispatchers.incrementAndGet();
-                RATE_LIMITED_LOGGER.trace("Sending message {} via sync dispatcher", messageEntry);
+                LOG.trace("Sending message {} via sync dispatcher", messageEntry);
                 syncDispatcher.send(messageEntry.getValue());
-                RATE_LIMITED_LOGGER.trace("Successfully sent message {}", messageEntry);
+                LOG.trace("Successfully sent message {}", messageEntry);
 
                 if (messageEntry.getKey() != null) {
-                    RATE_LIMITED_LOGGER.trace("Attempting to complete future for message {}", messageEntry);
+                    LOG.trace("Attempting to complete future for message {}", messageEntry);
                     CompletableFuture<DispatchStatus> messageFuture = futureMap.remove(messageEntry.getKey());
 
                     if (messageFuture != null) {
                         messageFuture.complete(DispatchStatus.DISPATCHED);
-                        RATE_LIMITED_LOGGER.trace("Completed future for message {}", messageEntry);
+                        LOG.trace("Completed future for message {}", messageEntry);
                     } else {
                         RATE_LIMITED_LOGGER.warn("No future found for message {}", messageEntry);
                     }
                 } else {
-                    RATE_LIMITED_LOGGER.trace("Dequeued an entry with a null key");
+                    LOG.trace("Dequeued an entry with a null key");
                 }
 
                 activeDispatchers.decrementAndGet();
@@ -164,7 +164,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             String newId = UUID.randomUUID().toString();
             DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, newId);
             
-            RATE_LIMITED_LOGGER.trace("Result of enqueueing was {}", result);
+            LOG.trace("Result of enqueueing was {}", result);
 
             if (result == DispatchQueue.EnqueueResult.DEFERRED) {
                 sendFuture.complete(DispatchStatus.QUEUED);

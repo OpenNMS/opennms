@@ -166,7 +166,7 @@ public class AsyncDispatcherTest {
         // The queue should be full
         assertEquals(NUM_THREADS, asyncDispatcher.getQueueSize());
         // All the dispatch threads should be blocked
-        assertThat(blockableSyncDispatcher.getBlockedThreadCount(), equalTo(NUM_THREADS));
+        await().atMost(1, MINUTES).until(blockableSyncDispatcher::getBlockedThreadCount, equalTo(NUM_THREADS));
 
         // The next dispatch should return a failed future
         CompletableFuture<AsyncDispatcher.DispatchStatus> future = asyncDispatcher.send(
@@ -231,7 +231,7 @@ public class AsyncDispatcherTest {
         // The queue should be full
         assertEquals(NUM_THREADS, asyncDispatcher.getQueueSize());
         // All the dispatch threads should be blocked
-        assertThat(blockableSyncDispatcher.getBlockedThreadCount(), equalTo(NUM_THREADS));
+        await().atMost(1, MINUTES).until(blockableSyncDispatcher::getBlockedThreadCount, equalTo(NUM_THREADS));
 
         // This send should block right now
         AtomicBoolean didSend = new AtomicBoolean(false);
@@ -313,7 +313,7 @@ public class AsyncDispatcherTest {
         await().atMost(1, MINUTES).until(asyncDispatcher::getQueueSize, equalTo(totalToSend - NUM_THREADS));
 
         // All the dispatch threads should be blocked
-        assertThat(blockableSyncDispatcher.getBlockedThreadCount(), equalTo(NUM_THREADS));
+        await().atMost(1, MINUTES).until(blockableSyncDispatcher::getBlockedThreadCount, equalTo(NUM_THREADS));
         
         // Release the threads!
         blockableSyncDispatcher.unblock();

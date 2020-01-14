@@ -79,7 +79,6 @@ public class QueueFileOffHeapDispatchQueueFactory implements DispatchQueueFactor
 
         return (DispatchQueue<T>) queues.computeIfAbsent(moduleName, (k) -> {
             try {
-                // TODO: Configurable
                 return new QueueFileOffHeapDispatchQueue<>(serializer, deserializer, k, baseFilePath,
                         inMemoryEntrySize, batchSize,
                         offHeapSize);
@@ -94,11 +93,18 @@ public class QueueFileOffHeapDispatchQueueFactory implements DispatchQueueFactor
             return 0;
         }
 
-        String suffix = sizeWithSuffix.substring(sizeWithSuffix.length() - 2).toLowerCase();
-        String sizeValue = sizeWithSuffix.substring(0, sizeWithSuffix.length() - 2);
+        String suffix;
+        String sizeValue;
+        try {
+            suffix = sizeWithSuffix.substring(sizeWithSuffix.length() - 2).toLowerCase();
+            sizeValue = sizeWithSuffix.substring(0, sizeWithSuffix.length() - 2).trim();
+        } catch (IndexOutOfBoundsException e) {
+            LOG.warn("Invalid file size '" + sizeWithSuffix + "'. The file size must include a size and the units. eg 128MB");
+            throw e;
+        }
 
         double value = Long.parseLong(sizeValue);
-        long bytes = 0;
+        long bytes;
 
         switch (suffix) {
             case "kb":
@@ -110,6 +116,9 @@ public class QueueFileOffHeapDispatchQueueFactory implements DispatchQueueFactor
             case "gb":
                 bytes = (long) value * 1024 * 1024 * 1024;
                 break;
+            default:
+                LOG.warn("Could not parse unit suffix of '" + suffix + "' from max file size '" + sizeWithSuffix + "'");
+                throw new IllegalArgumentException("Invalid unit suffix " + suffix);
         }
 
         return bytes;
