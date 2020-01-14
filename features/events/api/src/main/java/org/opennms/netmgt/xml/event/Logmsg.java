@@ -109,7 +109,7 @@ public class Logmsg implements Serializable {
         Logmsg logmsg = new Logmsg();
         logmsg.setContent(source.getContent());
         logmsg.setDest(source.getDest());
-        logmsg.setNotify(source.getNotify());
+        logmsg.setNotify(source.copyNotify());
         return logmsg;
     }
 
@@ -153,6 +153,10 @@ public class Logmsg implements Serializable {
     public Boolean getNotify(
     ) {
         return this._notify == null? false : this._notify;
+    }
+
+    public Boolean copyNotify() {
+        return _notify;
     }
 
     /**

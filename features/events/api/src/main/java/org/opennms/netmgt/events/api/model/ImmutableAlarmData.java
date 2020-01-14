@@ -145,11 +145,21 @@ public final class ImmutableAlarmData implements IAlarmData {
 
     @Override
     public Integer getAlarmType() {
+        return alarmType == null ? 0 : alarmType;
+    }
+
+    @Override
+    public Integer copyAlarmType() {
         return alarmType;
     }
 
     @Override
     public Boolean getAutoClean() {
+        return autoClean == null ? false : autoClean;
+    }
+
+    @Override
+    public Boolean copyAutoClean() {
         return autoClean;
     }
 
@@ -170,6 +180,11 @@ public final class ImmutableAlarmData implements IAlarmData {
 
     @Override
     public Integer getX733ProbableCause() {
+        return x733ProbableCause == null ? 0 : x733ProbableCause;
+    }
+
+    @Override
+    public Integer copyX733ProbableCause() {
         return x733ProbableCause;
     }
 

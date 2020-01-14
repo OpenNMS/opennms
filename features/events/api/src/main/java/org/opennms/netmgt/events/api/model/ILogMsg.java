@@ -35,4 +35,5 @@ public interface ILogMsg {
     String getContent();
     String getDest();
     Boolean getNotify();
+    Boolean copyNotify();
 }

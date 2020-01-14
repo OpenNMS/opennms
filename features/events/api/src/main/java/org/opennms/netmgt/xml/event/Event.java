@@ -310,15 +310,15 @@ public class Event implements Message,Serializable {
 
 		Event event = new Event();
 		event.setUuid(source.getUuid());
-		event.setDbid(source.getDbid());
+		event.setDbid(source.copyDbid());
 		event.setDistPoller(source.getDistPoller());
-		event.setCreationTime(source.getCreationTime());
+		event.setCreationTime(source.getCreationTime() == null ? null : new Date(source.getCreationTime().getTime()));
 		event.setMasterStation(source.getMasterStation());
 		event.setMask(Mask.copyFrom(source.getMask()));
 		event.setUei(source.getUei());
 		event.setSource(source.getSource());
-		event.setNodeid(source.getNodeid());
-		event.setTime(source.getTime());
+		event.setNodeid(source.copyNodeid());
+		event.setTime(source.getTime() == null ? null : new Date(source.getTime().getTime()));
 		event.setHost(source.getHost());
 		event.setInterface(source.getInterface());
 		event.setInterfaceAddress(source.getInterfaceAddress());
@@ -344,7 +344,7 @@ public class Event implements Message,Serializable {
 				source.getForwardCollection().stream().map(Forward::copyFrom).collect(Collectors.toList()));
 		event.getScriptCollection().addAll(
 				source.getScriptCollection().stream().map(Script::copyFrom).collect(Collectors.toList()));
-		event.setIfIndex(source.getIfIndex());
+		event.setIfIndex(source.copyIfIndex());
 		event.setIfAlias(source.getIfAlias());
 		event.setMouseovertext(source.getMouseovertext());
 		event.setAlarmData(AlarmData.copyFrom(source.getAlarmData()));
@@ -643,6 +643,10 @@ public class Event implements Message,Serializable {
 		return _dbid == null ? 0 : _dbid;
 	}
 
+	public Integer copyDbid() {
+		return _dbid;
+	}
+
 	/**
 	 * Returns the value of field 'descr'. The field 'descr' has the following
 	 * description: The event description
@@ -741,6 +745,10 @@ public class Event implements Message,Serializable {
 	 */
 	public Integer getIfIndex() {
 		return _ifIndex == null ? 0 : _ifIndex;
+	}
+
+	public Integer copyIfIndex() {
+		return _ifIndex;
 	}
 
 	/**
@@ -861,6 +869,10 @@ public class Event implements Message,Serializable {
 	 */
 	public Long getNodeid() {
 		return _nodeid == null ? 0 : _nodeid;
+	}
+
+	public Long copyNodeid() {
+		return _nodeid;
 	}
 
 	/**

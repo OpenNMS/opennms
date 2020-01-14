@@ -45,11 +45,11 @@ public class ImmutableMapper {
 
         return ImmutableAlarmData.newBuilder()
                 .setReductionKey(alarmData.getReductionKey())
-                .setAlarmType(alarmData.getAlarmType())
+                .setAlarmType(alarmData.copyAlarmType())
                 .setClearKey(alarmData.getClearKey())
-                .setAutoClean(alarmData.getAutoClean())
+                .setAutoClean(alarmData.copyAutoClean())
                 .setX733AlarmType(alarmData.getX733AlarmType())
-                .setX733ProbableCause(alarmData.getX733ProbableCause())
+                .setX733ProbableCause(alarmData.copyX733ProbableCause())
                 .setUpdateFieldList(
                         alarmData.getUpdateFieldList()
                                 .stream().map(ImmutableMapper::fromMutableUpdateField)
@@ -103,14 +103,14 @@ public class ImmutableMapper {
 
         return ImmutableEvent.newBuilder()
                 .setUuid(event.getUuid())
-                .setDbId(event.getDbid())
+                .setDbId(event.copyDbid())
                 .setDistPoller(event.getDistPoller())
                 .setCreationTime(event.getCreationTime())
                 .setMasterStation(event.getMasterStation())
                 .setMask(ImmutableMapper.fromMutableMask(event.getMask()))
                 .setUei(event.getUei())
                 .setSource(event.getSource())
-                .setNodeid(event.getNodeid())
+                .setNodeid(event.copyNodeid())
                 .setTime(event.getTime())
                 .setHost(event.getHost())
                 .setInterface(event.getInterface())
@@ -142,7 +142,7 @@ public class ImmutableMapper {
                 .setScriptList(ImmutableCollections.newListOfImmutableType(
                         event.getScriptCollection().stream().map(
                                 ImmutableMapper::fromMutableScript).collect(Collectors.toList())))
-                .setIfIndex(event.getIfIndex())
+                .setIfIndex(event.copyIfIndex())
                 .setIfAlias(event.getIfAlias())
                 .setMouseOverText(event.getMouseovertext())
                 .setAlarmData(ImmutableMapper.fromMutableAlarmData(event.getAlarmData()))
@@ -168,7 +168,7 @@ public class ImmutableMapper {
         return ImmutableLogMsg.newBuilder()
                 .setContent(logMsg.getContent())
                 .setDest(logMsg.getDest())
-                .setNotify(logMsg.getNotify())
+                .setNotify(logMsg.copyNotify())
                 .build();
     }
 
@@ -247,10 +247,10 @@ public class ImmutableMapper {
                 .setId(snmp.getId())
                 .setIdText(snmp.getIdtext())
                 .setVersion(snmp.getVersion())
-                .setSpecific(snmp.getSpecific())
-                .setGeneric(snmp.getGeneric())
+                .setSpecific(snmp.copySpecific())
+                .setGeneric(snmp.copyGeneric())
                 .setCommunity(snmp.getCommunity())
-                .setTimeStamp(snmp.getTimeStamp())
+                .setTimeStamp(snmp.copyTimeStamp())
                 .build();
     }
 
