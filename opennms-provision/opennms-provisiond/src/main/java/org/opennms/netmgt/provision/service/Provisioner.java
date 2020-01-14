@@ -604,7 +604,8 @@ public class Provisioner implements SpringServiceDaemon {
         final String uei = event.getUei();
         final String ip = event.getInterface();
         final Map<String, String> paramMap = Maps.newHashMap();
-        event.getParmCollection().forEach(eachParam -> paramMap.put(eachParam.getParmName(), eachParam.getValue().getContent()));
+        event.getParmCollection().forEach(eachParam -> paramMap.put(eachParam.getParmName(),
+                eachParam.getValue().getContent()));
 
         if (ip == null) {
             LOG.error("Received a {} event with a null ipAddress", uei);

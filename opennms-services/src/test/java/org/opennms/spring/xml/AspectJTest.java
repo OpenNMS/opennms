@@ -82,7 +82,8 @@ public class AspectJTest implements InitializingBean {
         assertEquals(0, m_interceptor.getPreEventCount());
         assertEquals(0, m_interceptor.getPostEventCount());
         
-        m_handler.handleAnEvent(ImmutableMapper.fromMutableEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)));
+        m_handler.handleAnEvent(ImmutableMapper.fromMutableEvent(
+                createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)));
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());

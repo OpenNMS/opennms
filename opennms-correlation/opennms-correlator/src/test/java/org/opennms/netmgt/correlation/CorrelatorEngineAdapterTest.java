@@ -77,7 +77,8 @@ public class CorrelatorEngineAdapterTest {
         verify(eventIpcManager, times(1)).addEventListener(any(EventListener.class), any(String.class));
 
         // Now send a reloadDaemonConfig event targeting our engine
-        listener.onEvent(ImmutableMapper.fromMutableEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
+        listener.onEvent(ImmutableMapper.fromMutableEvent(
+                new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
                 .addParam(EventConstants.PARM_DAEMON_NAME, listener.getName())
                 .getEvent()));
         // The event listener should have been removed and re-added

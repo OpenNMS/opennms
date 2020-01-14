@@ -673,7 +673,8 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
-    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation, IEvent sourceEvent, boolean rescheduleExisting) {
+    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation,
+                                   IEvent sourceEvent, boolean rescheduleExisting) {
         if (nodeId == null || nodeId <= 0) {
             LOG.warn("Invalid node ID for event, skipping service reschedule: {}", sourceEvent);
             return;
@@ -771,7 +772,8 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
-    protected void closeOutagesForService(final IEvent event, final Long nodeId, final Date closeDate, final Service polledService) {
+    protected void closeOutagesForService(final IEvent event, final Long nodeId, final Date closeDate,
+                                          final Service polledService) {
         getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 
