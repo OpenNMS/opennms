@@ -158,11 +158,13 @@ public class QueueFileOffHeapDispatchQueueTest {
         DispatchQueue<String> queue = new QueueFileOffHeapDispatchQueue<>(String::getBytes, String::new,
                 moduleName, path, 1, 1, 10000);
 
+        // Should be immediate since it should be queued in-memory
         String payload1 = "msg1";
-        queue.enqueue(payload1, "key1");
+        assertThat(queue.enqueue(payload1, "key1"), equalTo(DispatchQueue.EnqueueResult.IMMEDIATE));
 
+        // Should get deferred since it will be written off-heap
         String payload2 = "msg2";
-        queue.enqueue(payload2, "key2");
+        assertThat(queue.enqueue(payload2, "key2"), equalTo(DispatchQueue.EnqueueResult.DEFERRED));;
 
         // Reinitialize to simulate coming back up after restart
         queue = new QueueFileOffHeapDispatchQueue<>(String::getBytes, String::new,

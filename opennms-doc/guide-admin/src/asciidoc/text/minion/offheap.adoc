@@ -5,7 +5,7 @@
 
 If a _Minion_ loses connectivity with the broker (i.e. _Kafka_ or _ActiveMQ_), then any received messages (i.e. syslog, flows, SNMP traps) are queued until connectivity is restored.
 This queue is limited by a fixed (and configurable) number of messages queued in the JVM heap and can optionally queue
-additional messages directly to the filesystem to avoid using heap memory.
+additional messages by persisting directly to the filesystem avoiding heap memory usage.
 Once the queue is full, additional messages will be dropped.
 
 The off-heap storage feature allows us to extend the storage capacity by queuing messages outside of the JVM heap.
