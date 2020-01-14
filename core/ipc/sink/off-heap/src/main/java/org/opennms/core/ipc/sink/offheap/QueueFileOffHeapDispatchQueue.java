@@ -179,7 +179,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
         try {
             long fileSize = (long) usedBytesMethod.invoke(offHeapQueue);
             fileCapacityLatch.setCurrentCapacityBytes(maxFileSizeInBytes - fileSize);
-            RATE_LIMITED_LOGGER.trace("Checked file size for module {} and got result {} bytes", moduleName,
+            LOG.trace("Checked file size for module {} and got result {} bytes", moduleName,
                     fileSize);
 
             return fileSize;
@@ -200,15 +200,12 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
     @Override
     public synchronized EnqueueResult enqueue(T message, String key) throws WriteFailedException {
         Map.Entry<String, T> msgEntry = new AbstractMap.SimpleImmutableEntry<>(key, message);
-
-        if (RATE_LIMITED_LOGGER.isDebugEnabled()) {
-            RATE_LIMITED_LOGGER.debug("Attempting to enqueue {} with key {} into queue with current size {}", message,
-                    key, getSize());
-        }
+        
+        LOG.debug("Attempting to enqueue {} with key {} into queue with current size {}", message, key, getSize());
 
         // Off-heap queueing is not enabled so queue directly to memory
         if (offHeapQueue == null) {
-            RATE_LIMITED_LOGGER.trace("Enqueueing {} with key {} in-memory since there is no off-heap queue " +
+            LOG.trace("Enqueueing {} with key {} in-memory since there is no off-heap queue " +
                     "configured", message, key);
 
             try {
@@ -231,7 +228,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
                 boolean inMemoryQueueHadSpace = inMemoryQueue.offer(msgEntry);
 
                 if (inMemoryQueueHadSpace) {
-                    RATE_LIMITED_LOGGER.trace("Enqueueing {} with key {} in-memory", message, key);
+                    LOG.trace("Enqueueing {} with key {} in-memory", message, key);
 
                     return EnqueueResult.IMMEDIATE;
                 }
@@ -239,11 +236,11 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
 
             // The in-memory queue is either full or there is already message in the batch or off-heap so we continue to
             // batch
-            RATE_LIMITED_LOGGER.trace("Batching message {} with key {} for off-heap queue", message, key);
+            LOG.trace("Batching message {} with key {} for off-heap queue", message, key);
             batch.add(message);
 
             if (batch.isFull()) {
-                RATE_LIMITED_LOGGER.trace("Flushing batch off-heap");
+                LOG.trace("Flushing batch off-heap");
 
                 try {
                     serializedBatch = batch.toSerializedBatchAndClear();
@@ -297,14 +294,14 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
      */
     @Override
     public Map.Entry<String, T> dequeue() throws InterruptedException {
-        RATE_LIMITED_LOGGER.debug("Dequeueing an entry from queue with current size {}", getSize());
+        LOG.debug("Dequeueing an entry from queue with current size {}", getSize());
 
         // If off-heap queueing is enabled we need to first check if there is anything to read off-heap
         if (offHeapQueue != null) {
             synchronized (offHeapMutex) {
                 // Try to move a batch from the off-heap queue to the in-memory queue
                 if (offHeapQueue.size() > 0 && inMemoryQueue.remainingCapacity() >= batchSize) {
-                    RATE_LIMITED_LOGGER.trace("Found an entry off-heap and there was room in-memory, moving it");
+                    LOG.trace("Found an entry off-heap and there was room in-memory, moving it");
 
                     try {
                         byte[] entry = offHeapQueue.peek();
@@ -328,7 +325,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
                 } else if (!batch.isEmpty()) {
                     // Try to move the batch to the in-memory queue if there is enough room
                     if (inMemoryQueue.remainingCapacity() >= batch.size()) {
-                        RATE_LIMITED_LOGGER.trace("Found an entry in batch and there was room in-memory, moving it");
+                        LOG.trace("Found an entry in batch and there was room in-memory, moving it");
                         inMemoryQueue.addAll(batch.unbatch());
 
                         // Since we just moved the batch cancel any flush if there was one pending
@@ -343,7 +340,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
             }
         }
 
-        RATE_LIMITED_LOGGER.trace("Waiting for an entry from in-memory queue...");
+        LOG.trace("Waiting for an entry from in-memory queue...");
 
         return inMemoryQueue.take();
     }
@@ -404,7 +401,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
                 }
 
                 markFull();
-                RATE_LIMITED_LOGGER.trace("Waiting for capacity... Need {} bytes but current capacity is {} bytes",
+                LOG.trace("Waiting for capacity... Need {} bytes but current capacity is {} bytes",
                         capacityNeededBytes, currentCapacityBytes);
                 wait();
             }
