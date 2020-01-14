@@ -64,7 +64,7 @@ import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
-@Command(scope = "opennms-poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location. The current monitor's configuration of the poller-configuration.xml file is used when service and package name were specified. When only the monitor's classname was specified the hardcoded defaults of the monitor class will be used. All settings can be overwritten by defining key-value pairs on the command line.")
+@Command(scope = "opennms-poller", name = "poll", description = "Used to invoke a monitor against a host at a specific location, or to test a service monitor definition from a given poller package.")
 @Service
 public class Poll implements Action {
 
