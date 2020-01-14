@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,13 +97,13 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return org.opennms.core.ipc.grpc.common.MinionIpc.internal_static_Empty_descriptor;
+    return MinionIpc.internal_static_Empty_descriptor;
   }
 
   @Override
-  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+  protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return org.opennms.core.ipc.grpc.common.MinionIpc.internal_static_Empty_fieldAccessorTable
+    return MinionIpc.internal_static_Empty_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             Empty.class, Builder.class);
   }
@@ -248,7 +248,7 @@ private static final long serialVersionUID = 0L;
 
   @Override
   protected Builder newBuilderForType(
-      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      BuilderParent parent) {
     Builder builder = new Builder(parent);
     return builder;
   }
@@ -261,13 +261,13 @@ private static final long serialVersionUID = 0L;
       EmptyOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.opennms.core.ipc.grpc.common.MinionIpc.internal_static_Empty_descriptor;
+      return MinionIpc.internal_static_Empty_descriptor;
     }
 
     @Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.opennms.core.ipc.grpc.common.MinionIpc.internal_static_Empty_fieldAccessorTable
+      return MinionIpc.internal_static_Empty_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               Empty.class, Builder.class);
     }
@@ -278,7 +278,7 @@ private static final long serialVersionUID = 0L;
     }
 
     private Builder(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        BuilderParent parent) {
       super(parent);
       maybeForceBuilderInitialization();
     }
@@ -296,7 +296,7 @@ private static final long serialVersionUID = 0L;
     @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return org.opennms.core.ipc.grpc.common.MinionIpc.internal_static_Empty_descriptor;
+      return MinionIpc.internal_static_Empty_descriptor;
     }
 
     @Override

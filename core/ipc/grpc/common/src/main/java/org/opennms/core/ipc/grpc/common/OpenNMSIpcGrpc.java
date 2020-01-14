@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,11 @@
 package org.opennms.core.ipc.grpc.common;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
+import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
-
-import io.grpc.stub.ClientCalls;
 
 /**
  * <pre>
@@ -43,37 +43,37 @@ import io.grpc.stub.ClientCalls;
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.24.0)",
     comments = "Source: ipc.proto")
-public final class OnmsIpcGrpc {
+public final class OpenNMSIpcGrpc {
 
-  private OnmsIpcGrpc() {}
+  private OpenNMSIpcGrpc() {}
 
-  public static final String SERVICE_NAME = "OnmsIpc";
+  public static final String SERVICE_NAME = "OpenNMSIpc";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<org.opennms.core.ipc.grpc.common.RpcMessage,
-      org.opennms.core.ipc.grpc.common.RpcMessage> getRpcStreamingMethod;
+  private static volatile io.grpc.MethodDescriptor<RpcResponseProto,
+      RpcRequestProto> getRpcStreamingMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "RpcStreaming",
-      requestType = org.opennms.core.ipc.grpc.common.RpcMessage.class,
-      responseType = org.opennms.core.ipc.grpc.common.RpcMessage.class,
+      requestType = RpcResponseProto.class,
+      responseType = RpcRequestProto.class,
       methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
-  public static io.grpc.MethodDescriptor<org.opennms.core.ipc.grpc.common.RpcMessage,
-      org.opennms.core.ipc.grpc.common.RpcMessage> getRpcStreamingMethod() {
-    io.grpc.MethodDescriptor<org.opennms.core.ipc.grpc.common.RpcMessage, org.opennms.core.ipc.grpc.common.RpcMessage> getRpcStreamingMethod;
-    if ((getRpcStreamingMethod = OnmsIpcGrpc.getRpcStreamingMethod) == null) {
-      synchronized (OnmsIpcGrpc.class) {
-        if ((getRpcStreamingMethod = OnmsIpcGrpc.getRpcStreamingMethod) == null) {
-          OnmsIpcGrpc.getRpcStreamingMethod = getRpcStreamingMethod =
-              io.grpc.MethodDescriptor.<org.opennms.core.ipc.grpc.common.RpcMessage, org.opennms.core.ipc.grpc.common.RpcMessage>newBuilder()
+  public static io.grpc.MethodDescriptor<RpcResponseProto,
+      RpcRequestProto> getRpcStreamingMethod() {
+    io.grpc.MethodDescriptor<RpcResponseProto, RpcRequestProto> getRpcStreamingMethod;
+    if ((getRpcStreamingMethod = OpenNMSIpcGrpc.getRpcStreamingMethod) == null) {
+      synchronized (OpenNMSIpcGrpc.class) {
+        if ((getRpcStreamingMethod = OpenNMSIpcGrpc.getRpcStreamingMethod) == null) {
+          OpenNMSIpcGrpc.getRpcStreamingMethod = getRpcStreamingMethod =
+              io.grpc.MethodDescriptor.<RpcResponseProto, RpcRequestProto>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "RpcStreaming"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.opennms.core.ipc.grpc.common.RpcMessage.getDefaultInstance()))
+                  RpcResponseProto.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  org.opennms.core.ipc.grpc.common.RpcMessage.getDefaultInstance()))
-              .setSchemaDescriptor(new OnmsIpcMethodDescriptorSupplier("RpcStreaming"))
+                  RpcRequestProto.getDefaultInstance()))
+              .setSchemaDescriptor(new OpenNMSIpcMethodDescriptorSupplier("RpcStreaming"))
               .build();
         }
       }
@@ -92,10 +92,10 @@ public final class OnmsIpcGrpc {
   public static io.grpc.MethodDescriptor<SinkMessage,
       Empty> getSinkStreamingMethod() {
     io.grpc.MethodDescriptor<SinkMessage, Empty> getSinkStreamingMethod;
-    if ((getSinkStreamingMethod = OnmsIpcGrpc.getSinkStreamingMethod) == null) {
-      synchronized (OnmsIpcGrpc.class) {
-        if ((getSinkStreamingMethod = OnmsIpcGrpc.getSinkStreamingMethod) == null) {
-          OnmsIpcGrpc.getSinkStreamingMethod = getSinkStreamingMethod =
+    if ((getSinkStreamingMethod = OpenNMSIpcGrpc.getSinkStreamingMethod) == null) {
+      synchronized (OpenNMSIpcGrpc.class) {
+        if ((getSinkStreamingMethod = OpenNMSIpcGrpc.getSinkStreamingMethod) == null) {
+          OpenNMSIpcGrpc.getSinkStreamingMethod = getSinkStreamingMethod =
               io.grpc.MethodDescriptor.<SinkMessage, Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SinkStreaming"))
@@ -104,7 +104,7 @@ public final class OnmsIpcGrpc {
                   SinkMessage.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new OnmsIpcMethodDescriptorSupplier("SinkStreaming"))
+              .setSchemaDescriptor(new OpenNMSIpcMethodDescriptorSupplier("SinkStreaming"))
               .build();
         }
       }
@@ -115,24 +115,24 @@ public final class OnmsIpcGrpc {
   /**
    * Creates a new async stub that supports all call types for the service
    */
-  public static OnmsIpcStub newStub(io.grpc.Channel channel) {
-    return new OnmsIpcStub(channel);
+  public static OpenNMSIpcStub newStub(io.grpc.Channel channel) {
+    return new OpenNMSIpcStub(channel);
   }
 
   /**
    * Creates a new blocking-style stub that supports unary and streaming output calls on the service
    */
-  public static OnmsIpcBlockingStub newBlockingStub(
+  public static OpenNMSIpcBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    return new OnmsIpcBlockingStub(channel);
+    return new OpenNMSIpcBlockingStub(channel);
   }
 
   /**
    * Creates a new ListenableFuture-style stub that supports unary calls on the service
    */
-  public static OnmsIpcFutureStub newFutureStub(
+  public static OpenNMSIpcFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    return new OnmsIpcFutureStub(channel);
+    return new OpenNMSIpcFutureStub(channel);
   }
 
   /**
@@ -140,15 +140,15 @@ public final class OnmsIpcGrpc {
    * service definitions of IPC between Minion and OpenNMS
    * </pre>
    */
-  public static abstract class OnmsIpcImplBase implements io.grpc.BindableService {
+  public static abstract class OpenNMSIpcImplBase implements io.grpc.BindableService {
 
     /**
      * <pre>
      * Streams RPC messages between OpenNMS and Minion.
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<org.opennms.core.ipc.grpc.common.RpcMessage> rpcStreaming(
-        io.grpc.stub.StreamObserver<org.opennms.core.ipc.grpc.common.RpcMessage> responseObserver) {
+    public io.grpc.stub.StreamObserver<RpcResponseProto> rpcStreaming(
+        io.grpc.stub.StreamObserver<RpcRequestProto> responseObserver) {
       return asyncUnimplementedStreamingCall(getRpcStreamingMethod(), responseObserver);
     }
 
@@ -168,8 +168,8 @@ public final class OnmsIpcGrpc {
             getRpcStreamingMethod(),
             asyncBidiStreamingCall(
               new MethodHandlers<
-                org.opennms.core.ipc.grpc.common.RpcMessage,
-                org.opennms.core.ipc.grpc.common.RpcMessage>(
+                RpcResponseProto,
+                RpcRequestProto>(
                   this, METHODID_RPC_STREAMING)))
           .addMethod(
             getSinkStreamingMethod(),
@@ -187,20 +187,20 @@ public final class OnmsIpcGrpc {
    * service definitions of IPC between Minion and OpenNMS
    * </pre>
    */
-  public static final class OnmsIpcStub extends io.grpc.stub.AbstractStub<OnmsIpcStub> {
-    private OnmsIpcStub(io.grpc.Channel channel) {
+  public static final class OpenNMSIpcStub extends io.grpc.stub.AbstractStub<OpenNMSIpcStub> {
+    private OpenNMSIpcStub(io.grpc.Channel channel) {
       super(channel);
     }
 
-    private OnmsIpcStub(io.grpc.Channel channel,
+    private OpenNMSIpcStub(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @Override
-    protected OnmsIpcStub build(io.grpc.Channel channel,
+    protected OpenNMSIpcStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
-      return new OnmsIpcStub(channel, callOptions);
+      return new OpenNMSIpcStub(channel, callOptions);
     }
 
     /**
@@ -208,9 +208,9 @@ public final class OnmsIpcGrpc {
      * Streams RPC messages between OpenNMS and Minion.
      * </pre>
      */
-    public io.grpc.stub.StreamObserver<org.opennms.core.ipc.grpc.common.RpcMessage> rpcStreaming(
-        io.grpc.stub.StreamObserver<org.opennms.core.ipc.grpc.common.RpcMessage> responseObserver) {
-      return ClientCalls.asyncBidiStreamingCall(
+    public io.grpc.stub.StreamObserver<RpcResponseProto> rpcStreaming(
+        io.grpc.stub.StreamObserver<RpcRequestProto> responseObserver) {
+      return asyncBidiStreamingCall(
           getChannel().newCall(getRpcStreamingMethod(), getCallOptions()), responseObserver);
     }
 
@@ -221,7 +221,7 @@ public final class OnmsIpcGrpc {
      */
     public io.grpc.stub.StreamObserver<SinkMessage> sinkStreaming(
         io.grpc.stub.StreamObserver<Empty> responseObserver) {
-      return ClientCalls.asyncClientStreamingCall(
+      return asyncClientStreamingCall(
           getChannel().newCall(getSinkStreamingMethod(), getCallOptions()), responseObserver);
     }
   }
@@ -231,20 +231,20 @@ public final class OnmsIpcGrpc {
    * service definitions of IPC between Minion and OpenNMS
    * </pre>
    */
-  public static final class OnmsIpcBlockingStub extends io.grpc.stub.AbstractStub<OnmsIpcBlockingStub> {
-    private OnmsIpcBlockingStub(io.grpc.Channel channel) {
+  public static final class OpenNMSIpcBlockingStub extends io.grpc.stub.AbstractStub<OpenNMSIpcBlockingStub> {
+    private OpenNMSIpcBlockingStub(io.grpc.Channel channel) {
       super(channel);
     }
 
-    private OnmsIpcBlockingStub(io.grpc.Channel channel,
+    private OpenNMSIpcBlockingStub(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @Override
-    protected OnmsIpcBlockingStub build(io.grpc.Channel channel,
+    protected OpenNMSIpcBlockingStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
-      return new OnmsIpcBlockingStub(channel, callOptions);
+      return new OpenNMSIpcBlockingStub(channel, callOptions);
     }
   }
 
@@ -253,20 +253,20 @@ public final class OnmsIpcGrpc {
    * service definitions of IPC between Minion and OpenNMS
    * </pre>
    */
-  public static final class OnmsIpcFutureStub extends io.grpc.stub.AbstractStub<OnmsIpcFutureStub> {
-    private OnmsIpcFutureStub(io.grpc.Channel channel) {
+  public static final class OpenNMSIpcFutureStub extends io.grpc.stub.AbstractStub<OpenNMSIpcFutureStub> {
+    private OpenNMSIpcFutureStub(io.grpc.Channel channel) {
       super(channel);
     }
 
-    private OnmsIpcFutureStub(io.grpc.Channel channel,
+    private OpenNMSIpcFutureStub(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @Override
-    protected OnmsIpcFutureStub build(io.grpc.Channel channel,
+    protected OpenNMSIpcFutureStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
-      return new OnmsIpcFutureStub(channel, callOptions);
+      return new OpenNMSIpcFutureStub(channel, callOptions);
     }
   }
 
@@ -278,10 +278,10 @@ public final class OnmsIpcGrpc {
       io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.BidiStreamingMethod<Req, Resp> {
-    private final OnmsIpcImplBase serviceImpl;
+    private final OpenNMSIpcImplBase serviceImpl;
     private final int methodId;
 
-    MethodHandlers(OnmsIpcImplBase serviceImpl, int methodId) {
+    MethodHandlers(OpenNMSIpcImplBase serviceImpl, int methodId) {
       this.serviceImpl = serviceImpl;
       this.methodId = methodId;
     }
@@ -302,7 +302,7 @@ public final class OnmsIpcGrpc {
       switch (methodId) {
         case METHODID_RPC_STREAMING:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.rpcStreaming(
-              (io.grpc.stub.StreamObserver<org.opennms.core.ipc.grpc.common.RpcMessage>) responseObserver);
+              (io.grpc.stub.StreamObserver<RpcRequestProto>) responseObserver);
         case METHODID_SINK_STREAMING:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.sinkStreaming(
               (io.grpc.stub.StreamObserver<Empty>) responseObserver);
@@ -312,9 +312,9 @@ public final class OnmsIpcGrpc {
     }
   }
 
-  private static abstract class OnmsIpcBaseDescriptorSupplier
+  private static abstract class OpenNMSIpcBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
-    OnmsIpcBaseDescriptorSupplier() {}
+    OpenNMSIpcBaseDescriptorSupplier() {}
 
     @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
@@ -323,21 +323,21 @@ public final class OnmsIpcGrpc {
 
     @Override
     public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
-      return getFileDescriptor().findServiceByName("OnmsIpc");
+      return getFileDescriptor().findServiceByName("OpenNMSIpc");
     }
   }
 
-  private static final class OnmsIpcFileDescriptorSupplier
-      extends OnmsIpcBaseDescriptorSupplier {
-    OnmsIpcFileDescriptorSupplier() {}
+  private static final class OpenNMSIpcFileDescriptorSupplier
+      extends OpenNMSIpcBaseDescriptorSupplier {
+    OpenNMSIpcFileDescriptorSupplier() {}
   }
 
-  private static final class OnmsIpcMethodDescriptorSupplier
-      extends OnmsIpcBaseDescriptorSupplier
+  private static final class OpenNMSIpcMethodDescriptorSupplier
+      extends OpenNMSIpcBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
     private final String methodName;
 
-    OnmsIpcMethodDescriptorSupplier(String methodName) {
+    OpenNMSIpcMethodDescriptorSupplier(String methodName) {
       this.methodName = methodName;
     }
 
@@ -352,11 +352,11 @@ public final class OnmsIpcGrpc {
   public static io.grpc.ServiceDescriptor getServiceDescriptor() {
     io.grpc.ServiceDescriptor result = serviceDescriptor;
     if (result == null) {
-      synchronized (OnmsIpcGrpc.class) {
+      synchronized (OpenNMSIpcGrpc.class) {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .setSchemaDescriptor(new OnmsIpcFileDescriptorSupplier())
+              .setSchemaDescriptor(new OpenNMSIpcFileDescriptorSupplier())
               .addMethod(getRpcStreamingMethod())
               .addMethod(getSinkStreamingMethod())
               .build();

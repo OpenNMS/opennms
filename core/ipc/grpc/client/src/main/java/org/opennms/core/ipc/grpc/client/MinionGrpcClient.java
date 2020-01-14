@@ -65,8 +65,9 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
 
 import org.opennms.core.ipc.grpc.common.ConfigUtils;
-import org.opennms.core.ipc.grpc.common.OnmsIpcGrpc;
-import org.opennms.core.ipc.grpc.common.RpcMessage;
+import org.opennms.core.ipc.grpc.common.OpenNMSIpcGrpc;
+import org.opennms.core.ipc.grpc.common.RpcRequestProto;
+import org.opennms.core.ipc.grpc.common.RpcResponseProto;
 import org.opennms.core.ipc.grpc.common.SinkMessage;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -111,12 +112,12 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private static final long SINK_BLOCKING_TIMEOUT = 3000;
     private static final int SINK_BLOCKING_THREAD_POOL_SIZE = 100;
     private ManagedChannel channel;
-    private OnmsIpcGrpc.OnmsIpcStub asyncStub;
+    private OpenNMSIpcGrpc.OpenNMSIpcStub asyncStub;
     private Properties properties;
     private BundleContext bundleContext;
     private MinionIdentity minionIdentity;
     private ConfigurationAdmin configAdmin;
-    private StreamObserver<RpcMessage> rpcStream;
+    private StreamObserver<RpcResponseProto> rpcStream;
     private StreamObserver<SinkMessage> sinkStream;
     private ConnectivityState currentChannelState;
     private MetricRegistry metrics;
@@ -160,10 +161,10 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             channel = channelBuilder.usePlaintext().build();
         }
 
-        asyncStub = OnmsIpcGrpc.newStub(channel);
+        asyncStub = OpenNMSIpcGrpc.newStub(channel);
         initializeRpcStub();
         initializeSinkStub();
-        if(tracerRegistry != null) {
+        if (tracerRegistry != null) {
             tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
         }
         LOG.info("Minion at location {} with systemId {} started", minionIdentity.getLocation(), minionIdentity.getId());
@@ -362,36 +363,36 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
 
     private void sendMinionHeaders() {
-        RpcMessage rpcMessage = RpcMessage.newBuilder()
+        RpcResponseProto rpcHeader = RpcResponseProto.newBuilder()
                 .setLocation(minionIdentity.getLocation())
                 .setSystemId(minionIdentity.getId())
                 .setModuleId(MINION_HEADERS_MODULE)
                 .setRpcId(minionIdentity.getId())
                 .build();
-        sendRpcMessage(rpcMessage);
+        sendRpcResponse(rpcHeader);
         LOG.info("Sending Minion Headers from SystemId {} to gRPC server", minionIdentity.getId());
     }
 
-    private void processRpcRequest(RpcMessage request) {
-        long currentTime = request.getExpirationTime();
-        if(request.getExpirationTime() < currentTime) {
+    private void processRpcRequest(RpcRequestProto requestProto) {
+        long currentTime = requestProto.getExpirationTime();
+        if (requestProto.getExpirationTime() < currentTime) {
             return;
         }
-        String moduleId = request.getModuleId();
-        if(Strings.isNullOrEmpty(moduleId)) {
+        String moduleId = requestProto.getModuleId();
+        if (Strings.isNullOrEmpty(moduleId)) {
             return;
         }
-        LOG.debug("Received RPC request with RpcID:{} for module:{}", request.getRpcId(), request.getModuleId());
+        LOG.debug("Received RPC request with RpcID:{} for module {}", requestProto.getRpcId(), requestProto.getModuleId());
         RpcModule<RpcRequest, RpcResponse> rpcModule = registerdModules.get(moduleId);
         if (rpcModule == null) {
             return;
         }
         //Build child span from rpcMessage and start minion span.
-        Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(request);
+        Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(requestProto);
         Span minionSpan = spanBuilder.start();
-        setTagsForRpc(request, minionSpan);
+        setTagsForRpc(requestProto, minionSpan);
 
-        RpcRequest rpcRequest = rpcModule.unmarshalRequest(request.getRpcContent().toStringUtf8());
+        RpcRequest rpcRequest = rpcModule.unmarshalRequest(requestProto.getRpcContent().toStringUtf8());
         CompletableFuture<RpcResponse> future = rpcModule.execute(rpcRequest);
         future.whenComplete((res, ex) -> {
             final RpcResponse rpcResponse;
@@ -408,19 +409,20 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             minionSpan.finish();
             // Construct response using the same rpcId;
             String responseAsString = rpcModule.marshalResponse(rpcResponse);
-            RpcMessage response = RpcMessage.newBuilder()
-                    .setRpcId(request.getRpcId())
+            RpcResponseProto responseProto = RpcResponseProto.newBuilder()
+                    .setRpcId(requestProto.getRpcId())
                     .setSystemId(minionIdentity.getId())
-                    .setLocation(request.getLocation())
-                    .setModuleId(request.getModuleId())
+                    .setLocation(requestProto.getLocation())
+                    .setModuleId(requestProto.getModuleId())
                     .setRpcContent(ByteString.copyFrom(responseAsString.getBytes()))
                     .build();
             if (getChannelState().equals(ConnectivityState.READY)) {
                 try {
-                    sendRpcMessage(response);
-                    LOG.debug("Request with RpcId:{} for module:{} handled successfully, and response was sent",request.getRpcId(), request.getModuleId());
+                    sendRpcResponse(responseProto);
+                    LOG.debug("Request with RpcId:{} for module {} handled successfully, and response was sent",
+                            responseProto.getRpcId(), responseProto.getModuleId());
                 } catch (Throwable e) {
-                    LOG.error("Error while sending response {}", response, e);
+                    LOG.error("Error while sending RPC response {}", responseProto, e);
                 }
             } else {
                 LOG.warn("gRPC IPC server is not in ready state");
@@ -428,28 +430,28 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         });
     }
 
-    private Tracer.SpanBuilder buildSpanFromRpcMessage(RpcMessage rpcMessage) {
+    private Tracer.SpanBuilder buildSpanFromRpcMessage(RpcRequestProto requestProto) {
         // Initializer tracer and extract parent tracer context from TracingInfo
         final Tracer tracer = getTracer();
         Tracer.SpanBuilder spanBuilder;
         Map<String, String> tracingInfoMap = new HashMap<>();
-        rpcMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
+        requestProto.getTracingInfoMap().forEach(tracingInfoMap::put);
         SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
         if (context != null) {
-            spanBuilder = tracer.buildSpan(rpcMessage.getModuleId()).asChildOf(context);
+            spanBuilder = tracer.buildSpan(requestProto.getModuleId()).asChildOf(context);
         } else {
-            spanBuilder = tracer.buildSpan(rpcMessage.getModuleId());
+            spanBuilder = tracer.buildSpan(requestProto.getModuleId());
         }
         return spanBuilder;
     }
 
-    private void setTagsForRpc(RpcMessage rpcMessage, Span minionSpan) {
+    private void setTagsForRpc(RpcRequestProto requestProto, Span minionSpan) {
         // Retrieve custom tags from rpcMessage and add them as tags.
-        rpcMessage.getTracingInfoMap().forEach(minionSpan::setTag);
+        requestProto.getTracingInfoMap().forEach(minionSpan::setTag);
         // Set tags for minion span
-        minionSpan.setTag(TAG_LOCATION, rpcMessage.getLocation());
-        if (!Strings.isNullOrEmpty(rpcMessage.getSystemId())) {
-            minionSpan.setTag(TAG_SYSTEM_ID, rpcMessage.getSystemId());
+        minionSpan.setTag(TAG_LOCATION, requestProto.getLocation());
+        if (!Strings.isNullOrEmpty(requestProto.getSystemId())) {
+            minionSpan.setTag(TAG_SYSTEM_ID, requestProto.getSystemId());
         }
     }
 
@@ -465,28 +467,28 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         }
     }
 
-    private synchronized void sendRpcMessage(RpcMessage rpcMessage) {
+    private synchronized void sendRpcResponse(RpcResponseProto rpcResponseProto) {
         if (rpcStream != null) {
             try {
-                rpcStream.onNext(rpcMessage);
+                rpcStream.onNext(rpcResponseProto);
             } catch (Exception e) {
-                LOG.error("Exception while sending RPC message : {}", rpcMessage);
+                LOG.error("Exception while sending RPC response : {}", rpcResponseProto);
             }
         } else {
             throw new RuntimeException("RPC response handler not found");
         }
     }
 
-    private class RpcMessageHandler implements StreamObserver<RpcMessage> {
+    private class RpcMessageHandler implements StreamObserver<RpcRequestProto> {
 
         @Override
-        public void onNext(RpcMessage rpcMessage) {
+        public void onNext(RpcRequestProto rpcRequestProto) {
 
             try {
                 // Run processing of RPC request in a different thread.
-                requestHandlerExecutor.execute(() -> processRpcRequest(rpcMessage));
+                requestHandlerExecutor.execute(() -> processRpcRequest(rpcRequestProto));
             } catch (Throwable e) {
-                LOG.error("Error while processing the RPC Request {}", rpcMessage, e);
+                LOG.error("Error while processing the RPC Request {}", rpcRequestProto, e);
             }
         }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,8 @@
 
 package org.opennms.core.ipc.grpc.common;
 
-public interface RpcMessageOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:RpcMessage)
+public interface RpcRequestProtoOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:RpcRequestProto)
     com.google.protobuf.MessageOrBuilder {
 
   /**
@@ -96,23 +96,11 @@ public interface RpcMessageOrBuilder extends
   long getExpirationTime();
 
   /**
-   * <code>int32 current_chunk_number = 7;</code>
-   * @return The currentChunkNumber.
-   */
-  int getCurrentChunkNumber();
-
-  /**
-   * <code>int32 total_chunks = 8;</code>
-   * @return The totalChunks.
-   */
-  int getTotalChunks();
-
-  /**
-   * <code>map&lt;string, string&gt; tracing_info = 9;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
   int getTracingInfoCount();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 9;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
   boolean containsTracingInfo(
           String key);
@@ -123,19 +111,19 @@ public interface RpcMessageOrBuilder extends
   java.util.Map<String, String>
   getTracingInfo();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 9;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
   java.util.Map<String, String>
   getTracingInfoMap();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 9;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
 
   String getTracingInfoOrDefault(
           String key,
           String defaultValue);
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 9;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
 
   String getTracingInfoOrThrow(

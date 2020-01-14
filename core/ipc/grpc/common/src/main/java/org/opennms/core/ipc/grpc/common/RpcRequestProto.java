@@ -32,20 +32,21 @@
 package org.opennms.core.ipc.grpc.common;
 
 /**
- * Protobuf type {@code SinkMessage}
+ * Protobuf type {@code RpcRequestProto}
  */
-public  final class SinkMessage extends
+public  final class RpcRequestProto extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:SinkMessage)
-    SinkMessageOrBuilder {
+    // @@protoc_insertion_point(message_implements:RpcRequestProto)
+    RpcRequestProtoOrBuilder {
 private static final long serialVersionUID = 0L;
-  // Use SinkMessage.newBuilder() to construct.
-  private SinkMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+  // Use RpcRequestProto.newBuilder() to construct.
+  private RpcRequestProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private SinkMessage() {
-    messageId_ = "";
-    content_ = com.google.protobuf.ByteString.EMPTY;
+  private RpcRequestProto() {
+    rpcId_ = "";
+    rpcContent_ = com.google.protobuf.ByteString.EMPTY;
+    systemId_ = "";
     location_ = "";
     moduleId_ = "";
   }
@@ -54,7 +55,7 @@ private static final long serialVersionUID = 0L;
   @SuppressWarnings({"unused"})
   protected Object newInstance(
       UnusedPrivateParameter unused) {
-    return new SinkMessage();
+    return new RpcRequestProto();
   }
 
   @Override
@@ -62,7 +63,7 @@ private static final long serialVersionUID = 0L;
   getUnknownFields() {
     return this.unknownFields;
   }
-  private SinkMessage(
+  private RpcRequestProto(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -84,27 +85,38 @@ private static final long serialVersionUID = 0L;
           case 10: {
             String s = input.readStringRequireUtf8();
 
-            messageId_ = s;
+            rpcId_ = s;
             break;
           }
           case 18: {
 
-            content_ = input.readBytes();
+            rpcContent_ = input.readBytes();
             break;
           }
           case 26: {
             String s = input.readStringRequireUtf8();
 
-            location_ = s;
+            systemId_ = s;
             break;
           }
           case 34: {
             String s = input.readStringRequireUtf8();
 
-            moduleId_ = s;
+            location_ = s;
             break;
           }
           case 42: {
+            String s = input.readStringRequireUtf8();
+
+            moduleId_ = s;
+            break;
+          }
+          case 48: {
+
+            expirationTime_ = input.readUInt64();
+            break;
+          }
+          case 58: {
             if (!((mutable_bitField0_ & 0x00000001) != 0)) {
               tracingInfo_ = com.google.protobuf.MapField.newMapField(
                   TracingInfoDefaultEntryHolder.defaultEntry);
@@ -138,7 +150,7 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return MinionIpc.internal_static_SinkMessage_descriptor;
+    return MinionIpc.internal_static_RpcRequestProto_descriptor;
   }
 
   @SuppressWarnings({"rawtypes"})
@@ -146,7 +158,7 @@ private static final long serialVersionUID = 0L;
   protected com.google.protobuf.MapField internalGetMapField(
       int number) {
     switch (number) {
-      case 5:
+      case 7:
         return internalGetTracingInfo();
       default:
         throw new RuntimeException(
@@ -156,61 +168,97 @@ private static final long serialVersionUID = 0L;
   @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return MinionIpc.internal_static_SinkMessage_fieldAccessorTable
+    return MinionIpc.internal_static_RpcRequestProto_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            SinkMessage.class, Builder.class);
+            RpcRequestProto.class, Builder.class);
   }
 
-  public static final int MESSAGE_ID_FIELD_NUMBER = 1;
-  private volatile Object messageId_;
+  public static final int RPC_ID_FIELD_NUMBER = 1;
+  private volatile Object rpcId_;
   /**
-   * <code>string message_id = 1;</code>
-   * @return The messageId.
+   * <code>string rpc_id = 1;</code>
+   * @return The rpcId.
    */
-  public String getMessageId() {
-    Object ref = messageId_;
+  public String getRpcId() {
+    Object ref = rpcId_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
-      messageId_ = s;
+      rpcId_ = s;
       return s;
     }
   }
   /**
-   * <code>string message_id = 1;</code>
-   * @return The bytes for messageId.
+   * <code>string rpc_id = 1;</code>
+   * @return The bytes for rpcId.
    */
   public com.google.protobuf.ByteString
-      getMessageIdBytes() {
-    Object ref = messageId_;
+      getRpcIdBytes() {
+    Object ref = rpcId_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
-      messageId_ = b;
+      rpcId_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
   }
 
-  public static final int CONTENT_FIELD_NUMBER = 2;
-  private com.google.protobuf.ByteString content_;
+  public static final int RPC_CONTENT_FIELD_NUMBER = 2;
+  private com.google.protobuf.ByteString rpcContent_;
   /**
-   * <code>bytes content = 2;</code>
-   * @return The content.
+   * <code>bytes rpc_content = 2;</code>
+   * @return The rpcContent.
    */
-  public com.google.protobuf.ByteString getContent() {
-    return content_;
+  public com.google.protobuf.ByteString getRpcContent() {
+    return rpcContent_;
   }
 
-  public static final int LOCATION_FIELD_NUMBER = 3;
+  public static final int SYSTEM_ID_FIELD_NUMBER = 3;
+  private volatile Object systemId_;
+  /**
+   * <code>string system_id = 3;</code>
+   * @return The systemId.
+   */
+  public String getSystemId() {
+    Object ref = systemId_;
+    if (ref instanceof String) {
+      return (String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      String s = bs.toStringUtf8();
+      systemId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string system_id = 3;</code>
+   * @return The bytes for systemId.
+   */
+  public com.google.protobuf.ByteString
+      getSystemIdBytes() {
+    Object ref = systemId_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (String) ref);
+      systemId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int LOCATION_FIELD_NUMBER = 4;
   private volatile Object location_;
   /**
-   * <code>string location = 3;</code>
+   * <code>string location = 4;</code>
    * @return The location.
    */
   public String getLocation() {
@@ -226,7 +274,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string location = 3;</code>
+   * <code>string location = 4;</code>
    * @return The bytes for location.
    */
   public com.google.protobuf.ByteString
@@ -243,10 +291,10 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int MODULE_ID_FIELD_NUMBER = 4;
+  public static final int MODULE_ID_FIELD_NUMBER = 5;
   private volatile Object moduleId_;
   /**
-   * <code>string module_id = 4;</code>
+   * <code>string module_id = 5;</code>
    * @return The moduleId.
    */
   public String getModuleId() {
@@ -262,7 +310,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string module_id = 4;</code>
+   * <code>string module_id = 5;</code>
    * @return The bytes for moduleId.
    */
   public com.google.protobuf.ByteString
@@ -279,13 +327,23 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int TRACING_INFO_FIELD_NUMBER = 5;
+  public static final int EXPIRATION_TIME_FIELD_NUMBER = 6;
+  private long expirationTime_;
+  /**
+   * <code>uint64 expiration_time = 6;</code>
+   * @return The expirationTime.
+   */
+  public long getExpirationTime() {
+    return expirationTime_;
+  }
+
+  public static final int TRACING_INFO_FIELD_NUMBER = 7;
   private static final class TracingInfoDefaultEntryHolder {
     static final com.google.protobuf.MapEntry<
         String, String> defaultEntry =
             com.google.protobuf.MapEntry
             .<String, String>newDefaultInstance(
-                MinionIpc.internal_static_SinkMessage_TracingInfoEntry_descriptor,
+                MinionIpc.internal_static_RpcRequestProto_TracingInfoEntry_descriptor,
                 com.google.protobuf.WireFormat.FieldType.STRING,
                 "",
                 com.google.protobuf.WireFormat.FieldType.STRING,
@@ -306,7 +364,7 @@ private static final long serialVersionUID = 0L;
     return internalGetTracingInfo().getMap().size();
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
 
   public boolean containsTracingInfo(
@@ -322,14 +380,14 @@ private static final long serialVersionUID = 0L;
     return getTracingInfoMap();
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
 
   public java.util.Map<String, String> getTracingInfoMap() {
     return internalGetTracingInfo().getMap();
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
 
   public String getTracingInfoOrDefault(
@@ -341,7 +399,7 @@ private static final long serialVersionUID = 0L;
     return map.containsKey(key) ? map.get(key) : defaultValue;
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
 
   public String getTracingInfoOrThrow(
@@ -369,24 +427,30 @@ private static final long serialVersionUID = 0L;
   @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getMessageIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, messageId_);
+    if (!getRpcIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, rpcId_);
     }
-    if (!content_.isEmpty()) {
-      output.writeBytes(2, content_);
+    if (!rpcContent_.isEmpty()) {
+      output.writeBytes(2, rpcContent_);
+    }
+    if (!getSystemIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, systemId_);
     }
     if (!getLocationBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, location_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, location_);
     }
     if (!getModuleIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, moduleId_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, moduleId_);
+    }
+    if (expirationTime_ != 0L) {
+      output.writeUInt64(6, expirationTime_);
     }
     com.google.protobuf.GeneratedMessageV3
       .serializeStringMapTo(
         output,
         internalGetTracingInfo(),
         TracingInfoDefaultEntryHolder.defaultEntry,
-        5);
+        7);
     unknownFields.writeTo(output);
   }
 
@@ -396,18 +460,25 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getMessageIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, messageId_);
+    if (!getRpcIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, rpcId_);
     }
-    if (!content_.isEmpty()) {
+    if (!rpcContent_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(2, content_);
+        .computeBytesSize(2, rpcContent_);
+    }
+    if (!getSystemIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, systemId_);
     }
     if (!getLocationBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, location_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, location_);
     }
     if (!getModuleIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, moduleId_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, moduleId_);
+    }
+    if (expirationTime_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt64Size(6, expirationTime_);
     }
     for (java.util.Map.Entry<String, String> entry
          : internalGetTracingInfo().getMap().entrySet()) {
@@ -417,7 +488,7 @@ private static final long serialVersionUID = 0L;
           .setValue(entry.getValue())
           .build();
       size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, tracingInfo__);
+          .computeMessageSize(7, tracingInfo__);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -429,19 +500,23 @@ private static final long serialVersionUID = 0L;
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof SinkMessage)) {
+    if (!(obj instanceof RpcRequestProto)) {
       return super.equals(obj);
     }
-    SinkMessage other = (SinkMessage) obj;
+    RpcRequestProto other = (RpcRequestProto) obj;
 
-    if (!getMessageId()
-        .equals(other.getMessageId())) return false;
-    if (!getContent()
-        .equals(other.getContent())) return false;
+    if (!getRpcId()
+        .equals(other.getRpcId())) return false;
+    if (!getRpcContent()
+        .equals(other.getRpcContent())) return false;
+    if (!getSystemId()
+        .equals(other.getSystemId())) return false;
     if (!getLocation()
         .equals(other.getLocation())) return false;
     if (!getModuleId()
         .equals(other.getModuleId())) return false;
+    if (getExpirationTime()
+        != other.getExpirationTime()) return false;
     if (!internalGetTracingInfo().equals(
         other.internalGetTracingInfo())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
@@ -455,14 +530,19 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + MESSAGE_ID_FIELD_NUMBER;
-    hash = (53 * hash) + getMessageId().hashCode();
-    hash = (37 * hash) + CONTENT_FIELD_NUMBER;
-    hash = (53 * hash) + getContent().hashCode();
+    hash = (37 * hash) + RPC_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getRpcId().hashCode();
+    hash = (37 * hash) + RPC_CONTENT_FIELD_NUMBER;
+    hash = (53 * hash) + getRpcContent().hashCode();
+    hash = (37 * hash) + SYSTEM_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getSystemId().hashCode();
     hash = (37 * hash) + LOCATION_FIELD_NUMBER;
     hash = (53 * hash) + getLocation().hashCode();
     hash = (37 * hash) + MODULE_ID_FIELD_NUMBER;
     hash = (53 * hash) + getModuleId().hashCode();
+    hash = (37 * hash) + EXPIRATION_TIME_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getExpirationTime());
     if (!internalGetTracingInfo().getMap().isEmpty()) {
       hash = (37 * hash) + TRACING_INFO_FIELD_NUMBER;
       hash = (53 * hash) + internalGetTracingInfo().hashCode();
@@ -472,69 +552,69 @@ private static final long serialVersionUID = 0L;
     return hash;
   }
 
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       java.nio.ByteBuffer data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static SinkMessage parseFrom(byte[] data)
+  public static RpcRequestProto parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static SinkMessage parseFrom(java.io.InputStream input)
+  public static RpcRequestProto parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static SinkMessage parseDelimitedFrom(java.io.InputStream input)
+  public static RpcRequestProto parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static SinkMessage parseDelimitedFrom(
+  public static RpcRequestProto parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static SinkMessage parseFrom(
+  public static RpcRequestProto parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -547,7 +627,7 @@ private static final long serialVersionUID = 0L;
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(SinkMessage prototype) {
+  public static Builder newBuilder(RpcRequestProto prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   @Override
@@ -563,22 +643,22 @@ private static final long serialVersionUID = 0L;
     return builder;
   }
   /**
-   * Protobuf type {@code SinkMessage}
+   * Protobuf type {@code RpcRequestProto}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:SinkMessage)
-      SinkMessageOrBuilder {
+      // @@protoc_insertion_point(builder_implements:RpcRequestProto)
+      org.opennms.core.ipc.grpc.common.RpcRequestProtoOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return MinionIpc.internal_static_SinkMessage_descriptor;
+      return MinionIpc.internal_static_RpcRequestProto_descriptor;
     }
 
     @SuppressWarnings({"rawtypes"})
     protected com.google.protobuf.MapField internalGetMapField(
         int number) {
       switch (number) {
-        case 5:
+        case 7:
           return internalGetTracingInfo();
         default:
           throw new RuntimeException(
@@ -589,7 +669,7 @@ private static final long serialVersionUID = 0L;
     protected com.google.protobuf.MapField internalGetMutableMapField(
         int number) {
       switch (number) {
-        case 5:
+        case 7:
           return internalGetMutableTracingInfo();
         default:
           throw new RuntimeException(
@@ -599,12 +679,12 @@ private static final long serialVersionUID = 0L;
     @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return MinionIpc.internal_static_SinkMessage_fieldAccessorTable
+      return MinionIpc.internal_static_RpcRequestProto_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              SinkMessage.class, Builder.class);
+              RpcRequestProto.class, Builder.class);
     }
 
-    // Construct using org.opennms.core.ipc.grpc.common.SinkMessage.newBuilder()
+    // Construct using org.opennms.core.ipc.grpc.common.RpcRequestProto.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -622,13 +702,17 @@ private static final long serialVersionUID = 0L;
     @Override
     public Builder clear() {
       super.clear();
-      messageId_ = "";
+      rpcId_ = "";
 
-      content_ = com.google.protobuf.ByteString.EMPTY;
+      rpcContent_ = com.google.protobuf.ByteString.EMPTY;
+
+      systemId_ = "";
 
       location_ = "";
 
       moduleId_ = "";
+
+      expirationTime_ = 0L;
 
       internalGetMutableTracingInfo().clear();
       return this;
@@ -637,17 +721,17 @@ private static final long serialVersionUID = 0L;
     @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return MinionIpc.internal_static_SinkMessage_descriptor;
+      return MinionIpc.internal_static_RpcRequestProto_descriptor;
     }
 
     @Override
-    public SinkMessage getDefaultInstanceForType() {
-      return SinkMessage.getDefaultInstance();
+    public RpcRequestProto getDefaultInstanceForType() {
+      return RpcRequestProto.getDefaultInstance();
     }
 
     @Override
-    public SinkMessage build() {
-      SinkMessage result = buildPartial();
+    public RpcRequestProto build() {
+      RpcRequestProto result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
@@ -655,13 +739,15 @@ private static final long serialVersionUID = 0L;
     }
 
     @Override
-    public SinkMessage buildPartial() {
-      SinkMessage result = new SinkMessage(this);
+    public RpcRequestProto buildPartial() {
+      RpcRequestProto result = new RpcRequestProto(this);
       int from_bitField0_ = bitField0_;
-      result.messageId_ = messageId_;
-      result.content_ = content_;
+      result.rpcId_ = rpcId_;
+      result.rpcContent_ = rpcContent_;
+      result.systemId_ = systemId_;
       result.location_ = location_;
       result.moduleId_ = moduleId_;
+      result.expirationTime_ = expirationTime_;
       result.tracingInfo_ = internalGetTracingInfo();
       result.tracingInfo_.makeImmutable();
       onBuilt();
@@ -702,22 +788,26 @@ private static final long serialVersionUID = 0L;
     }
     @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof SinkMessage) {
-        return mergeFrom((SinkMessage)other);
+      if (other instanceof RpcRequestProto) {
+        return mergeFrom((RpcRequestProto)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(SinkMessage other) {
-      if (other == SinkMessage.getDefaultInstance()) return this;
-      if (!other.getMessageId().isEmpty()) {
-        messageId_ = other.messageId_;
+    public Builder mergeFrom(RpcRequestProto other) {
+      if (other == RpcRequestProto.getDefaultInstance()) return this;
+      if (!other.getRpcId().isEmpty()) {
+        rpcId_ = other.rpcId_;
         onChanged();
       }
-      if (other.getContent() != com.google.protobuf.ByteString.EMPTY) {
-        setContent(other.getContent());
+      if (other.getRpcContent() != com.google.protobuf.ByteString.EMPTY) {
+        setRpcContent(other.getRpcContent());
+      }
+      if (!other.getSystemId().isEmpty()) {
+        systemId_ = other.systemId_;
+        onChanged();
       }
       if (!other.getLocation().isEmpty()) {
         location_ = other.location_;
@@ -726,6 +816,9 @@ private static final long serialVersionUID = 0L;
       if (!other.getModuleId().isEmpty()) {
         moduleId_ = other.moduleId_;
         onChanged();
+      }
+      if (other.getExpirationTime() != 0L) {
+        setExpirationTime(other.getExpirationTime());
       }
       internalGetMutableTracingInfo().mergeFrom(
           other.internalGetTracingInfo());
@@ -744,11 +837,11 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      SinkMessage parsedMessage = null;
+      RpcRequestProto parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (SinkMessage) e.getUnfinishedMessage();
+        parsedMessage = (RpcRequestProto) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -759,118 +852,194 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private Object messageId_ = "";
+    private Object rpcId_ = "";
     /**
-     * <code>string message_id = 1;</code>
-     * @return The messageId.
+     * <code>string rpc_id = 1;</code>
+     * @return The rpcId.
      */
-    public String getMessageId() {
-      Object ref = messageId_;
+    public String getRpcId() {
+      Object ref = rpcId_;
       if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
-        messageId_ = s;
+        rpcId_ = s;
         return s;
       } else {
         return (String) ref;
       }
     }
     /**
-     * <code>string message_id = 1;</code>
-     * @return The bytes for messageId.
+     * <code>string rpc_id = 1;</code>
+     * @return The bytes for rpcId.
      */
     public com.google.protobuf.ByteString
-        getMessageIdBytes() {
-      Object ref = messageId_;
+        getRpcIdBytes() {
+      Object ref = rpcId_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
-        messageId_ = b;
+        rpcId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>string message_id = 1;</code>
-     * @param value The messageId to set.
+     * <code>string rpc_id = 1;</code>
+     * @param value The rpcId to set.
      * @return This builder for chaining.
      */
-    public Builder setMessageId(
+    public Builder setRpcId(
         String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      messageId_ = value;
+      rpcId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string message_id = 1;</code>
+     * <code>string rpc_id = 1;</code>
      * @return This builder for chaining.
      */
-    public Builder clearMessageId() {
+    public Builder clearRpcId() {
       
-      messageId_ = getDefaultInstance().getMessageId();
+      rpcId_ = getDefaultInstance().getRpcId();
       onChanged();
       return this;
     }
     /**
-     * <code>string message_id = 1;</code>
-     * @param value The bytes for messageId to set.
+     * <code>string rpc_id = 1;</code>
+     * @param value The bytes for rpcId to set.
      * @return This builder for chaining.
      */
-    public Builder setMessageIdBytes(
+    public Builder setRpcIdBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      messageId_ = value;
+      rpcId_ = value;
       onChanged();
       return this;
     }
 
-    private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
+    private com.google.protobuf.ByteString rpcContent_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes content = 2;</code>
-     * @return The content.
+     * <code>bytes rpc_content = 2;</code>
+     * @return The rpcContent.
      */
-    public com.google.protobuf.ByteString getContent() {
-      return content_;
+    public com.google.protobuf.ByteString getRpcContent() {
+      return rpcContent_;
     }
     /**
-     * <code>bytes content = 2;</code>
-     * @param value The content to set.
+     * <code>bytes rpc_content = 2;</code>
+     * @param value The rpcContent to set.
      * @return This builder for chaining.
      */
-    public Builder setContent(com.google.protobuf.ByteString value) {
+    public Builder setRpcContent(com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      content_ = value;
+      rpcContent_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>bytes content = 2;</code>
+     * <code>bytes rpc_content = 2;</code>
      * @return This builder for chaining.
      */
-    public Builder clearContent() {
+    public Builder clearRpcContent() {
       
-      content_ = getDefaultInstance().getContent();
+      rpcContent_ = getDefaultInstance().getRpcContent();
+      onChanged();
+      return this;
+    }
+
+    private Object systemId_ = "";
+    /**
+     * <code>string system_id = 3;</code>
+     * @return The systemId.
+     */
+    public String getSystemId() {
+      Object ref = systemId_;
+      if (!(ref instanceof String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        systemId_ = s;
+        return s;
+      } else {
+        return (String) ref;
+      }
+    }
+    /**
+     * <code>string system_id = 3;</code>
+     * @return The bytes for systemId.
+     */
+    public com.google.protobuf.ByteString
+        getSystemIdBytes() {
+      Object ref = systemId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        systemId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string system_id = 3;</code>
+     * @param value The systemId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSystemId(
+        String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      systemId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string system_id = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearSystemId() {
+      
+      systemId_ = getDefaultInstance().getSystemId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string system_id = 3;</code>
+     * @param value The bytes for systemId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSystemIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      systemId_ = value;
       onChanged();
       return this;
     }
 
     private Object location_ = "";
     /**
-     * <code>string location = 3;</code>
+     * <code>string location = 4;</code>
      * @return The location.
      */
     public String getLocation() {
@@ -886,7 +1055,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string location = 3;</code>
+     * <code>string location = 4;</code>
      * @return The bytes for location.
      */
     public com.google.protobuf.ByteString
@@ -903,7 +1072,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string location = 3;</code>
+     * <code>string location = 4;</code>
      * @param value The location to set.
      * @return This builder for chaining.
      */
@@ -918,7 +1087,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string location = 3;</code>
+     * <code>string location = 4;</code>
      * @return This builder for chaining.
      */
     public Builder clearLocation() {
@@ -928,7 +1097,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string location = 3;</code>
+     * <code>string location = 4;</code>
      * @param value The bytes for location to set.
      * @return This builder for chaining.
      */
@@ -946,7 +1115,7 @@ private static final long serialVersionUID = 0L;
 
     private Object moduleId_ = "";
     /**
-     * <code>string module_id = 4;</code>
+     * <code>string module_id = 5;</code>
      * @return The moduleId.
      */
     public String getModuleId() {
@@ -962,7 +1131,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string module_id = 4;</code>
+     * <code>string module_id = 5;</code>
      * @return The bytes for moduleId.
      */
     public com.google.protobuf.ByteString
@@ -979,7 +1148,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string module_id = 4;</code>
+     * <code>string module_id = 5;</code>
      * @param value The moduleId to set.
      * @return This builder for chaining.
      */
@@ -994,7 +1163,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string module_id = 4;</code>
+     * <code>string module_id = 5;</code>
      * @return This builder for chaining.
      */
     public Builder clearModuleId() {
@@ -1004,7 +1173,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>string module_id = 4;</code>
+     * <code>string module_id = 5;</code>
      * @param value The bytes for moduleId to set.
      * @return This builder for chaining.
      */
@@ -1016,6 +1185,36 @@ private static final long serialVersionUID = 0L;
   checkByteStringIsUtf8(value);
       
       moduleId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private long expirationTime_ ;
+    /**
+     * <code>uint64 expiration_time = 6;</code>
+     * @return The expirationTime.
+     */
+    public long getExpirationTime() {
+      return expirationTime_;
+    }
+    /**
+     * <code>uint64 expiration_time = 6;</code>
+     * @param value The expirationTime to set.
+     * @return This builder for chaining.
+     */
+    public Builder setExpirationTime(long value) {
+      
+      expirationTime_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>uint64 expiration_time = 6;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearExpirationTime() {
+      
+      expirationTime_ = 0L;
       onChanged();
       return this;
     }
@@ -1047,7 +1246,7 @@ private static final long serialVersionUID = 0L;
       return internalGetTracingInfo().getMap().size();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
 
     public boolean containsTracingInfo(
@@ -1063,14 +1262,14 @@ private static final long serialVersionUID = 0L;
       return getTracingInfoMap();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
 
     public java.util.Map<String, String> getTracingInfoMap() {
       return internalGetTracingInfo().getMap();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
 
     public String getTracingInfoOrDefault(
@@ -1082,7 +1281,7 @@ private static final long serialVersionUID = 0L;
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
 
     public String getTracingInfoOrThrow(
@@ -1102,7 +1301,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
 
     public Builder removeTracingInfo(
@@ -1121,7 +1320,7 @@ private static final long serialVersionUID = 0L;
       return internalGetMutableTracingInfo().getMutableMap();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
     public Builder putTracingInfo(
         String key,
@@ -1133,7 +1332,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 7;</code>
      */
 
     public Builder putAllTracingInfo(
@@ -1155,41 +1354,41 @@ private static final long serialVersionUID = 0L;
     }
 
 
-    // @@protoc_insertion_point(builder_scope:SinkMessage)
+    // @@protoc_insertion_point(builder_scope:RpcRequestProto)
   }
 
-  // @@protoc_insertion_point(class_scope:SinkMessage)
-  private static final SinkMessage DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:RpcRequestProto)
+  private static final RpcRequestProto DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new SinkMessage();
+    DEFAULT_INSTANCE = new RpcRequestProto();
   }
 
-  public static SinkMessage getDefaultInstance() {
+  public static RpcRequestProto getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<SinkMessage>
-      PARSER = new com.google.protobuf.AbstractParser<SinkMessage>() {
+  private static final com.google.protobuf.Parser<RpcRequestProto>
+      PARSER = new com.google.protobuf.AbstractParser<RpcRequestProto>() {
     @Override
-    public SinkMessage parsePartialFrom(
+    public RpcRequestProto parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new SinkMessage(input, extensionRegistry);
+      return new RpcRequestProto(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<SinkMessage> parser() {
+  public static com.google.protobuf.Parser<RpcRequestProto> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<SinkMessage> getParserForType() {
+  public com.google.protobuf.Parser<RpcRequestProto> getParserForType() {
     return PARSER;
   }
 
   @Override
-  public SinkMessage getDefaultInstanceForType() {
+  public RpcRequestProto getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

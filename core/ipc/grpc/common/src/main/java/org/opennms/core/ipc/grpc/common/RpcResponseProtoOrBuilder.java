@@ -31,58 +31,70 @@
 
 package org.opennms.core.ipc.grpc.common;
 
-public interface SinkMessageOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:SinkMessage)
+public interface RpcResponseProtoOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:RpcResponseProto)
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string message_id = 1;</code>
-   * @return The messageId.
+   * <code>string rpc_id = 1;</code>
+   * @return The rpcId.
    */
-  String getMessageId();
+  String getRpcId();
   /**
-   * <code>string message_id = 1;</code>
-   * @return The bytes for messageId.
+   * <code>string rpc_id = 1;</code>
+   * @return The bytes for rpcId.
    */
   com.google.protobuf.ByteString
-      getMessageIdBytes();
+      getRpcIdBytes();
 
   /**
-   * <code>bytes content = 2;</code>
-   * @return The content.
+   * <code>bytes rpc_content = 2;</code>
+   * @return The rpcContent.
    */
-  com.google.protobuf.ByteString getContent();
+  com.google.protobuf.ByteString getRpcContent();
 
   /**
-   * <code>string location = 3;</code>
+   * <code>string system_id = 3;</code>
+   * @return The systemId.
+   */
+  String getSystemId();
+  /**
+   * <code>string system_id = 3;</code>
+   * @return The bytes for systemId.
+   */
+  com.google.protobuf.ByteString
+      getSystemIdBytes();
+
+  /**
+   * <code>string location = 4;</code>
    * @return The location.
    */
   String getLocation();
   /**
-   * <code>string location = 3;</code>
+   * <code>string location = 4;</code>
    * @return The bytes for location.
    */
   com.google.protobuf.ByteString
       getLocationBytes();
 
   /**
-   * <code>string module_id = 4;</code>
+   * <code>string module_id = 5;</code>
    * @return The moduleId.
    */
   String getModuleId();
   /**
-   * <code>string module_id = 4;</code>
+   * <code>string module_id = 5;</code>
    * @return The bytes for moduleId.
    */
   com.google.protobuf.ByteString
       getModuleIdBytes();
 
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
   int getTracingInfoCount();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
   boolean containsTracingInfo(
           String key);
@@ -93,19 +105,19 @@ public interface SinkMessageOrBuilder extends
   java.util.Map<String, String>
   getTracingInfo();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
   java.util.Map<String, String>
   getTracingInfoMap();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
 
   String getTracingInfoOrDefault(
           String key,
           String defaultValue);
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
 
   String getTracingInfoOrThrow(
