@@ -160,7 +160,7 @@
 
   <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 
-  <bean id="timescaleStorage" class="org.opennms.netmgt.timeseries.impl.timescale.TimescaleStorage" />
+  <bean id="timeseriesStorage" class="org.opennms.netmgt.timeseries.impl.timescale.TimescaleStorage" />
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 

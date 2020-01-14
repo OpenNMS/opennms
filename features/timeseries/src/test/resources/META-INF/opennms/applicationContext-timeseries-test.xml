@@ -165,8 +165,10 @@
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.TimeseriesResourceStorageDao" />
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+  <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
   <!-- bean id="resourceDao" primary="true" class="org.opennms.netmgt.dao.support.TimeseriesResourceDao" / -->
 

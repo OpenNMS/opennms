@@ -29,7 +29,6 @@
 
 package org.opennms.netmgt.timeseries.integration;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,38 +45,31 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory;
-import org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterIT;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.support.NodeSnmpResourceType;
-import org.opennms.netmgt.measurements.impl.TimeseriesFetchStrategy;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Results;
-import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.base.Optional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        // "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.timeseries.strategy=timescale",
+        "org.opennms.timeseries.strategy=timeseries",
         //   "mock.db.adminPassword=password" // TODO Patrick: remove
 })
 @JUnitTemporaryDatabase(dirtiesContext=true)
@@ -87,7 +79,11 @@ public class TimeseriesRoundtripIT {
     private TimeseriesPersisterFactory persisterFactory;
 
     @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
     private ResourceDao resourceDao;
+
 
 //    @Autowired
 //    private TimeseriesFetchStrategy fetchStrategy;
@@ -102,6 +98,9 @@ public class TimeseriesRoundtripIT {
         Persister persister = persisterFactory.createPersister(params, repo);
 
         int nodeId = 1;
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        final OnmsNode node = new OnmsNode(location);
+        node.setId(nodeId);
         CollectionAgent agent = mock(CollectionAgent.class);
         ResourcePath path = ResourcePath.get(Integer.toString(nodeId));
         when(agent.getStorageResourcePath()).thenReturn(path);
@@ -121,10 +120,8 @@ public class TimeseriesRoundtripIT {
         Thread.sleep(5 * 1000);
 
         // TODO: Patrick get results again and compare with original Collection
-
-        // Fetch the (persisted) sample
-        Resource resource = new Resource("snmp:1:metrics");
-        Timestamp end = Timestamp.now();
+        // when(nodeDao.get("1")).thenReturn(node);
+        nodeDao.saveOrUpdate(node);
 
         ResourceId parentResourceId = ResourceId.get("node", "1");
         ResourceId resourceId = ResourceId.get(parentResourceId, "nodeSnmp", "");
@@ -132,6 +129,8 @@ public class TimeseriesRoundtripIT {
         // assertEquals(resource.getId(), resourceFromStorage.getId().toString());
 
         // Fetch the (persisted) sample
+//        Resource resource = new Resource("snmp:1:metrics");
+//        Timestamp end = Timestamp.now();
 //        Results<Sample> samples = m_sampleRepository.select(Context.DEFAULT_CONTEXT, resource, Optional.of(now), Optional.of(end));
 //
 //        assertEquals(1, samples.getRows().size());
