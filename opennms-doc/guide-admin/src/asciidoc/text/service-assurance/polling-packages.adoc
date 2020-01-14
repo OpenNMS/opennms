@@ -190,7 +190,7 @@ ssh -p 8101 admin@localhost
 Once in the shell, you can print show the commands help as follows:
 [source]
 ----
-opennms> poller:poll --help
+opennms> opennms-poller:poll --help
 DESCRIPTION
         opennms-poller:poll
 
@@ -232,7 +232,7 @@ The following example runs the _ICMP_ monitor on a specific _IP Interface_.
 .Run ICMP monitor configuration defined in specific Polling Package
 [source]
 ----
-opennms> poller:poll -S ICMP -P example1 10.23.42.1
+opennms> opennms-poller:poll -S ICMP -P example1 10.23.42.1
 ----
 
 The output is verbose which allows debugging of _Monitor_ configurations.

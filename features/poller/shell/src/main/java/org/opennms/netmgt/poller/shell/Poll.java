@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
@@ -62,11 +63,8 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionOperations;
 
-@Command(scope = "opennms-poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location")
+@Command(scope = "opennms-poller", name = "poll", description = "Used to invoke a monitor against a host at a specified location. The current monitor's configuration of the poller-configuration.xml file is used when service and package name were specified. When only the monitor's classname was specified the hardcoded defaults of the monitor class will be used. All settings can be overwritten by defining key-value pairs on the command line.")
 @Service
 public class Poll implements Action {
 
@@ -108,7 +106,7 @@ public class Poll implements Action {
     public IpInterfaceDao ipInterfaceDao;
 
     @Reference
-    public TransactionOperations transactionTemplate;
+    public SessionUtils sessionUtils;
 
     @Override
     public Object execute() throws Exception {
@@ -128,35 +126,32 @@ public class Poll implements Action {
             }
         }
 
-        service = transactionTemplate.execute(new TransactionCallback<MonitoredService>() {
-            @Override
-            public SimpleMonitoredService doInTransaction(TransactionStatus status) {
-                final OnmsNode node;
+        service = sessionUtils.withReadOnlyTransaction(() -> {
+            final OnmsNode node;
 
-                if (nodeId > 0) {
-                    node = nodeDao.get(nodeId);
+            if (nodeId > 0) {
+                node = nodeDao.get(nodeId);
 
-                    if (node == null) {
-                        System.err.printf("Error: Can't find node with Id %d the database%n", nodeId);
-                        return null;
-                    }
-                } else {
-                    final List<OnmsIpInterface> ips = ipInterfaceDao.findByIpAddress(InetAddressUtils.str(ipAddress)).stream()
-                            .filter(i -> location.equals(i.getNode().getLocation().getLocationName()))
-                            .collect(Collectors.toList());
-
-                    if (ips.size() == 0) {
-                        System.err.printf("Error: Can't find the IP address %s on the database%n", InetAddressUtils.str(ipAddress));
-                        return null;
-                    }
-                    if (ips.size() > 1) {
-                        System.out.printf("Warning: there are several IP interface objects associated with the IP address %s (picking the first one)%n", InetAddressUtils.str(ipAddress));
-                    }
-                    node = ips.get(0).getNode();
+                if (node == null) {
+                    System.err.printf("Error: Can't find node with Id %d the database%n", nodeId);
+                    return null;
                 }
+            } else {
+                final List<OnmsIpInterface> ips = ipInterfaceDao.findByIpAddress(InetAddressUtils.str(ipAddress)).stream()
+                        .filter(i -> location.equals(i.getNode().getLocation().getLocationName()))
+                        .collect(Collectors.toList());
 
-                return new SimpleMonitoredService(ipAddress, node.getId(), node.getLabel(), serviceName == null ? "SVC" : serviceName, location);
+                if (ips.size() == 0) {
+                    System.err.printf("Error: Can't find the IP address %s on the database%n", InetAddressUtils.str(ipAddress));
+                    return null;
+                }
+                if (ips.size() > 1) {
+                    System.out.printf("Warning: there are several IP interface objects associated with the IP address %s (picking the first one)%n", InetAddressUtils.str(ipAddress));
+                }
+                node = ips.get(0).getNode();
             }
+
+            return new SimpleMonitoredService(ipAddress, node.getId(), node.getLabel(), serviceName == null ? "SVC" : serviceName, location);
         });
 
         final Map<String, Object> parameters = retrieveParameters(ipAddress, packageName, serviceName);
