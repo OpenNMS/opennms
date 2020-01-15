@@ -225,7 +225,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
 
 
     @Override
-    public void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (sinkConsumersByModuleId.get(module.getId()) == null) {
             int numOfThreads = getNumConsumerThreads(module);
             ExecutorService executor = Executors.newFixedThreadPool(numOfThreads, sinkConsumerThreadFactory);
@@ -236,7 +236,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     }
 
     @Override
-    public void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
 
         ExecutorService executor = sinkConsumersByModuleId.get(module.getId());
         if (executor != null) {
@@ -266,7 +266,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 timeToLive = (timeToLive != null && timeToLive > 0) ? timeToLive : ttl;
                 long expirationTime = System.currentTimeMillis() + timeToLive;
                 RpcResponseHandlerImpl responseHandler = new RpcResponseHandlerImpl<S, T>(future,
-                        module, rpcId, expirationTime, span, loggingContext);
+                        module, rpcId, request.getLocation(), expirationTime, span, loggingContext);
                 rpcResponseMap.put(rpcId, responseHandler);
                 rpcTimeoutQueue.offer(responseHandler);
                 RpcRequestProto.Builder builder = RpcRequestProto.newBuilder()
@@ -602,6 +602,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         private final CompletableFuture<T> responseFuture;
         private final RpcModule<S, T> rpcModule;
         private final String rpcId;
+        private final String location;
         private final long expirationTime;
         private final Map<String, String> loggingContext;
         private boolean isProcessed = false;
@@ -609,10 +610,11 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         private Span span;
 
         private RpcResponseHandlerImpl(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
-                                       long timeout, Span span, Map<String, String> loggingContext) {
+                                       String location, long timeout, Span span, Map<String, String> loggingContext) {
             this.responseFuture = responseFuture;
             this.rpcModule = rpcModule;
             this.rpcId = rpcId;
+            this.location = location;
             this.expirationTime = timeout;
             this.loggingContext = loggingContext;
             this.span = span;
@@ -627,19 +629,19 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                     T response = rpcModule.unmarshalResponse(message);
                     if (response.getErrorMessage() != null) {
                         span.log(response.getErrorMessage());
-                        RpcClientFactory.markFailed(getRpcMetrics(), location, rpcModule.getId());
+                        RpcClientFactory.markFailed(getRpcMetrics(), this.location, rpcModule.getId());
                         responseFuture.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
                     } else {
                         responseFuture.complete(response);
                     }
                     isProcessed = true;
-                    RpcClientFactory.updateResponseSize(getRpcMetrics(), location, rpcModule.getId(), message.getBytes().length);
+                    RpcClientFactory.updateResponseSize(getRpcMetrics(), this.location, rpcModule.getId(), message.getBytes().length);
                 } else {
                     span.setTag(TAG_TIMEOUT, "true");
-                    RpcClientFactory.markFailed(getRpcMetrics(), location, rpcModule.getId());
+                    RpcClientFactory.markFailed(getRpcMetrics(), this.location, rpcModule.getId());
                     responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                 }
-                RpcClientFactory.updateDuration(getRpcMetrics(), location, rpcModule.getId(), System.currentTimeMillis() - requestCreationTime);
+                RpcClientFactory.updateDuration(getRpcMetrics(), this.location, rpcModule.getId(), System.currentTimeMillis() - requestCreationTime);
                 rpcResponseMap.remove(rpcId);
                 span.finish();
             } catch (Throwable e) {

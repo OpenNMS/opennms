@@ -33,7 +33,7 @@ public interface GrpcServerConstants {
     String GRPC_SERVER_PID = "org.opennms.core.ipc.grpc.server";
     String  GRPC_TTL_PROPERTY = "ttl";
     long DEFAULT_GRPC_TTL = 20000;
-    String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
+    String GRPC_MAX_INBOUND_SIZE = "max.message.size";
     int DEFAULT_MESSAGE_SIZE = 10485760; //10MB
     int DEFAULT_GRPC_PORT = 8990;
     String GRPC_SERVER_PORT = "port";

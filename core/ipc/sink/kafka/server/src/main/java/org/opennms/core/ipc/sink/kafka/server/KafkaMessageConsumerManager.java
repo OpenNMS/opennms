@@ -261,7 +261,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     @Override
-    public void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
             LOG.info("Starting consumers for module: {}", module.getId());
 
@@ -278,7 +278,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     }
 
     @Override
-    public void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (consumerRunnersByModule.containsKey(module)) {
             LOG.info("Stopping consumers for module: {}", module.getId());
             final List<KafkaConsumerRunner> consumerRunners = consumerRunnersByModule.get(module);

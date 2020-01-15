@@ -49,6 +49,17 @@ client.private.key.filepath=/custom-path/client.pem
 EOF
 ----
 
+===== Step 4: Configure max message size if default 10MB is not sufficient.
+(needs to be configured both on server and client)
+
+.Configure max message size
+[source, shell]
+----
+cat <<EOF >${MINION_HOME}/etc/org.opennms.core.ipc.grpc.client.cfg
+max.message.size=10485760
+EOF
+----
+
 ===== Step 5: Restart Minion to apply changes
 
 [source, shell]

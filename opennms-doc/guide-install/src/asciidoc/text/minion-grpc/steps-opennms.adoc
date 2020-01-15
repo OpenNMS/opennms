@@ -21,7 +21,7 @@ opennms-core-ipc-grpc-server
 EOF
 ----
 
-===== Step 3: Enable and configure TLS on gRPC client
+===== Step 3: Enable and configure TLS on gRPC server
 
 .Enable TLS and configure TLS certificates and private keys.
 [source, shell]
@@ -34,8 +34,19 @@ client.cert.filepath=/custom-path/client.crt
 EOF
 ----
 
+===== Step 4: Configure max message size if default 10MB is not sufficient.
+(needs to be configured both on server and client)
 
-===== Step 4: Restart {opennms-product-name}
+.Configure max message size
+[source, shell]
+----
+cat <<EOF >${OPENNMS_HOME}/etc/org.opennms.core.ipc.grpc.server.cfg
+max.message.size=10485760
+EOF
+----
+
+
+===== Step 5: Restart {opennms-product-name}
 
 [source, shell]
 ----

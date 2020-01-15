@@ -36,7 +36,7 @@ public interface GrpcClientConstants {
     String GRPC_PORT = "port";
     int DEFAULT_GRPC_PORT = 8990;
     String TLS_ENABLED = "tls.enabled";
-    String GRPC_MAX_INBOUND_SIZE = "maxInboundMessageSize";
+    String GRPC_MAX_INBOUND_SIZE = "max.message.size";
     int DEFAULT_MESSAGE_SIZE = 10485760;
     String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
     String CLIENT_PRIVATE_KEY_FILE_PATH = "client.private.key.filepath";

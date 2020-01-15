@@ -169,7 +169,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
      * @see org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager#startConsumingForModule(org.opennms.core.ipc.sink.api.SinkModule)
      */
     @Override
-    public void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
             LOG.info("Starting consumers for module: {}", module);
 
@@ -189,7 +189,7 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
      * @see org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager#stopConsumingForModule(org.opennms.core.ipc.sink.api.SinkModule)
      */
     @Override
-    public void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
+    protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (consumerRunnersByModule.containsKey(module)) {
             LOG.info("Stopping consumers for module: {}", module);
             final List<AwsConsumerRunner> consumerRunners = consumerRunnersByModule.get(module);
