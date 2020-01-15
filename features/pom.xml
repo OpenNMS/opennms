@@ -14,6 +14,9 @@
     <!-- Enlinkd -->
     <module>enlinkd</module>
 
+    <!-- Graphs -->
+    <module>graph</module>
+
     <!-- Topologies -->
     <module>topologies</module>
 

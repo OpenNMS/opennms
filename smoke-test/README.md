@@ -27,7 +27,7 @@ docker tag opennms/minion:26.0.0 minion
 docker tag opennms/sentinel:26.0.0 sentinel
 ```
 
-#### b) Pull images from build artifacts
+### B) Pull images from build artifacts
 
 ```
 export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"

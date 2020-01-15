@@ -729,11 +729,7 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.client-rpc</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.graphml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
@@ -802,6 +798,16 @@
     <dependency>
       <groupId>org.opennms.features.flows.classification.persistence</groupId>
       <artifactId>org.opennms.features.flows.classification.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graph.dao</groupId>
+      <artifactId>org.opennms.features.graph.dao.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graph.dao</groupId>
+      <artifactId>org.opennms.features.graph.dao.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

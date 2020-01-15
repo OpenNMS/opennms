@@ -1,3 +1,13 @@
+opennms-minion (25.1.2-1) stable; urgency=medium
+
+  * New stable release.  It contains a number of alarm classification bug fixes
+    and performance improvements, flow enhancements, and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/25.1.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Jan 2020 10:00:00 -0400
+
 opennms-minion (25.1.1-1) stable; urgency=medium
 
   * New stable release.  It contains a number of bug fixes mostly related to alarm

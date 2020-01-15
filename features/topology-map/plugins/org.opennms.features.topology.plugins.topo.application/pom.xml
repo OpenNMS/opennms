@@ -41,6 +41,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.graph</groupId>
+      <artifactId>org.opennms.features.graph.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graph.provider</groupId>
+      <artifactId>org.opennms.features.graph.provider.application</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <type>pom</type>
@@ -77,6 +87,8 @@
       <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
+
+
   </dependencies>
 
 </project>

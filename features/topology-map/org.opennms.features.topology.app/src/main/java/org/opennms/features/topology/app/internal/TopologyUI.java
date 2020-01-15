@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.app.internal;
 
-import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
+import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getWrappedVertexHopCriteria;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -64,8 +64,9 @@ import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
 import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
 import org.opennms.features.topology.api.info.item.InfoPanelItem;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.CriteriaUtils;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo;
@@ -125,6 +126,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -331,10 +333,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     }
                 }
                 // We have to update the vertices in focus (in our case only nodes) only if the focus has changed
-                VertexHopGraphProvider.VertexHopCriteria criteria = VertexHopGraphProvider.getWrappedVertexHopCriteria(m_graphContainer);
+                VertexHopCriteria criteria = CriteriaUtils.getWrappedVertexHopCriteria(m_graphContainer);
                 if (!criteria.getVertices().equals(refs)) {
                     m_graphContainer.clearCriteria();
-                    refs.forEach(vertexRef -> m_graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
+                    refs.forEach(vertexRef -> m_graphContainer.addCriteria(new DefaultVertexHopCriteria(vertexRef)));
                     m_graphContainer.setSemanticZoomLevel(1);
                 }
                 return true;

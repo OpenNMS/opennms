@@ -423,7 +423,12 @@ public class SyslogMessageTest {
 
     static int getExpectedYear(String dateFragment) throws ParseException {
         Date date = new SimpleDateFormat("yyyy MMM dd hh:mm:ss", Locale.ENGLISH).parse("0000 " + dateFragment);
-        return YearGuesser.guessYearForDate(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()).getYear();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        LocalDateTime ldt = LocalDateTime.of(0, cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DATE),
+                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+
+        return YearGuesser.guessYearForDate(ldt).getYear();
     }
 
 }
