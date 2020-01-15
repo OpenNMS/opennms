@@ -56,7 +56,7 @@ import com.google.common.collect.Lists;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 /**
- * The graph itself is not immutable (Vertices and Edges can be added and removed) but it's properties are. 
+ * Immutable generic graph.
  */
 public final class GenericGraph extends GenericElement implements ImmutableGraph<GenericVertex, GenericEdge> {
 

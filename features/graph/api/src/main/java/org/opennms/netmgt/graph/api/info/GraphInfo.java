@@ -38,7 +38,7 @@ import org.opennms.netmgt.graph.api.Vertex;
  */
 public interface GraphInfo<V extends Vertex> {
 
-    /** The namespace of the graph. Should be unique overall Graphs */
+    /** The namespace of the graph. Should be unique over all Graphs */
     String getNamespace();
 
     /**
