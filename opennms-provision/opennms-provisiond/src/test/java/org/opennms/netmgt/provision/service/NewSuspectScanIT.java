@@ -29,13 +29,13 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 import org.joda.time.Duration;
 import org.junit.After;
@@ -174,7 +174,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         }
 
         m_foreignSource = new ForeignSource();
-        m_foreignSource.setName("imported:");
+        m_foreignSource.setName("imported");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
         final PluginConfig detector = new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
         detector.addParameter("timeout", "1000");
@@ -182,7 +182,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         m_foreignSource.addDetector(detector);
 
         m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_foreignSourceRepository.putDefaultForeignSource(m_foreignSource);
+        m_foreignSourceRepository.save(m_foreignSource);
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
 
@@ -221,7 +221,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null, "my-custom-location");
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), "imported", "my-custom-location");
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
@@ -233,8 +233,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         assertEquals(1, getNodeDao().countAll());
 
         OnmsNode onmsNode = getNodeDao().get(nextNodeId);
-        assertEquals(null, onmsNode.getForeignSource());
-        assertEquals(null, onmsNode.getForeignId());
+        assertEquals("imported", onmsNode.getForeignSource());
+        assertNotNull(onmsNode.getForeignId());
         assertEquals("my-custom-location", onmsNode.getLocation().getLocationName());
 
         final StringBuilder errorMsg = new StringBuilder();
@@ -281,7 +281,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new NodeLabelChangedEventBuilder("Provisiond").setOldNodeLabel("oldNodeLabel").setNewNodeLabel("newNodeLabel").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final String foreignSource = "Testie";
+        final String foreignSource = "imported";
         NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         runScan(scan);
 
@@ -295,7 +295,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
 
         List<OnmsNode> onmsNodes = getNodeDao().findByLabel("brozow.local");
         OnmsNode onmsNode = onmsNodes.get(0);
-        assertEquals("Testie", onmsNode.getForeignSource());
+        assertEquals("imported", onmsNode.getForeignSource());
         assertEquals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, onmsNode.getLocation().getLocationName());
 
         final StringBuilder errorMsg = new StringBuilder();
@@ -339,7 +339,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "Provisiond").setNodeid(nextNodeId).setInterface(addr("198.51.100.201")).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final String foreignSource = "Testie";
+        final String foreignSource = "imported";
         final String locationName = "!" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), foreignSource, locationName);
         runScan(scan);
@@ -586,7 +586,7 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new NodeLabelChangedEventBuilder("Provisiond").setOldNodeLabel("oldNodeLabel").setNewNodeLabel("newNodeLabel").setNodeid(nextNodeId).getEvent());
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, null, null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(ip, "imported", null);
         runScan(scan);
 
         anticipator.verifyAnticipated(20000, 0, 2000, 0, 0);
