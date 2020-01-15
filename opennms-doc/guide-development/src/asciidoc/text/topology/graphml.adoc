@@ -103,6 +103,9 @@ ____
 | `level`                   | no       | Node         | `int`     | `0`       | Sets the level of the Vertex which is used by certain layout algorithms i.e. `Hierarchical Layout` and `Grid Layout`.
 | `edge-path-offset`        | no       | Graph, Node  | `int`     | `20`      | Controls the spacing between the paths drawn for the edges when there are multiple edges connecting two vertices.
 | `breadcrumb-strategy`     | no       | GraphML      | `string`  | `NONE`    | Defines the breadcrumb strategy to use. See <<gd-topology-graphml-breadcrumbs>> for more information.
+| `containerId`             | no       | GraphML      | `string`  | `NONE`    | Defines the id of the container.
+                                                                                Is required to access the Graph Service ReST API.
+                                                                                If none is provided the value is calculated by joining the graph namespaces using a `.` as separator.
 |=======================
 
 [[gd-topology-graphml-focus-strategy]]

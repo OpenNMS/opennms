@@ -1300,8 +1300,9 @@
         <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.vmware/${project.version}</bundle>
     </feature>
     <feature name="opennms-topology-runtime-application" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Application">
-        <details>Generated using Pax-Construct</details>
+        <details>Runtime and plugins for the OpenNMS Application Topology Provider</details>
         <feature>opennms-topology-runtime-base</feature>
+        <feature>opennms-graph-provider-application</feature>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.application/${project.version}</bundle>
     </feature>
     <feature name="opennms-topology-runtime-bsm" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: BSM">
@@ -1316,6 +1317,7 @@
     </feature>
     <feature name="opennms-topology-runtime-graphml" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: GraphML">
         <details>GraphML runtime and plugins for the OpenNMS topology web app.</details>
+        <feature>opennms-graphml</feature>
         <feature>opennms-topology-runtime-base</feature>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/graphml/${project.version}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
@@ -1471,6 +1473,7 @@
         <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
+
     <feature name="opennms-endpoints-grafana" version="${project.version}" description="OpenNMS :: Features :: Endpoints :: Grafana">
         <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.client/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.service/${project.version}</bundle>
@@ -1566,5 +1569,93 @@
 
     <feature name="opennms-threshold-states-shell" description="OpenNMS :: Features :: Collection :: Thresholding :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-graphml" description="OpenNMS :: Features :: GraphML :: API + Service + ReST" version="${project.version}">
+        <feature>guava</feature>
+        <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.rest/${project.version}</bundle>
+        <!-- Provided by ${OPENNMS_HOME}/lib -->
+        <!-- <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle> -->
+    </feature>
+
+    <!-- Convenient feature to install all graph related features-->
+    <feature name="opennms-graphs" description="OpenNMS :: Features :: Graph" version="${project.version}">
+        <feature>opennms-graph-api</feature>
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-graph-domain</feature>
+        <feature>opennms-graph-persistence</feature>
+        <feature>opennms-graph-shell</feature>
+        <feature>opennms-graph-rest</feature>
+        <feature>opennms-graph-provider-graphml</feature>
+        <feature>opennms-graph-provider-bsm</feature>
+        <feature>opennms-graph-provider-application</feature>
+        <feature>opennms-graph-provider-legacy</feature>
+    </feature>
+    <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
+        <feature>guava</feature>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
+    </feature>
+    <feature name="opennms-graph-service" description="OpenNMS :: Features :: Graph :: Service" version="${project.version}">
+        <feature>opennms-graph-api</feature>
+        <feature>opennms-graph-domain</feature>
+        <bundle>wrap:mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
+        <bundle>mvn:com.github.ben-manes.caffeine/caffeine/${caffeineVersion}</bundle>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.service/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-persistence" description="OpenNMS :: Features :: Graph :: Persistence" version="${project.version}">
+        <feature>opennms-graph-api</feature>
+        <!-- Provided by ${OPENNMS_HOME}/lib -->
+        <!-- <feature>opennms-dao-api</feature> -->
+        <!-- <feature>opennms-dao</feature> -->
+        <!-- <bundle>mvn:org.opennms.features.graph.dao/org.opennms.features.graph.dao.api/${project.version}</bundle> -->
+        <!-- <bundle>mvn:org.opennms.features.graph.dao/org.opennms.features.graph.dao.impl/${project.version}</bundle> -->
+    </feature>
+    <feature name="opennms-graph-rest" description="OpenNMS :: Features :: Graph :: ReST API" version="${project.version}">
+        <feature>opennms-graph-api</feature>
+        <feature>opennms-graph-service</feature>
+        <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph.rest/org.opennms.features.graph.rest.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.graph.rest/org.opennms.features.graph.rest.impl/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-domain" description="OpenNMS :: Features :: Graph :: Domain" version="${project.version}">
+        <feature>opennms-graph-api</feature>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.domain/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-shell" description="OpenNMS :: Features :: Graph :: Shell" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.shell/${project.version}</bundle>
+    </feature>
+    <!-- Graph Providers -->
+    <feature name="opennms-graph-provider-graphml" description="OpenNMS :: Features :: Graph :: Provider :: GraphML" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-core</feature>
+        <feature>opennms-graphml</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.graphml/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-provider-bsm" description="OpenNMS :: Features :: Graph :: Provider :: Business Services" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-model</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.bsm/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-provider-application" description="OpenNMS :: Features :: Graph :: Provider :: Application" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-model</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.application/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-provider-legacy" description="OpenNMS :: Features :: Graph :: Provider :: VMware + Enlinkd" version="${project.version}">
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-model</feature>
+        <feature>opennms-topology-api</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.legacy/${project.version}</bundle>
+    </feature>
+    <!-- For now it is only used for test purposes -->
+    <feature name="opennms-graph-provider-persistence-test" description="OpenNMS :: Features :: Graph :: Provider :: Persistence Test" version="${project.version}">
+        <feature>opennms-model</feature>
+        <feature>opennms-graph-service</feature>
+        <feature>opennms-graph-domain</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.persistence-test/${project.version}</bundle>
     </feature>
 </features>

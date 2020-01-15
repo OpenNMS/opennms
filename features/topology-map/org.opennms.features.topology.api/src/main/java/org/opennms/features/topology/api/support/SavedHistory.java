@@ -54,6 +54,8 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchCriteria;
@@ -282,9 +284,9 @@ public class SavedHistory {
         final Set<VertexRef> retVal = new HashSet<>();
         Criteria[] criterias = graphContainer.getCriteria();
         for (Criteria crit : criterias) {
-            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria
+            if (crit instanceof VertexHopCriteria
                     && !(crit instanceof CollapsibleCriteria)) {
-                retVal.addAll(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices());
+                retVal.addAll(((VertexHopCriteria) crit).getVertices());
             }
         }
         return retVal;
@@ -300,7 +302,7 @@ public class SavedHistory {
     }
 
     private static void applyVerticesInFocus(Set<VertexRef> focusVertices, GraphContainer graphContainer) {
-        focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
+        focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new DefaultVertexHopCriteria(vertexRef)));
     }
 
     private static void applySavedLocations(Map<VertexRef, Point> locations, Layout layout) {

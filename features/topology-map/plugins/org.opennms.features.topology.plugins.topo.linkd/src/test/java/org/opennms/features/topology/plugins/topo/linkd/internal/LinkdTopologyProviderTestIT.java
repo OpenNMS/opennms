@@ -202,7 +202,7 @@ public class LinkdTopologyProviderTestIT {
         // 2.) map the nodes by it's label name.
         final Map<String, Vertex> vertices = new HashMap<>();
         final Map<Integer,Vertex> verticesById = new HashMap<>();
-        for(Vertex vertex : linkdTopologyProvider.getVerticesWithoutGroups()) {
+        for(Vertex vertex : linkdTopologyProvider.getCurrentGraph().getVertices()) {
             String label = vertex.getLabel();
             if("Segment".equals(label)) { // enhance Segment to make it unique
                 label = StringUtils.substringAfter(vertex.getTooltipText(), "nodeid:["); // Shared Segment': nodeid:[13561], bridgeport
@@ -274,7 +274,7 @@ public class LinkdTopologyProviderTestIT {
         // 3.) Invalidate cache - nothing should be found:
         entityCache.refresh();
         refresh();
-        assertEquals(0, linkdTopologyProvider.getVerticesWithoutGroups().size());
+        assertEquals(0, linkdTopologyProvider.getCurrentGraph().getVertices().size());
     }
 
     private void refresh() {
@@ -291,18 +291,18 @@ public class LinkdTopologyProviderTestIT {
 
     private void verifyAmounts(TopologySettings settings) {
         refresh();
-        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
+        List<Vertex> vertices = linkdTopologyProvider.getCurrentGraph().getVertices();
 
         // Check amount nodes
         assertEquals(settings.getAmountNodes(), vertices.size());
 
         // Check amount edges
-        Map<VertexRef, Set<EdgeRef>> edgeIds = linkdTopologyProvider.getEdgeIdsForVertices(vertices.toArray(new Vertex[vertices.size()]));
+        Map<VertexRef, Set<EdgeRef>> edgeIds = linkdTopologyProvider.getCurrentGraph().getEdgeIdsForVertices(vertices.toArray(new Vertex[vertices.size()]));
         Set<EdgeRef> allEdges = new HashSet<>();
         edgeIds.values().forEach(allEdges::addAll);
         // 2 links form one edge:
         int expectedAmountOfEdges = settings.getAmountLinks() / 2;
-        assertEquals(expectedAmountOfEdges, linkdTopologyProvider.getEdgeTotalCount());
+        assertEquals(expectedAmountOfEdges, linkdTopologyProvider.getCurrentGraph().getEdgeTotalCount());
         assertEquals(expectedAmountOfEdges, allEdges.size());
     }
 
@@ -326,10 +326,10 @@ public class LinkdTopologyProviderTestIT {
                 .topology(TopologyGenerator.Topology.ring) // deterministic behaviour: each node is connected to its neighbors
                 .build();
         generateTopologyAndRefreshCaches(settings);
-        assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getVerticesWithoutGroups().size());
+        assertEquals(settings.getAmountNodes(), linkdTopologyProvider.getCurrentGraph().getVertices().size());
 
         // 2.) sort the nodes by it's label name.
-        List<Vertex> vertices = linkdTopologyProvider.getVerticesWithoutGroups();
+        List<Vertex> vertices = linkdTopologyProvider.getCurrentGraph().getVertices();
         Vertex[] verticesArray = vertices.toArray(new Vertex[vertices.size()]);
         Arrays.sort(verticesArray, Comparator.comparing(Vertex::getLabel).thenComparing(Vertex::getNodeID));
         vertices = Arrays.asList(verticesArray);
@@ -345,14 +345,14 @@ public class LinkdTopologyProviderTestIT {
     private void verifyLinkingBetweenNodes(VertexRef left, VertexRef right) {
 
         // 1.) get the EdgeRef that connects the 2 vertices
-        List<EdgeRef> leftRefs = Arrays.asList(this.linkdTopologyProvider.getEdgeIdsForVertex(left));
-        List<EdgeRef>  rightRefs = Arrays.asList(this.linkdTopologyProvider.getEdgeIdsForVertex(right));
+        List<EdgeRef> leftRefs = Arrays.asList(linkdTopologyProvider.getCurrentGraph().getEdgeIdsForVertex(left));
+        List<EdgeRef>  rightRefs = Arrays.asList(linkdTopologyProvider.getCurrentGraph().getEdgeIdsForVertex(right));
         Set<EdgeRef> intersection = intersect(leftRefs, rightRefs);
         assertEquals(1, intersection.size());
         EdgeRef ref = intersection.iterator().next();
 
         // 2.) get the Edge and check if it really connects the 2 Vertices
-        Edge edge = this.linkdTopologyProvider.getEdge(ref);
+        Edge edge = linkdTopologyProvider.getCurrentGraph().getEdge(ref);
         // we don't know the direction it is connected so we have to test both ways:
         assertTrue(
                 (edge.getSource().getVertex().equals(left) || edge.getSource().getVertex().equals(right)) // source side

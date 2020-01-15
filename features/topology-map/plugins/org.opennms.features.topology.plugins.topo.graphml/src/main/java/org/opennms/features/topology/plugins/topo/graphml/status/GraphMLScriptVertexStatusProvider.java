@@ -28,22 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
-import com.google.common.collect.Lists;
-import org.opennms.features.topology.api.info.MeasurementsWrapper;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.VertexProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
-import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
-import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
-import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
-
-import javax.script.ScriptEngineManager;
-import javax.script.SimpleBindings;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -52,6 +36,24 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
+
+import org.opennms.features.topology.api.info.MeasurementsWrapper;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
+import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
+
+import com.google.common.collect.Lists;
 
 public class GraphMLScriptVertexStatusProvider implements StatusProvider {
 
@@ -89,7 +91,7 @@ public class GraphMLScriptVertexStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final VertexProvider vertexProvider,
+    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final BackendGraph graph,
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
         // All vertices for the current vertexProvider

@@ -95,6 +95,7 @@ public class GenerateHierarchiesShellCommand implements Action {
             }
             lastBusinessService = businessService;
         }
+        businessServiceManager.triggerDaemonReload();
         return null;
     }
 
