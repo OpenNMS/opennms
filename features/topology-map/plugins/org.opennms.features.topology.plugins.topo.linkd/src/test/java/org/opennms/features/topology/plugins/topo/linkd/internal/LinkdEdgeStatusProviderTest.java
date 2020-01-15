@@ -42,9 +42,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.enlinkd.common.TopologyUpdater;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
@@ -61,7 +61,7 @@ public class LinkdEdgeStatusProviderTest {
 
     private AlarmDao m_alarmDao;
     private LinkdEdgeStatusProvider m_statusProvider;
-    private EdgeProvider m_edgeProvider;
+    private BackendGraph m_graph;
     private OnmsNode m_node1;
     private OnmsNode m_node2;
     private OnmsNode m_node3;
@@ -158,7 +158,7 @@ public class LinkdEdgeStatusProviderTest {
         m_edges.add(LinkdEdge.create("310|314", dehliport12, chennaiport13, ProtocolSupported.OSPF));
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_edgeProvider = EasyMock.createMock(EdgeProvider.class);
+        m_graph = EasyMock.createMock(BackendGraph.class);
         m_statusProvider = new LinkdEdgeStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
 
@@ -166,7 +166,7 @@ public class LinkdEdgeStatusProviderTest {
 
     @After
     public void tearDown() {
-        EasyMock.reset(m_alarmDao,m_edgeProvider);
+        EasyMock.reset(m_alarmDao,m_graph);
     }
 
     @Test
@@ -176,11 +176,11 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
         
 
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
 
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
@@ -188,7 +188,7 @@ public class LinkdEdgeStatusProviderTest {
             assertEquals("up", status.computeStatus());
         }
 
-        Map<EdgeRef, Status> statusMap2 = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap2 = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap2.size());
         for (Status status : statusMap2.values()) {
             assertEquals("up", status.computeStatus());
@@ -203,10 +203,10 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
 
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         assertEquals(statusMap.get(edges.get(1)).computeStatus(), "up");
@@ -226,11 +226,11 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
 
         
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
 
@@ -251,10 +251,10 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
 
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         assertEquals(statusMap.get(edges.get(0)).computeStatus(), "up");
@@ -274,10 +274,10 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
 
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         assertEquals(statusMap.get(edges.get(0)).computeStatus(), "up");
@@ -297,10 +297,10 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
 
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         assertEquals(statusMap.get(edges.get(0)).computeStatus(), "up");
@@ -320,10 +320,10 @@ public class LinkdEdgeStatusProviderTest {
         List<EdgeRef> edges = getEdgeRefs();
         for (EdgeRef ref: edges) 
             EasyMock.expect(
-                            m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+        EasyMock.replay(m_alarmDao,m_graph);
 
-        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
         assertEquals(8, statusMap.size());
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         assertEquals(statusMap.get(edges.get(0)).computeStatus(), "up");
@@ -343,10 +343,10 @@ public class LinkdEdgeStatusProviderTest {
                 List<EdgeRef> edges = getEdgeRefs();
                 for (EdgeRef ref: edges) 
                     EasyMock.expect(
-                                    m_edgeProvider.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
-                        EasyMock.replay(m_alarmDao,m_edgeProvider);
+                                    m_graph.getEdge(ref)).andReturn(getEdgeFromRef(ref)).anyTimes();
+                        EasyMock.replay(m_alarmDao,m_graph);
 
-                Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+                Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_graph, edges, new Criteria[0]);
                 assertEquals(8, statusMap.size());
                 assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
                 assertEquals(statusMap.get(edges.get(0)).computeStatus(), "up");

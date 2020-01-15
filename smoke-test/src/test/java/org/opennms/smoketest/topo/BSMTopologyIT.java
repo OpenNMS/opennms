@@ -45,7 +45,6 @@ import org.junit.Test;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.smoketest.BSMAdminIT;
 import org.opennms.smoketest.BSMAdminIT.BsmAdminPage;
-import org.opennms.smoketest.OpenNMSSeleniumDebugIT;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT.TopologyUIPage;
 import org.opennms.smoketest.TopologyIT.VisibleVertex;

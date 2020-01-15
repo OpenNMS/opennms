@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
      http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
     <key id="breadcrumb-strategy" for="graphml" attr.name="breadcrumb-strategy" attr.type="string"/>
+    <key id="containerId" for="graphml" attr.name="containerId" attr.type="string"/>
     <key id="label" for="all" attr.name="label" attr.type="string"></key>
     <key id="description" for="graph" attr.name="description" attr.type="string"></key>
     <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
@@ -16,6 +17,7 @@
     <key id="iconKey" for="node" attr.name="iconKey" attr.type="string"/>
     <data key="label">GraphML Topology Provider (test-graph)</data>
     <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
+    <data key="containerId">test</data>
     <graph id="regions" edgedefault="undirected">
         <data key="namespace">acme:regions</data>
         <data key="focus-strategy">ALL</data>
