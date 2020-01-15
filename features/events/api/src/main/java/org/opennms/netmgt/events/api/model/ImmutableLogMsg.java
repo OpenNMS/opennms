@@ -104,8 +104,8 @@ public final class ImmutableLogMsg implements ILogMsg {
     }
 
     @Override
-    public Boolean copyNotify() {
-        return notify;
+    public boolean hasNotify() {
+        return notify != null;
     }
 
     @Override

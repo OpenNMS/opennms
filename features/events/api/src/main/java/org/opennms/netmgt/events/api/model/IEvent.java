@@ -46,7 +46,6 @@ public interface IEvent {
     ICorrelation getCorrelation();
     Date getCreationTime();
     Integer getDbid();
-    Integer copyDbid();
     String getDescr();
     String getDistPoller();
     IForward getForward(final int index);
@@ -55,7 +54,6 @@ public interface IEvent {
     int getForwardCount();
     String getHost();
     String getIfAlias();
-    Integer copyIfIndex();
     Integer getIfIndex();
     String getInterface();
     InetAddress getInterfaceAddress();
@@ -68,7 +66,6 @@ public interface IEvent {
     String getMasterStation();
     String getMouseovertext();
     Long getNodeid();
-    Long copyNodeid();
     IOperAction getOperaction(final int index);
     IOperAction[] getOperaction();
     List<IOperAction> getOperactionCollection();

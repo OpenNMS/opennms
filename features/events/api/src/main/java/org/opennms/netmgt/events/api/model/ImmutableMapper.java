@@ -45,11 +45,11 @@ public class ImmutableMapper {
 
         return ImmutableAlarmData.newBuilder()
                 .setReductionKey(alarmData.getReductionKey())
-                .setAlarmType(alarmData.copyAlarmType())
+                .setAlarmType(alarmData.hasAlarmType() ? alarmData.getAlarmType() : null)
                 .setClearKey(alarmData.getClearKey())
-                .setAutoClean(alarmData.copyAutoClean())
+                .setAutoClean(alarmData.hasAutoClean() ? alarmData.getAutoClean() : null)
                 .setX733AlarmType(alarmData.getX733AlarmType())
-                .setX733ProbableCause(alarmData.copyX733ProbableCause())
+                .setX733ProbableCause(alarmData.hasX733ProbableCause() ? alarmData.getX733ProbableCause() : null)
                 .setUpdateFieldList(
                         alarmData.getUpdateFieldList()
                                 .stream().map(ImmutableMapper::fromMutableUpdateField)
@@ -103,14 +103,14 @@ public class ImmutableMapper {
 
         return ImmutableEvent.newBuilder()
                 .setUuid(event.getUuid())
-                .setDbId(event.copyDbid())
+                .setDbId(event.hasDbid() ? event.getDbid() : null)
                 .setDistPoller(event.getDistPoller())
                 .setCreationTime(event.getCreationTime())
                 .setMasterStation(event.getMasterStation())
                 .setMask(ImmutableMapper.fromMutableMask(event.getMask()))
                 .setUei(event.getUei())
                 .setSource(event.getSource())
-                .setNodeid(event.copyNodeid())
+                .setNodeid(event.hasNodeid() ? event.getNodeid() : null)
                 .setTime(event.getTime())
                 .setHost(event.getHost())
                 .setInterface(event.getInterface())
@@ -142,7 +142,7 @@ public class ImmutableMapper {
                 .setScriptList(ImmutableCollections.newListOfImmutableType(
                         event.getScriptCollection().stream().map(
                                 ImmutableMapper::fromMutableScript).collect(Collectors.toList())))
-                .setIfIndex(event.copyIfIndex())
+                .setIfIndex(event.hasIfIndex() ? event.getIfIndex() : null)
                 .setIfAlias(event.getIfAlias())
                 .setMouseOverText(event.getMouseovertext())
                 .setAlarmData(ImmutableMapper.fromMutableAlarmData(event.getAlarmData()))
@@ -168,7 +168,7 @@ public class ImmutableMapper {
         return ImmutableLogMsg.newBuilder()
                 .setContent(logMsg.getContent())
                 .setDest(logMsg.getDest())
-                .setNotify(logMsg.copyNotify())
+                .setNotify(logMsg.hasNotify() ? logMsg.getNotify() : null)
                 .build();
     }
 
@@ -247,10 +247,10 @@ public class ImmutableMapper {
                 .setId(snmp.getId())
                 .setIdText(snmp.getIdtext())
                 .setVersion(snmp.getVersion())
-                .setSpecific(snmp.copySpecific())
-                .setGeneric(snmp.copyGeneric())
+                .setSpecific(snmp.hasSpecific() ? snmp.getSpecific() : null)
+                .setGeneric(snmp.hasGeneric() ? snmp.getGeneric() : null)
                 .setCommunity(snmp.getCommunity())
-                .setTimeStamp(snmp.copyTimeStamp())
+                .setTimeStamp(snmp.hasTimeStamp() ? snmp.getTimeStamp() : null)
                 .build();
     }
 

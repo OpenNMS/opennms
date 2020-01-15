@@ -120,10 +120,10 @@ public class Snmp implements Serializable {
         snmp.setId(source.getId());
         snmp.setIdtext(source.getIdtext());
         snmp.setVersion(source.getVersion());
-        snmp.setSpecific(source.copySpecific());
-        snmp.setGeneric(source.copyGeneric());
+        snmp.setSpecific(source.hasSpecific() ? source.getSpecific() : null);
+        snmp.setGeneric(source.hasGeneric() ? source.getGeneric() : null);
         snmp.setCommunity(source.getCommunity());
-        snmp.setTimeStamp(source.copyTimeStamp());
+        snmp.setTimeStamp(source.hasTimeStamp() ? source.getTimeStamp() : null);
         return snmp;
     }
 
@@ -175,10 +175,6 @@ public class Snmp implements Serializable {
         return this._generic == null? 0 : this._generic;
     }
 
-    public Integer copyGeneric() {
-        return _generic;
-    }
-
     /**
      * Returns the value of field 'id'. The field 'id' has the
      * following description: The snmp enterprise id
@@ -212,10 +208,6 @@ public class Snmp implements Serializable {
         return this._specific == null? 0 : this._specific;
     }
 
-    public Integer copySpecific() {
-        return _specific;
-    }
-
     /**
      * Returns the value of field 'timeStamp'. The field
      * 'timeStamp' has the following description: The time stamp
@@ -225,10 +217,6 @@ public class Snmp implements Serializable {
     public Long getTimeStamp(
     ) {
         return this._timeStamp == null? 0 : this._timeStamp;
-    }
-
-    public Long copyTimeStamp() {
-        return _timeStamp;
     }
 
     /**

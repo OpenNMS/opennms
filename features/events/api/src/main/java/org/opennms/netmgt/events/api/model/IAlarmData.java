@@ -35,14 +35,14 @@ import java.util.List;
  */
 public interface IAlarmData {
     Integer getAlarmType();
-    Integer copyAlarmType();
+    boolean hasAlarmType();
     Boolean getAutoClean();
-    Boolean copyAutoClean();
+    boolean hasAutoClean();
     String getClearKey();
     String getReductionKey();
     String getX733AlarmType();
     Integer getX733ProbableCause();
-    Integer copyX733ProbableCause();
+    boolean hasX733ProbableCause();
     Boolean isAutoClean();
     List<IUpdateField> getUpdateFieldList();
     Boolean hasUpdateFields();

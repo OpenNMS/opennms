@@ -126,11 +126,11 @@ public class AlarmData implements Serializable {
 
         AlarmData alarmData = new AlarmData();
         alarmData.setReductionKey(source.getReductionKey());
-        alarmData.setAlarmType(source.copyAlarmType());
+        alarmData.setAlarmType(source.hasAlarmType() ? source.getAlarmType() : null);
         alarmData.setClearKey(source.getClearKey());
-        alarmData.setAutoClean(source.copyAutoClean());
+        alarmData.setAutoClean(source.hasAutoClean() ? source.getAutoClean() : null);
         alarmData.setX733AlarmType(source.getX733AlarmType());
-        alarmData.setX733ProbableCause(source.copyX733ProbableCause());
+        alarmData.setX733ProbableCause(source.hasX733ProbableCause() ? source.getX733ProbableCause() : null);
         alarmData.getUpdateFieldList().addAll(
                 source.getUpdateFieldList().stream().map(UpdateField::copyFrom).collect(Collectors.toList()));
         alarmData.setManagedObject(ManagedObject.copyFrom(source.getManagedObject()));
@@ -165,10 +165,6 @@ public class AlarmData implements Serializable {
         return this._alarmType == null? 0 : this._alarmType;
     }
 
-    public Integer copyAlarmType() {
-        return _alarmType;
-    }
-
     /**
      * Returns the value of field 'autoClean'.
      * 
@@ -176,10 +172,6 @@ public class AlarmData implements Serializable {
      */
     public Boolean getAutoClean() {
         return this._autoClean == null? false : this._autoClean;
-    }
-
-    public Boolean copyAutoClean() {
-        return _autoClean;
     }
 
     /**
@@ -218,10 +210,6 @@ public class AlarmData implements Serializable {
      */
     public Integer getX733ProbableCause() {
         return this._x733ProbableCause == null ? 0 : this._x733ProbableCause;
-    }
-
-    public Integer copyX733ProbableCause() {
-        return _x733ProbableCause;
     }
 
     /**

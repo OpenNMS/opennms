@@ -432,11 +432,6 @@ public final class ImmutableEvent implements IEvent {
     }
 
     @Override
-    public Integer copyDbid() {
-        return dbId;
-    }
-
-    @Override
     public String getDescr() {
         return descr;
     }
@@ -484,11 +479,6 @@ public final class ImmutableEvent implements IEvent {
     @Override
     public Integer getIfIndex() {
         return ifIndex == null ? 0 : ifIndex;
-    }
-
-    @Override
-    public Integer copyIfIndex() {
-        return ifIndex;
     }
 
     @Override
@@ -549,11 +539,6 @@ public final class ImmutableEvent implements IEvent {
     @Override
     public Long getNodeid() {
         return nodeid == null ? 0 : nodeid;
-    }
-
-    @Override
-    public Long copyNodeid() {
-        return nodeid;
     }
 
     @Override

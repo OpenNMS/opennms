@@ -149,8 +149,8 @@ public final class ImmutableAlarmData implements IAlarmData {
     }
 
     @Override
-    public Integer copyAlarmType() {
-        return alarmType;
+    public boolean hasAlarmType() {
+        return alarmType != null;
     }
 
     @Override
@@ -159,8 +159,8 @@ public final class ImmutableAlarmData implements IAlarmData {
     }
 
     @Override
-    public Boolean copyAutoClean() {
-        return autoClean;
+    public boolean hasAutoClean() {
+        return autoClean != null;
     }
 
     @Override
@@ -184,8 +184,8 @@ public final class ImmutableAlarmData implements IAlarmData {
     }
 
     @Override
-    public Integer copyX733ProbableCause() {
-        return x733ProbableCause;
+    public boolean hasX733ProbableCause() {
+        return x733ProbableCause != null;
     }
 
     @Override

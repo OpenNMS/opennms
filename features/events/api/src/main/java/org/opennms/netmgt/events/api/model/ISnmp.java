@@ -34,13 +34,10 @@ package org.opennms.netmgt.events.api.model;
 public interface ISnmp {
     String getCommunity();
     Integer getGeneric();
-    Integer copyGeneric();
     String getId();
     String getIdtext();
     Integer getSpecific();
-    Integer copySpecific();
     Long getTimeStamp();
-    Long copyTimeStamp();
     String getVersion();
     boolean hasGeneric();
     boolean hasSpecific();
