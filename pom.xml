@@ -3322,4 +3322,18 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <!--
+    This is required to override the effective POM's definition of Maven Central.
+    Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
+    In 3.2.3 (and newer), HTTPS is used.
+    Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
+  -->
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
 </project>
