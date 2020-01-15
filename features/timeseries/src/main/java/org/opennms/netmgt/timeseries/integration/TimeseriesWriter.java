@@ -233,18 +233,12 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         // dedouble attributes
         Set<MetaData> metaData = new HashSet<>();
         for(Sample sample : event.getSamples()) {
-            AttributeIdentifier attributeIdentifier = AttributeIdentifier.of(
-                    sample.getResource(),
-                    sample.getContext().getId(), // TODO Patrick: is context == group?
-                    sample.getName(),
-                    sample.getType());
 
             // attributes of sample
             if(sample.getResource().getAttributes().isPresent()) {
                 sample.getResource().getAttributes().get().forEach((key, value) -> metaData.add(new MetaData(sample.getResource().getId(), key, value)));
             }
         }
-        // TODO: Patrick: build Integration test: collection set pass it to our integration layer and read it again.
         this.timeSeriesMetaDataDao.store(metaData);
     }
 

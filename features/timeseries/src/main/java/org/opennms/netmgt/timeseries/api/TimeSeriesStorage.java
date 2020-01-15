@@ -40,7 +40,6 @@ import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 
 public interface TimeSeriesStorage {
 
-
     /** Stores a list of Samples in the timeseries database. */
     void store(List<Sample> samples) throws StorageException;
 

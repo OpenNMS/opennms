@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 
+import lombok.Builder;
+
 /**
  * A piece of text that describes or identifies a metric. It is inspired by Metrics 2.0,
  * @link http://metrics20.org/spec/
@@ -148,6 +150,10 @@ public class Metric {
 
         public MetricBuilder tag(String key, String value) {
             return this.tag(new Tag(key, value));
+        }
+
+        public MetricBuilder tag(MandatoryTag key, String value) {
+            return this.tag(key.name(), value);
         }
 
         public MetricBuilder tag(String value) {

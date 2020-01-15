@@ -32,5 +32,5 @@ package org.opennms.netmgt.timeseries.api.domain;
  * Defines aggregation for a timeseries: how are the time buckets aggregated?
  */
 public enum Aggregation {
-    AVERAGE, MAX, MIN
+    AVERAGE, MAX, MIN, NONE
 }

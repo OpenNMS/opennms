@@ -110,7 +110,7 @@ public class TimeSeriesMetaDataDao {
         final DBUtils db = new DBUtils(this.getClass());
         try {
 
-            String sql = "SELECT name, value FROM timescale_meta where resourceid = ?";
+            String sql = "SELECT name, value FROM timeseries_meta where resourceid = ?";
 
             final Connection connection = this.dataSource.getConnection();
             db.watch(connection);
