@@ -235,6 +235,14 @@
           </annotation>
         </element>
       </sequence>
+
+      <attribute name="location" type="string" use="optional">
+        <annotation>
+          <documentation>The monitoring location where this exclude range
+            will be excluded.</documentation>
+        </annotation>
+      </attribute>
+
     </complexType>
   </element>
 

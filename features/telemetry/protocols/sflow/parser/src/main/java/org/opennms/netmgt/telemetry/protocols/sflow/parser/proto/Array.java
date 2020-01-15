@@ -28,30 +28,31 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class Array<T> implements Iterable<T> {
     @FunctionalInterface
     public interface Parser<T> {
-        T parse(final ByteBuffer buffer) throws InvalidPacketException;
+        T parse(final ByteBuf buffer) throws InvalidPacketException;
     }
 
     public final int size;
     public final List<T> values;
 
-    public Array(final ByteBuffer buffer,
+    public Array(final ByteBuf buffer,
                  final Optional<Integer> size,
-                 final Array.Parser<? extends T> parser) throws InvalidPacketException {
+                 final Parser<? extends T> parser) throws InvalidPacketException {
 
         this.size = size.orElseGet(() -> (int) BufferUtils.uint32(buffer));
 

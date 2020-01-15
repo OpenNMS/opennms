@@ -44,7 +44,6 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class DefaultTopologyServiceClient implements TopologyServiceClient {
@@ -75,7 +74,7 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
 
     @Override
     public Vertex getVertex(VertexRef target, Criteria... criteria) {
-        return topologyService.getGraphProvider(metaTopologyId, namespace).getVertex(target, criteria);
+        return topologyService.getGraphProvider(metaTopologyId, namespace).getCurrentGraph().getVertex(target, criteria);
     }
 
     @Override
@@ -85,17 +84,17 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
 
     @Override
     public Vertex getVertex(String namespace, String vertexId) {
-        return topologyService.getGraphProvider(metaTopologyId, namespace).getVertex(namespace, vertexId);
+        return topologyService.getGraphProvider(metaTopologyId, namespace).getCurrentGraph().getVertex(namespace, vertexId);
     }
 
     @Override
     public int getVertexTotalCount() {
-        return topologyService.getGraphProvider(metaTopologyId, namespace).getVertexTotalCount();
+        return topologyService.getGraphProvider(metaTopologyId, namespace).getCurrentGraph().getVertexTotalCount();
     }
 
     @Override
     public int getEdgeTotalCount() {
-        return topologyService.getGraphProvider(metaTopologyId, namespace).getEdgeTotalCount();
+        return topologyService.getGraphProvider(metaTopologyId, namespace).getCurrentGraph().getEdgeTotalCount();
     }
 
     @Override
@@ -108,10 +107,10 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
         return topologyService.getGraphProvider(metaTopologyId, namespace).getDefaults();
     }
 
-    @Override
-    public List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria) {
-        return topologyService.getGraphProvider(metaTopologyId, namespace).getChildren(vertexId, criteria);
-    }
+//    @Override
+//    public List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria) {
+//        return topologyService.getGraphProvider(metaTopologyId, namespace).getChildren(vertexId, criteria);
+//    }
 
     @Override
     public Collection<GraphProvider> getGraphProviders() {
@@ -129,7 +128,7 @@ public class DefaultTopologyServiceClient implements TopologyServiceClient {
     }
 
     @Override
-    public VertexProvider getDefaultGraphProvider() {
+    public GraphProvider getDefaultGraphProvider() {
         return topologyService.getMetaTopologyProvider(metaTopologyId).getDefaultGraphProvider();
     }
 

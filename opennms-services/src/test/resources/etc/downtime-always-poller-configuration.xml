@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<poller-configuration threads="30" serviceUnresponsiveEnabled="false">
+  <node-outage status="on">
+    <critical-service name="ICMP" />
+  </node-outage>
+
+  <package name="DowntimeNever">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <rrd step="60">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="ICMP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="icmp" />
+      <parameter key="ds-name" value="icmp" />
+    </service>
+
+    <downtime interval="20" begin="0" end="200"/>
+    <downtime begin="200" delete="always" />
+  </package>
+
+  <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+</poller-configuration>

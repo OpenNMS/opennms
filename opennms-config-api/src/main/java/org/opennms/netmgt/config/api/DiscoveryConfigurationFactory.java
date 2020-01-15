@@ -69,16 +69,17 @@ public interface DiscoveryConfigurationFactory {
 	
 	/**
 	 * <p>isExcluded</p>
-	 * 
-	 * @param an InetAddress
-	 * @return a boolean
+	 *
+	 * @param address @{@link InetAddress}
+     * @param location a String
+     * @return a boolean
 	 */
-	boolean isExcluded(final InetAddress address);
+	boolean isExcluded(final InetAddress address, String location);
 	
 	/**
 	 * <p>getForeignSource</p>
 	 * 
-	 * @param an InetAddress
+	 * @param address InetAddress
 	 * @return a String
 	 */
 	String getForeignSource(InetAddress address);

@@ -33,9 +33,14 @@ include::text/topology/infopanel.adoc[]
 include::text/topology/graphml.adoc[]
 include::text/topology/update.adoc[]
 
+[[ga-development-graph-service-api]]
+== Graph Service API
+include::text/graph/graph.adoc[]
+
 == CORS Support
 include::text/rest/CORS.adoc[]
 
+[[ga-development-rest]]
 == ReST API
 include::text/rest/rest-api.adoc[]
 
@@ -53,6 +58,7 @@ include::text/rest/categories.adoc[]
 include::text/rest/flows.adoc[]
 include::text/rest/classifications.adoc[]
 include::text/rest/foreign_sources.adoc[]
+include::text/rest/graph.adoc[]
 include::text/rest/groups.adoc[]
 include::text/rest/heatmap.adoc[]
 include::text/rest/ifservices.adoc[]

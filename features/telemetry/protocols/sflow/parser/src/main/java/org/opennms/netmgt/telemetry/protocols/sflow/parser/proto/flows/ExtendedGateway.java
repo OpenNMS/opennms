@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
@@ -40,6 +39,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedInteger;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_gateway {
 //    next_hop nexthop;           /* Address of the border router that should
@@ -61,7 +62,7 @@ public class ExtendedGateway implements FlowData {
     public final Array<UnsignedInteger> communities;
     public final long localpref;
 
-    public ExtendedGateway(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedGateway(final ByteBuf buffer) throws InvalidPacketException {
         this.nexthop = new NextHop(buffer);
         this.as = BufferUtils.uint32(buffer);
         this.src_as = BufferUtils.uint32(buffer);

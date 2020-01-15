@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct host_net_io {
 //    unsigned hyper bytes_in;  /* total bytes in */
@@ -59,7 +59,7 @@ public class HostNetIo implements CounterData {
     public final long errs_out;
     public final long drops_out;
 
-    public HostNetIo(final ByteBuffer buffer) throws InvalidPacketException {
+    public HostNetIo(final ByteBuf buffer) throws InvalidPacketException {
         this.bytes_in = BufferUtils.uint64(buffer);
         this.pkts_in = BufferUtils.uint32(buffer);
         this.errs_in = BufferUtils.uint32(buffer);

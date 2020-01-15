@@ -1,6 +1,6 @@
 {
     "name": "opennms-core-web-assets",
-    "version": "25.0.0-SNAPSHOT",
+    "version": "26.0.0-SNAPSHOT",
     "description": "JavaScript Web Components for OpenNMS",
     "license": "AGPL-3.0",
     "repository": {
@@ -8,7 +8,7 @@
         "url": "http://github.com/OpenNMS/opennms.git"
     },
     "devDependencies": {
-        "@babel/cli": "^7.6.2",
+        "@babel/cli": "^7.6.4",
         "@babel/core": "^7.6.2",
         "@babel/plugin-proposal-async-generator-functions": "^7.0.0",
         "@babel/plugin-proposal-class-properties": "^7.5.5",
@@ -64,13 +64,13 @@
         "ts-jest": "^24.1.0",
         "typescript": "^3.6.3",
         "uglifyjs-webpack-plugin": "^2.2.0",
-        "webpack": "^4.41.0",
+        "webpack": "^4.41.2",
         "webpack-bundle-analyzer": "^3.5.2",
         "webpack-cli": "^3.3.9",
         "yargs": "^14.0.0"
     },
     "dependencies": {
-        "@babel/runtime-corejs3": "^7.6.2",
+        "@babel/runtime-corejs3": "^7.6.3",
         "angular": "~1.5.11",
         "angular-animate": "~1.5.11",
         "angular-bootstrap-checkbox": "^0.5.0",

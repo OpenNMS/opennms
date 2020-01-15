@@ -30,7 +30,15 @@ package org.opennms.web.api;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @deprecated use HeaderComponent from vaadin-components/header instead.
+ */
+@Deprecated
 public interface OnmsHeaderProvider {
 
+    /**
+     * @deprecated use HeaderComponent from vaadin-components/header instead.
+     */
+    @Deprecated
     String getHeaderHtml(HttpServletRequest request) throws Exception;
 }

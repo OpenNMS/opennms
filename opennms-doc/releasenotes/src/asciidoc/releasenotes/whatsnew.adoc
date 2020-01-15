@@ -71,6 +71,11 @@ This reduces the amount of code we run through trying to figure out date formats
 * Docker containers are now built automatically as part of our CI process.
 * The `horizon` Docker container now runs as non-root by default.
 
+==== Systemd Updates
+
+The OpenNMS, Minion, and Sentinel packages all contain first-class Systemd files for startup.
+If you're upgrading from a previous release, you may need to do a `systemctl enable <service>` (`minion`, `sentinel`, etc.) and `systemctl daemon-reload` for things to start up as expected.
+
 ==== Poller
 
 * Pollerd now reloads properly with a `daemonReload` event.
@@ -173,5 +178,5 @@ A ton of other internal improvements have been made:
 * More instrumentation has been added to the Jaeger OpenTracing support introduced in Horizon 24.
 * A ton of performance improvements have been made in various parts of the codebase.
 * 2 new roles have been added:
-  * `ROLE_REPORT_DESIGNER` - use the ReST APIs or UI for manipulating reports and report schedules
-  * `ROLE_FLOW_MANAGER` - use the Rest APIs or UI for managing flow classification rules
+  ** `ROLE_REPORT_DESIGNER` - use the ReST APIs or UI for manipulating reports and report schedules
+  ** `ROLE_FLOW_MANAGER` - use the Rest APIs or UI for managing flow classification rules

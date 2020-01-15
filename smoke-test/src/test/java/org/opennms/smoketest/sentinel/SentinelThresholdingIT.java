@@ -59,9 +59,10 @@ import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.telemetry.Packet;
+import org.opennms.smoketest.telemetry.Payload;
+import org.opennms.smoketest.telemetry.Sender;
 import org.opennms.smoketest.utils.KarafShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ public class SentinelThresholdingIT {
         // However, sentinel may not know about it yet, so we manually sync the InterfaceToNodeCache in order to
         // "see" the new nodes and interfaces.
         final InetSocketAddress sentinelSshAddress = stack.sentinel().getSshAddress();
-        new KarafShell(sentinelSshAddress).runCommand("nodecache:sync");
+        new KarafShell(sentinelSshAddress).runCommand("opennms-nodecache:sync");
 
         final InetSocketAddress minionListenerAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.JTI);
         sendTriggerHighThresholdMessages(minionListenerAddress);
@@ -147,21 +148,21 @@ public class SentinelThresholdingIT {
     }
 
     private void sendTriggerHighThresholdMessages(InetSocketAddress minionListenerAddress) throws InterruptedException, IOException {
-        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 0).toByteArray(),
-                minionListenerAddress).send();
+        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 0))
+                .send(Sender.udp(minionListenerAddress));
         sleepToEnsureSeparateDelivery();
         // We need the delta sum of in+out to exceed 100,000/s keeping in mind we slept for 30 seconds
-        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 10000000, 10000000, 1).toByteArray(),
-                minionListenerAddress).send();
+        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 10000000, 10000000, 1))
+                .send(Sender.udp(minionListenerAddress));
     }
 
     private void sendClearHighThresholdMessages(InetSocketAddress minionListenerAddress) throws InterruptedException,
             IOException {
-        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 3).toByteArray(),
-                minionListenerAddress).send();
+        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 3))
+                .send(Sender.udp(minionListenerAddress));
         sleepToEnsureSeparateDelivery();
-        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 4).toByteArray(),
-                minionListenerAddress).send();
+        new Packet(buildJtiMessage(NODE_IP, INTERFACE_ID, 1, 1, 4))
+                .send(Sender.udp(minionListenerAddress));
     }
     
     private void sleepToEnsureSeparateDelivery() throws InterruptedException {
@@ -171,8 +172,8 @@ public class SentinelThresholdingIT {
         Thread.sleep(30000);
     }
 
-    public static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String interfaceName,
-                                                               long ifInOctets, long ifOutOctets, int sequenceNumber) {
+    public static Payload buildJtiMessage(String ipAddress, String interfaceName,
+                                          long ifInOctets, long ifOutOctets, int sequenceNumber) {
         Port.GPort.Builder builder = Port.GPort.newBuilder();
         sequenceNumber++;
         Random rnd = new Random();
@@ -215,13 +216,14 @@ public class SentinelThresholdingIT {
                 .setExtension(TelemetryTop.juniperNetworks, juniperNetworksSensors)
                 .build();
 
-        return TelemetryTop.TelemetryStream.newBuilder()
+        return Payload.direct(TelemetryTop.TelemetryStream.newBuilder()
                 .setSystemId(ipAddress)
                 .setComponentId(0)
                 .setSensorName("intf-stats")
                 .setSequenceNumber(49103 + sequenceNumber)
                 .setTimestamp(new Date().getTime())
                 .setEnterprise(sensors)
-                .build();
+                .build()
+                .toByteArray());
     }
 }

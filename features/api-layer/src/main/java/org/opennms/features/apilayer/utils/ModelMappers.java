@@ -30,6 +30,7 @@ package org.opennms.features.apilayer.utils;
 
 import java.util.stream.Collectors;
 
+import org.hibernate.ObjectNotFoundException;
 import org.mapstruct.factory.Mappers;
 import org.opennms.features.apilayer.model.mappers.AlarmFeedbackMapper;
 import org.opennms.features.apilayer.model.mappers.DatabaseEventMapper;
@@ -54,11 +55,14 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility functions for mapping to/from API types to OpenNMS types
  */
 public class ModelMappers {
+    private static final Logger LOG = LoggerFactory.getLogger(ModelMappers.class);
 
     private static final InMemoryEventMapper inMemoryEventMapper = Mappers.getMapper(InMemoryEventMapper.class);
     private static final DatabaseEventMapper databaseEventMapper = Mappers.getMapper(DatabaseEventMapper.class);
@@ -67,7 +71,10 @@ public class ModelMappers {
     private static final AlarmFeedbackMapper alarmFeedbackMapper = Mappers.getMapper(AlarmFeedbackMapper.class);
     
     public static Alarm toAlarm(OnmsAlarm alarm) {
-        return alarm == null ? null : ImmutableAlarm.newBuilder()
+        if (alarm == null) {
+            return null;
+        }
+        final ImmutableAlarm.Builder builder = ImmutableAlarm.newBuilder()
                 .setReductionKey(alarm.getReductionKey())
                 .setId(alarm.getId())
                 .setNode(toNode(alarm.getNode()))
@@ -82,9 +89,22 @@ public class ModelMappers {
                 .setLogMessage(alarm.getLogMsg())
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
-                .setFirstEventTime(alarm.getFirstEventTime())
-                .setLastEvent(toEvent(alarm.getLastEvent()))
-                .build();
+                .setFirstEventTime(alarm.getFirstEventTime());
+        try {
+            builder.setLastEvent(toEvent(alarm.getLastEvent()));
+        } catch (RuntimeException e) {
+            // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
+            // which has a different class for this loaded then what is being thrown
+            // Resort to comparing the name instead
+            if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
+                LOG.debug("The last event for alarm with id {} was deleted before we could perform the mapping." +
+                        " Last event will be null.", alarm.getId());
+            } else {
+                // Rethrow
+                throw e;
+            }
+        }
+        return builder.build();
     }
 
     public static InMemoryEvent toEvent(Event event) {

@@ -125,7 +125,7 @@ public interface ProvisionService {
     OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
 
     /**
-     * Delete the indicated node form the database.
+     * Delete the indicated node from the database.
      */
     @Transactional
     void deleteNode(Integer nodeId);
@@ -133,8 +133,19 @@ public interface ProvisionService {
     @Transactional
     void deleteInterface(Integer nodeId, String ipAddr);
 
+    /**
+     * Delete the indicated service from the database.
+     * 
+     * If the service is the last service on the interface, delete the interface as well.
+     * If the interface is the last interface on the node, delete the node as well.
+     * 
+     * @param nodeId the node containing the service
+     * @param addr the IP address containing the service
+     * @param service the service to delete
+     * @param ignoreUnmanaged if true, cascade delete the containing interface if only unmanaged services remain
+     */
     @Transactional
-    void deleteService(Integer nodeId, InetAddress addr, String service);
+    void deleteService(Integer nodeId, InetAddress addr, String service, boolean ignoreUnmanaged);
 
     /**
      * Insert the provided node into the database
@@ -161,7 +172,7 @@ public interface ProvisionService {
      *
      * @param name
      *            the name of the OnmsCategory to look up
-     * @return a OnmsCategor that represents the given name, if none existed
+     * @return an OnmsCategory that represents the given name, if none existed
      *         in the database a new one will have been created.
      */
     @Transactional
@@ -244,4 +255,6 @@ public interface ProvisionService {
     LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
 
     SnmpProfileMapper getSnmpProfileMapper();
+
+    public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper);
 }

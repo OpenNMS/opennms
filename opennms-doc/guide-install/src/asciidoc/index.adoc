@@ -109,10 +109,20 @@ ifndef::opennms-prime[]
 include::text/sentinel/debian/debian.adoc[]
 endif::opennms-prime[]
 
-// Enable section numbers
-:sectnums:
+ifndef::opennms-prime[]
+include::text/run-with-docker/introduction.adoc[]
+include::text/run-with-docker/opennms-config.adoc[]
+include::text/run-with-docker/minion-config.adoc[]
+include::text/run-with-docker/sentinel-config.adoc[]
+endif::opennms-prime[]
 
 // Alternate ways of doing it
+include::text/minion-custom-messaging-system/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-horizon.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-minion.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/tuning-kafka.adoc[]
+
 include::text/install-opennms-versions.adoc[]
 include::text/minion-config-file.adoc[]
 include::text/run-in-non-root.adoc[]
@@ -128,10 +138,4 @@ ifndef::opennms-prime[]
 include::text/time-series-storage/rrdtool/debian.adoc[]
 endif::opennms-prime[]
 
-include::text/time-series-storage/newts/introduction.adoc[]
-include::text/time-series-storage/newts/rhel.adoc[]
-ifndef::opennms-prime[]
-include::text/time-series-storage/newts/debian.adoc[]
-include::text/time-series-storage/newts/windows.adoc[]
-endif::opennms-prime[]
-include::text/time-series-storage/newts/configure-opennms.adoc[]
+include::text/time-series-storage/newts.adoc[]

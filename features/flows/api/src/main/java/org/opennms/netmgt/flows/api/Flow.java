@@ -224,4 +224,15 @@ public interface Flow {
      * VLAN ID.
      */
     Integer getVlan();
+
+    /**
+     * Method to get node lookup identifier.
+     *
+     * This field can be used as an alternate means to identify the
+     * exporter node when the source address of the packets are altered
+     * due to address translation.
+     *
+     * * @return the identifier
+     */
+    String getNodeIdentifier();
 }

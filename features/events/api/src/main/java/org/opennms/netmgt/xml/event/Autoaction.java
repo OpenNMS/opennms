@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.IAutoAction;
 
 import java.io.Serializable;
 
@@ -84,6 +86,16 @@ public class Autoaction implements Serializable {
         setState("on");
     }
 
+    public static Autoaction copyFrom(IAutoAction source) {
+        if (source == null) {
+            return null;
+        }
+
+        Autoaction autoaction = new Autoaction();
+        autoaction.setContent(source.getContent());
+        autoaction.setState(source.getState());
+        return autoaction;
+    }
 
       //-----------/
      //- Methods -/

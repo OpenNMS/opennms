@@ -2,6 +2,7 @@ const angular = require('vendor/angular-js');
 const elementList = require('../onms-elementList/lib/elementList');
 require('../../lib/onms-pagination');
 require('../../lib/onms-http');
+require('../onms-default-apps');
 require('angular-bootstrap-confirm');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
@@ -19,7 +20,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
 const confirmTopoverTemplate = require('./views/modals/popover.html');
 
-const handleErrorResponse = function(response) {
+const handleErrorResponse = function(response, $scope) {
     if (response && response.data) {
         var error = response.data;
         $scope.error = {};
@@ -43,7 +44,8 @@ const handleErrorResponse = function(response) {
             'onms.http',
             'onms.elementList',
             'mwl.confirm',
-            'onms.pagination'
+            'onms.pagination',
+            'onms.default.apps',
         ])
         .run(function(confirmationPopoverDefaults) {
             confirmationPopoverDefaults.templateUrl = confirmTopoverTemplate;
@@ -277,8 +279,11 @@ const handleErrorResponse = function(response) {
                             $scope.refreshTabs();
                             $scope.refresh();
                         };
+                        var errorCallback = function(response) {
+                            handleErrorResponse(response, $scope);
+                        };
 
-                        ClassificationGroupService.update(group, refreshCallback, handleErrorResponse);
+                        ClassificationGroupService.update(group, refreshCallback, errorCallback);
                     }
                 },
                 items: "tr:not(.unsortable)"
@@ -452,8 +457,11 @@ const handleErrorResponse = function(response) {
                         var refreshCallback = function () {
                             $scope.refreshAll();
                         };
+                        var errorCallback = function(response) {
+                            handleErrorResponse(response, $scope);
+                        };
 
-                        ClassificationRuleService.update(rule, refreshCallback, handleErrorResponse);
+                        ClassificationRuleService.update(rule, refreshCallback, errorCallback);
                     }
                 }
             };
@@ -599,11 +607,14 @@ const handleErrorResponse = function(response) {
                 var closeCallback = function() {
                     $uibModalInstance.close();
                 };
+                var errorCallback = function(response) {
+                    handleErrorResponse(response, $scope);
+                };
                 $scope.classification.protocols = convertProtocolsArrayToStringArray($scope.selectedProtocols);
                 if ($scope.classification.id) {
-                    ClassificationRuleService.update($scope.classification, closeCallback, handleErrorResponse);
+                    ClassificationRuleService.update($scope.classification, closeCallback, errorCallback);
                 } else {
-                    ClassificationRuleService.save($scope.classification, closeCallback, handleErrorResponse);
+                    ClassificationRuleService.save($scope.classification, closeCallback, errorCallback);
                 }
             };
 
@@ -651,10 +662,13 @@ const handleErrorResponse = function(response) {
                 var closeCallback = function() {
                     $uibModalInstance.close();
                 };
+                var errorCallback = function(response) {
+                    handleErrorResponse(response, $scope);
+                };
                 if ($scope.group.id) {
-                    ClassificationGroupService.update($scope.group, closeCallback, handleErrorResponse);
+                    ClassificationGroupService.update($scope.group, closeCallback, errorCallback);
                 } else {
-                    ClassificationGroupService.save($scope.group, closeCallback, handleErrorResponse);
+                    ClassificationGroupService.save($scope.group, closeCallback, errorCallback);
                 }
             };
 

@@ -1,0 +1,34 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Setup using Apache Kafka
+
+This section describes how to use _Apache Kafka_ as a messaging system between _{opennms-product-name}_ and _Minions_ in a remote location.
+
+==== Objectives
+
+* Configure _{opennms-product-name}_ to forward _RPC_ to a _Minion_
+* Configure _Minion_ to forward messages over the _Sink_ component to an _{opennms-product-name}_ instance
+* Disable the embedded _Active MQ_ message broker on the _Minion_.
+* Verify the functionality on the _Minion_ using the `health:check` command and ensure the _Minion_ is registered and monitored in the _{opennms-product-name}_ web interface
+
+==== Before you begin
+
+The following requirements should be satisfied before you can start with this tutorial:
+
+* At least a minimal Kafka system up and running
+  If you want to start in a lab, the link:https://kafka.apache.org/20/documentation.html#quickstart[Apache Kafka Quickstart] guide is a good starting point
+* An instance running with _{opennms-product-name}_ and at least one deployed _Minion_
+* Communication between _{opennms-product-name}_, _Minion_ and _Apache Kafka_ is possible on TCP port 9092
+
+.Network topology used for the following configuration example
+image:minion-custom-messaging-system/setup-minion-kafka.png[]
+
+NOTE: The example is used to describe how the components need to be configured.
+      IP addresses and hostnames need to be adjusted accordingly.
+
+NOTE: You can add more than one Kafka server to the configuration.
+      The driver will attempt to connect to the first entry.
+      If that is successful the whole broker topology will be discovered and will be known by the client.
+      The other entries are only used if the connection to the first entry fails.

@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -48,6 +48,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Head
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
@@ -96,11 +99,15 @@ public class BlackboxTest {
                 channel.read(buffer);
                 buffer.flip();
 
+                final ByteBuf buf = Unpooled.wrappedBuffer(buffer);
+
                 do {
-                    final Header header = new Header(slice(buffer, Header.SIZE));
-                    final Packet packet = new Packet(session, header, buffer);
+                    final Header header = new Header(slice(buf, Header.SIZE));
+                    final Packet packet = new Packet(session, header, buf);
+
                     assertThat(packet.header.versionNumber, is(0x0009));
-                } while (buffer.hasRemaining());
+
+                } while (buf.isReadable());
             }
         }
     }

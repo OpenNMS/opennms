@@ -28,23 +28,24 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef int label_stack<>;
 
 public class LabelStack {
     public final Array<Integer> label_stack;
 
-    public LabelStack(final ByteBuffer buffer) throws InvalidPacketException {
+    public LabelStack(final ByteBuf buffer) throws InvalidPacketException {
         this.label_stack = new Array(buffer, Optional.empty(), BufferUtils::sint32);
     }
 

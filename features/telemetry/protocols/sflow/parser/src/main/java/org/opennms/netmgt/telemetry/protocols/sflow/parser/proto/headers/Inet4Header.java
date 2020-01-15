@@ -30,15 +30,16 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.Throwables;
+
+import io.netty.buffer.ByteBuf;
 
 public class Inet4Header {
 
@@ -54,7 +55,7 @@ public class Inet4Header {
 
     public final Integer tcpFlags;
 
-    public Inet4Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Inet4Header(final ByteBuf buffer) throws InvalidPacketException {
         final int version_ihl = BufferUtils.uint8(buffer);
         if (version_ihl >> 4 != 0x04) {
             // First four bits must be 0x04
