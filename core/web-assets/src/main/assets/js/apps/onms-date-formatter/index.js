@@ -2,8 +2,9 @@
 
 const angular = require('vendor/angular-js');
 const moment = require('moment');
-const JSJoda = require('js-joda');
-require('js-joda-timezone');
+const JSJoda = require('@js-joda/core');
+require('@js-joda/timezone');
+require('@js-joda/locale_en');
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 function OnmsDateFormatter() {
