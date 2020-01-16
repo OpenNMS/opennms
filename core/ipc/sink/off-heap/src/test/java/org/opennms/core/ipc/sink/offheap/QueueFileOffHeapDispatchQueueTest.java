@@ -40,11 +40,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,6 +79,33 @@ public class QueueFileOffHeapDispatchQueueTest {
 
         assertThat(queue.dequeue().getValue(), equalTo(payload1));
         assertThat(queue.dequeue().getValue(), equalTo(payload2));
+    }
+
+    @Test
+    public void dequeuesInOrder() throws IOException, WriteFailedException, InterruptedException {
+        DispatchQueue<String> queue = new QueueFileOffHeapDispatchQueue<>(String::getBytes, String::new,
+                "dequeuesInOrder", Paths.get(folder.newFolder().toURI()), 1000, 100, 10_000_000);
+
+        int numEntries = 10020;
+        List<String> toQueue = IntStream.range(0, numEntries)
+                .boxed()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+
+        
+        for (String s : toQueue) {
+            queue.enqueue(s, "key" + s);
+        }
+
+        assertThat(queue.getSize(), equalTo(numEntries));
+
+        List<String> dequeued = new ArrayList<>();
+        
+        while(queue.getSize() > 0) {
+            dequeued.add(queue.dequeue().getValue());
+        }
+        
+        assertThat(dequeued, equalTo(toQueue));
     }
 
     @Test

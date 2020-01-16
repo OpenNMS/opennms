@@ -164,7 +164,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             String newId = UUID.randomUUID().toString();
             DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, newId);
             
-            LOG.trace("Result of enqueueing was {}", result);
+            LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
 
             if (result == DispatchQueue.EnqueueResult.DEFERRED) {
                 sendFuture.complete(DispatchStatus.QUEUED);

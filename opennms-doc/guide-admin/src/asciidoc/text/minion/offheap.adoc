@@ -21,6 +21,10 @@ entriesAllowedOnHeap = 100000
 offHeapFilePath =' > "$MINION_HOME/etc/org.opennms.core.ipc.sink.offheap.cfg"
 ----
 
+A file will be created for each module and the configuration will be applied to each module individually. Therefore
+setting a size of 1GB for example means that the maximum size for each module's file is 1GB not that the total for all
+modules is 1GB.
+
 The number of entries allowed to be queued on the heap can be controlled by setting the entriesAllowedOnHeap value.
 
 Specify offHeapSize in KB, MB or GB. For ex: 1, 128MB, 65536KB. The size specified must be a power of 2. For example
