@@ -3340,5 +3340,10 @@
       <name>Eclipse</name>
       <url>https://repo1.maven.org/maven2/</url>
     </repository>
+    <repository>
+      <id>maven-restlet</id>
+      <name>Restlet</name>
+      <url>https://repo.spring.io/plugins-release/</url>
+    </repository>
   </repositories>
 </project>
