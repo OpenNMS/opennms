@@ -129,10 +129,6 @@ if (not $MAVEN_OPTS =~ /https.protocols/) {
 	$MAVEN_OPTS .= " -Dhttps.protocols=TLSv1.2";
 }
 
-if (not $MAVEN_OPTS =~ /debug/) {
-	$MAVEN_OPTS .= " --debug";
-}
-
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
