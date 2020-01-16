@@ -30,6 +30,7 @@
 package org.opennms.netmgt.timeseries.integration;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,11 +50,14 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ResourceType;
+import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -117,7 +121,19 @@ public class TimeseriesRoundtripIT {
         when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get(Integer.toString(nodeId)));
         NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeId);
         InterfaceLevelResource ifLevelResource = new InterfaceLevelResource(nodeLevelResource, "if-x");
-        DeferredGenericTypeResource genericResource = new DeferredGenericTypeResource(nodeLevelResource, "sometype", "someinstance");
+
+       //  DeferredGenericTypeResource dereferredGenericResource = new DeferredGenericTypeResource(nodeLevelResource, "sometype", "someinstance");
+
+        ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
+        when(rt.getName()).thenReturn("Charles");
+        when(rt.getStorageStrategy().getClazz()).thenReturn(MockStorageStrategy.class.getCanonicalName());
+        when(rt.getPersistenceSelectorStrategy().getClazz()).thenReturn(MockPersistenceSelectorStrategy.class.getCanonicalName());
+
+        DeferredGenericTypeResource deferredGenericTypeResource = new DeferredGenericTypeResource(nodeLevelResource, "Charles", "id");
+
+        GenericTypeResource genericTypeResource = new GenericTypeResource(nodeLevelResource, rt, "idx");
+        genericTypeResource.setTimestamp(new Date(0));
+        ResourceTypeMapper.getInstance().setResourceTypeMapper((name) -> rt);
 
         Date now = new Date();
         CollectionSetDTO collectionSet = new CollectionSetBuilder(agent)
@@ -130,11 +146,9 @@ public class TimeseriesRoundtripIT {
                 .withIdentifiedNumericAttribute(ifLevelResource, "if-metrics", "m4", 55, AttributeType.COUNTER, "idx-m4")
                 .withStringAttribute(ifLevelResource, "if-metrics", "ifname", "eth0")
                 // Generic
-                // TODO Patrick: discuss with Jesse: how will genericResource resolved? Relevant for test? right now will lead to:
-                // java.lang.IllegalArgumentException: No resource type found with name 'sometype'!
-//                .withNumericAttribute(genericResource, "gen-metrics", "m5", 66, AttributeType.GAUGE)
-//                .withIdentifiedNumericAttribute(genericResource, "gen-metrics", "m6", 77, AttributeType.COUNTER, "idx-m6")
-//                .withIdentifiedStringAttribute(genericResource, "gen-metrics", "genname", "bgp", "oops")
+                .withNumericAttribute(deferredGenericTypeResource, "gen-metrics", "m5", 66, AttributeType.GAUGE)
+                .withIdentifiedNumericAttribute(deferredGenericTypeResource, "gen-metrics", "m6", 77, AttributeType.COUNTER, "idx-m6")
+                .withIdentifiedStringAttribute(deferredGenericTypeResource, "gen-metrics", "genname", "bgp", "oops")
                 .withTimestamp(now)
                 .build();
 
@@ -147,11 +161,17 @@ public class TimeseriesRoundtripIT {
         testForNumericAttribute("snmp:1:metrics", "m1", 900d);
         testForNumericAttribute("snmp:1:metrics", "m2", 1000d);
         testForStringAttribute("snmp/1", "sysname", "host1");
+        testForStringAttribute("snmp/1", "idx-m2", "idx-m2");
+
         testForNumericAttribute("snmp:1:if-x:if-metrics", "m3", 44d);
         testForNumericAttribute("snmp:1:if-x:if-metrics", "m4", 55d);
         testForStringAttribute("snmp/1/if-x", "ifname", "eth0");
+        testForStringAttribute("snmp/1", "idx-m4", "idx-m4");
 
-        // TODO Patrick: test for genericResource
+        testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m5", 66d);
+        testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
+        testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
+        testForStringAttribute("snmp/1", "idx-m6", "idx-m6");
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
