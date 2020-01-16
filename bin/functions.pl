@@ -84,7 +84,7 @@ delete $ENV{'M2_HOME'};
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-Xmx2048m -XX:ReservedCodeCacheSize=512m";
+	$MAVEN_OPTS = "-X -Xmx2048m -XX:ReservedCodeCacheSize=512m";
 }
 
 if (not $MAVEN_OPTS =~ /\:PermSize/) {
