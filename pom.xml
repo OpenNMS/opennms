@@ -3335,5 +3335,10 @@
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
     </repository>
+    <repository>
+      <id>eclipse-repository</id>
+      <name>Eclipse</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
   </repositories>
 </project>
