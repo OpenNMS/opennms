@@ -44,8 +44,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -79,6 +82,49 @@ public class QueueFileOffHeapDispatchQueueTest {
 
         assertThat(queue.dequeue().getValue(), equalTo(payload1));
         assertThat(queue.dequeue().getValue(), equalTo(payload2));
+    }
+
+    @Test
+    public void canQueueAndDequeueInParallel() throws IOException {
+        DispatchQueue<String> queue = new QueueFileOffHeapDispatchQueue<>(String::getBytes, String::new,
+                "canQueueAndDequeue", Paths.get(folder.newFolder().toURI()), 20, 5, 100_000_000);
+
+        int numEntries = 11_111;
+        List<String> toQueue = IntStream.range(0, numEntries)
+                .boxed()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+
+        CountDownLatch startedQueueing = new CountDownLatch(1);
+        AtomicInteger count = new AtomicInteger(0);
+        CompletableFuture.runAsync(() -> {
+            while(count.get() < numEntries) {
+                try {
+                    queue.enqueue(toQueue.get(count.getAndIncrement()), "key");
+                    startedQueueing.countDown();
+                } catch (WriteFailedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        
+        List<String> dequeued = new CopyOnWriteArrayList<>();
+        CompletableFuture.runAsync(() -> {
+            try {
+                startedQueueing.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            while(true) {
+                try {
+                    dequeued.add(queue.dequeue().getValue());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        
+        await().atMost(1, TimeUnit.MINUTES).until(() -> dequeued, equalTo(toQueue));
     }
 
     @Test
