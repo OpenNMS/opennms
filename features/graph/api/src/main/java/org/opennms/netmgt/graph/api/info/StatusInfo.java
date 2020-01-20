@@ -73,12 +73,12 @@ public class StatusInfo {
 
     public static StatusInfoBuilder builder(final Severity severity) {
         Objects.requireNonNull(severity);
-        return new StatusInfoBuilder().severity(severity);
+        return new StatusInfoBuilder().severity(severity).count(0);
     }
 
     public static StatusInfoBuilder builder(final OnmsSeverity severity) {
         Objects.requireNonNull(severity);
-        return new StatusInfoBuilder().severity(severity);
+        return builder(Severity.createFrom(severity));
     }
 
     public static StatusInfoBuilder from(final StatusInfo status) {
