@@ -362,6 +362,27 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    public void verifyStatusEnrichmentBsm() {
+        final KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
+        try {
+            karafShell.runCommand("opennms-bsm:generate-hierarchies 5 2");
+
+            // Fetch data
+            final JSONObject query = new JSONObject().put("semanticZoomLevel", 1);
+            given().log().ifValidationFails()
+                    .get("{container_id}/{namespace}", "bsm", "bsm")
+                    .then()
+                    .log().ifValidationFails()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("vertices", Matchers.hasSize(5))
+                    .content("vertices[0].status", Matchers.is("Normal"));
+        } finally {
+            karafShell.runCommand("opennms-bsm:delete-generated-hierarchies");
+        }
+    }
+
+    @Test
     // Here we test, that the name of the file and the container id may be different
     public void verifyContainerId() {
         final String graphmlName = "test-graph";
