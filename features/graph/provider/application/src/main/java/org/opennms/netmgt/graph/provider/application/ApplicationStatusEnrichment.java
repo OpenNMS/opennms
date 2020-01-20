@@ -48,6 +48,9 @@ import org.opennms.netmgt.graph.api.info.StatusInfo;
 import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 import org.opennms.netmgt.model.OnmsApplication;
 
+/**
+ * Calculates the status of the application and its children.
+ */
 public class ApplicationStatusEnrichment implements EnrichmentProcessor {
 
     private static final StatusInfo DEFAULT_STATUS = StatusInfo.builder(Severity.Normal).build();

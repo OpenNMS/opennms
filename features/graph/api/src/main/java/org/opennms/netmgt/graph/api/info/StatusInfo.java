@@ -38,6 +38,9 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
+/**
+ * Immutable object to store the status of a vertex/edge.
+ */
 public class StatusInfo {
 
     interface Properties {

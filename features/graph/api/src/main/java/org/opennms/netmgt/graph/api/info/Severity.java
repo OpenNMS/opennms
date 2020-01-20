@@ -32,6 +32,9 @@ import java.util.Objects;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 
+/**
+ * Graph API internal Severity enum.
+ */
 public enum Severity {
     Unknown,
     Normal,
