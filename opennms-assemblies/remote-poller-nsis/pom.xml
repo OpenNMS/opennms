@@ -5,32 +5,34 @@
   <artifactId>opennms-remote-poller-windows</artifactId>
   <version>14.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <!-- 
-    This "name" value is displayed in the installer and used to 
-    construct the names of registry keys that contain configuration 
+  <!--
+    This "name" value is displayed in the installer and used to
+    construct the names of registry keys that contain configuration
     data so do not change it unless you test the changes thoroughly.
   -->
   <name>OpenNMS Remote Poller</name>
-  <pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>nsis-maven-plugin</artifactId>
-        <version>1.0-alpha-1</version>
-        <configuration>
-          <scriptFile>remote-poller.nsi</scriptFile>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate-headerfile</goal>
-              <goal>make</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </pluginManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>nsis-maven-plugin</artifactId>
+          <version>1.0-alpha-1</version>
+          <configuration>
+            <scriptFile>remote-poller.nsi</scriptFile>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate-headerfile</goal>
+                <goal>make</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
   <profiles>
     <profile>
       <id>linux</id>
