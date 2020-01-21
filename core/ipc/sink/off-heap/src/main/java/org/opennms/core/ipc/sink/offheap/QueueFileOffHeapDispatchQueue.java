@@ -157,7 +157,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
                 if (file.delete()) {
                     qf = new QueueFile.Builder(file).build();
                 } else {
-                    throw new IOException("Could delete corrupted queue file " + file.getAbsolutePath());
+                    throw new IOException("Could not delete corrupted queue file " + file.getAbsolutePath());
                 }
             }
             offHeapQueue = qf;
