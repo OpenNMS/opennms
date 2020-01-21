@@ -1148,7 +1148,7 @@
     <repository>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </repository>
     <repository>
       <id>opennms-repo</id>
@@ -1177,7 +1177,7 @@
     <repository>
       <id>ibiblio</id>
       <name>Maven Central (ibiblio)</name>
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </repository>
   </repositories>
 
