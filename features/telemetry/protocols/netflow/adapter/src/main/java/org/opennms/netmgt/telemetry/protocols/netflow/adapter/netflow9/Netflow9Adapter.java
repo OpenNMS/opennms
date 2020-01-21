@@ -32,16 +32,17 @@ import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class Netflow9Adapter extends AbstractFlowAdapter<BsonDocument> {
 
-    public Netflow9Adapter(final String name,
+    public Netflow9Adapter(final AdapterDefinition adapterConfig,
                            final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository) {
-        super(name, metricRegistry, flowRepository, new Netflow9Converter());
+        super(adapterConfig, metricRegistry, flowRepository, new Netflow9Converter());
     }
 
     @Override

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.collection;
 
-import static com.codahale.metrics.MetricRegistry.name;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -39,6 +37,7 @@ import javax.script.ScriptException;
 
 import org.opennms.core.fileutils.FileUpdateCallback;
 import org.opennms.core.fileutils.FileUpdateWatcher;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.osgi.framework.BundleContext;
 
 import com.codahale.metrics.MetricRegistry;
@@ -88,8 +87,9 @@ public abstract class AbstractScriptedCollectionAdapter extends AbstractCollecti
      */
     private Map<ScriptedCollectionSetBuilder, Boolean> scriptUpdateMap = new ConcurrentHashMap<>();
 
-    public AbstractScriptedCollectionAdapter(String name, MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+    public AbstractScriptedCollectionAdapter(final AdapterDefinition adapterConfig,
+                                             final MetricRegistry metricRegistry) {
+        super(adapterConfig, metricRegistry);
     }
 
     /*

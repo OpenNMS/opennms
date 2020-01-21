@@ -50,6 +50,7 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapter;
@@ -68,9 +69,9 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    public BmpTelemetryAdapter(final String name,
+    public BmpTelemetryAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+        super(adapterConfig, metricRegistry);
     }
 
     @Override

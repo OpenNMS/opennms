@@ -52,8 +52,7 @@ public class BmpTelemetryAdapterFactory extends AbstractCollectionAdapterFactory
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final BmpTelemetryAdapter adapter = new BmpTelemetryAdapter(adapterConfig.getName(), this.getTelemetryRegistry().getMetricRegistry());
-        adapter.setConfig(adapterConfig);
+        final BmpTelemetryAdapter adapter = new BmpTelemetryAdapter(adapterConfig, this.getTelemetryRegistry().getMetricRegistry());
         adapter.setCollectionAgentFactory(this.getCollectionAgentFactory());
         adapter.setPersisterFactory(this.getPersisterFactory());
         adapter.setFilterDao(this.getFilterDao());
@@ -61,9 +60,6 @@ public class BmpTelemetryAdapterFactory extends AbstractCollectionAdapterFactory
         adapter.setInterfaceToNodeCache(this.getInterfaceToNodeCache());
         adapter.setThresholdingService(this.getThresholdingService());
         adapter.setBundleContext(this.getBundleContext());
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(adapterConfig.getParameterMap());
 
         return adapter;
     }

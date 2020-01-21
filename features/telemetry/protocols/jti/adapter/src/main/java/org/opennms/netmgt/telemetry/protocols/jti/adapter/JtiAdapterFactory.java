@@ -52,8 +52,7 @@ public class JtiAdapterFactory extends AbstractCollectionAdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final JtiGpbAdapter adapter = new JtiGpbAdapter(adapterConfig.getName(), getTelemetryRegistry().getMetricRegistry());
-        adapter.setConfig(adapterConfig);
+        final JtiGpbAdapter adapter = new JtiGpbAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry());
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
         adapter.setNodeDao(getNodeDao());

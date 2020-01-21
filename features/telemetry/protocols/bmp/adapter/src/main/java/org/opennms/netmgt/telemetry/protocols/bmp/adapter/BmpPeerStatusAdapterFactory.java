@@ -32,13 +32,8 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapterFactory;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import jdk.nashorn.internal.ir.annotations.Reference;
 
 public class BmpPeerStatusAdapterFactory extends AbstractAdapterFactory {
 
@@ -60,16 +55,10 @@ public class BmpPeerStatusAdapterFactory extends AbstractAdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final BmpPeerStatusAdapter adapter = new BmpPeerStatusAdapter(adapterConfig.getName(), this.getTelemetryRegistry().getMetricRegistry());
-        adapter.setBundleContext(this.getBundleContext());
-        adapter.setConfig(adapterConfig);
-        adapter.setInterfaceToNodeCache(this.getInterfaceToNodeCache());
-        adapter.setEventForwarder(this.eventForwarder);
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(adapterConfig.getParameterMap());
-
-        return adapter;
+        return new BmpPeerStatusAdapter(adapterConfig,
+                                        this.getInterfaceToNodeCache(),
+                                        this.eventForwarder,
+                                        this.getTelemetryRegistry().getMetricRegistry());
     }
 
     public EventForwarder getEventForwarder() {

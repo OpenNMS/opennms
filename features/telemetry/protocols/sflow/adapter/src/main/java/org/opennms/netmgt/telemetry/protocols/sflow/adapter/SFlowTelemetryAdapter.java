@@ -47,6 +47,7 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
@@ -63,8 +64,9 @@ public class SFlowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    public SFlowTelemetryAdapter(String name, MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+    public SFlowTelemetryAdapter(final AdapterDefinition adapterConfig,
+                                 final MetricRegistry metricRegistry) {
+        super(adapterConfig, metricRegistry);
     }
 
     @Override
