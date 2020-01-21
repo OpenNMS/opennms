@@ -108,7 +108,11 @@ public class KafkaRpcServerManager {
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-server-kafka-consumer-%d")
             .build();
+    private final ThreadFactory requestExecutorThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("rpc-request-executor-%d")
+            .build();
     private final ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
+    private final ExecutorService requestExecutor = Executors.newCachedThreadPool(requestExecutorThreadFactory);
     private Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> rpcModuleConsumers = new ConcurrentHashMap<>();
     private Map<String, RpcModule<RpcRequest, RpcResponse>> rpcModulesById = new ConcurrentHashMap<>();
     // cache to hold rpcId and ByteString when there are multiple chunks for the message.
@@ -195,6 +199,7 @@ public class KafkaRpcServerManager {
         }
         messageCache.clear();
         executor.shutdown();
+        requestExecutor.shutdown();
         delayQueueExecutor.shutdown();
     }
 
@@ -259,33 +264,14 @@ public class KafkaRpcServerManager {
                                 messageCache.remove(rpcId);
                                 currentChunkCache.remove(rpcId);
                             }
-                            //Build child span from rpcMessage and start minion span.
-                            Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(rpcMessage);
-                            Span minionSpan = spanBuilder.start();
                             final RpcModule module = modulesById.get(rpcMessage.getModuleId());
                             if(module == null) {
                                 continue;
                             }
-                            RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
-                            setTagsOnMinion(rpcMessage, request, minionSpan);
-
-                            CompletableFuture<RpcResponse> future = module.execute(request);
-                            future.whenComplete((res, ex) -> {
-                                final RpcResponse response;
-                                if (ex != null) {
-                                    // An exception occurred, store the exception in a new response
-                                    LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
-                                    response = module.createResponseWithException(ex);
-                                    minionSpan.log(ex.getMessage());
-                                    minionSpan.setTag(TAG_RPC_FAILED, "true");
-                                } else {
-                                    // No exception occurred, use the given response
-                                    response = res;
-                                }
-                                // Finish minion Span
-                                minionSpan.finish();
-                                sendResponse(rpcId, response, module);
-                            });
+                            // Should have complete message by this point.
+                            final ByteString requestMessage = rpcContent;
+                            // Handle unmarshalling and execution in a separate thread.
+                            requestExecutor.execute(() -> handleRequest(rpcMessage, requestMessage, module));
                         } catch (InvalidProtocolBufferException e) {
                             LOG.error("error while parsing the request", e);
                         }
@@ -301,6 +287,36 @@ public class KafkaRpcServerManager {
             }
         }
 
+        @SuppressWarnings("unchecked")
+        private void handleRequest(RpcMessageProto rpcRequestProto, ByteString rpcContent, RpcModule module) {
+
+            //Build child span from rpcMessage and start minion span.
+            Tracer.SpanBuilder spanBuilder = buildSpanFromRpcMessage(rpcRequestProto);
+            Span minionSpan = spanBuilder.start();
+
+            RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
+            setTagsOnMinion(rpcRequestProto, request, minionSpan);
+            // Modules may run the execution in their own thread pool.
+            CompletableFuture<RpcResponse> future = module.execute(request);
+            future.whenComplete((res, ex) -> {
+                final RpcResponse response;
+                if (ex != null) {
+                    // An exception occurred, store the exception in a new response
+                    LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
+                    response = module.createResponseWithException(ex);
+                    minionSpan.log(ex.getMessage());
+                    minionSpan.setTag(TAG_RPC_FAILED, "true");
+                } else {
+                    // No exception occurred, use the given response
+                    response = res;
+                }
+                // Finish minion Span
+                minionSpan.finish();
+                sendResponse(rpcRequestProto.getRpcId(), response, module);
+            });
+        }
+
+        @SuppressWarnings("unchecked")
         private void sendResponse(String rpcId, RpcResponse response, RpcModule module) {
             try {
                 String responseTopic = KafkaRpcConstants.getResponseTopic();
