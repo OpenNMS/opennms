@@ -43,4 +43,16 @@
 			<entry key="registration.export" value="true" />
 		</service-properties>
 	</service>
+
+	<!-- OpenBMP Integration Adapter -->
+	<bean id="bmpIntegrationFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="telemetryRegistry" ref="telemetryRegistry" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+	</bean>
+	<service ref="bmpIntegrationFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
 </blueprint>
