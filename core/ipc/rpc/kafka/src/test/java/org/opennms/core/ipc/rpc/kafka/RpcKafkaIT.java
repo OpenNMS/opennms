@@ -119,19 +119,20 @@ public class RpcKafkaIT {
     public void setup() throws Exception {
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
-        rpcClient = new KafkaRpcClientFactory();
-        rpcClient.setTracerRegistry(tracerRegistry);
-        echoClient = new MockEchoClient(rpcClient);
-        rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_PID, configAdmin), minionIdentity,tracerRegistry);
+        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_PID, configAdmin),
+                minionIdentity,tracerRegistry);
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
+        rpcClient = new KafkaRpcClientFactory();
+        rpcClient.setTracerRegistry(tracerRegistry);
+        echoClient = new MockEchoClient(rpcClient);
+        rpcClient.start();
     }
 
     @Test(timeout = 30000)
@@ -173,7 +174,7 @@ public class RpcKafkaIT {
             echoClient.execute(request).get();
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
-            assertTrue("Cause is not of type TimedOutException: " + ExceptionUtils.getStackTrace(e),
+            assertTrue("Cause is of type TimedOutException: " + ExceptionUtils.getStackTrace(e),
                     e.getCause() instanceof RequestTimedOutException);
         }
     }
@@ -202,7 +203,6 @@ public class RpcKafkaIT {
             echoClient.execute(request).get();
             fail();
         } catch (ExecutionException e) {
-            assertTrue(e.getCause().getMessage(), e.getCause().getMessage().contains("Kafka-RPC"));
             assertEquals(RemoteExecutionException.class, e.getCause().getClass());
         }
     }
@@ -222,7 +222,7 @@ public class RpcKafkaIT {
         }
         await().atMost(60, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
     }
-    
+
     @Test(timeout = 60000)
     public void stressTestKafkaRpc() {
         EchoRequest request = new EchoRequest("Kafka-RPC");
@@ -324,7 +324,9 @@ public class RpcKafkaIT {
     @After
     public void destroy() throws Exception {
         kafkaRpcServer.unbind(echoRpcModule);
+        kafkaRpcServer.destroy();
         rpcClient.stop();
     }
+
 
 }

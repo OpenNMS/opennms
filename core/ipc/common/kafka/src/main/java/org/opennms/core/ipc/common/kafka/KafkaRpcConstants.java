@@ -31,12 +31,15 @@ package org.opennms.core.ipc.common.kafka;
 import java.util.Properties;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.utils.SystemInfoUtils;
 
 /**
  * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
  */
 public interface KafkaRpcConstants {
-    
+
+    static final String TOPIC_NAME_AT_LOCATION = "%s.%s.%s";
+    static final String TOPIC_NAME_WITHOUT_LOCATION = "%s.%s";
     public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
     public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
     public static final String RPC_TOPIC_PREFIX = "rpc";
@@ -72,5 +75,16 @@ public interface KafkaRpcConstants {
             // pass
         }
         return maxBufferSize;
+    }
+
+
+    static String getRequestTopicAtLocation(String location) {
+
+        return String.format(TOPIC_NAME_AT_LOCATION, SystemInfoUtils.getInstanceId(), location, RPC_REQUEST_TOPIC_NAME);
+    }
+
+    static String getResponseTopic() {
+
+        return String.format(TOPIC_NAME_WITHOUT_LOCATION, SystemInfoUtils.getInstanceId(), RPC_RESPONSE_TOPIC_NAME);
     }
 }
