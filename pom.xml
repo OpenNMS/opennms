@@ -4175,7 +4175,7 @@
     <pluginRepository>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </pluginRepository>
     <pluginRepository>
       <id>opennms-repo</id>
@@ -4183,4 +4183,16 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </pluginRepository>
   </pluginRepositories>
+  <repositories>
+    <repository>
+      <id>eclipse-repository</id>
+      <name>Eclipse</name>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>spring-release</id>
+      <name>Spring</name>
+      <url>https://repo.spring.io/plugins-release/</url>
+    </repository>
+  </repositories>
 </project>
