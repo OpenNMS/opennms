@@ -146,8 +146,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
-    private MetricRegistry metrics;
     private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
+    private MetricRegistry metrics;
     private JmxReporter metricsReporter = null;
 
 
@@ -455,10 +455,11 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         @Override
         public void run() {
             Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
+            final String responseTopic = KafkaRpcConstants.getResponseTopic();
+            consumer.subscribe(Arrays.asList(responseTopic));
+            LOG.info("subscribed to topic {}", responseTopic);
             while (!closed.get()) {
                 try {
-                    final String responseTopic = KafkaRpcConstants.getResponseTopic();
-                    consumer.subscribe(Arrays.asList(responseTopic));
                     ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
 
                     for (ConsumerRecord<String, byte[]> record : records) {
