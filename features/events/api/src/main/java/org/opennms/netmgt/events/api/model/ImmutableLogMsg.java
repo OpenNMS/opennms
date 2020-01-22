@@ -100,7 +100,12 @@ public final class ImmutableLogMsg implements ILogMsg {
 
     @Override
     public Boolean getNotify() {
-        return notify;
+        return notify == null ? false : notify;
+    }
+
+    @Override
+    public boolean hasNotify() {
+        return notify != null;
     }
 
     @Override

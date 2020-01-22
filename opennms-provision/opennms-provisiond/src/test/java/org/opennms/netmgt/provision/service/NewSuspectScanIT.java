@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,6 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 import org.joda.time.Duration;
 import org.junit.After;
@@ -62,6 +61,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -732,8 +732,8 @@ public class NewSuspectScanIT extends ProvisioningITCase implements Initializing
         anticipator.anticipateEvent(new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond").setNodeid(nextNodeId).getEvent());
 
         // Send new suspect threads at once, these two shouldn't create two nodes.
-        m_provisioner.handleNewSuspectEvent(newSuspectEvent);
-        m_provisioner.handleNewSuspectEvent(newSuspectEvent1);
+        m_provisioner.handleNewSuspectEvent(ImmutableMapper.fromMutableEvent(newSuspectEvent));
+        m_provisioner.handleNewSuspectEvent(ImmutableMapper.fromMutableEvent(newSuspectEvent1));
 
         anticipator.verifyAnticipated(20000, 0, 0, 0, 0);
 

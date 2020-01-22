@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,6 +54,7 @@ import org.opennms.core.network.IPAddressRangeSet;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -2161,7 +2162,7 @@ public class SnmpEventInfoTest {
 
 		// now map the event back to an SnmpEventInfo-object ...
 		// ... and check that second is equally to initial
-		SnmpEventInfo second = new SnmpEventInfo(event);
+		SnmpEventInfo second = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(event));
 		assertEquals(initial, second);
 	}
 }

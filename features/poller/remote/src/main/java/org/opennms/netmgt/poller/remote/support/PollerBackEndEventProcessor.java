@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,9 +31,9 @@ package org.opennms.netmgt.poller.remote.support;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * <p>PollerBackEndEventProcessor class.</p>
@@ -58,20 +58,20 @@ public class PollerBackEndEventProcessor {
     /**
      * <p>handleSnmpPollerConfigChanged</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI)
-    public void handleSnmpPollerConfigChanged(final Event event) {
+    public void handleSnmpPollerConfigChanged(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleDaemonConfigChanged</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleDaemonConfigChanged(final Event event) {
+    public void handleDaemonConfigChanged(final IEvent event) {
         String daemon = EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME);
         if ("PollerBackEnd".equalsIgnoreCase(daemon)) {
             m_pollerBackEnd.configurationUpdated();
@@ -81,90 +81,90 @@ public class PollerBackEndEventProcessor {
     /**
      * <p>handleNodeAdded</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
-    public void handleNodeAdded(final Event event) {
+    public void handleNodeAdded(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleNodeGainedInterface</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
-    public void handleNodeGainedInterface(final Event event) {
+    public void handleNodeGainedInterface(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleNodeGainedService</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
-    public void handleNodeGainedService(final Event event) {
+    public void handleNodeGainedService(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleNodeConfigChanged</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.NODE_CONFIG_CHANGE_UEI)
-    public void handleNodeConfigChanged(final Event event) {
+    public void handleNodeConfigChanged(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleNodeInfoChanged</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.NODE_INFO_CHANGED_EVENT_UEI)
-    public void handleNodeInfoChanged(final Event event) {
+    public void handleNodeInfoChanged(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleServiceDeleted</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.SERVICE_DELETED_EVENT_UEI)
-    public void handleServiceDeleted(final Event event) {
+    public void handleServiceDeleted(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleServiceUnmanaged</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
-    public void handleServiceUnmanaged(final Event event) {
+    public void handleServiceUnmanaged(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleInterfaceDeleted</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
-    public void handleInterfaceDeleted(final Event event) {
+    public void handleInterfaceDeleted(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 
     /**
      * <p>handleNodeDeleted</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
-    public void handleNodeDeleted(final Event event) {
+    public void handleNodeDeleted(final IEvent event) {
         m_pollerBackEnd.configurationUpdated();
     }
 

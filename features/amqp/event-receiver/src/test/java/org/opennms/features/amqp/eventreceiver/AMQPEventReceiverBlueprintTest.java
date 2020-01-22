@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -86,7 +87,7 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
     @Test
     public void canReceiveEvent() throws Exception {
         // Register an event listener
-        final List<Event> receivedEvents = Lists.newArrayList();
+        final List<IEvent> receivedEvents = Lists.newArrayList();
         eventIpcManager.addEventListener(new EventListener() {
             @Override
             public String getName() {
@@ -94,7 +95,7 @@ public class AMQPEventReceiverBlueprintTest extends CamelBlueprintTest {
             }
 
             @Override
-            public void onEvent(Event e) {
+            public void onEvent(IEvent e) {
                 receivedEvents.add(e);
             }
         });
