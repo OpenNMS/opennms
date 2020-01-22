@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.graph.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.netmgt.graph.api.info.DefaultGraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
+import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.service.topology.LegacyMetaTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -52,10 +57,12 @@ public class GraphProviderManager {
     private static final String CONTAINER_ID_KEY = "containerId";
 
     private final BundleContext bundleContext;
-    private final Map<GraphProvider, ServiceRegistration<GraphContainerProvider>> graphProviderServices = new HashMap<>();
+    private final Map<GraphProvider, List<ServiceRegistration<?>>> registeredServices = new HashMap<>();
+    private final GraphService graphService;
 
-    public GraphProviderManager(BundleContext bundleContext) {
+    public GraphProviderManager(final BundleContext bundleContext, final GraphService graphService) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
+        this.graphService = Objects.requireNonNull(graphService);
     }
 
     public void onBind(GraphProvider graphProvider, Map<String, String> properties) {
@@ -74,14 +81,26 @@ public class GraphProviderManager {
         // Expose the ContainerProvider
         final Map<String, String> actualProperties = getActualProperties(properties); // forward service properties to container service
         final SingleGraphContainerProvider singleGraphContainerProvider = new SingleGraphContainerProvider(graphProvider, containerInfo);
-        final ServiceRegistration<GraphContainerProvider> serviceRegistration = bundleContext.registerService(GraphContainerProvider.class, singleGraphContainerProvider, new Hashtable<>(actualProperties));
-        graphProviderServices.put(graphProvider, serviceRegistration);
+        final ServiceRegistration<GraphContainerProvider> graphContainerProviderServiceRegistration = bundleContext.registerService(GraphContainerProvider.class, singleGraphContainerProvider, new Hashtable<>(actualProperties));
+        registeredServices.putIfAbsent(graphProvider, new ArrayList<>());
+        registeredServices.get(graphProvider).add(graphContainerProviderServiceRegistration);
+
+        final boolean exposeAsTopologyProvider = Boolean.valueOf(actualProperties.getOrDefault("expose-to-topology", "false"));
+        if (exposeAsTopologyProvider) {
+            final MetaTopologyProvider metaTopologyProvider = new LegacyMetaTopologyProvider(graphService, containerId);
+            final ServiceRegistration<MetaTopologyProvider> metaTopologyProviderServiceRegistration = bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, new Hashtable<>(actualProperties));
+            registeredServices.get(graphProvider).add(metaTopologyProviderServiceRegistration);
+        }
     }
 
     public void onUnbind(GraphProvider graphProvider, Map<String, String> properties) {
-        final ServiceRegistration<GraphContainerProvider> removedService = graphProviderServices.remove(graphProvider);
-        if (removedService != null) {
-            removedService.unregister();
+        final List<ServiceRegistration<?>> removedServices = registeredServices.remove(graphProvider);
+        if (removedServices != null) {
+            removedServices.stream().forEach(removedService -> {
+                if (removedService != null) {
+                    removedService.unregister();
+                }
+            });
         }
     }
 

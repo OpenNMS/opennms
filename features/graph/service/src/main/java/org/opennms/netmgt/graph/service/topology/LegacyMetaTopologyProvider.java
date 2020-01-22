@@ -1,0 +1,84 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.graph.service.topology;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.graph.api.service.GraphService;
+
+public class LegacyMetaTopologyProvider implements MetaTopologyProvider {
+
+    private final GraphService graphService;
+    private final String containerId;
+
+    public LegacyMetaTopologyProvider(final GraphService graphService, final String containerId) {
+        this.graphService = Objects.requireNonNull(graphService);
+        this.containerId = Objects.requireNonNull(containerId);
+    }
+
+    @Override
+    public GraphProvider getDefaultGraphProvider() {
+        final String defaultNamespace = graphService.getGraphContainerInfo(containerId).getPrimaryGraphInfo().getNamespace();
+        return new LegacyTopologyProvider(graphService, containerId, defaultNamespace);
+    }
+
+    @Override
+    public Collection<GraphProvider> getGraphProviders() {
+        return graphService.getGraphContainerInfo(containerId).getNamespaces().stream()
+                .map(namespace -> new LegacyTopologyProvider(graphService, containerId, namespace))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public GraphProvider getGraphProviderBy(String namespace) {
+        return new LegacyTopologyProvider(graphService, containerId, namespace);
+    }
+
+    @Override
+    public BreadcrumbStrategy getBreadcrumbStrategy() {
+        return BreadcrumbStrategy.NONE;
+    }
+
+    @Override
+    public String getId() {
+        return containerId;
+    }
+}

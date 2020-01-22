@@ -30,6 +30,7 @@
     <!-- Listen for GraphProviders and expose them as GraphContainerProvider -->
     <bean id="graphProviderManager" class="org.opennms.netmgt.graph.service.GraphProviderManager" >
         <argument ref="blueprintBundleContext" />
+        <argument ref="cachingGraphService" />
     </bean>
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphProviderManager" />
