@@ -529,6 +529,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
             };
         }
 
+        @Override
         public io.grpc.stub.StreamObserver<SinkMessage> sinkStreaming(
                 io.grpc.stub.StreamObserver<Empty> responseObserver) {
 
