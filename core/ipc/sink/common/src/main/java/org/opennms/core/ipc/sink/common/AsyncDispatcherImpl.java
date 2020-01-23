@@ -40,6 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.joda.time.Duration;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
@@ -189,21 +191,29 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         executor.shutdown();
     }
 
+    /**
+     * This class is intended to be used only when a suitable implementation could not be found at runtime. This should
+     * only occur in testing.
+     */
     private static class DefaultQueue<T> implements DispatchQueue<T> {
         private final BlockingQueue<Map.Entry<String, T>> queue;
+        private final Lock enqueueFairMutex = new ReentrantLock(true);
 
         DefaultQueue(int size) {
             queue = new ArrayBlockingQueue<>(size);
         }
 
         @Override
-        public synchronized EnqueueResult enqueue(T message, String key) throws WriteFailedException {
+        public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
+            enqueueFairMutex.lock();
             try {
                 queue.put(new AbstractMap.SimpleImmutableEntry<>(key, message));
 
                 return EnqueueResult.IMMEDIATE;
             } catch (InterruptedException e) {
                 throw new WriteFailedException(e);
+            } finally {
+                enqueueFairMutex.unlock();
             }
         }
 

@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import org.opennms.core.ipc.sink.api.DispatchQueueFactory;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +59,8 @@ public class DispatchQueueServiceLoader {
 
         if (context != null) {
             try {
-                dispatchQueueFactory = context.getService(context.getServiceReference(DispatchQueueFactory.class));
-                return Optional.of(dispatchQueueFactory);
+                ServiceReference<DispatchQueueFactory> serviceReference = context.getServiceReference(DispatchQueueFactory.class);
+                return serviceReference == null ? Optional.empty() : Optional.of(context.getService(serviceReference));
             } catch (Exception e) {
                 LOG.error("Exception while retrieving DispatchQueueFactory Service from registry", e);
                 throw e;
