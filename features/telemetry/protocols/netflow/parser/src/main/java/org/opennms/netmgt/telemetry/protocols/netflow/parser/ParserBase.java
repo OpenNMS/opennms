@@ -240,7 +240,7 @@ public class ParserBase implements Parser {
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
         final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(()-> {
             return packet.getRecords().map(record -> {
-                final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
+                final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
                 final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());

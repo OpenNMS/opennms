@@ -20,3 +20,4 @@ minion-poller
 minion-collection
 minion-icmp-proxy
 minion-telemetryd-receivers
+opennms-core-ipc-sink-offheap
