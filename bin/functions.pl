@@ -125,6 +125,10 @@ if (not $MAVEN_OPTS =~ /UseParallelGC/) {
 	$MAVEN_OPTS .= " -XX:+UseParallelGC -XX:+UseParallelOldGC";
 }
 
+if (not $MAVEN_OPTS =~ /https.protocols/) {
+	$MAVEN_OPTS .= " -Dhttps.protocols=TLSv1.2";
+}
+
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
