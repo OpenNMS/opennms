@@ -28,13 +28,13 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import static org.opennms.core.ipc.rpc.kafka.RpcKafkaIT.REMOTE_LOCATION_NAME;
-
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProto;
+import org.opennms.core.rpc.api.RpcModule;
+import org.opennms.core.rpc.api.RpcRequest;
+import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 
@@ -82,12 +82,20 @@ public class RpcTestServer extends KafkaRpcServerManager {
     }
 
     @Override
-    public void startKafkaConsumer() {
-        final String requestTopic = KafkaRpcConstants.getRequestTopicAtLocation(REMOTE_LOCATION_NAME);
+    protected void startConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
+        String topic = getKafkaRpcTopicProvider().getRequestTopicAtLocation(minionIdentity.getLocation(), rpcModule.getId());
         KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(getKafkaConfig()), KafkaConsumer.class.getClassLoader());
-        kafkaConsumerRunner = new KafkaServerConsumer(consumer, requestTopic);
+        kafkaConsumerRunner = new KafkaServerConsumer(consumer, topic);
         getExecutor().execute(kafkaConsumerRunner);
     }
+
+    @Override
+    protected void stopConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
+      if(kafkaConsumerRunner != null) {
+          kafkaConsumerRunner.shutdown();
+      }
+    }
+
 
     @Override
     public void destroy() {

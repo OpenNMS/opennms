@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,58 +28,56 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.util.Hashtable;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider;
-import org.opennms.core.rpc.api.RequestTimedOutException;
+import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.tracing.api.TracerRegistry;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
-import org.opennms.netmgt.snmp.proxy.common.SnmpMultiResponseDTO;
-import org.opennms.netmgt.snmp.proxy.common.SnmpRequestDTO;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
-public class RpcKafkaLargeBufferIT {
+/**
+ * This tests the same tests from RpcKafkaIT with single topic for all modules by setting
+ * org.opennms.core.ipc.rpc.kafka.single-topic = true.
+ */
+public class RpcKafkaWithSingleTopicIT extends RpcKafkaIT {
 
     private static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka.";
-    private static final String REMOTE_LOCATION_NAME = "remote";
-    private static final String MAX_BUFFER_SIZE = "1000";
+    public static final String REMOTE_LOCATION_NAME = "remote";
+
 
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
 
-    private MockSnmpClient snmpClient;
+    private MockEchoClient echoClient;
 
     private KafkaRpcClientFactory rpcClient;
 
-    private RpcTestServer kafkaRpcServer;
+    private KafkaRpcServerManager kafkaRpcServer;
 
     private MinionIdentity minionIdentity;
 
-    private MockSnmpModule mockSnmpModule = new MockSnmpModule();
+    private EchoRpcModule echoRpcModule = new EchoRpcModule();
 
     private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
 
-    private TracerRegistry tracerRegistry = new TracerRegistry() {
+    private AtomicInteger count = new AtomicInteger(0);
+
+    static TracerRegistry tracerRegistry = new TracerRegistry() {
         @Override
         public Tracer getTracer() {
             return GlobalTracer.get();
@@ -92,68 +90,59 @@ public class RpcKafkaLargeBufferIT {
 
 
     @Before
+    @Override
     public void setup() throws Exception {
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES), "true");
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
-        rpcClient = new KafkaRpcClientFactory();
-        rpcClient.setTracerRegistry(tracerRegistry);
-        snmpClient = new MockSnmpClient(rpcClient, mockSnmpModule);
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put(KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY, MAX_BUFFER_SIZE);
+        kafkaConfig.put(KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES, "true");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new RpcTestServer(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
+        kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
                 minionIdentity,tracerRegistry);
-
         kafkaRpcServer.init();
-        kafkaRpcServer.bind(mockSnmpModule);
+        kafkaRpcServer.bind(echoRpcModule);
+        rpcClient = new KafkaRpcClientFactory();
+        rpcClient.setTracerRegistry(tracerRegistry);
+        echoClient = new MockEchoClient(rpcClient);
         rpcClient.start();
     }
 
-    /**
-     * This test verifies that the message is processed properly by skipping duplicate chunk
-     */
-    @Test(timeout = 30000)
-    public void testLargeBufferWithDuplicateChunks() throws ExecutionException, InterruptedException {
-        SnmpRequestDTO requestDTO = new SnmpRequestDTO();
-        requestDTO.setLocation(REMOTE_LOCATION_NAME);
-        requestDTO.setTimeToLive(10000L);
-        String xmlFile = MockSnmpClient.class.getResource("/snmp-response.xml").getFile();
-        SnmpMultiResponseDTO expectedResponseDTO = JaxbUtils.unmarshal(SnmpMultiResponseDTO.class, new File(xmlFile));
-        SnmpMultiResponseDTO responseDTO = snmpClient.execute(requestDTO).get();
-        Assert.assertTrue(kafkaRpcServer.isSkippedOrDuplicated());
-        Assert.assertEquals(expectedResponseDTO, responseDTO);
-    }
-
-    /**
-     * This test verifies that the message will not be processed if a chunk is missing and rpc client throws
-     * timeout exception instead of unmarshal exception.
-     */
-    @Test(timeout = 30000)
-    public void testLargeBufferBySkippingChunks() throws ExecutionException, InterruptedException {
-        kafkaRpcServer.setSkipChunks(true);
-        SnmpRequestDTO requestDTO = new SnmpRequestDTO();
-        requestDTO.setTimeToLive(10000L);
-        requestDTO.setLocation(REMOTE_LOCATION_NAME);
-        String xmlFile = MockSnmpClient.class.getResource("/snmp-response.xml").getFile();
-        SnmpMultiResponseDTO expectedResponseDTO = JaxbUtils.unmarshal(SnmpMultiResponseDTO.class, new File(xmlFile));
-        try {
-            snmpClient.execute(requestDTO).get();
-            fail();
-        } catch (ExecutionException e) {
-            Assert.assertTrue(kafkaRpcServer.isSkippedOrDuplicated());
-            assertEquals(RequestTimedOutException.class, e.getCause().getClass());
-        }
-    }
-
     @After
+    @Override
     public void destroy() throws Exception {
-        kafkaRpcServer.unbind(mockSnmpModule);
+        kafkaRpcServer.unbind(echoRpcModule);
         kafkaRpcServer.destroy();
         rpcClient.stop();
+    }
+
+    @Override
+    public EchoRpcModule getEchoRpcModule() {
+        return echoRpcModule;
+    }
+
+    @Override
+    public MockEchoClient getEchoClient() {
+        return echoClient;
+    }
+
+    @Override
+    public MinionIdentity getMinionIdentity() {
+        return minionIdentity;
+    }
+
+    @Override
+    public Hashtable<String, Object> getKafkaConfig() {
+        return kafkaConfig;
+    }
+
+    @Override
+    public KafkaRpcServerManager getKafkaRpcServer() {
+        return kafkaRpcServer;
     }
 
 }

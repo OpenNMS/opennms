@@ -37,15 +37,12 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.math.RoundingMode;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutorService;
@@ -72,6 +69,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
+import org.opennms.core.ipc.common.kafka.KafkaTopicProvider;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProto;
 import org.opennms.core.logging.Logging;
@@ -143,6 +141,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private final ExecutorService responseHandlerExecutor = Executors.newCachedThreadPool(responseHandlerThreadFactory);
     private final Map<String, ResponseCallback> rpcResponseMap = new ConcurrentHashMap<>();
     private KafkaConsumerRunner kafkaConsumerRunner;
+    private Map<String, KafkaConsumerRunner> kafkaConsumersByTopic = new ConcurrentHashMap<>();
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
@@ -166,7 +165,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     return module.execute(request);
                 }
                 Span span = tracer.buildSpan(module.getId()).start();
-                String requestTopic = KafkaRpcConstants.getRequestTopicAtLocation(request.getLocation());
+                KafkaTopicProvider topicProvider = new KafkaTopicProvider();
+                String requestTopic = topicProvider.getRequestTopicAtLocation(request.getLocation(), module.getId());
+                startKafkaConsumer(module.getId());
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
@@ -306,12 +307,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
 
             // Find all of the system properties that start with 'org.opennms.core.ipc.rpc.kafka.' and add them to the config.
-            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_SYS_PROP_PREFIX);
+            KafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_SYS_PROP_PREFIX);
             kafkaConfig.putAll(kafkaConfigProvider.getProperties());
             producer = new KafkaProducer<>(kafkaConfig);
             LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
-            // Start consumer which handles all the responses.
-            startKafkaConsumer();
             // Initialize metrics reporter.
             metricsReporter = JmxReporter.forRegistry(getMetrics()).
                     inDomain(JMX_DOMAIN_RPC).build();
@@ -341,10 +340,15 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         }
     }
 
-    private void startKafkaConsumer() {
-        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
-        kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
-        kafkaConsumerExecutor.execute(kafkaConsumerRunner);
+    private synchronized void startKafkaConsumer(String module) {
+        KafkaTopicProvider topicProvider = new KafkaTopicProvider();
+        final String responseTopic = topicProvider.getResponseTopic(module);
+        if (kafkaConsumersByTopic.get(responseTopic) == null) {
+            KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+            kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer, responseTopic);
+            kafkaConsumersByTopic.put(responseTopic, kafkaConsumerRunner);
+            kafkaConsumerExecutor.execute(kafkaConsumerRunner);
+        }
     }
 
     /**
@@ -443,21 +447,18 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
         private final KafkaConsumer<String, byte[]> consumer;
         private final AtomicBoolean closed = new AtomicBoolean(false);
-        private final Set<String> moduleIdsForTopics = new HashSet<>();
-        private final Set<String> topics = new HashSet<>();
-        private final AtomicBoolean topicAdded = new AtomicBoolean(false);
-        private final CountDownLatch firstTopicAdded = new CountDownLatch(1);
+        private final String topic;
 
-        private KafkaConsumerRunner(KafkaConsumer<String, byte[]> consumer) {
+        private KafkaConsumerRunner(KafkaConsumer<String, byte[]> consumer, String topic) {
             this.consumer = consumer;
+            this.topic = topic;
         }
 
         @Override
         public void run() {
             Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
-            final String responseTopic = KafkaRpcConstants.getResponseTopic();
-            consumer.subscribe(Arrays.asList(responseTopic));
-            LOG.info("subscribed to topic {}", responseTopic);
+            consumer.subscribe(Arrays.asList(topic));
+            LOG.info("subscribed to topic {}", topic);
             while (!closed.get()) {
                 try {
                     ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
@@ -536,7 +537,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         if (metricsReporter != null) {
             metricsReporter.close();
         }
-        kafkaConsumerRunner.stop();
+        kafkaConsumersByTopic.forEach((topic, consumer) -> consumer.stop());
         kafkaConsumerExecutor.shutdown();
         timerExecutor.shutdown();
         responseHandlerExecutor.shutdown();
