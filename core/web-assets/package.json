@@ -21,6 +21,7 @@
         "@babel/polyfill": "^7.6.0",
         "@babel/preset-env": "^7.6.2",
         "@babel/preset-typescript": "^7.6.0",
+        "@rangerrick/moment-javaformat": "git+https://github.com/RangerRick/moment-javaformat.git#master",
         "@types/jest": "^24.0.18",
         "@types/lodash": "^4.14.141",
         "@typescript-eslint/eslint-plugin": "^2.3.2",
@@ -51,6 +52,7 @@
         "jest": "^24.9.0",
         "lodash.clonedeep": "^4.5.0",
         "main-bower-files": "^2.13.3",
+        "moment-timezone": "^0.5.27",
         "ngtemplate-loader": "^2.0.1",
         "node-sass": "^4.12.0",
         "parallel-webpack": "^2.4.0",
@@ -71,9 +73,6 @@
     },
     "dependencies": {
         "@babel/runtime-corejs3": "^7.6.2",
-        "@js-joda/core": "^2.0.0",
-        "@js-joda/locale_en": "^3.1.0",
-        "@js-joda/timezone": "^2.2.0",
         "angular": "~1.5.11",
         "angular-animate": "~1.5.11",
         "angular-bootstrap-checkbox": "^0.5.0",
@@ -116,6 +115,7 @@
         "popper.js": "^1.15.0",
         "regenerator-runtime": "^0.13.3",
         "tempusdominus-bootstrap-4": "^5.1.2",
+        "tempusdominus-core": "^5.0.3",
         "ui-bootstrap4": "^3.0.6",
         "ui-select-bs4": "https://github.com/bmontgomery/ui-select#300af1b2b5c8aa94faa3c6d3bb1df4e543d097ae",
         "underscore": "^1.9.1"
