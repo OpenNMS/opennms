@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.offheap;
+package org.opennms.core.ipc.sink.api;
 
-import org.opennms.core.ipc.sink.api.Message;
+import java.util.function.Function;
 
-public class MockMessage implements Message{
+public interface DispatchQueueFactory {
 
-    private String id;
+    <T> DispatchQueue<T> getQueue(AsyncPolicy asyncPolicy, String moduleName, Function<T, byte[]> serializer,
+                                  Function<byte[], T> deserializer);
 
-    public MockMessage(String id) {
-          this.id = id;
-    }
-
-    public String getId(){
-        return this.id;
-    }
 }
