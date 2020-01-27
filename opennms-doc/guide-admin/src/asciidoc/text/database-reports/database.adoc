@@ -2,7 +2,7 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-Reporting on information from the _{opennms-product-name}_ monitoring system is important for strategical or operational decisions.
+Reporting on information from the _{opennms-product-name}_ monitoring system is important for strategic or operational decisions.
 _Database Reports_ give access to the embedded _JasperReports_ engine and allows users to create and customize report templates.
 These reports can be executed on demand or on a predefined schedule within _{opennms-product-name}_.
 
