@@ -8,9 +8,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graph.provider</groupId>
-    <artifactId>org.opennms.features.graph.provider.legacy</artifactId>
-    <name>OpenNMS :: Features :: Graph :: Provider :: Legacy</name>
-    <description>Adapter for the (legacy) TopologyProvider API (Topology API -> Graph API)</description>
+    <artifactId>org.opennms.features.graph.provider.topology</artifactId>
+    <name>OpenNMS :: Features :: Graph :: Provider :: Topology</name>
+    <description>Exposes GraphContainerProvider to the (legacy) TopologyProvider API (Graph API -> Topology API)</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>
@@ -36,11 +36,6 @@
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.graph</groupId>
-            <artifactId>org.opennms.features.graph.domain</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

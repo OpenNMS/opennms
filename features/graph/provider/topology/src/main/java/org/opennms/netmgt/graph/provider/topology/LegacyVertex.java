@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.service.topology;
+package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.Map;
 import java.util.Objects;
@@ -42,7 +42,6 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
 
     protected LegacyVertex(GenericVertex genericVertex) {
         super(Objects.requireNonNull(genericVertex).getNamespace(), genericVertex.getId(), genericVertex.getProperty(GenericProperties.LABEL, genericVertex.getId()));
-
         setIconKey(genericVertex.getProperty("iconKey"));
         setIpAddress(genericVertex.getProperty("ipAddr"));
         setLocked(Boolean.valueOf(genericVertex.getProperty("locked")));
@@ -58,7 +57,6 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
         if (genericVertex.getNodeRef() != null) {
             setNodeID(genericVertex.getNodeRef().getNodeId());
         }
-
         level = genericVertex.getProperty("level", 0);
         properties = genericVertex.getProperties();
     }

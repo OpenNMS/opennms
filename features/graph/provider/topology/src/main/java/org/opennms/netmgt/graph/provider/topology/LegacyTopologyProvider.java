@@ -26,38 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.service.topology;
+package org.opennms.netmgt.graph.provider.topology;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.BackendGraph;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class LegacyTopologyProvider implements GraphProvider {
 
     private final String containerId;
     private final String namespace;
     private final GraphService graphService;
+    private final NodeDao nodeDao;
 
     private LegacyBackendGraph backendGraph;
 
-    public LegacyTopologyProvider(final GraphService graphService, final String containerId, final String graphNamespace) {
+    public LegacyTopologyProvider(final NodeDao nodeDao, final GraphService graphService, final String containerId, final String graphNamespace) {
         this.containerId = Objects.requireNonNull(containerId);
         this.namespace = Objects.requireNonNull(graphNamespace);
         this.graphService = Objects.requireNonNull(graphService);
+        this.nodeDao = Objects.requireNonNull(nodeDao);
     }
 
     @Override
@@ -69,6 +76,32 @@ public class LegacyTopologyProvider implements GraphProvider {
     public void refresh() {
         final GenericGraph graph = graphService.getGraph(containerId, namespace);
         this.backendGraph = new LegacyBackendGraph(graph);
+
+        // Update nodeId information as enrichment is not implemented at the moment
+        final Map<String, Map<String, Integer>> nodeIdMap = getNodeIdMap(graph);
+        graph.getVertices().stream()
+                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
+                .forEach(vertex -> {
+                    final NodeRef nodeRef = vertex.getNodeRef();
+                    final Map<String, Integer> foreignIdNodeIdMap = nodeIdMap.get(nodeRef.getForeignSource());
+                    final Integer nodeId = foreignIdNodeIdMap.get(nodeRef.getForeignId());
+                    if (nodeId != null) {
+                        backendGraph.getVertex(getNamespace(), vertex.getId()).setNodeID(nodeId);
+                    }
+                });
+    }
+
+    private Map<String, Map<String, Integer>> getNodeIdMap(GenericGraph graph) {
+        final Set<String> foreignSources = graph.getVertices().stream()
+                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
+                .map(v -> v.getNodeRef().getForeignSource())
+                .collect(Collectors.toSet());
+        final Map<String, Map<String, Integer>> foreignSourceMap = Maps.newHashMap();
+        for (String eachForeignSource : foreignSources) {
+            final Map<String, Integer> foreignIdToNodeIdMap = nodeDao.getForeignIdToNodeIdMap(eachForeignSource);
+            foreignSourceMap.put(eachForeignSource, foreignIdToNodeIdMap);
+        }
+        return foreignSourceMap;
     }
 
     @Override
@@ -82,12 +115,10 @@ public class LegacyTopologyProvider implements GraphProvider {
                 .withPreferredLayout("D3 Layout")
                 .withSemanticZoomLevel(1)
                 .withCriteria(() -> {
-                    if (backendGraph != null && !backendGraph.getVertices().isEmpty()) {
-                        return Lists.newArrayList(
-                                new DefaultVertexHopCriteria(
-                                        new DefaultVertexRef(namespace, backendGraph.getVertices().get(0).getId())));
+                    if (backendGraph != null) {
+                        return backendGraph.getDefaultCriteria();
                     }
-                    return Collections.emptyList();
+                    return Lists.newArrayList();
                 });
     }
 
@@ -98,11 +129,24 @@ public class LegacyTopologyProvider implements GraphProvider {
 
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        final Set<Integer> nodeIds = selectedVertices.stream()
+                .filter(v -> namespace.equals(v.getNamespace()))
+                .filter(v -> v instanceof AbstractVertex)
+                .map(v -> (AbstractVertex) v)
+                .map(v -> v.getNodeID())
+                .filter(nodeId -> nodeId != null)
+                .collect(Collectors.toSet());
+        if (type == ContentType.Alarm) {
+            return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
+        }
+        if (type == ContentType.Node) {
+            return new SelectionChangedListener.IdSelection<>(nodeIds);
+        }
         return SelectionChangedListener.Selection.NONE;
     }
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return false;
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 }

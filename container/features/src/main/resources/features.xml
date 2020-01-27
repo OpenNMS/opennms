@@ -1593,6 +1593,7 @@
         <feature>opennms-graph-provider-bsm</feature>
         <feature>opennms-graph-provider-application</feature>
         <feature>opennms-graph-provider-legacy</feature>
+        <feature>opennms-graph-provider-topology</feature>
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
         <feature>guava</feature>
@@ -1652,6 +1653,14 @@
         <feature>opennms-model</feature>
         <feature>opennms-topology-api</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.legacy/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-graph-provider-topology" description="OpenNMS :: Features :: Graph :: Provider :: Topology" version="${project.version}">
+        <feature>opennms-model</feature>
+        <feature>opennms-graph-service</feature>
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.topology/${project.version}</bundle>
+        <!-- TODO MVR add topology dependencies -->
+        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
+        <!-- TODO MVR simple??? -->
     </feature>
     <!-- For now it is only used for test purposes -->
     <feature name="opennms-graph-provider-persistence-test" description="OpenNMS :: Features :: Graph :: Provider :: Persistence Test" version="${project.version}">

@@ -28,22 +28,15 @@
 
 package org.opennms.features.apilayer.graph;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.graph.Graph;
 import org.opennms.integration.api.v1.graph.GraphInfo;
 import org.opennms.integration.api.v1.graph.GraphProvider;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
-import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.osgi.framework.BundleContext;
-
-import com.google.common.collect.ImmutableMap;
 
 public class GraphProviderManager extends InterfaceMapper<GraphProvider, org.opennms.netmgt.graph.api.service.GraphProvider> {
 
@@ -58,58 +51,20 @@ public class GraphProviderManager extends InterfaceMapper<GraphProvider, org.ope
             @Override
             public ImmutableGraph<?, ?> loadGraph() {
                 final Graph extensionGraph = extension.loadGraph();
-                Objects.requireNonNull(extensionGraph, "extension.loadGraph() must return not null value");
-                final List<GenericVertex> vertices = extensionGraph.getVertices().stream()
-                        .map(v -> GenericVertex.builder().properties(v.getProperties()).build())
-                        .collect(Collectors.toList());
-                final List<GenericEdge> edges = extensionGraph.getEdges().stream()
-                        .map(e -> GenericEdge.builder()
-                                .properties(e.getProperties())
-                                .source(e.getSource().getNamespace(), e.getSource().getId())
-                                .target(e.getTarget().getNamespace(), e.getTarget().getId())
-                                .build())
-                        .collect(Collectors.toList());
-                final GenericGraph convertedGraph = GenericGraph.builder().properties(extensionGraph.getProperties())
-                    .addVertices(vertices)
-                    .addEdges(edges)
-                    .build();
+                final GenericGraph convertedGraph = new GraphMapper().map(extensionGraph);
                 return convertedGraph;
             }
 
             @Override
             public org.opennms.netmgt.graph.api.info.GraphInfo<?> getGraphInfo() {
                 final GraphInfo extensionGraphInfo = extension.getGraphInfo();
-                Objects.requireNonNull(extensionGraphInfo, "extension.getGraphInfo() must return not null value");
-                return new org.opennms.netmgt.graph.api.info.GraphInfo<GenericVertex>() {
-
-                    @Override
-                    public String getNamespace() {
-                        return extensionGraphInfo.getNamespace();
-                    }
-
-                    @Override
-                    public String getDescription() {
-                        return extensionGraphInfo.getDescription();
-                    }
-
-                    @Override
-                    public String getLabel() {
-                        return extensionGraphInfo.getLabel();
-                    }
-
-                    @Override
-                    public Class<GenericVertex> getVertexType() {
-                        return GenericVertex.class;
-                    }
-                };
+                return new GraphMapper().map(extensionGraphInfo);
             }
         };
     }
 
     @Override
     public Map<String, Object> getServiceProperties(GraphProvider extension) {
-        return ImmutableMap.<String, Object>builder()
-                .put("expose-to-topology", Boolean.toString(extension.isTopology()))
-                .build();
+        return GraphContainerProviderManager.getServiceProperties(extension.getConfiguration());
     }
 }

@@ -26,40 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.service.topology;
+package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
 public class LegacyMetaTopologyProvider implements MetaTopologyProvider {
 
     private final GraphService graphService;
+    private final NodeDao nodeDao;
     private final String containerId;
+    private final Map<String, GraphProvider> providers;
 
-    public LegacyMetaTopologyProvider(final GraphService graphService, final String containerId) {
+    public LegacyMetaTopologyProvider(final NodeDao nodeDao, final GraphService graphService, final String containerId) {
+        this.nodeDao = Objects.requireNonNull(nodeDao);
         this.graphService = Objects.requireNonNull(graphService);
         this.containerId = Objects.requireNonNull(containerId);
+
+        // Build TopologyProvider delegations
+        this.providers = graphService.getGraphContainerInfo(containerId).getNamespaces().stream()
+                .map(namespace -> new LegacyTopologyProvider(nodeDao, graphService, containerId, namespace))
+                .collect(Collectors.toMap(LegacyTopologyProvider::getNamespace, Function.identity()));
     }
 
     @Override
     public GraphProvider getDefaultGraphProvider() {
         final String defaultNamespace = graphService.getGraphContainerInfo(containerId).getPrimaryGraphInfo().getNamespace();
-        return new LegacyTopologyProvider(graphService, containerId, defaultNamespace);
+        return providers.get(defaultNamespace);
     }
 
     @Override
     public Collection<GraphProvider> getGraphProviders() {
-        return graphService.getGraphContainerInfo(containerId).getNamespaces().stream()
-                .map(namespace -> new LegacyTopologyProvider(graphService, containerId, namespace))
-                .collect(Collectors.toList());
+        return providers.values();
     }
 
     @Override
@@ -69,7 +78,7 @@ public class LegacyMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public GraphProvider getGraphProviderBy(String namespace) {
-        return new LegacyTopologyProvider(graphService, containerId, namespace);
+        return providers.get(namespace);
     }
 
     @Override

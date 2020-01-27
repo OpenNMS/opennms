@@ -347,6 +347,14 @@
   <reference-list interface="org.opennms.integration.api.v1.graph.GraphProvider" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphProviderManager" />
   </reference-list>
+
+  <bean id="graphContainerProviderManager" class="org.opennms.features.apilayer.graph.GraphContainerProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.graph.GraphContainerProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphContainerProviderManager" />
+  </reference-list>
+
   <bean id="graphContainerCacheImpl" class="org.opennms.features.apilayer.graph.GraphContainerCacheImpl">
     <argument ref="graphContainerCache" />
   </bean>

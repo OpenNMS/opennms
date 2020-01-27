@@ -10,6 +10,7 @@
 ">
     <reference id="graphContainerDao" interface="org.opennms.netmgt.graph.dao.api.GraphContainerDao" availability="mandatory" />
     <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
 
@@ -30,7 +31,6 @@
     <!-- Listen for GraphProviders and expose them as GraphContainerProvider -->
     <bean id="graphProviderManager" class="org.opennms.netmgt.graph.service.GraphProviderManager" >
         <argument ref="blueprintBundleContext" />
-        <argument ref="cachingGraphService" />
     </bean>
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphProviderManager" />

@@ -26,23 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.service.topology;
+package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.Objects;
 
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.features.topology.api.topo.TopologyProviderInfo;
+import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.info.GraphInfo;
 
-public class LegacyEdge extends AbstractEdge {
-    public LegacyEdge(GenericEdge edge) {
-        super(Objects.requireNonNull(edge).getNamespace(), edge.getId(), createVertexRef(edge.getSource()), createVertexRef(edge.getTarget()));
+public class LegacyTopologyProviderInfo implements TopologyProviderInfo {
+
+    private final GraphInfo delegate;
+
+    public LegacyTopologyProviderInfo(GenericGraph genericGraph) {
+        this(Objects.requireNonNull(genericGraph).getGraphInfo());
     }
 
-    private static VertexRef createVertexRef(org.opennms.netmgt.graph.api.VertexRef input) {
-        Objects.requireNonNull(input);
-        final VertexRef output = new DefaultVertexRef(input.getNamespace(), input.getId());
-        return output;
+    public LegacyTopologyProviderInfo(GraphInfo graphInfo) {
+        this.delegate = Objects.requireNonNull(graphInfo);
+    }
+
+    @Override
+    public String getName() {
+        return delegate.getLabel();
+    }
+
+    @Override
+    public String getDescription() {
+        return delegate.getDescription();
+    }
+
+    @Override
+    public boolean isHierarchical() {
+        return false;
+    }
+
+    @Override
+    public boolean isSupportsCategorySearch() {
+        return false;
     }
 }

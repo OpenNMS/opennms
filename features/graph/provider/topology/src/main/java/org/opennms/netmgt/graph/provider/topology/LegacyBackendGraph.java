@@ -26,17 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.service.topology;
+package org.opennms.netmgt.graph.provider.topology;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.simple.SimpleGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 
 public class LegacyBackendGraph extends SimpleGraph {
+    private final GenericGraph delegate;
+
     public LegacyBackendGraph(GenericGraph genericGraph) {
         super(Objects.requireNonNull(genericGraph.getNamespace()));
         genericGraph.getVertices().forEach(genericVertex -> addVertices(new LegacyVertex(genericVertex)));
         genericGraph.getEdges().forEach(genericEdge -> addEdges(new LegacyEdge(genericEdge)));
+        this.delegate = genericGraph;
+    }
+
+    public List<Criteria> getDefaultCriteria() {
+        return delegate.getDefaultFocus().getVertexIds().stream()
+                .map(vertexId -> new DefaultVertexHopCriteria(new DefaultVertexRef(getNamespace(), vertexId)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public LegacyVertex getVertex(String namespace, String id) {
+        return (LegacyVertex) super.getVertex(namespace, id);
     }
 }
