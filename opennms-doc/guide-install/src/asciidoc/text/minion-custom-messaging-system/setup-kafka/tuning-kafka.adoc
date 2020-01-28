@@ -26,3 +26,19 @@ TIP: By default, Kafka RPC supports buffers greater than >1MB by splitting large
 
 TIP: Default time to live (time at which request will expire) is 20000 msec (20sec).
      It can be changed by configuring system property `org.opennms.core.ipc.rpc.kafka.ttl` in msec.
+
+
+==== Using single topic for Kafka RPC
+
+By default OpenNMS creates a request topic for each module at a given location and a response topic for each module.
+When dealing with too many locations, this can be optimized to create one request topic at a given location and one response topic for all modules.
+
+Single topic for all modules needs to be configured both on OpenNMS and Minion.
+
+.Configure single topic on Minion
+[source, shell]
+----
+echo 'single-topic=true' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+----
+
+On OpenNMS, single topic can be enabled by setting system property `org.opennms.core.ipc.rpc.kafka.single-topic` to true.

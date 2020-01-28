@@ -125,15 +125,15 @@ public class RpcKafkaIT {
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
+        rpcClient = new KafkaRpcClientFactory();
+        rpcClient.setTracerRegistry(tracerRegistry);
+        echoClient = new MockEchoClient(rpcClient);
+        rpcClient.start();
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
                 minionIdentity,tracerRegistry);
         kafkaRpcServer.init();
         kafkaRpcServer.bind(getEchoRpcModule());
-        rpcClient = new KafkaRpcClientFactory();
-        rpcClient.setTracerRegistry(tracerRegistry);
-        echoClient = new MockEchoClient(rpcClient);
-        rpcClient.start();
     }
 
     @Test(timeout = 30000)

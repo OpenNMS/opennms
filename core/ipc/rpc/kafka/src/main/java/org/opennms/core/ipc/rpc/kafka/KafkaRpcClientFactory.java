@@ -36,13 +36,15 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.math.RoundingMode;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutorService;
@@ -141,12 +143,12 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private final ExecutorService responseHandlerExecutor = Executors.newCachedThreadPool(responseHandlerThreadFactory);
     private final Map<String, ResponseCallback> rpcResponseMap = new ConcurrentHashMap<>();
     private KafkaConsumerRunner kafkaConsumerRunner;
-    private Map<String, KafkaConsumerRunner> kafkaConsumersByTopic = new ConcurrentHashMap<>();
     private DelayQueue<ResponseCallback> delayQueue = new DelayQueue<>();
     // Used to cache responses when large message are involved.
     private Map<String, ByteString> messageCache = new ConcurrentHashMap<>();
     private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
     private MetricRegistry metrics;
+    private KafkaTopicProvider topicProvider = new KafkaTopicProvider();
     private JmxReporter metricsReporter = null;
 
 
@@ -165,9 +167,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     return module.execute(request);
                 }
                 Span span = tracer.buildSpan(module.getId()).start();
-                KafkaTopicProvider topicProvider = new KafkaTopicProvider();
                 String requestTopic = topicProvider.getRequestTopicAtLocation(request.getLocation(), module.getId());
-                startKafkaConsumer(module.getId());
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
@@ -183,6 +183,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         expirationTime, loggingContext, request.getLocation(), span);
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
+                kafkaConsumerRunner.startConsumingForModule(module.getId());
                 byte[] messageInBytes = marshalRequest.getBytes();
                 int totalChunks = IntMath.divide(messageInBytes.length, MAX_BUFFER_SIZE, RoundingMode.UP);
 
@@ -311,6 +312,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             kafkaConfig.putAll(kafkaConfigProvider.getProperties());
             producer = new KafkaProducer<>(kafkaConfig);
             LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
+            // Start consumer which handles all the responses.
+            startKafkaConsumer();
+            LOG.info("started  kafka consumer with : {}", kafkaConfig);
             // Initialize metrics reporter.
             metricsReporter = JmxReporter.forRegistry(getMetrics()).
                     inDomain(JMX_DOMAIN_RPC).build();
@@ -318,7 +322,6 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             // Initialize tracer from tracer registry.
             tracerRegistry.init(SystemInfoUtils.getInstanceId());
             tracer = tracerRegistry.getTracer();
-            LOG.info("started  kafka consumer with : {}", kafkaConfig);
             // Start a new thread which handles timeouts from delayQueue and calls response callback.
             timerExecutor.execute(() -> {
                 while (true) {
@@ -340,15 +343,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         }
     }
 
-    private synchronized void startKafkaConsumer(String module) {
-        KafkaTopicProvider topicProvider = new KafkaTopicProvider();
-        final String responseTopic = topicProvider.getResponseTopic(module);
-        if (kafkaConsumersByTopic.get(responseTopic) == null) {
-            KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
-            kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer, responseTopic);
-            kafkaConsumersByTopic.put(responseTopic, kafkaConsumerRunner);
-            kafkaConsumerExecutor.execute(kafkaConsumerRunner);
-        }
+    private void startKafkaConsumer() {
+        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+        kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
+        kafkaConsumerExecutor.execute(kafkaConsumerRunner);
     }
 
     /**
@@ -447,20 +445,29 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
         private final KafkaConsumer<String, byte[]> consumer;
         private final AtomicBoolean closed = new AtomicBoolean(false);
-        private final String topic;
+        private final Set<String> moduleIdsForTopics = new HashSet<>();
+        private final Set<String> topics = new HashSet<>();
+        private final AtomicBoolean topicAdded = new AtomicBoolean(false);
+        private final CountDownLatch firstTopicAdded = new CountDownLatch(1);
 
-        private KafkaConsumerRunner(KafkaConsumer<String, byte[]> consumer, String topic) {
+        private KafkaConsumerRunner(KafkaConsumer<String, byte[]> consumer) {
             this.consumer = consumer;
-            this.topic = topic;
         }
 
         @Override
         public void run() {
             Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
-            consumer.subscribe(Arrays.asList(topic));
-            LOG.info("subscribed to topic {}", topic);
+            if (topics.isEmpty()) {
+                // kafka consumer needs to subscribe to at least one topic for the consumer.poll to work.
+                waitTillFirstTopicIsAdded();
+                LOG.info("First topic is added, consumer will be started.");
+            }
+
             while (!closed.get()) {
                 try {
+                    //Subscribe to new topics when added.
+                    subscribeToTopics();
+
                     ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
 
                     for (ConsumerRecord<String, byte[]> record : records) {
@@ -529,6 +536,46 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             return rpcMessage.getTotalChunks() == chunkNumber;
         }
 
+        private void waitTillFirstTopicIsAdded() {
+            while (!topicAdded.get()) {
+                try {
+                    firstTopicAdded.await(1, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    LOG.info("Interrupted before first topic was added. Terminating Kafka RPC consumer thread.", e);
+                    return;
+                } catch (Throwable e) {
+                    LOG.error("Unknown exception before first topic is added. Terminating Kafka RPC consumer thread.", e);
+                    return;
+                }
+            }
+        }
+
+        private void subscribeToTopics() {
+            if (topicAdded.get()) {
+                synchronized (topics) {
+                    // Topic subscriptions are not incremental. This list will replace the current assignment (if there is one).
+                    LOG.info("Subscribing Kafka RPC consumer to topics named: {}", topics);
+                    consumer.subscribe(topics);
+                    topicAdded.set(false);
+                }
+            }
+        }
+
+        private void startConsumingForModule(String moduleId) {
+            if (moduleIdsForTopics.contains(moduleId)) {
+                return;
+            }
+            moduleIdsForTopics.add(moduleId);
+            final String topic = topicProvider.getResponseTopic(moduleId);
+            synchronized (topics) {
+                if (topics.add(topic)) {
+                    topicAdded.set(true);
+                    firstTopicAdded.countDown();
+                    consumer.wakeup();
+                }
+            }
+        }
+
     }
 
 
@@ -537,7 +584,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         if (metricsReporter != null) {
             metricsReporter.close();
         }
-        kafkaConsumersByTopic.forEach((topic, consumer) -> consumer.stop());
+        kafkaConsumerRunner.stop();
         kafkaConsumerExecutor.shutdown();
         timerExecutor.shutdown();
         responseHandlerExecutor.shutdown();
