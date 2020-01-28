@@ -86,7 +86,8 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=timeseries",
-        //   "mock.db.adminPassword=password" // TODO Patrick: remove
+//        "mock.db.adminUser=admin", // TODO Patrick: remove?
+//        "mock.db.adminPassword=password" // TODO Patrick: remove?
 })
 @JUnitTemporaryDatabase(dirtiesContext=true)
 public class TimeseriesRoundtripIT {
@@ -161,17 +162,17 @@ public class TimeseriesRoundtripIT {
         testForNumericAttribute("snmp:1:metrics", "m1", 900d);
         testForNumericAttribute("snmp:1:metrics", "m2", 1000d);
         testForStringAttribute("snmp/1", "sysname", "host1");
-        testForStringAttribute("snmp/1", "idx-m2", "idx-m2");
+        testForStringAttribute("snmp/1/metrics", "m2", "m2");
 
         testForNumericAttribute("snmp:1:if-x:if-metrics", "m3", 44d);
         testForNumericAttribute("snmp:1:if-x:if-metrics", "m4", 55d);
         testForStringAttribute("snmp/1/if-x", "ifname", "eth0");
-        testForStringAttribute("snmp/1", "idx-m4", "idx-m4");
+        testForStringAttribute("snmp/1/if-x/if-metrics", "m4", "m4");
 
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m5", 66d);
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
-        testForStringAttribute("snmp/1", "idx-m6", "idx-m6");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "m6", "m6");
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
