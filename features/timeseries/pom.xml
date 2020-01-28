@@ -102,6 +102,11 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-java</artifactId>
+      <version>1.4.0</version>
+    </dependency>
     <dependency><!-- TODO: Patrick: remove if we don't like it -->
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>

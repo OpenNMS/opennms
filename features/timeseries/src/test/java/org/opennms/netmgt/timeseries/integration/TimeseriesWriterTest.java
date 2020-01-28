@@ -70,6 +70,7 @@ public class TimeseriesWriterTest {
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
         TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
+        writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
         writer.setTimeSeriesStorage(store);
 
         for (int i = 0; i < ringBufferSize*2; i++) {

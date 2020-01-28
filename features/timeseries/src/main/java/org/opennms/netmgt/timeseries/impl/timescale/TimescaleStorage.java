@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,7 +61,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-@Service
 public class TimescaleStorage implements TimeSeriesStorage {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimescaleStorage.class);
@@ -95,8 +94,8 @@ public class TimescaleStorage implements TimeSeriesStorage {
                     ps.setString(2, sample.getMetric().getKey());
                     ps.setDouble(3, sample.getValue());
                     ps.addBatch();
-                    saveTags(sample.getMetric(), Metric.TagType.intrinsic, sample.getMetric().getTags());
-                    saveTags(sample.getMetric(), Metric.TagType.meta, sample.getMetric().getMetaTags());
+                    storeTags(sample.getMetric(), Metric.TagType.intrinsic, sample.getMetric().getTags());
+                    storeTags(sample.getMetric(), Metric.TagType.meta, sample.getMetric().getMetaTags());
                 }
                 ps.executeBatch();
 
@@ -115,7 +114,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
         }
     }
 
-    private void saveTags(final Metric metric, final Metric.TagType tagType, final Collection<Tag> tags) throws SQLException {
+    private void storeTags(final Metric metric, final Metric.TagType tagType, final Collection<Tag> tags) throws SQLException {
         final String sql = "INSERT INTO timescale_tag(fk_timescale_metric, key, value, type)  values (?, ?, ?, ?) ON CONFLICT (fk_timescale_metric, key, value, type) DO NOTHING;";
 
         final DBUtils db = new DBUtils(this.getClass());
