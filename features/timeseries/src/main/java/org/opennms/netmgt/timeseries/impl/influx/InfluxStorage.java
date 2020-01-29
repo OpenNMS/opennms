@@ -28,9 +28,17 @@
 
 package org.opennms.netmgt.timeseries.impl.influx;
 
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
@@ -38,15 +46,19 @@ import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.springframework.stereotype.Service;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.InfluxDBClientOptions;
 import com.influxdb.client.domain.DeletePredicateRequest;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Implementation of TimeSeriesStorage that uses InfluxStorage.
@@ -60,12 +72,23 @@ public class InfluxStorage implements TimeSeriesStorage {
     private InfluxDBClient influxDBClient;
 
     // TODO Patrick: externalize config
-    private String configBucket = "my-bucket";
-    private String configOrg = "my-org";
+    private String configBucket = "opennms";
+    private String configOrg = "opennms";
+    private String configToken = "5DOQmVNBf1olXG2Iba0WSPfEqD-mt1dhoJctvX4HjLPRufNqjpb4UJsDyVCPJUkDzEXTnN0QrGOaeXGwIdTUxQ==";
+    private String configUrl = "http://localhost:9999";
 
     public InfluxStorage() {
         // TODO Patrick: externalize configuration
-        influxDBClient = InfluxDBClientFactory.create("http://localhost:9999", "my-token".toCharArray());
+        // OkHttpClient okHttpClient = new OkHttpClient.Builder().
+
+        InfluxDBClientOptions options = InfluxDBClientOptions.builder()
+                .bucket(configBucket)
+                .connectionString(configUrl)
+                .org(configOrg)
+                .url(configUrl)
+                .authenticateToken(configToken.toCharArray())
+                .build();
+        influxDBClient = InfluxDBClientFactory.create(options);
         // TODO Patrick: enable batch?
     }
 
@@ -83,33 +106,81 @@ public class InfluxStorage implements TimeSeriesStorage {
 
     private void storeTags(final Point point, final Metric.TagType tagType, final Collection<Tag> tags) {
         for(final Tag tag : tags) {
-            point.addTag(tag.getKey(), toClassifiedTagValue(tagType, tag));
+            point.addTag(toClassifiedTagKey(tagType, tag), tag.getValue());
         }
     }
 
-    private String toClassifiedTagValue(final Metric.TagType tagType, final Tag tag) {
-         return tagType.name() + "_" + tag.getValue();
+    private String toClassifiedTagKey(final Metric.TagType tagType, final Tag tag) {
+         return tagType.name() + "_" + tag.getKey();
     }
 
     @Override
     public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
 
-        String query = "from(bucket:\"\" + this.configBucket + \"\")" +
-                "|> range(start:-24h)" +
-                "|> group(by:[\"_measurement\"])" +
-                "|> distinct(column:\"_measurement\")" +
-                "|> group(none:true)";
+        String query = "from(bucket:\"opennms\")\n" +
+                "  |> range(start:-24h)\n" +
+                "  |> group(columns:[\"_measurement\"])\n" +
+                "  |> distinct(column:\"_measurement\")";
 
         // TODO Patrick: Find a way to restore a metric
         // https://www.influxdata.com/blog/schema-queries-in-ifql/
-        return new ArrayList<>();
+
+        final List<FluxTable> tables = influxDBClient.getQueryApi().query(query);
+        List<?> allMetricKeys = tables.stream()
+                .map(FluxTable::getRecords)
+                .filter(l -> !l.isEmpty()) // just to be sure
+                .map(t -> t.get(0))
+                .map(FluxRecord::getMeasurement)
+                .filter(Objects::nonNull)
+                .filter(s -> s.contains(CommonTagNames.resourceId))
+                .collect(Collectors.toList());
+
+        query = "from(bucket:\"opennms\")\n" +
+                "  |> range(start:-24h)\n" +
+//                "  |> group(columns:[\"_measurement\"])\n" +
+//                "  |> distinct(column:\"_measurement\"\n)" +
+                // "  |> filter(fn:(r) => r._measurement == \"go_gc_duration_seconds\")\n" +
+                "  |> keys()";
+
+        final List<FluxTable> keys = influxDBClient.getQueryApi().query(query);
+        List<Metric> allMetrics = keys.stream()
+                .map(FluxTable::getRecords)
+                .flatMap(Collection::stream)
+                .map(FluxRecord::getValues)
+                .filter(m -> m.get("_measurement").toString().contains(CommonTagNames.resourceId))
+                .map(this::createMetricFromMap)
+                .filter(metric -> metric.getTags().containsAll(tags))
+                .distinct()
+                .collect(Collectors.toList());
+
+        return allMetrics;
+    }
+
+    private Metric createMetricFromMap(final Map<String, Object> map) {
+        Metric.MetricBuilder metric = Metric.builder();
+        for(Map.Entry<String, Object> entry : map.entrySet()) {
+            getIfMatching(Metric.TagType.intrinsic, entry).ifPresent(metric::tag);
+            getIfMatching(Metric.TagType.meta, entry).ifPresent(metric::metaTag);
+        }
+        return metric.build();
+    }
+
+    private Optional<Tag> getIfMatching(final Metric.TagType tagType, final Map.Entry<String, Object> entry) {
+        // Check if the key starts with the prefix. If so it is an opennms key, if not something InfluxDb specific
+        final String prefix = tagType.name() + '_';
+        if(entry.getKey().startsWith(prefix)) {
+            return Optional.of(new Tag(entry.getKey().substring(prefix.length()), entry.getValue().toString()));
+        }
+        return Optional.empty();
     }
 
     @Override
     public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ").withZone(ZoneId.systemDefault());
+
         String query = "from(bucket:\"" + this.configBucket + "\")\n" +
                 " |> filter(fn: (r) => (r[\"_measurement\"] == \"" + request.getMetric().getKey() + "\"))" +
-                " |> range(start: time(v: " + request.getStart().toEpochMilli() * 1000000 + "), stop: time(v: " + request.getEnd().toEpochMilli() * 1000000 + "))\n";
+                " |> range(start:" + format.format(request.getStart()) + ", stop:" + format.format(request.getEnd()) + ")\n";
         List<FluxTable> tables = influxDBClient.getQueryApi().query(query);
         for (FluxTable fluxTable : tables) {
             List<FluxRecord> records = fluxTable.getRecords();

@@ -184,8 +184,8 @@ public class TimeseriesRoundtripIT {
 
         TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
                 .aggregation(Aggregation.NONE)
-                .start(Instant.MIN)
-                .end(Instant.MAX)
+                .start(Instant.ofEpochMilli(0))
+                .end(Instant.now())
                 .step(Duration.ZERO) // Duration doesn't matter for Aggregation.NONE
                 .metric(metrics.get(0)).build();
 

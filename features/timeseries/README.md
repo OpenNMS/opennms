@@ -10,6 +10,7 @@
 
 ## InfluxDB
 * run influxdb: ``sudo docker run -p 9999:9999 quay.io/influxdb/influxdb:2.0.0-beta --reporting-disabled``
+* init influxdb: ``sudo ./bin/influxdb init``
 
 ## Newts / cassandra
 * start cassandra docker container: ```sudo docker run -p 7199:7199 -p 7000:7000 -p 7001:7001 -p 9160:9160 -p 9042:9042 cassandra:3```
@@ -24,4 +25,5 @@
 * remove all Newts stuff from Abstraction layer
 * set up module structure properly
 * clean up opennms.properties
+* consolidate cmd commands, they do the same
 * The code makes use of the lombok library. This makes for much faster prototyping by remvoving lots of boilerplate code. Since we haven't agreed on using this library we might need to remove it (shouldn't be a problem)
