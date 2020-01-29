@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,9 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.provision.ProvisioningAdapter;
 import org.opennms.netmgt.provision.ProvisioningAdapterException;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -92,10 +92,10 @@ public class ProvisioningAdapterManager implements InitializingBean {
     /**
      * <p>handleNodeAddedEvent</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
-    public void handleNodeAddedEvent(Event e) {
+    public void handleNodeAddedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
             LOG.info("handleNodeAddedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
             try {
@@ -111,10 +111,10 @@ public class ProvisioningAdapterManager implements InitializingBean {
     /**
      * <p>handleNodeUpdatedEvent</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
-    public void handleNodeUpdatedEvent(Event e) {
+    public void handleNodeUpdatedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
             LOG.info("handleNodeUpdatedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
             try {
@@ -130,10 +130,10 @@ public class ProvisioningAdapterManager implements InitializingBean {
     /**
      * <p>handleNodeDeletedEvent</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
-    public void handleNodeDeletedEvent(Event e) {
+    public void handleNodeDeletedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
             LOG.info("handleNodeDeletedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
             try {
@@ -152,10 +152,10 @@ public class ProvisioningAdapterManager implements InitializingBean {
      * Note: If the operations are properly scheduled and handled using the SimpleQueuedProvisioningAdapter, even though
      * this event is sent following a nodeUpdated event, the update operation task should be reduced to 1 operation on the queue.
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.PROVISION_SCAN_COMPLETE_UEI)
-    public void handleNodeScanCompletedEvent(Event e) {
+    public void handleNodeScanCompletedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
             LOG.info("handleScanCompletedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
             try {
@@ -171,10 +171,10 @@ public class ProvisioningAdapterManager implements InitializingBean {
     /**
      * <p>handleNodeChangedEvent</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.NODE_CONFIG_CHANGE_UEI)
-    public void handleNodeChangedEvent(Event e) {
+    public void handleNodeChangedEvent(IEvent e) {
         for (ProvisioningAdapter adapter : m_adapters) {
             LOG.info("handleNodeChangedEvent: Calling adapter:{} for node: {}", e.getNodeid(), adapter.getName());
             try {

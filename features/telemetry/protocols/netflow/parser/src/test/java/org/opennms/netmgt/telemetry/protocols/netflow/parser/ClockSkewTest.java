@@ -104,7 +104,7 @@ public class ClockSkewTest {
 
     private ParserBase parserBase = new ParserBase(Protocol.NETFLOW5, "name", new AsyncDispatcher<TelemetryMessage>() {
         @Override
-        public CompletableFuture<TelemetryMessage> send(TelemetryMessage message) {
+        public CompletableFuture<DispatchStatus> send(TelemetryMessage message) {
             return null;
         }
 

@@ -31,13 +31,13 @@ find target -type f | sort -u
 
 for FILE in target/rpm/RPMS/noarch/*.rpm; do
   # give it 3 tries then die
-  cloudsmith push rpm "${PROJECT}/$REPO/el/5" "$FILE" ||
-  cloudsmith push rpm "${PROJECT}/$REPO/el/5" "$FILE" ||
-  cloudsmith push rpm "${PROJECT}/$REPO/el/5" "$FILE" || exit 1
+  cloudsmith push rpm "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  cloudsmith push rpm "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  cloudsmith push rpm "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
 done
 for FILE in target/debs/*.deb; do
   # give it 3 tries then die
-  cloudsmith push deb "${PROJECT}/$REPO/debian/etch" "$FILE" ||
-  cloudsmith push deb "${PROJECT}/$REPO/debian/etch" "$FILE" ||
-  cloudsmith push deb "${PROJECT}/$REPO/debian/etch" "$FILE" || exit 1
+  cloudsmith push deb "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  cloudsmith push deb "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  cloudsmith push deb "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
 done

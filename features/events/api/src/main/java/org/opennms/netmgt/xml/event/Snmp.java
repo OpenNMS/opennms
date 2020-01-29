@@ -120,10 +120,10 @@ public class Snmp implements Serializable {
         snmp.setId(source.getId());
         snmp.setIdtext(source.getIdtext());
         snmp.setVersion(source.getVersion());
-        snmp.setSpecific(source.getSpecific());
-        snmp.setGeneric(source.getGeneric());
+        snmp.setSpecific(source.hasSpecific() ? source.getSpecific() : null);
+        snmp.setGeneric(source.hasGeneric() ? source.getGeneric() : null);
         snmp.setCommunity(source.getCommunity());
-        snmp.setTimeStamp(source.getTimeStamp());
+        snmp.setTimeStamp(source.hasTimeStamp() ? source.getTimeStamp() : null);
         return snmp;
     }
 

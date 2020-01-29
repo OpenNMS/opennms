@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.poller.DefaultPollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class PendingPollEvent extends PollEvent {
     // how long to wait, in milliseconds, before giving up on waiting for a poll event to get an event ID, defaults to 10 minutes
     private static final long PENDING_EVENT_TIMEOUT = SystemProperties.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
 
-    private final Event m_event;
+    private IEvent m_event;
     private final Date m_date;
     private long m_expirationTimeInMillis;
     private final AtomicBoolean m_pending = new AtomicBoolean(true);
@@ -59,9 +60,9 @@ public class PendingPollEvent extends PollEvent {
     /**
      * <p>Constructor for PendingPollEvent.</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
-    public PendingPollEvent(final Event event) {
+    public PendingPollEvent(final IEvent event) {
         super(Scope.fromUei(event.getUei()));
         m_event = event;
         m_date = m_event.getTime();
@@ -104,9 +105,9 @@ public class PendingPollEvent extends PollEvent {
     /**
      * <p>getEvent</p>
      *
-     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
-    public Event getEvent() {
+    public IEvent getEvent() {
         return m_event;
     }
     
@@ -133,12 +134,13 @@ public class PendingPollEvent extends PollEvent {
     /**
      * Changes the state of this event from "pending" to "not pending".
      * It is important that this call be thread-safe and idempotent because
-     * it may be invoked by multiple {@link DefaultPollContext#onEvent(Event)}
+     * it may be invoked by multiple {@link DefaultPollContext#onEvent(IEvent)}
      * threads.
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
-    public void complete(Event e) {
+    public void complete(IEvent e) {
+        m_event = e;
         m_pending.set(false);
     }
     
@@ -147,8 +149,6 @@ public class PendingPollEvent extends PollEvent {
      * It is important that this call be thread-safe and idempotent because
      * it may be invoked by multiple {@link DefaultPollContext#onEvent(Event)}
      * threads.
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public void processPending() {
         while (!m_pendingOutages.isEmpty()) {

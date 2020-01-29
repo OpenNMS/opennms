@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,8 +40,9 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -83,12 +84,12 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		}
 
 		@Override
-		public void onEvent(final Event e) {
+		public void onEvent(final IEvent e) {
 		    if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
 		        handleReloadEvent(e);
 		        return;
 		    }
-		    m_engine.correlate(e);
+		    m_engine.correlate(Event.copyFrom(e));
 		}
 
 		public void tearDown() {
@@ -106,12 +107,12 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
                     }
 		}
 
-		private void handleReloadEvent(Event e) {
+		private void handleReloadEvent(IEvent e) {
 			boolean engineNameMatched = false;
 			// By default always persist state.
 			boolean persistState = true;
-		    List<Parm> parmCollection = e.getParmCollection();
-		    for (Parm parm : parmCollection) {
+		    List<IParm> parmCollection = e.getParmCollection();
+		    for (IParm parm : parmCollection) {
 		        String parmName = parm.getParmName();
 		        if(EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
 		            if (parm.getValue() == null || parm.getValue().getContent() == null) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,10 +73,11 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,7 +204,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * available for processing.
      */
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(IEvent event) {
         if (event == null) return;
 
         if (isReloadConfigEvent(event)) {
@@ -239,21 +240,23 @@ public final class BroadcastEventProcessor implements EventListener {
 
         boolean notifsOn = computeNullSafeStatus();
 
-        if (notifsOn && (checkCriticalPath(event, notifsOn))) {
-            scheduleNoticesForEvent(event);
+        Event mutableEvent = Event.copyFrom(event);
+
+        if (notifsOn && (checkCriticalPath(mutableEvent, notifsOn))) {
+            scheduleNoticesForEvent(mutableEvent);
         } else if (!notifsOn) {
             LOG.debug("discarding event {}, notifd status on = {}", event.getUei(), notifsOn);
         }
-        automaticAcknowledge(event, notifsOn);
+        automaticAcknowledge(mutableEvent, notifsOn);
     }
 
-    private boolean isReloadConfigEvent(Event event) {
+    private boolean isReloadConfigEvent(IEvent event) {
         boolean isTarget = false;
 
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParmCollection();
+            List<IParm> parmCollection = event.getParmCollection();
 
-            for (Parm parm : parmCollection) {
+            for (IParm parm : parmCollection) {
                 if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Notifd".equalsIgnoreCase(parm.getValue().getContent())) {
                     isTarget = true;
                     break;

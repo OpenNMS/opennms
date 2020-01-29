@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,13 +40,12 @@ import java.util.concurrent.CompletableFuture;
 public interface AsyncDispatcher<S extends Message> extends AutoCloseable {
 
     /**
-     * Asynchronously send the given message and return a future
-     * that is resolved once the message was successfully dispatched.
+     * Asynchronously send the given message.
      *
      * @param message the message to send
-     * @return a future that is resolved once the message was dispatched
+     * @return a future that is resolved once the message was dispatched or queued
      */
-    CompletableFuture<S> send(S message);
+    CompletableFuture<DispatchStatus> send(S message);
 
     /**
      * Returns the number of messages that are currently queued
@@ -55,5 +54,17 @@ public interface AsyncDispatcher<S extends Message> extends AutoCloseable {
      * @return current queue size
      */
     int getQueueSize();
+    
+    enum DispatchStatus {
+        /**
+         * The message was actually dispatched.
+         */
+        DISPATCHED,
+
+        /**
+         * The message has been queued to be dispatched later.
+         */
+        QUEUED
+    }
 
 }

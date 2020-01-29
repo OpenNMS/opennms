@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,8 +36,8 @@ import java.util.Objects;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
 
 import com.google.common.collect.Lists;
 
@@ -62,7 +62,7 @@ public class TopologyServiceEventListener implements EventListener {
     }
 
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
         // Reload given Topology or all
         if (e.getUei().equals(EventConstants.RELOAD_TOPOLOGY_UEI)) {
             final String topologyNamespace = EventUtils.getParm(e, PARAM_TOPOLOGY_NAMESPACE);

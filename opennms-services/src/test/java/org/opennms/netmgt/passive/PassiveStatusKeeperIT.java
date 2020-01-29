@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
@@ -170,7 +171,7 @@ public class PassiveStatusKeeperIT {
     public void testEventWithPassiveStatusParms() {
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
 
-        assertTrue(m_psk.isPassiveStatusEvent(e));
+        assertTrue(m_psk.isPassiveStatusEvent(ImmutableMapper.fromMutableEvent(e)));
         
     }
     
@@ -183,15 +184,15 @@ public class PassiveStatusKeeperIT {
     public void testIsPassiveStatusEvent() {
         
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
-        assertTrue(m_psk.isPassiveStatusEvent(e));
+        assertTrue(m_psk.isPassiveStatusEvent(ImmutableMapper.fromMutableEvent(e)));
         
         //test for missing required parms
         e = createPassiveStatusEvent("Router", "192.168.1.1", null, "Down");
-        assertFalse(m_psk.isPassiveStatusEvent(e));
+        assertFalse(m_psk.isPassiveStatusEvent(ImmutableMapper.fromMutableEvent(e)));
         
         //this will test the event simply doesn't match a registered uei.
         e.setUei("bogusUei");
-        assertFalse(m_psk.isPassiveStatusEvent(e));
+        assertFalse(m_psk.isPassiveStatusEvent(ImmutableMapper.fromMutableEvent(e)));
                 
     }
     

@@ -35,6 +35,9 @@ import java.util.List;
 
 /**
  * A definition corresponding to POJO '{@link org.opennms.netmgt.xml.event.Event}'.
+ *
+ * The 'has...()' methods exist since the corresponding 'get...()' methods will return a default value if null.
+ * Using the 'has...()' method is the only means to determine if the backing value is null.
  */
 public interface IEvent {
     IAlarmData getAlarmData();

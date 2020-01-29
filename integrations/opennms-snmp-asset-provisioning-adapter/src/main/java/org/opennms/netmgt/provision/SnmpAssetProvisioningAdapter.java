@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -59,7 +61,6 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -417,10 +418,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * <p>handleReloadConfigEvent</p>
 	 *
-	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+	 * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
 	 */
 	@EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-	public void handleReloadConfigEvent(final Event event) {
+	public void handleReloadConfigEvent(final IEvent event) {
 		if (isReloadConfigEventTarget(event)) {
 			EventBuilder ebldr = null;
 			LOG.debug("Reloading the SNMP asset adapter configuration");
@@ -440,10 +441,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		}
 	}
 
-	private boolean isReloadConfigEventTarget(final Event event) {
+	private boolean isReloadConfigEventTarget(final IEvent event) {
 		boolean isTarget = false;
 
-		for (final Parm parm : event.getParmCollection()) {
+		for (final IParm parm : event.getParmCollection()) {
 			if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && ("Provisiond." + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
 				isTarget = true;
 				break;
