@@ -21,7 +21,7 @@
         "@babel/polyfill": "^7.6.0",
         "@babel/preset-env": "^7.6.2",
         "@babel/preset-typescript": "^7.6.0",
-        "@rangerrick/moment-javaformat": "^1.0.1",
+        "@rangerrick/moment-javaformat": "^1.0.2",
         "@types/jest": "^24.0.18",
         "@types/lodash": "^4.14.141",
         "@typescript-eslint/eslint-plugin": "^2.3.2",
