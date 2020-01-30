@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.impl.influx.cli;
+package org.opennms.netmgt.timeseries.impl.influxdb.cli;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +42,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.spi.SubCommand;
 import org.kohsuke.args4j.spi.SubCommandHandler;
 import org.kohsuke.args4j.spi.SubCommands;
-import org.opennms.netmgt.timeseries.impl.timescale.cli.Timescale;
 
 public class Influxdb {
 

@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.impl.influx;
+package org.opennms.netmgt.timeseries.impl.influxdb;
 
-import static org.opennms.netmgt.timeseries.impl.influx.TransformUtil.metricKeyToInflux;
-import static org.opennms.netmgt.timeseries.impl.influx.TransformUtil.tagValueFromInflux;
-import static org.opennms.netmgt.timeseries.impl.influx.TransformUtil.tagValueToInflux;
+import static org.opennms.netmgt.timeseries.impl.influxdb.TransformUtil.metricKeyToInflux;
+import static org.opennms.netmgt.timeseries.impl.influxdb.TransformUtil.tagValueFromInflux;
+import static org.opennms.netmgt.timeseries.impl.influxdb.TransformUtil.tagValueToInflux;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;

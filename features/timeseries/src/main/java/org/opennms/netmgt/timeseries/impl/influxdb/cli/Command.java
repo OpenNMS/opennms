@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.impl.influx;
+package org.opennms.netmgt.timeseries.impl.influxdb.cli;
 
-public class TransformUtil {
-
-    public static String tagValueToInflux(final String resourceId) {
-        return resourceId
-                .replace(':', '/');// Influx has a problem with queries that contain a colon in a query param
-    }
-
-    public static String tagValueFromInflux(final String resourceId) {
-        return resourceId.replace('/', ':'); // Influx has a problem with queries that contain a colon in a query param
-    }
-
-    public static String metricKeyToInflux(final String resourceId) {
-        return tagValueToInflux(resourceId)
-                .replace("/", "-")
-                .replace("=", "-");// Influx has a problem with queries that contain a equals in a query param
-    }
-
+public interface Command {
+    void execute() throws Exception;
 }
