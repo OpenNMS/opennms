@@ -248,7 +248,9 @@ public abstract class TopologyUpdater extends Discovery implements OnmsTopologyU
     }
 
     public void setTopology(OnmsTopology topology) {
-        m_topology = topology;
+        synchronized (m_topology) {
+            m_topology = topology;
+        }
     }
 
     public boolean isRunned() {
