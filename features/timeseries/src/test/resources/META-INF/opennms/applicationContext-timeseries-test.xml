@@ -136,9 +136,9 @@
 
   <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
 
-  <bean id="timescaleSearcher" class="org.opennms.netmgt.dao.support.TimeseriesSearcher" />
+  <bean id="timeseriesSearcher" class="org.opennms.netmgt.dao.support.TimeseriesSearcher" />
 
-  <bean id="resourceMetadataCache" class="${org.opennms.timescale.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
+  <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
   <bean id="cachePrimer" class="org.opennms.netmgt.timeseries.integration.support.CachePrimer"/>
 
@@ -172,12 +172,12 @@
 
   <!-- bean id="resourceDao" primary="true" class="org.opennms.netmgt.dao.support.TimeseriesResourceDao" / -->
 
-  <bean id="timescalePersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" />
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 
   <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
-    <constructor-arg index="0" ref="timescalePersisterFactory"/>
+    <constructor-arg index="0" ref="timeseriesPersisterFactory"/>
     <constructor-arg index="1" ref="osgiPersisterFactory"/>
   </bean>
 

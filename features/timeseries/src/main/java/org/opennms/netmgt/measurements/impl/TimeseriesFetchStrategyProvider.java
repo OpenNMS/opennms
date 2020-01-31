@@ -39,7 +39,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyProvider;
  */
 public class TimeseriesFetchStrategyProvider implements MeasurementFetchStrategyProvider {
 
-    public static final String TIME_SERIES_STRATEGY_NAME = "timescale";
+    public static final String TIME_SERIES_STRATEGY_NAME = "integration";
 
     @Override
     public Class<? extends MeasurementFetchStrategy> getStrategyClass(String timeSeriesStrategyName, String rrdStrategyClass) {

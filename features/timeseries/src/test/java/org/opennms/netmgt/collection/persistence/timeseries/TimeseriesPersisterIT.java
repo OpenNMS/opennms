@@ -81,8 +81,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.timeseries.strategy=timescale",
-      //   "mock.db.adminPassword=password" // TODO Patrick: remove
+        "org.opennms.timeseries.strategy=integration"
 })
 @JUnitTemporaryDatabase(dirtiesContext=true)
 public class TimeseriesPersisterIT {

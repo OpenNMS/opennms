@@ -8,6 +8,6 @@
 
   <context:annotation-config />
 
-  <bean id="timescaleRrdStrategy" class="org.opennms.netmgt.rrd.RrdUtils" factory-method="getStrategy"/>
+  <bean id="timeseriesRrdStrategy" class="org.opennms.netmgt.rrd.RrdUtils" factory-method="getStrategy"/>
 
 </beans>

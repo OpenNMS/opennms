@@ -64,7 +64,16 @@ public class InMemoryStorage implements TimeSeriesStorage {
     @Override
     public List<Metric> getMetrics(final Collection<Tag> tags) {
         Objects.requireNonNull(tags);
-        return data.keySet().stream().filter(metric -> metric.getTags().containsAll(tags)).collect(Collectors.toList());
+        return data.keySet().stream().filter(metric -> containsAll(metric, tags)).collect(Collectors.toList());
+    }
+
+    private boolean containsAll(final Metric metric, final Collection<Tag> tags) {
+        for(Tag tag: tags) {
+            if(!metric.getTags().contains(tag) && !metric.getMetaTags().contains(tag)){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

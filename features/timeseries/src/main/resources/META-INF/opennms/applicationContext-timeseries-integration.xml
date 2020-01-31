@@ -14,6 +14,22 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
+  <bean id="influxdb.bucket" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.bucket:opennms}" />
+  </bean>
+
+  <bean id="influxdb.org" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.bucket:org}" />
+  </bean>
+
+  <bean id="influxdb.token" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.token:unknown}" />
+  </bean>
+
+  <bean id="influxdb.url" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.url:http://localhost:9999}" />
+  </bean>
+
   <bean id="newts.max_batch_size" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.max_batch_size:16}" />
   </bean>
@@ -136,9 +152,9 @@
 
   <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
 
-  <bean id="timescaleSearcher" class="org.opennms.netmgt.dao.support.TimeseriesSearcher" />
+  <bean id="timeseriesSearcher" class="org.opennms.netmgt.dao.support.TimeseriesSearcher" />
 
-  <bean id="resourceMetadataCache" class="${org.opennms.timescale.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
+  <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
   <bean id="cachePrimer" class="org.opennms.netmgt.timeseries.integration.support.CachePrimer"/>
 
@@ -160,7 +176,7 @@
 
   <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 
-  <bean id="timeseriesStorage" class="org.opennms.netmgt.timeseries.impl.timescale.TimescaleStorage" />
+  <bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/>
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
@@ -168,12 +184,12 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-  <bean id="timescalePersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" />
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 
   <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
-    <constructor-arg index="0" ref="timescalePersisterFactory"/>
+    <constructor-arg index="0" ref="timeseriesPersisterFactory"/>
     <constructor-arg index="1" ref="osgiPersisterFactory"/>
   </bean>
 

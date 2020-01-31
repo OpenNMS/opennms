@@ -182,12 +182,12 @@
     </bean>
     <service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-    <bean id="timescalePersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" >
+    <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" >
         <argument ref="defaultContext"/>
         <argument ref="newtsWriter" />
     </bean>
 
-    <service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="timescalePersisterFactory">
+    <service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="timeseriesPersisterFactory">
         <service-properties>
             <entry key="strategy" value="newts">
             </entry>

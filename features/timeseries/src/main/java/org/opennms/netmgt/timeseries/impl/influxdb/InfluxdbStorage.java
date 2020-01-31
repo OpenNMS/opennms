@@ -38,8 +38,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
@@ -59,29 +63,35 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 
 /**
- * Implementation of TimeSeriesStorage that uses InfluxStorage.
+ * Implementation of TimeSeriesStorage that uses InfluxdbStorage.
  *
  * Design choices:
  * - we fill the _measurement column with the Metrics key
  * - we prefix the tag key with the tag type ('intrinsic' or 'meta')
  */
-public class InfluxStorage implements TimeSeriesStorage {
+public class InfluxdbStorage implements TimeSeriesStorage {
 
     private InfluxDBClient influxDBClient;
 
-    // TODO Patrick: externalize config
-    private String configBucket = "opennms";
-    private String configOrg = "opennms";
-    private String configToken = "5DOQmVNBf1olXG2Iba0WSPfEqD-mt1dhoJctvX4HjLPRufNqjpb4UJsDyVCPJUkDzEXTnN0QrGOaeXGwIdTUxQ==";
-    private String configUrl = "http://localhost:9999";
+    private final String configBucket;
+    private final String configOrg;
 
-    public InfluxStorage() {
+    @Inject
+    public InfluxdbStorage(
+            @Named("influxdb.bucket") String bucket,
+            @Named("influxdb.org") String org,
+            @Named("influxdb.token") String token,
+            @Named("influxdb.url") String url) {
+        this.configBucket = Objects.requireNonNull(bucket, "Parameter influxdbBucket cannot be null");
+        this.configOrg = Objects.requireNonNull(org, "Parameter influxdbOrg cannot be null");
+        Objects.requireNonNull(org, "Parameter influxdbToken cannot be null");
+        Objects.requireNonNull(org, "Parameter influxdbUrl cannot be null");
+
         InfluxDBClientOptions options = InfluxDBClientOptions.builder()
                 .bucket(configBucket)
-                .connectionString(configUrl)
                 .org(configOrg)
-                .url(configUrl)
-                .authenticateToken(configToken.toCharArray())
+                .url(url)
+                .authenticateToken(token.toCharArray())
                 .build();
         influxDBClient = InfluxDBClientFactory.create(options);
         // TODO Patrick: do we need to enable batch? How?
@@ -115,7 +125,7 @@ public class InfluxStorage implements TimeSeriesStorage {
     @Override
     public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
 
-        // TODO: Patrick: The code works but is probaply not efficient enough, we should optimize this query since
+        // TODO: Patrick: The code works but is probably not efficient enough, we should optimize this query since
         // it gets way too much (redundant) data.
         // I am not sure how - the influx documentation doesn't seem to be up to date / correct:
         // https://www.influxdata.com/blog/schema-queries-in-ifql/
