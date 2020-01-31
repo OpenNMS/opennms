@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,26 +21,26 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application;
+package org.opennms.netmgt.graph.rest.impl.converter.json;
 
-import java.util.Date;
+import org.json.JSONObject;
+import org.opennms.netmgt.graph.api.info.StatusInfo;
+import org.opennms.netmgt.graph.rest.api.PropertyConverter;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
-import org.opennms.netmgt.model.OnmsSeverity;
+public class StatusInfoConverter implements PropertyConverter<StatusInfo, JSONObject> {
+    @Override
+    public boolean canConvert(Class<StatusInfo> type) {
+        return StatusInfo.class.isAssignableFrom(type);
+    }
 
-public class ApplicationStatusEntityTest {
-    @Test
-    public void testKey() {
-        ApplicationStatusEntity entity = new ApplicationStatusEntity(100, InetAddressUtils.getLocalHostAddress(), 20, new Date(), OnmsSeverity.NORMAL, 20L);
-        ApplicationStatusEntity.Key key1 = entity.getKey();
-        Assert.assertEquals(new ApplicationStatusEntity.Key("100", "20", InetAddressUtils.getLocalHostAddress().toString()), key1);
+    @Override
+    public JSONObject convert(StatusInfo statusInfo) {
+        final JSONObject json = new JSONObject(statusInfo.getProperties());
+        return json;
     }
 }

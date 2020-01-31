@@ -26,35 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.domain;
+package org.opennms.netmgt.graph.api.info;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
-        protected final Map<String, Object> properties = new HashMap<>();
-        
-        protected AbstractDomainElementBuilder() {}
-        
-        public T id(String id) {
-            properties.put(GenericProperties.ID, id);
-            return (T) this;
+/**
+ * Graph API internal Severity enum.
+ */
+public enum Severity {
+    Unknown,
+    Normal,
+    Warning,
+    Minor,
+    Major,
+    Critical;
+
+    public static Severity createFrom(final OnmsSeverity severity) {
+        Objects.requireNonNull(severity);
+        switch(severity) {
+            case INDETERMINATE: return Severity.Unknown;
+            case NORMAL: return Severity.Normal;
+            case MINOR: return Severity.Minor;
+            case MAJOR: return Severity.Major;
+            case CRITICAL: return Severity.Critical;
+            default:
+                throw new IllegalStateException("Cannot convert OnmsSeverity to Severity due to unknown severity '" + severity.name() + "'");
         }
-        
-        public T label(String label){
-            properties.put(GenericProperties.LABEL, label);
-            return (T) this;
-        }
-        
-        public T namespace(String namespace){
-            properties.put(GenericProperties.NAMESPACE, namespace);
-            return (T) this;
-        }
-        
-        public <V> T property(String name, V value){
-            properties.put(name, value);
-            return (T) this;
-        }
+    }
+
+    public boolean isLessThan(Severity other) {
+        Objects.requireNonNull(other);
+        return ordinal() < other.ordinal();
+    }
+
+    public boolean isEqual(Severity other) {
+        Objects.requireNonNull(other);
+        return ordinal() == other.ordinal();
+    }
 }

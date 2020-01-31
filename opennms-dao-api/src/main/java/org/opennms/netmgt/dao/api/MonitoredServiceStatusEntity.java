@@ -26,35 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.domain;
+package org.opennms.netmgt.dao.api;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
-        protected final Map<String, Object> properties = new HashMap<>();
-        
-        protected AbstractDomainElementBuilder() {}
-        
-        public T id(String id) {
-            properties.put(GenericProperties.ID, id);
-            return (T) this;
-        }
-        
-        public T label(String label){
-            properties.put(GenericProperties.LABEL, label);
-            return (T) this;
-        }
-        
-        public T namespace(String namespace){
-            properties.put(GenericProperties.NAMESPACE, namespace);
-            return (T) this;
-        }
-        
-        public <V> T property(String name, V value){
-            properties.put(name, value);
-            return (T) this;
-        }
+public class MonitoredServiceStatusEntity {
+    private final int nodeId;
+    private final Date lastEventTime;
+    private final OnmsSeverity severity;
+    private final long alarmCount;
+
+    public MonitoredServiceStatusEntity(final int nodeId, final Date lastEventTime, final OnmsSeverity severity, final long alarmCount) {
+        this.nodeId = nodeId;
+        this.lastEventTime = lastEventTime;
+        this.severity = severity;
+        this.alarmCount = alarmCount;
+    }
+
+    public OnmsSeverity getSeverity() {
+        return severity;
+    }
+
+    public long getCount() {
+        return alarmCount;
+    }
+
+    public int getNodeId() {
+        return nodeId;
+    }
 }

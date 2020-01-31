@@ -26,35 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.domain;
+package org.opennms.netmgt.graph.api.enrichment;
 
-import java.util.HashMap;
-import java.util.Map;
+public interface EnrichedProperties {
 
-import org.opennms.netmgt.graph.api.generic.GenericProperties;
+    String STATUS = "status";
 
-public abstract class AbstractDomainElementBuilder<T extends AbstractDomainElementBuilder> {
-        protected final Map<String, Object> properties = new HashMap<>();
-        
-        protected AbstractDomainElementBuilder() {}
-        
-        public T id(String id) {
-            properties.put(GenericProperties.ID, id);
-            return (T) this;
-        }
-        
-        public T label(String label){
-            properties.put(GenericProperties.LABEL, label);
-            return (T) this;
-        }
-        
-        public T namespace(String namespace){
-            properties.put(GenericProperties.NAMESPACE, namespace);
-            return (T) this;
-        }
-        
-        public <V> T property(String name, V value){
-            properties.put(name, value);
-            return (T) this;
-        }
 }
