@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.persistence.timeseries;
+package org.opennms.netmgt.timeseries.integration.persistence;
 
 import java.util.Objects;
 

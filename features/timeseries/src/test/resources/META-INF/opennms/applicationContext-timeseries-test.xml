@@ -136,7 +136,7 @@
 
   <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
 
-  <bean id="timeseriesSearcher" class="org.opennms.netmgt.dao.support.TimeseriesSearcher" />
+  <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher" />
 
   <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
@@ -164,7 +164,7 @@
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.TimeseriesResourceStorageDao" />
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
   <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
@@ -172,7 +172,7 @@
 
   <!-- bean id="resourceDao" primary="true" class="org.opennms.netmgt.dao.support.TimeseriesResourceDao" / -->
 
-  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" />
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 

@@ -135,35 +135,4 @@ public class TimeSeriesMetaDataDao {
         return metaData;
     }
 
-//    public void store(List<StringAttribute> attributes) throws SQLException {
-//
-//        // TODO: Patrick: can we simplify this? Right now it reflects the fields in StringAttribute
-//
-//        String sql = "INSERT INTO timeseries_meta(group, identifier, name, value, type)  values (?, ?, ?, ?, ?)";
-//
-//        if (this.connection == null) {
-//            this.connection = this.dataSource.getConnection();
-//        }
-//
-//        PreparedStatement ps = connection.prepareStatement(sql);
-//        // Partition the samples into collections smaller then max_batch_size
-//        for (List<StringAttribute> batch : Lists.partition(attributes, maxBatchSize)) {
-//            try {
-//                LOG.debug("Inserting {} attributes", batch.size());
-//                // m_sampleRepository.insert(batch);
-//                for (StringAttribute attribute : batch) {
-//                    ps.setString(1, attribute.getGroup());
-//                    ps.setString(2, attribute.getIdentifier()); // TODO Patrick: this should be getKey instead
-//                    ps.setString(3, attribute.getName());
-//                    ps.setString(4, attribute.getValue());
-//                    ps.setString(5, attribute.getType().getName());
-//                    ps.addBatch();
-//                }
-//                ps.executeBatch();
-//            } catch (Throwable t) {
-//                RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
-//            }
-//        }
-//        ps.close();
-//    }
 }

@@ -172,7 +172,7 @@
         <property name="indexer" ref="cassandraIndexer" />
     </bean>
 
-    <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.TimeseriesResourceStorageDao" >
+    <bean id="resourceStorageDao" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" >
         <property name="searchableCache" ref="resourceMetadataCache" />
         <property name="searcher" ref="cassandraSearcher" />
         <property name="context" ref="defaultContext" />
@@ -182,7 +182,7 @@
     </bean>
     <service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-    <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory" >
+    <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" >
         <argument ref="defaultContext"/>
         <argument ref="newtsWriter" />
     </bean>

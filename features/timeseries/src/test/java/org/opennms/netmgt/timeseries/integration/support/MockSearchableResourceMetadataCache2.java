@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.support;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.cassandra.search.ResourceMetadata;

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.dao;
 
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
 

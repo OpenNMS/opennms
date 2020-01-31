@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.dao;
 
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toMetricName;
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.dao.support.SearchResults.Result;
+import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;

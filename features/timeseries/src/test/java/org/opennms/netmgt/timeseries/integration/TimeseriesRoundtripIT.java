@@ -54,7 +54,7 @@ import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
-import org.opennms.netmgt.collection.persistence.timeseries.TimeseriesPersisterFactory;
+import org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;

@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.netmgt.dao.support.TimeseriesResourceStorageDao;
+import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.MetricType;

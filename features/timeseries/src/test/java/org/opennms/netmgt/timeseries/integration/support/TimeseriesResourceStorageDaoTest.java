@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -46,8 +46,9 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
-import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
+import org.opennms.netmgt.timeseries.integration.dao.SearchResults;
+import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
+import org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -215,8 +216,8 @@ public class TimeseriesResourceStorageDaoTest {
     }
 
     private void replay() throws StorageException {
-        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt(), EasyMock.anyBoolean())).andAnswer(new IAnswer<org.opennms.netmgt.dao.support.SearchResults>() {
-            public org.opennms.netmgt.dao.support.SearchResults
+        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt(), EasyMock.anyBoolean())).andAnswer(new IAnswer<SearchResults>() {
+            public SearchResults
             answer() {
                 ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
                 int depth = (Integer)EasyMock.getCurrentArguments()[1];
@@ -226,7 +227,7 @@ public class TimeseriesResourceStorageDaoTest {
                 String field = "_idx"+idxSuffix; // key
                 String value = String.format("(%s,%d)", toResourceId(resourcePath), targetLen); // value
 
-                org.opennms.netmgt.dao.support.SearchResults searchResults = new org.opennms.netmgt.dao.support.SearchResults();
+                SearchResults searchResults = new SearchResults();
                 for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
                     Map<String, String> attributes = Maps.newHashMap();
                     // Build the indexed attributes and attempt to match them against the given query

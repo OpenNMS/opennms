@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.dao;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

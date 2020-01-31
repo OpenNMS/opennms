@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.measurements.impl;
+package org.opennms.netmgt.timeseries.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -46,7 +46,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
-import org.opennms.netmgt.measurements.impl.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
@@ -59,7 +58,7 @@ import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
+import org.opennms.netmgt.timeseries.integration.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;

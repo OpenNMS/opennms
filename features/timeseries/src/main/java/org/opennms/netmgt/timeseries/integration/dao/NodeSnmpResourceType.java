@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.timeseries.integration.dao;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +34,8 @@ import java.util.Set;
 
 import org.opennms.core.collections.LazySet;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.dao.support.LazyResourceAttributeLoader;
+import org.opennms.netmgt.dao.support.NodeResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;

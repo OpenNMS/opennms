@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.measurements.impl;
+package org.opennms.netmgt.timeseries.integration;
 
 import static org.opennms.netmgt.timeseries.api.domain.Utils.asMap;
 
@@ -64,11 +64,9 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
-import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
