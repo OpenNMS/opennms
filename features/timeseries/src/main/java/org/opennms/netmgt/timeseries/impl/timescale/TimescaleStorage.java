@@ -56,7 +56,6 @@ import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;

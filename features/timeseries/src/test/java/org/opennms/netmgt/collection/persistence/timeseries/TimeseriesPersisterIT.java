@@ -33,10 +33,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -50,19 +52,18 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.newts.api.Context;
+import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Aggregation;
+import org.opennms.netmgt.timeseries.api.domain.Metric;
+import org.opennms.netmgt.timeseries.api.domain.Sample;
+import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
+import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Results;
-import org.opennms.newts.api.Results.Row;
-import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.cassandra.NewtsInstance;
-import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.base.Optional;
 
 /**
  * Used to verify that numeric attributes in CollectionSets are persisted
@@ -86,29 +87,19 @@ import com.google.common.base.Optional;
 @JUnitTemporaryDatabase(dirtiesContext=true)
 public class TimeseriesPersisterIT {
 
-    @ClassRule
-    public static NewtsInstance s_newtsInstance = new NewtsInstance();
-
-    @BeforeClass
-    public static void setUpClass() {
-        System.setProperty("org.opennms.newts.config.hostname", s_newtsInstance.getHost());
-        System.setProperty("org.opennms.newts.config.port", Integer.toString(s_newtsInstance.getPort()));
-        System.setProperty("org.opennms.newts.config.keyspace", s_newtsInstance.getKeyspace());
-    }
+    @Autowired
+    private TimeseriesPersisterFactory persisterFactory;
 
     @Autowired
-    private TimeseriesPersisterFactory m_persisterFactory;
-
-    @Autowired
-    private CassandraSampleRepository m_sampleRepository;
+    private TimeSeriesStorage storage;
 
     @Test
-    public void canPersist() throws InterruptedException {
+    public void canPersist() throws InterruptedException, StorageException {
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
         RrdRepository repo = new RrdRepository();
         // Only the last element of the path matters here
         repo.setRrdBaseDir(Paths.get("a","path","that","ends","with","snmp").toFile());
-        Persister persister = m_persisterFactory.createPersister(params, repo);
+        Persister persister = persisterFactory.createPersister(params, repo);
 
         int nodeId = 1;
         CollectionAgent agent = mock(CollectionAgent.class);
@@ -116,10 +107,10 @@ public class TimeseriesPersisterIT {
         NodeLevelResource nodeLevelResource = new NodeLevelResource(nodeId);
 
         // Build a collection set with a single sample
-        Timestamp now = Timestamp.now();
+        Instant now = Instant.now();
         CollectionSet collectionSet = new CollectionSetBuilder(agent)
                 .withNumericAttribute(nodeLevelResource, "metrics", "metric", 900, AttributeType.GAUGE)
-                .withTimestamp(now.asDate())
+                .withTimestamp(Date.from(now))
                 .build();
 
         // Persist
@@ -130,11 +121,25 @@ public class TimeseriesPersisterIT {
 
         // Fetch the (persisted) sample
         Resource resource = new Resource("snmp:1:metrics");
-        Timestamp end = Timestamp.now();
-        Results<Sample> samples = m_sampleRepository.select(Context.DEFAULT_CONTEXT, resource, Optional.of(now), Optional.of(end));
+        Instant end = Instant.now();
 
-        assertEquals(1, samples.getRows().size());
-        Row<Sample> row = samples.getRows().iterator().next();
-        assertEquals(900, row.getElement("metric").getValue().doubleValue(), 0.00001);
+        Metric metric = Metric.builder()
+                .tag(Metric.MandatoryTag.unit, CommonTagValues.unknown)
+                .tag(Metric.MandatoryTag.mtype, Metric.Mtype.gauge.name())
+                .tag(CommonTagNames.resourceId, resource.getId())
+                .tag(CommonTagNames.name, "metric")
+                .build();
+        TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+                .start(now)
+                .end(end)
+                .metric(metric)
+                .aggregation(Aggregation.AVERAGE)
+                .step(Duration.ofMillis(1))
+                .build();
+        List<org.opennms.netmgt.timeseries.api.domain.Sample> samples = this.storage.getTimeseries(request);
+
+        assertEquals(1, samples.size());
+        Sample row = samples.get(0);
+        assertEquals(900, row.getValue(), 0.00001);
     }
 }

@@ -35,6 +35,7 @@ import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
 import com.influxdb.client.domain.OnboardingRequest;
+import com.influxdb.client.domain.OnboardingResponse;
 
 import okhttp3.OkHttpClient;
 
@@ -76,10 +77,8 @@ public class Init implements Command {
                 .org(configOrg)
                 .url(configUrl)
                 .okHttpClient(builder)
-                // .authenticateToken(configToken.toCharArray())
                 .build();
         InfluxDBClient influxDBClient = InfluxDBClientFactory.create(options);
-
 
         System.out.println("Checking preconditions");
         if(!influxDBClient.isOnboardingAllowed()) {
@@ -92,7 +91,9 @@ public class Init implements Command {
                 .org(configOrg)
                 .username(configUser)
                 .password(configPassword);
-        influxDBClient.onBoarding(request);
-        System.out.println("Create account: ok. Enjoy!");
+        OnboardingResponse response = influxDBClient.onBoarding(request);
+        System.out.println("Create account: ok");
+        System.out.println("Access token is: " + response.getAuth().getToken());
+        System.out.println("Enjoy!");
     }
 }

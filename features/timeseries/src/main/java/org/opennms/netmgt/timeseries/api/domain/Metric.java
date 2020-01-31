@@ -28,18 +28,13 @@
 
 package org.opennms.netmgt.timeseries.api.domain;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
-
-import lombok.Builder;
 
 /**
  * A piece of text that describes or identifies a metric. It is inspired by Metrics 2.0,

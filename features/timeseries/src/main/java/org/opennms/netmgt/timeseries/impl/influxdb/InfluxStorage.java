@@ -48,7 +48,6 @@ import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
-import org.springframework.stereotype.Service;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
@@ -66,7 +65,6 @@ import com.influxdb.query.FluxTable;
  * - we fill the _measurement column with the Metrics key
  * - we prefix the tag key with the tag type ('intrinsic' or 'meta')
  */
-@Service
 public class InfluxStorage implements TimeSeriesStorage {
 
     private InfluxDBClient influxDBClient;
