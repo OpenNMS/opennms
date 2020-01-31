@@ -52,7 +52,7 @@
         "lodash.clonedeep": "^4.5.0",
         "main-bower-files": "^2.13.3",
         "ngtemplate-loader": "^2.0.1",
-        "node-sass": "^4.12.0",
+        "node-sass": "^4.0.0",
         "parallel-webpack": "^2.4.0",
         "phantomjs-prebuilt": "^2.1.16",
         "postcss-loader": "^3.0.0",
