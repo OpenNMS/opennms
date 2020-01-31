@@ -15,7 +15,9 @@
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
 
     <!-- Listen for GraphContainerProviders -->
-    <bean id="defaultGraphService" class="org.opennms.netmgt.graph.service.DefaultGraphService" />
+    <bean id="defaultGraphService" class="org.opennms.netmgt.graph.service.DefaultGraphService">
+        <argument ref="blueprintBundleContext" />
+    </bean>
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphService" />
     </reference-list>

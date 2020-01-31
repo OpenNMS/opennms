@@ -26,43 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.provider.topology;
+package org.opennms.netmgt.graph.api.service.osgi;
 
-import java.util.Objects;
+import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
-
-public class LegacyTopologyProviderInfo implements TopologyProviderInfo {
-
-    private final GraphInfo delegate;
-
-    public LegacyTopologyProviderInfo(final GenericGraph genericGraph) {
-        this(Objects.requireNonNull(genericGraph).getGraphInfo());
-    }
-
-    public LegacyTopologyProviderInfo(final GraphInfo graphInfo) {
-        this.delegate = Objects.requireNonNull(graphInfo);
-    }
-
-    @Override
-    public String getName() {
-        return delegate.getLabel();
-    }
-
-    @Override
-    public String getDescription() {
-        return delegate.getDescription();
-    }
-
-    @Override
-    public boolean isHierarchical() {
-        return false;
-    }
-
-    @Override
-    public boolean isSupportsCategorySearch() {
-        return false;
-    }
+/**
+ * Helper interface used to wrap a GraphContainerProvider.
+ * This is necessary as otherwise if listening to GraphContainerProvider references they
+ * may not be available in the GraphService yet.
+ *
+ * @author mvrueden
+ */
+public interface GraphContainerProviderRegistration {
+    GraphContainerProvider getDelegate();
 }

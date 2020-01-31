@@ -57,14 +57,16 @@ public class LegacyTopologyProvider implements GraphProvider {
     private final String namespace;
     private final GraphService graphService;
     private final NodeDao nodeDao;
+    private final boolean resolveNodeIds;
 
     private LegacyBackendGraph backendGraph;
 
-    public LegacyTopologyProvider(final NodeDao nodeDao, final GraphService graphService, final String containerId, final String graphNamespace) {
+    public LegacyTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao, final GraphService graphService, final String containerId, final String graphNamespace) {
         this.containerId = Objects.requireNonNull(containerId);
         this.namespace = Objects.requireNonNull(graphNamespace);
         this.graphService = Objects.requireNonNull(graphService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.resolveNodeIds = Objects.requireNonNull(configuration).isResolveNodeIds();
     }
 
     @Override
@@ -77,9 +79,11 @@ public class LegacyTopologyProvider implements GraphProvider {
         final GenericGraph graph = graphService.getGraph(containerId, namespace);
         this.backendGraph = new LegacyBackendGraph(graph);
 
-        // Update nodeId information as enrichment is not implemented at the moment
-        final Map<String, Map<String, Integer>> nodeIdMap = getNodeIdMap(graph);
-        graph.getVertices().stream()
+        // Optionally resolve the nodIds of vertices providing information related to nodes
+        if (resolveNodeIds) {
+            // Update nodeId information as enrichment is not implemented at the moment
+            final Map<String, Map<String, Integer>> nodeIdMap = getNodeIdMap(graph);
+            graph.getVertices().stream()
                 .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
                 .forEach(vertex -> {
                     final NodeRef nodeRef = vertex.getNodeRef();
@@ -89,19 +93,7 @@ public class LegacyTopologyProvider implements GraphProvider {
                         backendGraph.getVertex(getNamespace(), vertex.getId()).setNodeID(nodeId);
                     }
                 });
-    }
-
-    private Map<String, Map<String, Integer>> getNodeIdMap(GenericGraph graph) {
-        final Set<String> foreignSources = graph.getVertices().stream()
-                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
-                .map(v -> v.getNodeRef().getForeignSource())
-                .collect(Collectors.toSet());
-        final Map<String, Map<String, Integer>> foreignSourceMap = Maps.newHashMap();
-        for (String eachForeignSource : foreignSources) {
-            final Map<String, Integer> foreignIdToNodeIdMap = nodeDao.getForeignIdToNodeIdMap(eachForeignSource);
-            foreignSourceMap.put(eachForeignSource, foreignIdToNodeIdMap);
         }
-        return foreignSourceMap;
     }
 
     @Override
@@ -148,5 +140,18 @@ public class LegacyTopologyProvider implements GraphProvider {
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
+    }
+
+    private Map<String, Map<String, Integer>> getNodeIdMap(GenericGraph graph) {
+        final Set<String> foreignSources = graph.getVertices().stream()
+                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
+                .map(v -> v.getNodeRef().getForeignSource())
+                .collect(Collectors.toSet());
+        final Map<String, Map<String, Integer>> foreignSourceMap = Maps.newHashMap();
+        for (String eachForeignSource : foreignSources) {
+            final Map<String, Integer> foreignIdToNodeIdMap = nodeDao.getForeignIdToNodeIdMap(eachForeignSource);
+            foreignSourceMap.put(eachForeignSource, foreignIdToNodeIdMap);
+        }
+        return foreignSourceMap;
     }
 }

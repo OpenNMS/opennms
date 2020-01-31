@@ -65,6 +65,6 @@ public class GraphProviderManager extends InterfaceMapper<GraphProvider, org.ope
 
     @Override
     public Map<String, Object> getServiceProperties(GraphProvider extension) {
-        return GraphContainerProviderManager.getServiceProperties(extension.getConfiguration());
+        return GraphContainerProviderManager.getServiceProperties(extension.getTopologyConfiguration());
     }
 }

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.api.service.osgi.GraphContainerProviderRegistration;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -63,26 +65,38 @@ public class GraphContainerProviderManager {
         this.alarmDao = Objects.requireNonNull(alarmDao);
     }
 
-    public void onBind(final GraphContainerProvider containerProvider, final Map<String, String> properties) {
-        final PropertyAccessor propertyAccessor = new PropertyAccessor(properties);
-        if (propertyAccessor.isExposeToTopology()) {
+    public void onBind(final GraphContainerProviderRegistration containerProviderRegistration, final Map<String, String> properties) {
+        final GraphContainerProvider containerProvider = containerProviderRegistration.getDelegate();
+        final LegacyTopologyConfigurationImpl configuration = new LegacyTopologyConfigurationImpl(properties);
+        if (configuration.isExposeToTopology()) {
             serviceRegistrations.putIfAbsent(containerProvider, Lists.newArrayList());
 
+            // Expose Meta Topology Provider
             final GraphContainerInfo containerInfo = containerProvider.getContainerInfo();
             final String containerId = containerInfo.getId();
             final Hashtable<String, String> serviceProperties = new Hashtable<>();
             serviceProperties.put("label", containerInfo.getLabel());
 
-            final MetaTopologyProvider metaTopologyProvider = new LegacyMetaTopologyProvider(nodeDao, graphService, containerId);
+            final MetaTopologyProvider metaTopologyProvider = new LegacyMetaTopologyProvider(configuration, nodeDao, graphService, containerId);
             final ServiceRegistration<MetaTopologyProvider> metaTopologyProviderServiceRegistration = bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, serviceProperties);
             serviceRegistrations.get(containerProvider).add(metaTopologyProviderServiceRegistration);
 
-            if (propertyAccessor.isExposeStatusProvider()) {
-                metaTopologyProvider.getGraphProviders().forEach(topologyProvider -> {
-                    final SearchProvider searchProvider = new LegacyTopologySearchProvider((LegacyTopologyProvider) topologyProvider);
-                    final ServiceRegistration<SearchProvider> registeredSearchProviderServiceRegistration = bundleContext.registerService(SearchProvider.class, searchProvider, new Hashtable<>());
-                    serviceRegistrations.get(containerProvider).add(registeredSearchProviderServiceRegistration);
+            // Register Search provider
+            metaTopologyProvider.getGraphProviders().forEach(topologyProvider -> {
+                final SearchProvider searchProvider = new LegacyTopologySearchProvider((LegacyTopologyProvider) topologyProvider);
+                final ServiceRegistration<SearchProvider> registeredSearchProviderServiceRegistration = bundleContext.registerService(SearchProvider.class, searchProvider, new Hashtable<>());
+                serviceRegistrations.get(containerProvider).add(registeredSearchProviderServiceRegistration);
+            });
 
+            // Register IconRepository, otherwise icons will not work
+            metaTopologyProvider.getGraphProviders().forEach(topologyProvider -> {
+                final ServiceRegistration<IconRepository> iconRepositoryServiceRegistration = bundleContext.registerService(IconRepository.class, new LegacyIconRepositoryAdapter(topologyProvider), new Hashtable<>());
+                serviceRegistrations.get(containerProvider).add(iconRepositoryServiceRegistration);
+            });
+
+            // If configured, expose Status Provider
+            if (configuration.isExposeStatusProvider()) {
+                metaTopologyProvider.getGraphProviders().forEach(topologyProvider -> {
                     final LegacyStatusProvider statusProvider = new LegacyStatusProvider(topologyProvider.getNamespace(), alarmDao);
                     final ServiceRegistration<StatusProvider> statusProviderServiceRegistration = bundleContext.registerService(StatusProvider.class, statusProvider, new Hashtable<>());
                     final ServiceRegistration<EdgeStatusProvider> edgeStatusProviderServiceRegistration = bundleContext.registerService(EdgeStatusProvider.class, statusProvider, new Hashtable<>());
@@ -93,8 +107,8 @@ public class GraphContainerProviderManager {
         }
     }
 
-    public void onUnbind(final GraphContainerProvider containerProvider, final Map<String, String> properties) {
-        final List<ServiceRegistration<?>> removedServices = serviceRegistrations.remove(containerProvider);
+    public void onUnbind(final GraphContainerProviderRegistration containerProviderRegistration, final Map<String, String> properties) {
+        final List<ServiceRegistration<?>> removedServices = serviceRegistrations.remove(containerProviderRegistration.getDelegate());
         if (removedServices != null) {
             for (ServiceRegistration<?> removedService : removedServices) {
                 if (removedService != null) {
@@ -104,10 +118,10 @@ public class GraphContainerProviderManager {
         }
     }
 
-    private static class PropertyAccessor {
+    private static class LegacyTopologyConfigurationImpl implements LegacyTopologyConfiguration {
         private final Map<String, String> properties;
 
-        public PropertyAccessor(final Map<String, String> properties) {
+        public LegacyTopologyConfigurationImpl(final Map<String, String> properties) {
             this.properties = Objects.requireNonNull(properties);
         }
 
@@ -115,10 +129,12 @@ public class GraphContainerProviderManager {
             return Boolean.valueOf(properties.get("expose-to-topology"));
         }
 
+        @Override
         public boolean isExposeStatusProvider() {
             return Boolean.valueOf(properties.get("expose-status-provider"));
         }
 
+        @Override
         public boolean isResolveNodeIds() {
             return Boolean.valueOf(properties.get("resolve-node-ids"));
         }

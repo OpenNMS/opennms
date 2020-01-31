@@ -31,9 +31,9 @@ package org.opennms.features.apilayer.graph;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
-import org.opennms.integration.api.v1.graph.Configuration;
 import org.opennms.integration.api.v1.graph.GraphContainer;
 import org.opennms.integration.api.v1.graph.GraphContainerProvider;
+import org.opennms.integration.api.v1.graph.TopologyConfiguration;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -69,14 +69,14 @@ public class GraphContainerProviderManager extends InterfaceMapper<GraphContaine
 
     @Override
     public Map<String, Object> getServiceProperties(GraphContainerProvider extension) {
-        return getServiceProperties(extension.getConfiguration());
+        return getServiceProperties(extension.getTopologyConfiguration());
     }
 
-    public static ImmutableMap<String, Object> getServiceProperties(Configuration extensionConfiguration) {
+    public static ImmutableMap<String, Object> getServiceProperties(TopologyConfiguration extensionConfiguration) {
         return ImmutableMap.<String, Object>builder()
-                .put("expose-to-topology", Boolean.toString(extensionConfiguration.isTopology()))
-                .put("expose-status-provider", "true")
-                .put("resolve-node-ids", "true")
+                .put("expose-to-topology", Boolean.toString(extensionConfiguration.isLegacyTopology()))
+                .put("expose-status-provider", Boolean.toString(extensionConfiguration.getLegacyStatusStrategy() == TopologyConfiguration.LegacyStatusStrategy.Default))
+                .put("resolve-node-ids", Boolean.toString(extensionConfiguration.shouldResolveNodes()))
                 .build();
     }
 }

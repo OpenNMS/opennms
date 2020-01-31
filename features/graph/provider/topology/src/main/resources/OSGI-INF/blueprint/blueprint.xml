@@ -17,7 +17,7 @@
         <argument ref="nodeDao" />
         <argument ref="alarmDao" />
     </bean>
-    <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
+    <reference-list interface="org.opennms.netmgt.graph.api.service.osgi.GraphContainerProviderRegistration" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphContainerProviderManager" />
     </reference-list>
 </blueprint>

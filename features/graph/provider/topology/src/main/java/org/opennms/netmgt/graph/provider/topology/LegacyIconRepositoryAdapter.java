@@ -29,40 +29,41 @@
 package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
+import org.opennms.features.topology.api.IconRepository;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 
-public class LegacyTopologyProviderInfo implements TopologyProviderInfo {
+import com.google.common.collect.Sets;
 
-    private final GraphInfo delegate;
+public class LegacyIconRepositoryAdapter implements IconRepository {
 
-    public LegacyTopologyProviderInfo(final GenericGraph genericGraph) {
-        this(Objects.requireNonNull(genericGraph).getGraphInfo());
-    }
+    private final GraphProvider delegate;
 
-    public LegacyTopologyProviderInfo(final GraphInfo graphInfo) {
-        this.delegate = Objects.requireNonNull(graphInfo);
-    }
-
-    @Override
-    public String getName() {
-        return delegate.getLabel();
+    public LegacyIconRepositoryAdapter(final GraphProvider delegate) {
+        this.delegate = Objects.requireNonNull(delegate);
     }
 
     @Override
-    public String getDescription() {
-        return delegate.getDescription();
+    public boolean contains(String iconKey) {
+        return getUsedIconIds().contains(iconKey);
     }
 
     @Override
-    public boolean isHierarchical() {
-        return false;
+    public String getSVGIconId(String iconKey) {
+        return iconKey;
     }
 
-    @Override
-    public boolean isSupportsCategorySearch() {
-        return false;
+    private Set<String> getUsedIconIds() {
+        if (delegate.getCurrentGraph() != null) {
+            final Set<String> iconIds = delegate.getCurrentGraph().getVertices().stream()
+                    .map(Vertex::getIconKey)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            return iconIds;
+        }
+        return Sets.newHashSet();
     }
 }

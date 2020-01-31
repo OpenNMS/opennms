@@ -28,41 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
-import java.util.Objects;
-
-import org.opennms.features.topology.api.topo.TopologyProviderInfo;
-import org.opennms.netmgt.graph.api.generic.GenericGraph;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
-
-public class LegacyTopologyProviderInfo implements TopologyProviderInfo {
-
-    private final GraphInfo delegate;
-
-    public LegacyTopologyProviderInfo(final GenericGraph genericGraph) {
-        this(Objects.requireNonNull(genericGraph).getGraphInfo());
-    }
-
-    public LegacyTopologyProviderInfo(final GraphInfo graphInfo) {
-        this.delegate = Objects.requireNonNull(graphInfo);
-    }
-
-    @Override
-    public String getName() {
-        return delegate.getLabel();
-    }
-
-    @Override
-    public String getDescription() {
-        return delegate.getDescription();
-    }
-
-    @Override
-    public boolean isHierarchical() {
-        return false;
-    }
-
-    @Override
-    public boolean isSupportsCategorySearch() {
-        return false;
-    }
+public interface LegacyTopologyConfiguration {
+    boolean isExposeStatusProvider();
+    boolean isResolveNodeIds();
 }

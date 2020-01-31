@@ -45,18 +45,16 @@ import org.opennms.netmgt.graph.api.service.GraphService;
 public class LegacyMetaTopologyProvider implements MetaTopologyProvider {
 
     private final GraphService graphService;
-    private final NodeDao nodeDao;
     private final String containerId;
     private final Map<String, GraphProvider> providers;
 
-    public LegacyMetaTopologyProvider(final NodeDao nodeDao, final GraphService graphService, final String containerId) {
-        this.nodeDao = Objects.requireNonNull(nodeDao);
+    public LegacyMetaTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao, final GraphService graphService, final String containerId) {
         this.graphService = Objects.requireNonNull(graphService);
         this.containerId = Objects.requireNonNull(containerId);
 
         // Build TopologyProvider delegations
         this.providers = graphService.getGraphContainerInfo(containerId).getNamespaces().stream()
-                .map(namespace -> new LegacyTopologyProvider(nodeDao, graphService, containerId, namespace))
+                .map(namespace -> new LegacyTopologyProvider(configuration, nodeDao, graphService, containerId, namespace))
                 .collect(Collectors.toMap(LegacyTopologyProvider::getNamespace, Function.identity()));
     }
 

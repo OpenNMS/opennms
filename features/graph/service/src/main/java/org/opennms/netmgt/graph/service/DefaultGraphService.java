@@ -42,10 +42,25 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.api.service.osgi.GraphContainerProviderRegistration;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+
+import com.google.common.collect.Maps;
 
 public class DefaultGraphService implements GraphService {
 
     private List<GraphContainerProvider> graphContainerProviders = new CopyOnWriteArrayList<>();
+    private final BundleContext bundleContext;
+    private final Map<GraphContainerProvider, ServiceRegistration<GraphContainerProviderRegistration>> serviceRegistrationMap = Maps.newHashMap();
+
+    public DefaultGraphService() {
+        this(null);
+    }
+
+    public DefaultGraphService(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
     @Override
     public List<GraphContainerInfo> getGraphContainerInfos() {
@@ -94,7 +109,7 @@ public class DefaultGraphService implements GraphService {
         return null;
     }
 
-    public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+    public synchronized void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         // Ensure id and namespace is unique
         final GraphContainerInfo containerInfo = graphContainerProvider.getContainerInfo();
         if (getGraphContainerInfo(containerInfo.getId()) != null) {
@@ -108,7 +123,7 @@ public class DefaultGraphService implements GraphService {
         graphContainerProviders.add(graphContainerProvider);
     }
 
-    public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+    public synchronized void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         graphContainerProviders.remove(graphContainerProvider);
     }
 }

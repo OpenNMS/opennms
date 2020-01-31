@@ -41,6 +41,7 @@ import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
@@ -59,7 +60,9 @@ public class GraphMapper {
                         .target(e.getTarget().getNamespace(), e.getTarget().getId())
                         .build())
                 .collect(Collectors.toList());
-        final GenericGraph.GenericGraphBuilder graphBuilder = GenericGraph.builder().properties(extensionGraph.getProperties())
+        final GenericGraph.GenericGraphBuilder graphBuilder = GenericGraph.builder()
+                .properties(extensionGraph.getProperties())
+                .property(GenericProperties.ENRICHMENT_RESOLVE_NODES, true) // Enable node enrichment for all graphs
                 .addVertices(vertices)
                 .addEdges(edges);
         final List<VertexRef> defaultFocus = extensionGraph.getDefaultFocus();
@@ -73,11 +76,8 @@ public class GraphMapper {
 
     public GenericGraphContainer map(final GraphContainer extensionGraphContainer) {
         Objects.requireNonNull(extensionGraphContainer, "extensionGraphContainer must not be null");
-        // TODO MVR add possibility to add custom properties to container
         final GenericGraphContainer.GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder()
-                .id(extensionGraphContainer.getId())
-                .label(extensionGraphContainer.getLabel())
-                .description(extensionGraphContainer.getDescription());
+                .properties(extensionGraphContainer.getProperties());
         extensionGraphContainer.getGraphs().stream()
                 .map(extensionGraph -> map(extensionGraph))
                 .forEach(containerBuilder::addGraph);
