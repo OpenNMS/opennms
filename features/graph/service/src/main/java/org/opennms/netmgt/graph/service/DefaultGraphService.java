@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.graph.service;
 
+import static org.opennms.netmgt.graph.service.GraphProviderManager.getActualProperties;
+
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -109,7 +112,7 @@ public class DefaultGraphService implements GraphService {
         return null;
     }
 
-    public synchronized void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+    public void onBind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         // Ensure id and namespace is unique
         final GraphContainerInfo containerInfo = graphContainerProvider.getContainerInfo();
         if (getGraphContainerInfo(containerInfo.getId()) != null) {
@@ -121,9 +124,18 @@ public class DefaultGraphService implements GraphService {
             }
         }
         graphContainerProviders.add(graphContainerProvider);
+
+        // Allow other services to listen for GraphContainerProvider.
+        // That way it is ensured that the service is already known by the GraphProvider
+        final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = bundleContext.registerService(GraphContainerProviderRegistration.class, () -> graphContainerProvider, new Hashtable<>(getActualProperties(props)));
+        serviceRegistrationMap.put(graphContainerProvider, serviceRegistration);
     }
 
-    public synchronized void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+    public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
         graphContainerProviders.remove(graphContainerProvider);
+        final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = serviceRegistrationMap.remove(graphContainerProvider);
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
+        }
     }
 }

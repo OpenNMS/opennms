@@ -65,6 +65,7 @@
     <!-- Node Service -->
     <bean id="defaultNodeService" class="org.opennms.netmgt.graph.service.DefaultNodeService">
         <argument ref="genericPersistenceAccessor" />
+        <argument ref="alarmDao" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.NodeService" ref="defaultNodeService" />
 
@@ -82,6 +83,10 @@
         <argument ref="defaultNodeService" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="nodeEnrichmentProcessor" />
+    <bean id="statusEnrichmentProcessor" class="org.opennms.netmgt.graph.enrichment.StatusEnrichmentProcessor">
+        <argument ref="defaultNodeService" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="statusEnrichmentProcessor" />
 
     <!-- Notification Service -->
     <bean id="notificationService" class="org.opennms.netmgt.graph.updates.DefaultGraphNotificationService" />

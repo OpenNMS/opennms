@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.graph.api;
+package org.opennms.netmgt.graph.enrichment;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.info.NodeInfo;
-import org.opennms.netmgt.graph.api.info.StatusInfo;
+public final class EnrichmentUtils {
 
-public interface NodeService {
-    List<NodeInfo> resolveNodes(List<NodeRef> nodeRefs);
-    Map<NodeRef, StatusInfo> resolveStatus(List<NodeRef> nodeRefs);
+    private EnrichmentUtils() {}
+
+    public static boolean parseBoolean(final Map<String, Object> properties, final String propertyKey) {
+        Objects.requireNonNull(properties);
+        final Object value = properties.get(propertyKey);
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        }
+        return false;
+    }
 }

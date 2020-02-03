@@ -62,7 +62,8 @@ public class GraphMapper {
                 .collect(Collectors.toList());
         final GenericGraph.GenericGraphBuilder graphBuilder = GenericGraph.builder()
                 .properties(extensionGraph.getProperties())
-                .property(GenericProperties.ENRICHMENT_RESOLVE_NODES, true) // Enable node enrichment for all graphs
+                .property(GenericProperties.Enrichment.RESOLVE_NODES, true) // Enable node enrichment for all graphs
+                .property(GenericProperties.Enrichment.DEFAULT_STATUS, true) // Enable status enrichment for all graphs
                 .addVertices(vertices)
                 .addEdges(edges);
         final List<VertexRef> defaultFocus = extensionGraph.getDefaultFocus();

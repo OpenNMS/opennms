@@ -43,7 +43,6 @@ import org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.Severity;
 import org.opennms.netmgt.graph.api.info.StatusInfo;
 import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -53,7 +52,7 @@ import org.opennms.netmgt.model.OnmsApplication;
  */
 public class ApplicationStatusEnrichment implements EnrichmentProcessor {
 
-    private static final StatusInfo DEFAULT_STATUS = StatusInfo.builder(Severity.Normal).build();
+    private static final StatusInfo DEFAULT_STATUS = StatusInfo.defaultStatus().build();
 
     private final ApplicationDao applicationDao;
 
