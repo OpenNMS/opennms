@@ -33,6 +33,8 @@ import java.util.Map;
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.graph.GraphContainer;
 import org.opennms.integration.api.v1.graph.GraphContainerProvider;
+import org.opennms.integration.api.v1.graph.configuration.GraphCacheStrategy;
+import org.opennms.integration.api.v1.graph.configuration.GraphConfiguration;
 import org.opennms.integration.api.v1.graph.configuration.TopologyConfiguration;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
@@ -69,14 +71,22 @@ public class GraphContainerProviderManager extends InterfaceMapper<GraphContaine
 
     @Override
     public Map<String, Object> getServiceProperties(GraphContainerProvider extension) {
-        return getServiceProperties(extension.getTopologyConfiguration());
+        return getServiceProperties(extension.getTopologyConfiguration(), extension.getGraphConfiguration());
     }
 
-    public static ImmutableMap<String, Object> getServiceProperties(TopologyConfiguration extensionConfiguration) {
-        return ImmutableMap.<String, Object>builder()
-                .put("expose-to-topology", Boolean.toString(extensionConfiguration.isLegacyTopology()))
-                .put("expose-status-provider", Boolean.toString(extensionConfiguration.getLegacyStatusStrategy() == TopologyConfiguration.LegacyStatusStrategy.Default))
-                .put("resolve-node-ids", Boolean.toString(extensionConfiguration.shouldResolveNodes()))
-                .build();
+    public static ImmutableMap<String, Object> getServiceProperties(final TopologyConfiguration topologyConfiguration, final GraphConfiguration graphConfiguration) {
+        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
+            .put("expose-to-topology", Boolean.toString(topologyConfiguration.isLegacyTopology()))
+            .put("expose-status-provider", Boolean.toString(topologyConfiguration.getLegacyStatusStrategy() == TopologyConfiguration.LegacyStatusStrategy.Default))
+            .put("resolve-node-ids", Boolean.toString(topologyConfiguration.shouldResolveNodes()));
+
+        // In case the cache strategy is timed, it should be expose it accordingly
+        if (graphConfiguration.getGraphCacheStrategy() instanceof GraphCacheStrategy.TimedGraphCacheStrategy) {
+            GraphCacheStrategy.TimedGraphCacheStrategy timedGraphCacheStrategy = ((GraphCacheStrategy.TimedGraphCacheStrategy)graphConfiguration.getGraphCacheStrategy());
+            if (timedGraphCacheStrategy.getCacheReloadIntervalInSeconds() > 0) {
+                builder.put("cacheInvalidateInterval", Long.toString(timedGraphCacheStrategy.getCacheReloadIntervalInSeconds()));
+            }
+        }
+        return builder.build();
     }
 }
