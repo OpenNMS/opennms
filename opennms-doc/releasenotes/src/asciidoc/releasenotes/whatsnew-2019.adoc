@@ -92,6 +92,24 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.3]
+
+==== Release Meridian-2019.1.3
+
+Release 2019.1.3 is the fourth release in the Meridian 2019 series.
+
+It contains a few bug fixes, most notably a fix for some NPEs as well as a performance issue in topology processing.
+
+The codename for 2019.1.3 is _link:$$https://en.wikipedia.org/wiki/Mars$$[Mars]_
+
+===== Bug
+
+* changing GUI date/timeformat breaks requisition update/import date/time display (Issue http://issues.opennms.org/browse/NMS-12428[NMS-12428])
+* Inefficient locking in the TopologyUpdater class (Issue http://issues.opennms.org/browse/NMS-12443[NMS-12443])
+* MIB Compiler fails with Null Pointer Exception (Issue http://issues.opennms.org/browse/NMS-12459[NMS-12459])
+* The Karaf poller:test command is not location aware (Issue http://issues.opennms.org/browse/NMS-12460[NMS-12460])
+* NPE while compiling a MIB (Issue http://issues.opennms.org/browse/NMS-12472[NMS-12472])
+
 [releasenotes-changelog-Meridian-2019.1.2]
 
 ==== Release Meridian-2019.1.2
