@@ -96,9 +96,8 @@ public class LegacyEdgeStatusProviderManager extends InterfaceMapper<LegacyStatu
                                 .properties(legacyEdge.getProperties())
                                 .build();
                         final StatusInfo apiStatus = extension.calculateStatus(apiEdge);
-                        // TODO MVR add null check
-                        final OnmsSeverity onmsSeverity = ModelMappers.fromSeverity(apiStatus.getSeverity());
-                        statusMap.put(edgeRef, new DefaultStatus(onmsSeverity.getLabel(), apiStatus.getCount()));
+                        final Status status = convert(apiStatus);
+                        statusMap.put(edgeRef, status);
                     } else {
                         statusMap.put(edgeRef, new DefaultStatus(OnmsSeverity.INDETERMINATE.getLabel(), 0));
                     }
@@ -106,5 +105,13 @@ public class LegacyEdgeStatusProviderManager extends InterfaceMapper<LegacyStatu
                 return statusMap;
             }
         };
+    }
+
+    public static Status convert(StatusInfo apiStatus) {
+        if (apiStatus == null) {
+            return new DefaultStatus(OnmsSeverity.NORMAL.getLabel(), 0);
+        }
+        final OnmsSeverity onmsSeverity = ModelMappers.fromSeverity(apiStatus.getSeverity());
+        return new DefaultStatus(onmsSeverity.getLabel(), apiStatus.getCount());
     }
 }

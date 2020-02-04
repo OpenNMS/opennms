@@ -28,12 +28,13 @@
 
 package org.opennms.features.apilayer.graph.status;
 
+import static org.opennms.features.apilayer.graph.status.LegacyEdgeStatusProviderManager.convert;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.apilayer.utils.InterfaceMapper;
-import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
@@ -81,9 +82,8 @@ public class LegacyVertexStatusProviderManager extends InterfaceMapper<LegacySta
                                 .properties(legacyVertex.getProperties())
                                 .build();
                         final StatusInfo apiStatus = extension.calculateStatus(apiVertex);
-                        // TODO MVR add null check
-                        final OnmsSeverity onmsSeverity = ModelMappers.fromSeverity(apiStatus.getSeverity());
-                        statusMap.put(vertexRef, new DefaultStatus(onmsSeverity.getLabel(), apiStatus.getCount()));
+                        final Status status = convert(apiStatus);
+                        statusMap.put(vertexRef, status);
                     } else {
                         statusMap.put(vertexRef, new DefaultStatus(OnmsSeverity.INDETERMINATE.getLabel(), 0));
                     }
