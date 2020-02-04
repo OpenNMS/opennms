@@ -51,7 +51,7 @@ public class GraphProviderManager extends InterfaceMapper<GraphProvider, org.ope
             @Override
             public ImmutableGraph<?, ?> loadGraph() {
                 final Graph extensionGraph = extension.loadGraph();
-                final GenericGraph convertedGraph = new GraphMapper().map(extensionGraph);
+                final GenericGraph convertedGraph = new GraphMapper().map(extensionGraph, extension.getGraphConfiguration());
                 return convertedGraph;
             }
 

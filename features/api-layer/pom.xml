@@ -114,6 +114,12 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapstructVersion}</version>
         </dependency>
+        <!-- TODO MVR verify that the oia feature has this as dependency set -->
+        <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.topologies</groupId>
             <artifactId>org.opennms.features.topologies.service.api</artifactId>
@@ -124,9 +130,16 @@
             <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- TODO MVR verify that the oia feature has this as dependency set -->
         <dependency>
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- TODO MVR verify that the oia feature has this as dependency set -->
+        <dependency>
+            <groupId>org.opennms.features.graph.provider</groupId>
+            <artifactId>org.opennms.features.graph.provider.topology</artifactId>
             <version>${project.version}</version>
         </dependency>
 

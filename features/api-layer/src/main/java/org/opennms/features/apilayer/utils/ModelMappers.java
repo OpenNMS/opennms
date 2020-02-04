@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.utils;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.hibernate.ObjectNotFoundException;
@@ -173,6 +174,11 @@ public class ModelMappers {
                 .withSituationKey(feedback.getSituationKey())
                 .withUser(feedback.getUser())
                 .build();
+    }
+
+    public static OnmsSeverity fromSeverity(Severity severity) {
+        Objects.requireNonNull(severity);
+        return OnmsSeverity.get(severity.getId());
     }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {

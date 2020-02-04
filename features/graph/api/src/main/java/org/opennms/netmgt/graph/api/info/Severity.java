@@ -48,6 +48,7 @@ public enum Severity {
         switch(severity) {
             case INDETERMINATE: return Severity.Unknown;
             case NORMAL: return Severity.Normal;
+            case WARNING: return Severity.Warning;
             case MINOR: return Severity.Minor;
             case MAJOR: return Severity.Major;
             case CRITICAL: return Severity.Critical;

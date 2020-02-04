@@ -33,7 +33,7 @@ import java.util.Map;
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.graph.GraphContainer;
 import org.opennms.integration.api.v1.graph.GraphContainerProvider;
-import org.opennms.integration.api.v1.graph.TopologyConfiguration;
+import org.opennms.integration.api.v1.graph.configuration.TopologyConfiguration;
 import org.opennms.netmgt.graph.api.ImmutableGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
@@ -54,7 +54,7 @@ public class GraphContainerProviderManager extends InterfaceMapper<GraphContaine
             @Override
             public ImmutableGraphContainer loadGraphContainer() {
                 final GraphContainer graphContainer = extension.loadGraphContainer();
-                final GenericGraphContainer convertedGraphContainer = new GraphMapper().map(graphContainer);
+                final GenericGraphContainer convertedGraphContainer = new GraphMapper().map(graphContainer, extension.getGraphConfiguration());
                 return convertedGraphContainer;
             }
 

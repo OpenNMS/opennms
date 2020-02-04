@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.opennms.integration.api.v1.graph.Graph;
 import org.opennms.integration.api.v1.graph.GraphContainer;
 import org.opennms.integration.api.v1.graph.VertexRef;
+import org.opennms.integration.api.v1.graph.configuration.GraphConfiguration;
 import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
@@ -48,8 +49,9 @@ import org.opennms.netmgt.graph.api.info.GraphInfo;
 
 public class GraphMapper {
 
-    public GenericGraph map(final Graph extensionGraph) {
+    public GenericGraph map(final Graph extensionGraph, final GraphConfiguration graphConfiguration) {
         Objects.requireNonNull(extensionGraph, "extensionGraph must not be null");
+        Objects.requireNonNull(graphConfiguration, "graphConfiguration must not be null");
         final List<GenericVertex> vertices = extensionGraph.getVertices().stream()
                 .map(v -> GenericVertex.builder().properties(v.getProperties()).build())
                 .collect(Collectors.toList());
@@ -62,8 +64,8 @@ public class GraphMapper {
                 .collect(Collectors.toList());
         final GenericGraph.GenericGraphBuilder graphBuilder = GenericGraph.builder()
                 .properties(extensionGraph.getProperties())
-                .property(GenericProperties.Enrichment.RESOLVE_NODES, true) // Enable node enrichment for all graphs
-                .property(GenericProperties.Enrichment.DEFAULT_STATUS, true) // Enable status enrichment for all graphs
+                .property(GenericProperties.Enrichment.RESOLVE_NODES, graphConfiguration.shouldEnrichNodeInfo())
+                .property(GenericProperties.Enrichment.DEFAULT_STATUS, graphConfiguration.getGraphStatusStrategy() == GraphConfiguration.GraphStatusStrategy.Default)
                 .addVertices(vertices)
                 .addEdges(edges);
         final List<VertexRef> defaultFocus = extensionGraph.getDefaultFocus();
@@ -75,12 +77,13 @@ public class GraphMapper {
         return convertedGraph;
     }
 
-    public GenericGraphContainer map(final GraphContainer extensionGraphContainer) {
+    public GenericGraphContainer map(final GraphContainer extensionGraphContainer, final GraphConfiguration graphConfiguration) {
         Objects.requireNonNull(extensionGraphContainer, "extensionGraphContainer must not be null");
+        Objects.requireNonNull(graphConfiguration, "graphConfiguration must not be null");
         final GenericGraphContainer.GenericGraphContainerBuilder containerBuilder = GenericGraphContainer.builder()
                 .properties(extensionGraphContainer.getProperties());
         extensionGraphContainer.getGraphs().stream()
-                .map(extensionGraph -> map(extensionGraph))
+                .map(extensionGraph -> map(extensionGraph, graphConfiguration))
                 .forEach(containerBuilder::addGraph);
         final GenericGraphContainer convertedGraphContainer = containerBuilder.build();
         return convertedGraphContainer;

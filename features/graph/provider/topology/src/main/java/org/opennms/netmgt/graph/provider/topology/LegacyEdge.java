@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
+import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -36,8 +37,16 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 
 public class LegacyEdge extends AbstractEdge {
+
+    private final Map<String, Object> properties;
+
     public LegacyEdge(GenericEdge edge) {
         super(Objects.requireNonNull(edge).getNamespace(), edge.getId(), createVertexRef(edge.getSource()), createVertexRef(edge.getTarget()));
+        this.properties = edge.getProperties();
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 
     private static VertexRef createVertexRef(org.opennms.netmgt.graph.api.VertexRef input) {
