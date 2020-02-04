@@ -66,7 +66,7 @@ public class AlarmDaoImpl implements AlarmDao {
     }
 
     @Override
-    public Optional<Alarm> getWorstAlarm(NodeRef nodeRef) {
+    public Optional<Alarm> getAlarmWithHighestSeverity(NodeRef nodeRef) {
         final Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
                 .alias("node", "node")
                 .orderBy("severity", false)
