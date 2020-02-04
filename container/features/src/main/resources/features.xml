@@ -1657,10 +1657,8 @@
     <feature name="opennms-graph-provider-topology" description="OpenNMS :: Features :: Graph :: Provider :: Topology" version="${project.version}">
         <feature>opennms-model</feature>
         <feature>opennms-graph-service</feature>
-        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.topology/${project.version}</bundle>
-        <!-- TODO MVR add topology dependencies -->
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
-        <!-- TODO MVR simple??? -->
+        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.topology/${project.version}</bundle>
     </feature>
     <!-- For now it is only used for test purposes -->
     <feature name="opennms-graph-provider-persistence-test" description="OpenNMS :: Features :: Graph :: Provider :: Persistence Test" version="${project.version}">
