@@ -67,7 +67,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
 
     // A calculation of the focus
     private final Focus defaultFocus;
-    private final GraphInfo<GenericVertex> graphInfo;
+    private final GraphInfo graphInfo;
 
     private GenericGraph(GenericGraphBuilder builder) {
         super(builder.properties);
@@ -106,11 +106,6 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
     @Override
     public String getLabel() {
         return graphInfo.getLabel();
-    }
-
-    @Override
-    public Class<GenericVertex> getVertexType() {
-        return GenericVertex.class;
     }
 
     @Override
@@ -489,7 +484,7 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         }
     }
     
-    private class GenericGraphInfo implements GraphInfo<GenericVertex> {
+    private class GenericGraphInfo implements GraphInfo {
 
         @Override
         public String getNamespace() {
@@ -504,11 +499,6 @@ public final class GenericGraph extends GenericElement implements ImmutableGraph
         @Override
         public String getLabel() {
             return (String) properties.get(GenericProperties.LABEL);
-        }
-
-        @Override
-        public Class<GenericVertex> getVertexType() {
-            return GenericVertex.class;
         }
 
     }

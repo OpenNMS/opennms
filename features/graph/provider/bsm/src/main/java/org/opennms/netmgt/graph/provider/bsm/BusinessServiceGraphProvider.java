@@ -51,7 +51,6 @@ import org.opennms.netmgt.graph.api.service.GraphContainerCache;
 import org.opennms.netmgt.graph.api.service.GraphProvider;
 import org.opennms.netmgt.graph.provider.bsm.BusinessServiceGraph.BusinessServiceGraphBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -91,8 +90,8 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     @Override
-    public GraphInfo<?> getGraphInfo() {
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(BusinessServiceGraph.NAMESPACE, BusinessServiceVertex.class);
+    public GraphInfo getGraphInfo() {
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(BusinessServiceGraph.NAMESPACE);
         graphInfo.setLabel("Business Service Graph"); // Business Services
         graphInfo.setDescription("Displays the hierarchy of the defined Business Services and their computed operational states.");
         return graphInfo;
