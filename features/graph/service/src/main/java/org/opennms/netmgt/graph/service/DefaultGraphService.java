@@ -127,8 +127,10 @@ public class DefaultGraphService implements GraphService {
 
         // Allow other services to listen for GraphContainerProvider.
         // That way it is ensured that the service is already known by the GraphProvider
-        final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = bundleContext.registerService(GraphContainerProviderRegistration.class, () -> graphContainerProvider, new Hashtable<>(getActualProperties(props)));
-        serviceRegistrationMap.put(graphContainerProvider, serviceRegistration);
+        if (bundleContext != null) {
+            final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = bundleContext.registerService(GraphContainerProviderRegistration.class, () -> graphContainerProvider, new Hashtable<>(getActualProperties(props)));
+            serviceRegistrationMap.put(graphContainerProvider, serviceRegistration);
+        }
     }
 
     public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
