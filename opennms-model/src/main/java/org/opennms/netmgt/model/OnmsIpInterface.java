@@ -180,13 +180,23 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Transient
-    @XmlAttribute(name="hasFlows")
-    public boolean getHasFlows() {
+    @XmlAttribute(name="lastIngressFlow")
+    public Date getLastIngressFlow() {
         if (m_snmpInterface == null) {
-            return false;
+            return null;
         }
 
-        return m_snmpInterface.getHasFlows();
+        return m_snmpInterface.getLastIngressFlow();
+    }
+
+    @Transient
+    @XmlAttribute(name="lastEgressFlow")
+    public Date getLastEgressFlow() {
+        if (m_snmpInterface == null) {
+            return null;
+        }
+
+        return m_snmpInterface.getLastEgressFlow();
     }
 
     /**

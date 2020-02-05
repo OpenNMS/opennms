@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -79,6 +79,8 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -167,7 +169,7 @@ public class ElasticFlowRepository implements FlowRepository {
      *
      * This maps a node ID to a set if snmpInterface IDs.
      */
-    private final ConcurrentMap<Integer, Set<Integer>> markerCache = Maps.newConcurrentMap();
+    private final Map<Direction, Cache<Integer, Set<Integer>>> markerCache = Maps.newEnumMap(Direction.class);
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
@@ -193,11 +195,25 @@ public class ElasticFlowRepository implements FlowRepository {
         logMarkingTimer = metricRegistry.timer("logMarking");
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
 
-        // Pre-populate marker cache with values from DB
+        this.markerCache.put(Direction.INGRESS, CacheBuilder.newBuilder()
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .build());
+
+        this.markerCache.put(Direction.EGRESS, CacheBuilder.newBuilder()
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .build());
+
         this.sessionUtils.withTransaction(() -> {
-            for (final OnmsNode node : this.nodeDao.findAllHavingFlows()) {
-                this.markerCache.put(node.getId(),
-                        this.snmpInterfaceDao.findAllHavingFlows(node.getId()).stream()
+            for (final OnmsNode node : this.nodeDao.findAllHavingIngressFlows()) {
+                this.markerCache.get(Direction.INGRESS).put(node.getId(),
+                        this.snmpInterfaceDao.findAllHavingIngressFlows(node.getId()).stream()
+                                .map(OnmsSnmpInterface::getIfIndex)
+                                .collect(Collectors.toCollection(Sets::newConcurrentHashSet)));
+            }
+
+            for (final OnmsNode node : this.nodeDao.findAllHavingEgressFlows()) {
+                this.markerCache.get(Direction.EGRESS).put(node.getId(),
+                        this.snmpInterfaceDao.findAllHavingEgressFlows(node.getId()).stream()
                                 .map(OnmsSnmpInterface::getIfIndex)
                                 .collect(Collectors.toCollection(Sets::newConcurrentHashSet)));
             }
@@ -255,8 +271,13 @@ public class ElasticFlowRepository implements FlowRepository {
 
         // Mark nodes and interfaces as having associated flows
         try (final Timer.Context ctx = logMarkingTimer.time()) {
-            final List<Integer> nodesToUpdate = Lists.newArrayListWithExpectedSize(flowDocuments.size());
-            final Map<Integer, List<Integer>> interfacesToUpdate = Maps.newHashMap();
+            final Map<Direction, List<Integer>> nodesToUpdate = Maps.newEnumMap(Direction.class);
+            final Map<Direction, Map<Integer, List<Integer>>> interfacesToUpdate = Maps.newEnumMap(Direction.class);
+
+            nodesToUpdate.put(Direction.INGRESS, Lists.newArrayListWithExpectedSize(flowDocuments.size()));
+            nodesToUpdate.put(Direction.EGRESS, Lists.newArrayListWithExpectedSize(flowDocuments.size()));
+            interfacesToUpdate.put(Direction.INGRESS, Maps.newHashMap());
+            interfacesToUpdate.put(Direction.EGRESS, Maps.newHashMap());
 
             for (final FlowDocument flow : flowDocuments) {
                 if (flow.getNodeExporter() == null) continue;
@@ -264,33 +285,42 @@ public class ElasticFlowRepository implements FlowRepository {
 
                 final Integer nodeId = flow.getNodeExporter().getNodeId();
 
-                Set<Integer> ifaceMarkerCache = this.markerCache.get(nodeId);
+                Set<Integer> ifaceMarkerCache = this.markerCache.get(flow.getDirection()).getIfPresent(nodeId);
+
                 if (ifaceMarkerCache == null) {
-                    this.markerCache.put(nodeId, ifaceMarkerCache = Sets.newConcurrentHashSet());
-                    nodesToUpdate.add(nodeId);
+                    this.markerCache.get(flow.getDirection()).put(nodeId, ifaceMarkerCache = Sets.newConcurrentHashSet());
+                    nodesToUpdate.get(flow.getDirection()).add(nodeId);
                 }
 
                 if (flow.getInputSnmp() != null &&
                     flow.getInputSnmp() != 0 &&
                     !ifaceMarkerCache.contains(flow.getInputSnmp())) {
                     ifaceMarkerCache.add(flow.getInputSnmp());
-                    interfacesToUpdate.computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
+                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
                 }
                 if (flow.getOutputSnmp() != null &&
                     flow.getOutputSnmp() != 0 &&
                     !ifaceMarkerCache.contains(flow.getOutputSnmp())) {
                     ifaceMarkerCache.add(flow.getOutputSnmp());
-                    interfacesToUpdate.computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
+                    interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
                 }
             }
 
-            if (!nodesToUpdate.isEmpty() || !interfacesToUpdate.isEmpty()) {
+            if (!nodesToUpdate.get(Direction.INGRESS).isEmpty() ||
+                !interfacesToUpdate.get(Direction.INGRESS).isEmpty() ||
+                !nodesToUpdate.get(Direction.EGRESS).isEmpty() ||
+                !interfacesToUpdate.get(Direction.EGRESS).isEmpty()) {
                 sessionUtils.withTransaction(() -> {
-                    if (!nodesToUpdate.isEmpty()) {
-                        this.nodeDao.markHavingFlows(nodesToUpdate);
+                    if (!nodesToUpdate.get(Direction.INGRESS).isEmpty() || !nodesToUpdate.get(Direction.EGRESS).isEmpty()) {
+                        this.nodeDao.markHavingFlows(nodesToUpdate.get(Direction.INGRESS), nodesToUpdate.get(Direction.EGRESS));
                     }
-                    for (final Map.Entry<Integer, List<Integer>> e : interfacesToUpdate.entrySet()) {
-                        this.snmpInterfaceDao.markHavingFlows(e.getKey(), e.getValue());
+
+                    for (final Map.Entry<Integer, List<Integer>> e : interfacesToUpdate.get(Direction.INGRESS).entrySet()) {
+                        this.snmpInterfaceDao.markHavingIngressFlows(e.getKey(), e.getValue());
+                    }
+
+                    for (final Map.Entry<Integer, List<Integer>> e : interfacesToUpdate.get(Direction.EGRESS).entrySet()) {
+                        this.snmpInterfaceDao.markHavingEgressFlows(e.getKey(), e.getValue());
                     }
                     return null;
                 });
