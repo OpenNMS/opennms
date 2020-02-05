@@ -40,7 +40,7 @@ import org.opennms.netmgt.graph.api.service.GraphService;
 import org.opennms.netmgt.graph.shell.completer.ContainerIdCompleter;
 
 @Service
-@Command(scope = "opennms-graph", name = "force-reload", description="Invalidates the cache for the given container, forcing it to reload when next request occurs")
+@Command(scope = "opennms", name = "graph-force-reload", description="Invalidates the cache for the given container, forcing it to reload when next request occurs")
 public class GraphReloadCommand implements Action {
 
     @Reference

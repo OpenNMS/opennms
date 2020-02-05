@@ -55,7 +55,7 @@ import org.opennms.newts.api.Timestamp;
 
 import com.google.common.base.Optional;
 
-@Command(scope = "opennms-measurements", name = "show-newts-samples", description = "Show the raw sample stored in Newts")
+@Command(scope = "opennms", name = "show-newts-samples", description = "Show the raw sample stored in Newts")
 @Service
 public class ShowNewtsSamples implements Action {
 

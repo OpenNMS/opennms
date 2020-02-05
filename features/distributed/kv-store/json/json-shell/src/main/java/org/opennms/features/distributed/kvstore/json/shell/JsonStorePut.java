@@ -37,7 +37,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 
-@Command(scope = "opennms-kv-json", name = "put", description = "Insert a record into the JSON store")
+@Command(scope = "opennms", name = "kv-put-json", description = "Insert a record into the JSON store")
 @Service
 public class JsonStorePut implements Action {
     @Reference

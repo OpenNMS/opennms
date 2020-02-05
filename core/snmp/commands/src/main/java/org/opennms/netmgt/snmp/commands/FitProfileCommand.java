@@ -47,7 +47,7 @@ import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import com.google.common.base.Strings;
 
 
-@Command(scope = "opennms-snmp", name = "fit", description = "Fit a profile for a given IP address")
+@Command(scope = "opennms", name = "snmp-fit", description = "Fit a profile for a given IP address")
 @Service
 public class FitProfileCommand implements Action {
 

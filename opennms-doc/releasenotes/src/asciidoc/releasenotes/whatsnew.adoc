@@ -134,28 +134,28 @@ ReST queries and Helm have been enhanced to support new flow features:
 The following new commands have been added to support new or existing functionality:
 
 * `events:send` - send an OpenNMS event
-* `opennms-dns:stress` - stress-test the new internal DNS resolver
-* `opennms-kv-blob:get` - print a record from the blob store
-* `opennms-kv-blob:put` - inserts a string into the blob store
-* `opennms-kv-blob:benchmark` - benchmark the internal OpenNMS blob store
-* `opennms-kv-json:get` - print a record from the JSON store
-* `opennms-kv-blob:put` - inserts a record into the JSON store
-* `opennms-measurements:show-measurements` - show measurements data
-* `opennms-measurements:show-newts-samples` - show raw sample data from Newts
-* `opennms-measurements:show-resources` - show/filter the resource tree
-* `opennms-measurements:delete-resource` - delete the measurements and meta-data for a resource
-* `opennms-snmp:fit` - given an IP address, "fit" that address to an SNMP config profile
-* `opennms-snmp:remove-from-definition` - remove an IP address from an SNMP config definition
-* `opennms-threshold-states:enumerate` - list threshold states
-* `opennms-threshold-states:details` - show the details of a specific threshold state
-* `opennms-threshold-states:clear` - clear a specific threshold state
-* `opennms-threshold-states:clear-all` - reset all threshold states
+* `opennms:stress-dns` - stress-test the new internal DNS resolver
+* `opennms:kv-get-blob` - print a record from the blob store
+* `opennms:kv-put-blob` - inserts a string into the blob store
+* `opennms:kv-benchmark-blob` - benchmark the internal OpenNMS blob store
+* `opennms:kv-get-json` - print a record from the JSON store
+* `opennms:kv-put-blob` - inserts a record into the JSON store
+* `opennms:show-measurements` - show measurements data
+* `opennms:show-newts-samples` - show raw sample data from Newts
+* `opennms:show-measurement-resources` - show/filter the resource tree
+* `opennms:delete-measurement-resources` - delete the measurements and meta-data for a resource
+* `opennms:snmp-fit` - given an IP address, "fit" that address to an SNMP config profile
+* `opennms:snmp-remove-from-definition` - remove an IP address from an SNMP config definition
+* `opennms:threshold-enumerate` - list threshold states
+* `opennms:threshold-details` - show the details of a specific threshold state
+* `opennms:threshold-clear` - clear a specific threshold state
+* `opennms:threshold-clear-all` - reset all threshold states
 * `provision:import-requisition` - import a requisition from a URL
 
 Additionally, a few commands have been updated to have `opennms-` as their prefix:
 
-* `snmp:show-config` -> `opennms-snmp:show-config`
-* `snmp:walk` -> `opennms-snmp:walk`
+* `snmp:show-config` -> `opennms:snmp-show-config`
+* `snmp:walk` -> `opennms:snmp-walk`
 
 ==== UI Improvements
 

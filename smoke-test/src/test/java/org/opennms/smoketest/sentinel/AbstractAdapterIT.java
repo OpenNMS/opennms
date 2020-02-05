@@ -152,7 +152,7 @@ public abstract class AbstractAdapterIT {
         // However, sentinel may not know about it yet, so we manually sync the InterfaceToNodeCache in order to
         // "see" the new nodes and interfaces.
         if (requisitionToCreate != null) {
-            new KarafShell(sentinelSshAddress).runCommand("opennms-nodecache:sync");
+            new KarafShell(sentinelSshAddress).runCommand("opennms:sync-node-cache");
         }
 
         // Resource Id to verify against

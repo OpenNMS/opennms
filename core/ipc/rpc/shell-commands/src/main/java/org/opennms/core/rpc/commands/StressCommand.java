@@ -48,7 +48,7 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 
-@Command(scope = "opennms-rpc", name = "stress", description="Generates RPC requests against the Echo module")
+@Command(scope = "opennms", name = "stress-rpc", description="Generates RPC requests against the Echo module")
 @Service
 public class StressCommand implements Action {
 
