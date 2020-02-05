@@ -14,10 +14,24 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
+  <!-- Influx DB -->
+  <bean id="influxdb.bucket" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.bucket:opennms}" />
+  </bean>
+  <bean id="influxdb.org" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.bucket:opennms}" />
+  </bean>
+  <bean id="influxdb.token" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.token:unknown}" />
+  </bean>
+  <bean id="influxdb.url" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.url:http://localhost:9999}" />
+  </bean>
+
+ <!-- timeseries integration layer -->
   <bean id="timeseries.max_batch_size" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.max_batch_size:16}" />
   </bean>
-
   <bean id="timeseries.ring_buffer_size" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.ring_buffer_size:8192}" />
   </bean>
@@ -25,33 +39,6 @@
   <bean id="timeseries.writer_threads" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
-
-  <bean id="cassandra.keyspace" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.keyspace:newts}" />
-  </bean>
-
-  <bean id="cassandra.hostname" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.hostname:localhost}" />
-  </bean>
-
-  <bean id="cassandra.port" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.port:9042}" />
-  </bean>
-
-  <bean id="cassandra.compression" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.compression:NONE}" />
-  </bean>
-
-  <bean id="cassandra.username" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.username:cassandra}" />
-  </bean>
-
-  <bean id="cassandra.password" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.password:cassandra}" />
-  </bean>
-
-  <!-- This bean provides the pool configuration beans which are used to wire up the Newts context -->
-  <bean id="cassandraPoolConfiguration" class="org.opennms.netmgt.timeseries.integration.support.CassandraPoolConfiguration"/>
 
   <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31540000}" />
@@ -130,29 +117,9 @@
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
-  <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
-
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher" />
 
   <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
-
-  <bean id="cachePrimer" class="org.opennms.netmgt.timeseries.integration.support.CachePrimer"/>
-
-  <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" depends-on="search.cassandra.time-to-live,search.resourceMetadata.maxCacheEntries" />
-
-  <bean id="cassandraIndexerSampleProcessor" class="org.opennms.newts.cassandra.search.CassandraIndexerSampleProcessor" />
-
-  <bean id="sampleProcessors" class="com.google.common.collect.Sets" factory-method="newHashSet" >
-    <constructor-arg index="0" ref="cassandraIndexerSampleProcessor" />
-  </bean>
-
-  <bean id="sampleProcessorService" class="org.opennms.netmgt.timeseries.integration.support.SimpleSampleProcessorService" >
-    <constructor-arg index="0" ref="sampleProcessors" />
-  </bean>
-
-  <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" depends-on="samples.cassandra.time-to-live" />
-
-  <onmsgi:service interface="org.opennms.newts.api.SampleRepository" ref="cassandraSampleRepository" />
 
   <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 
@@ -161,6 +128,7 @@
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
   <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
