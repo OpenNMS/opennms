@@ -53,7 +53,7 @@ public class InMemoryStorage implements TimeSeriesStorage {
     private final Map<Metric, Collection<Sample>> data = new ConcurrentHashMap<>();
 
     @Override
-    public void store(List<Sample> samples) throws StorageException {
+    public void store(List<Sample> samples) {
         Objects.requireNonNull(samples);
         for(Sample sample : samples) {
             Collection<Sample> timeseries = data.computeIfAbsent(sample.getMetric(), k -> new ConcurrentLinkedQueue<Sample>());

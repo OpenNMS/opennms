@@ -85,7 +85,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.timeseries.strategy=timeseries",
+        "org.opennms.timeseries.strategy=integration",
 //        "mock.db.adminUser=admin", // TODO Patrick: remove?
 //        "mock.db.adminPassword=password" // TODO Patrick: remove?
 })
@@ -186,7 +186,7 @@ public class TimeseriesRoundtripIT {
                 .aggregation(Aggregation.NONE)
                 .start(Instant.ofEpochMilli(0))
                 .end(Instant.now())
-                .step(Duration.ZERO) // Duration doesn't matter for Aggregation.NONE
+                .step(Duration.ofSeconds(1))
                 .metric(metrics.get(0)).build();
 
         List<Sample> sample = timeseriesStorage.getTimeseries(request);

@@ -176,11 +176,12 @@ public class InfluxdbStorage implements TimeSeriesStorage {
     public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneId.of("UTC"));
 
-        // TODO: Patrick add aggregation function to query
+        long stepInSeconds = request.getStep().getSeconds();
         String query = "from(bucket:\"" + this.configBucket + "\")\n" +
                 " |> range(start:" + format.format(request.getStart()) + ", stop:" + format.format(request.getEnd()) + ")\n" +
                 " |> filter(fn:(r) => r._measurement == \"" + metricKeyToInflux(request.getMetric().getKey()) + "\")\n" +
                 " |> filter(fn: (r) => r._field == \"value\")";
+               // " |> aggregateWindow(every: " + stepInSeconds +"s,fn: mean)"; // TODO: Patrick: this crashes the whole Indluxdb server???
         List<FluxTable> tables = influxDBClient.getQueryApi().query(query);
 
         final List<Sample> samples = new ArrayList<>();

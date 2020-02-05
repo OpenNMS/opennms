@@ -48,8 +48,6 @@ import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
-import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.netmgt.timeseries.meta.AttributeIdentifier;
 import org.opennms.netmgt.timeseries.meta.MetaData;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.MetricType;
@@ -113,8 +111,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private final AtomicLong m_numEntriesOnRingBuffer = new AtomicLong();
 
     @Inject
-    public TimeseriesWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize,
-                            @Named("newts.writer_threads") Integer numWriterThreads, @Named("newtsMetricRegistry") MetricRegistry registry) {
+    public TimeseriesWriter(@Named("timeseries.max_batch_size") Integer maxBatchSize, @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
+                            @Named("timeseries.writer_threads") Integer numWriterThreads, @Named("newtsMetricRegistry") MetricRegistry registry) {
         Preconditions.checkArgument(maxBatchSize > 0, "maxBatchSize must be strictly positive");
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");

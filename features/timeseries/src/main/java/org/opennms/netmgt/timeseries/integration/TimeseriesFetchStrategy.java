@@ -312,7 +312,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                 }
 
                 LOG.debug("Found {} rows.", rows.size());
-                return rows;
+                 return rows;
             }
         };
     }
