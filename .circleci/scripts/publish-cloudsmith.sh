@@ -47,13 +47,13 @@ publishPackage() {
 
 for FILE in target/rpm/RPMS/noarch/*.rpm; do
   # give it 3 tries then die
-  publishPackage cloudsmith push rpm "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push rpm "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push rpm "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
+  publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
 done
 for FILE in target/debs/*.deb; do
   # give it 3 tries then die
-  publishPackage cloudsmith push deb "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push deb "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
-  publishPackage cloudsmith push deb "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
+  publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
+  publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
 done
