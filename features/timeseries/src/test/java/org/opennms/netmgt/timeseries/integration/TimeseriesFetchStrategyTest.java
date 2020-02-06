@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +56,11 @@ import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Aggregation;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -269,9 +272,11 @@ public class TimeseriesFetchStrategyTest {
         Measurement measurement = new Measurement(Timestamp.fromEpochSeconds(0), res, label, 0.0d);
         row.addElement(measurement);
 
+
+        String name = ds != null ? ds : attr;
         Metric metric = Metric.builder()
                 .tag(CommonTagNames.resourceId, newtsResourceId)
-                .tag(CommonTagNames.name, label)
+                .tag(CommonTagNames.name, name)
                 .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())
                 .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                 .build();
@@ -283,8 +288,16 @@ public class TimeseriesFetchStrategyTest {
 
         results.add(sample);
 
+        TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+                .metric(metric)
+                .aggregation(Aggregation.AVERAGE)
+                .start(Instant.ofEpochMilli(1431047069000L - (60 * 60 * 1000)))
+                .end(Instant.ofEpochMilli(1431047069000L))
+                .step(Duration.ofMinutes(5))
+                .build();
+
         if (expect) {
-            EasyMock.expect(timeSeriesStorage.getTimeseries(EasyMock.anyObject())).andReturn(results);
+            EasyMock.expect(timeSeriesStorage.getTimeseries(request)).andReturn(results);
         }
 
         final Source source = new Source();

@@ -284,4 +284,9 @@ public class TimescaleStorage implements TimeSeriesStorage {
             throw new IllegalArgumentException("Unknown aggregation " + aggregation);
         }
     }
+
+    @Override
+    public boolean supportsAggregation(final Aggregation aggregation) {
+        return aggregation == Aggregation.MAX || aggregation == Aggregation.MIN || aggregation == Aggregation.AVERAGE;
+    }
 }

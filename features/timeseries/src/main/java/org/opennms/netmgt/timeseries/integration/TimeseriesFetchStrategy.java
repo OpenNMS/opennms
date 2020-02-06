@@ -116,7 +116,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     @Autowired
     private ResourceDao m_resourceDao;
 
-    private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("NewtsFetchStrateg-%d").build();
+    private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("TimeseriesFetchStrateg-%d").build();
 
     private final ExecutorService threadPool = Executors.newCachedThreadPool(namedThreadFactory);
 
