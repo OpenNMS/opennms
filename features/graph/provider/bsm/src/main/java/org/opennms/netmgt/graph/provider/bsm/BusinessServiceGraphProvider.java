@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.*;
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.BusinessServiceVertexBuilder;
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.builder;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.VertexRef;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
@@ -116,7 +118,7 @@ public class BusinessServiceGraphProvider implements GraphProvider, EventListene
     }
 
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
         // BSM has been reloaded, force reload
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
             String daemonName = EventUtils.getParm(e, EventConstants.PARM_DAEMON_NAME);

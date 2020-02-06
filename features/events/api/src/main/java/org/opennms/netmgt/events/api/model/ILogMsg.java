@@ -30,9 +30,13 @@ package org.opennms.netmgt.events.api.model;
 
 /**
  * A definition corresponding to POJO '{@link org.opennms.netmgt.xml.event.Logmsg}'.
+ *
+ * The 'has...()' methods exist since the corresponding 'get...()' methods will return a default value if null.
+ * Using the 'has...()' method is the only means to determine if the backing value is null.
  */
 public interface ILogMsg {
     String getContent();
     String getDest();
     Boolean getNotify();
+    boolean hasNotify();
 }

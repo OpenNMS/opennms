@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,26 +21,18 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application;
+package org.opennms.core.ipc.sink.api;
 
-import java.util.Date;
+import java.util.function.Function;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
-import org.opennms.netmgt.model.OnmsSeverity;
+public interface DispatchQueueFactory {
 
-public class ApplicationStatusEntityTest {
-    @Test
-    public void testKey() {
-        ApplicationStatusEntity entity = new ApplicationStatusEntity(100, InetAddressUtils.getLocalHostAddress(), 20, new Date(), OnmsSeverity.NORMAL, 20L);
-        ApplicationStatusEntity.Key key1 = entity.getKey();
-        Assert.assertEquals(new ApplicationStatusEntity.Key("100", "20", InetAddressUtils.getLocalHostAddress().toString()), key1);
-    }
+    <T> DispatchQueue<T> getQueue(AsyncPolicy asyncPolicy, String moduleName, Function<T, byte[]> serializer,
+                                  Function<byte[], T> deserializer);
+
 }

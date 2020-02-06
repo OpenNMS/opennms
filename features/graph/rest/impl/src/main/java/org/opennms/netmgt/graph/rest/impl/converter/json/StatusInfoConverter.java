@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.offheap;
+package org.opennms.netmgt.graph.rest.impl.converter.json;
 
-import org.opennms.core.ipc.sink.api.Message;
+import org.json.JSONObject;
+import org.opennms.netmgt.graph.api.info.StatusInfo;
+import org.opennms.netmgt.graph.rest.api.PropertyConverter;
 
-public class MockMessage implements Message{
-
-    private String id;
-
-    public MockMessage(String id) {
-          this.id = id;
+public class StatusInfoConverter implements PropertyConverter<StatusInfo, JSONObject> {
+    @Override
+    public boolean canConvert(Class<StatusInfo> type) {
+        return StatusInfo.class.isAssignableFrom(type);
     }
 
-    public String getId(){
-        return this.id;
+    @Override
+    public JSONObject convert(StatusInfo statusInfo) {
+        final JSONObject json = new JSONObject(statusInfo.getProperties());
+        return json;
     }
 }

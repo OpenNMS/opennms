@@ -13,10 +13,10 @@ update_configs:
       include_scope: true
     allowed_updates:
       - match:
-          update_type: "security"
+          update_type: security
     ignored_updates:
       - match:
           dependency_name: "d3"
       - match:
           dependency_name: "ionicons"
-    target_branch: "develop"
+    target_branch: "foundation-2019"

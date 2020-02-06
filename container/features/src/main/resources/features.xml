@@ -468,8 +468,9 @@
     <feature name="opennms-core-ipc-sink-offheap" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: OffHeap">
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>dropwizard-metrics</feature>
+        <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.offheap/${project.version}</bundle>
-        <bundle>mvn:com.h2database/h2/${h2databaseVersion}</bundle>
+        <bundle>wrap:mvn:com.squareup.tape2/tape/${tape2Version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-camel-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Common">
         <feature>opennms-core-ipc-sink-api</feature>
@@ -1609,6 +1610,7 @@
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
         <feature>guava</feature>
+        <feature>opennms-model</feature>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.jung/${jungVersion}</bundle>
     </feature>

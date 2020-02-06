@@ -2,6 +2,29 @@
 
 === Changelog
 
+[releasenotes-changelog-25.2.0]
+
+==== Release 25.2.0
+
+Release 25.2.0 is the fifth release in the Horizon 25 series.
+
+It contains a number of bug fixes including a performance fix for topology updating, and an enhancement
+to the sink API to persist to disk when the Minion can't reach the broker.
+
+The codename for 25.2.0 is _link:$$https://en.wikipedia.org/wiki/Chicken_and_dumplings$$[Biscuit Dumpling]_.
+
+===== Bug
+
+* changing GUI date/timeformat breaks requisition update/import date/time display (Issue http://issues.opennms.org/browse/NMS-12428[NMS-12428])
+* Inefficient locking in the TopologyUpdater class (Issue http://issues.opennms.org/browse/NMS-12443[NMS-12443])
+* MIB Compiler fails with Null Pointer Exception (Issue http://issues.opennms.org/browse/NMS-12459[NMS-12459])
+* The Karaf poller:test command is not location aware (Issue http://issues.opennms.org/browse/NMS-12460[NMS-12460])
+* NPE while compiling a MIB (Issue http://issues.opennms.org/browse/NMS-12472[NMS-12472])
+
+===== Enhancement
+
+* Sink API: Persistent Off-Heap Storage (Issue http://issues.opennms.org/browse/NMS-10586[NMS-10586])
+
 [releasenotes-changelog-25.1.2]
 
 ==== Release 25.1.2

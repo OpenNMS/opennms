@@ -2,12 +2,12 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-Reporting on information from the _{opennms-product-name}_ monitoring system is important for strategical or operational decisions.
-_Database Reports_ give access to the embedded _JasperReports_ engine and allows to create and customize report templates.
-These reports can be executed on demand or on a pre-defined schedule within _{opennms-product-name}_.
+Reporting on information from the _{opennms-product-name}_ monitoring system is important for strategic or operational decisions.
+_Database Reports_ give access to the embedded _JasperReports_ engine and allows users to create and customize report templates.
+These reports can be executed on demand or on a predefined schedule within _{opennms-product-name}_.
 
 NOTE: Originally _Database Reports_ were introduced to create reports working on data stored in the _{opennms-product-name}_ database only.
-      This is no longer mandatory, also performance data can be used.
+      This is no longer mandatory. Performance data can also be used.
       Theoretically the reports do not necessarily need to be _{opennms-product-name}_ related.
 
 WARNING: The _{opennms-product-name} Report Engine_ allows the creation of various kinds of reports and also supports distributed report repositories.
@@ -27,7 +27,7 @@ The _{opennms-product-name} Report Engine_ passes a _JDBC_ Connection to the _{o
 |`JasperReport` Version   | {jasperReportsVersion}
 |===
 
-For more details on how _JasperReports_ works, please have a look at the link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation] of _Jaspersoft Studio_.
+For more details on how _JasperReports_ works, please look at the link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation] of _Jaspersoft Studio_.
 
 [[ga-database-report-add-custom-report]]
 
