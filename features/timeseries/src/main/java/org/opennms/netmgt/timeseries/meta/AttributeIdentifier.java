@@ -32,7 +32,8 @@ import org.opennms.netmgt.collection.support.builder.Attribute;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 
-/** Unique identifier for a Attribute. There can't be more than one Attribute with the same identifier.
+/** // TODO: Patrick: delete class, we don't seem to need it anymore?
+ *  Unique identifier for a Attribute. There can't be more than one Attribute with the same identifier.
  *  // TODO: Patrick: discuss with Jesse if this implementation is correct
  */
 public class AttributeIdentifier {

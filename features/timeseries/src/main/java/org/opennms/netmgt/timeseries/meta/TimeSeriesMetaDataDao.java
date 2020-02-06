@@ -96,7 +96,6 @@ public class TimeSeriesMetaDataDao {
                 ps.addBatch();
             }
             ps.executeBatch();
-            ps.close();
         } finally{
             db.cleanUp();
         }
@@ -114,7 +113,6 @@ public class TimeSeriesMetaDataDao {
 
             final Connection connection = this.dataSource.getConnection();
             db.watch(connection);
-
             PreparedStatement statement = connection.prepareStatement(sql);
             db.watch(statement);
             statement.setString(1, toResourceId(path));
@@ -126,11 +124,11 @@ public class TimeSeriesMetaDataDao {
                 String value = rs.getString("value");
                 metaData.put(name, value);
             }
-            rs.close();
         } catch (SQLException e) {
             LOG.error("Could not retrieve meta data for resourceId={}", resourceId, e);
-            db.cleanUp();
             throw new StorageException(e);
+        } finally {
+            db.cleanUp();
         }
         return metaData;
     }

@@ -72,6 +72,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class TimeseriesFetchStrategyTest {
+
+    private final static long START_TIME = 1431047069000L - (300 * 1000);
+    private final static long END_TIME = 1431047069000L -1;
+    private final static long STEP = (300 * 1000);
+
     private ResourceDao m_resourceDao;
     private TimeSeriesStorage timeSeriesStorage;
 
@@ -79,8 +84,9 @@ public class TimeseriesFetchStrategyTest {
 
     private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
 
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         m_resourceDao = EasyMock.createNiceMock(ResourceDao.class);
         timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
  
@@ -90,7 +96,7 @@ public class TimeseriesFetchStrategyTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         EasyMock.verify(m_resourceDao, timeSeriesStorage);
     }
 
@@ -106,7 +112,7 @@ public class TimeseriesFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmp"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -124,7 +130,7 @@ public class TimeseriesFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmp"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -142,7 +148,7 @@ public class TimeseriesFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, Lists.newArrayList(sourceToBeFetched), false);
         assertNull(fetchResults);
     }
 
@@ -155,7 +161,7 @@ public class TimeseriesFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
         assertEquals(3, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertTrue(fetchResults.getColumns().containsKey("snmplocalhost"));
@@ -171,7 +177,7 @@ public class TimeseriesFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources, false);
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
     }
@@ -216,8 +222,7 @@ public class TimeseriesFetchStrategyTest {
                 createMockResource("ping1Micro", "strafeping",  "ping1", "127.0.0.1", true));
         replay();
 
-        FetchResults fetchResults = fetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L,
-                300 * 1000, 0, null, null, sources, false);
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("ping1Micro"));
     }
@@ -282,18 +287,18 @@ public class TimeseriesFetchStrategyTest {
                 .build();
         Sample sample = Sample.builder()
                 .metric(metric)
-                .time(Instant.ofEpochMilli(0))
-                .value(0.0)
+                .time(Instant.ofEpochMilli(START_TIME))
+                .value(33.0)
                 .build();
 
         results.add(sample);
 
         TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
                 .metric(metric)
-                .aggregation(Aggregation.AVERAGE)
-                .start(Instant.ofEpochMilli(1431047069000L - (60 * 60 * 1000)))
-                .end(Instant.ofEpochMilli(1431047069000L))
-                .step(Duration.ofMinutes(5))
+                .aggregation(Aggregation.NONE) // we do the aggregation in the JVM
+                .start(Instant.ofEpochMilli(START_TIME))
+                .end(Instant.ofEpochMilli(END_TIME))
+                .step(Duration.ofMillis(STEP))
                 .build();
 
         if (expect) {
