@@ -86,11 +86,11 @@
   </bean>
 
   <bean id="redis.hostname" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.redis_hostname:localhost}" />
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.redis_hostname:localhost}" />
   </bean>
 
   <bean id="redis.port" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.redis_port:6379}" />
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.redis_port:6379}" />
   </bean>
 
   <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
@@ -99,21 +99,21 @@
     <property name="staticMethod" value="org.opennms.netmgt.timeseries.integration.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
 
-  <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
 
   <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-      <constructor-arg ref="newtsMetricRegistry"/>
+      <constructor-arg ref="newtsMetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
   </bean>
 
   <bean id="newtsMetricRegistryDomainedJmxReporterBuilder" factory-bean="newtsMetricRegistryJmxReporterBuilder" factory-method="inDomain">
-      <constructor-arg value="org.opennms.newts"/>
+      <constructor-arg value="org.opennms.newts"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
   </bean>
 
   <bean id="newtsMetricRegistryJmxReporter"
         factory-bean="newtsMetricRegistryDomainedJmxReporterBuilder"
         factory-method="build"
         init-method="start"
-        destroy-method="stop" />
+        destroy-method="stop" /><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 

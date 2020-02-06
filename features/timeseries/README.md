@@ -31,9 +31,7 @@ nothing
 * add the token to opennms.properties at: ``org.opennms.timeseries.influxdb.token``
 
 ## Open TODOs
-* make registration layer do the aggregation
-* make interface implement aggregation or not
-* remove Cassandra dependencx from integration layer
+* check caching strategy and cache priming
 * clean up opennms.properties
 * consolidate cmd commands, they do the same
 * The code makes use of the lombok library. This makes for much faster prototyping by remvoving lots of boilerplate code. Since we haven't agreed on using this library we might need to remove it (shouldn't be a problem)

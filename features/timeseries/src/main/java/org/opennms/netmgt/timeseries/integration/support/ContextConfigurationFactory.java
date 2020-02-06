@@ -39,6 +39,7 @@ import com.datastax.driver.core.ConsistencyLevel;
  * system properties.
  *
  * @author jwhite
+ * // TODO: Patrick discuss with Jesse: do we need this class? Can we remove it?
  */
 public class ContextConfigurationFactory {
 
