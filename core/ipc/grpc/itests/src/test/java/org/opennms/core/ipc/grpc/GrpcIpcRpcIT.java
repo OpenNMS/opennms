@@ -29,8 +29,10 @@
 package org.opennms.core.ipc.grpc;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -47,6 +49,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.ipc.grpc.client.GrpcClientConstants;
 import org.opennms.core.ipc.grpc.client.MinionGrpcClient;
+import org.opennms.core.ipc.grpc.common.RpcRequestProto;
 import org.opennms.core.ipc.grpc.server.GrpcServerConstants;
 import org.opennms.core.ipc.grpc.server.OpennmsGrpcServer;
 import org.opennms.core.rpc.echo.EchoRequest;
@@ -57,6 +60,8 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.google.common.base.Strings;
 
+import io.grpc.stub.StreamObserver;
+
 public class GrpcIpcRpcIT {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
@@ -64,6 +69,7 @@ public class GrpcIpcRpcIT {
     private MockEchoClient echoClient;
     private MinionGrpcClient grpcClient;
     private OpennmsGrpcServer server;
+    private ConfigurationAdmin configAdmin;
     private EchoRpcModule echoRpcModule = new EchoRpcModule();
 
     @Before
@@ -77,7 +83,7 @@ public class GrpcIpcRpcIT {
 
         clientConfig.put(GrpcClientConstants.GRPC_HOST, "localhost");
         clientConfig.put(GrpcClientConstants.TLS_ENABLED, false);
-        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
+        configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcServerConstants.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcClientConstants.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
 
@@ -155,6 +161,70 @@ public class GrpcIpcRpcIT {
         }
 
     }
+
+    @Test(timeout = 45000)
+    public void testMultipleGrpcClientsIteration() throws Exception {
+        MinionIdentity minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME, "minion2");
+        MinionGrpcClient grpcClient2 = new MinionGrpcClient(minionIdentity, configAdmin);
+        grpcClient2.bind(echoRpcModule);
+        grpcClient2.start();
+        MinionIdentity minionIdentity1 = new MockMinionIdentity(REMOTE_LOCATION_NAME, "minion3");
+        MinionGrpcClient grpcClient3 = new MinionGrpcClient(minionIdentity1, configAdmin);
+        grpcClient3.bind(echoRpcModule);
+        grpcClient3.start();
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> {
+                            grpcClient.dispatch(new HeartbeatModule(), null, new Heartbeat());
+                            grpcClient2.dispatch(new HeartbeatModule(), null, new Heartbeat());
+                            grpcClient3.dispatch(new HeartbeatModule(), null, new Heartbeat());
+                            return server.getRpcHandlerByLocation().size();
+                        },
+                        is(3));
+        // Verify that rpc handler is iterative for 3 minions for a given location
+        StreamObserver<RpcRequestProto> observer1 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        StreamObserver<RpcRequestProto> observer2 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        assertNotEquals(observer1, observer2);
+        StreamObserver<RpcRequestProto> observer3 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        assertNotEquals(observer2, observer3);
+        assertNotEquals(observer1, observer3);
+
+
+        grpcClient3.shutdown();
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> server.getRpcHandlerByLocation().size(), is(2));
+
+        // Verify that rpc handler is iterative for 2 minions for a given location
+        observer1 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        observer2 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        assertNotEquals(observer1, observer2);
+        observer3 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        assertNotEquals(observer2, observer3);
+        assertEquals(observer3, observer1);
+
+        // Add one more minion.
+        MinionGrpcClient grpcClient4 = new MinionGrpcClient(minionIdentity1, configAdmin);
+        grpcClient4.bind(echoRpcModule);
+        grpcClient4.start();
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> {
+                    grpcClient4.dispatch(new HeartbeatModule(), null, new Heartbeat());
+            return server.getRpcHandlerByLocation().size();
+            }, is(3));
+        // Verify that rpc handler is iterative for 3 minions for a given location
+        observer1 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        observer2 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        assertNotEquals(observer1, observer2);
+        observer3 = server.getRpcHandler(REMOTE_LOCATION_NAME, null);
+        assertNotEquals(observer2, observer3);
+        assertNotEquals(observer1, observer3);
+
+        grpcClient4.shutdown();
+        grpcClient2.shutdown();
+        await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> server.getRpcHandlerByLocation().size(), is(1));
+
+    }
+
 
     @After
     public void shutdown() throws Exception {

@@ -35,13 +35,20 @@ public class MockMinionIdentity implements MinionIdentity {
 
     private final String location;
 
+    private String id = "minionId";
+
     public MockMinionIdentity(String location) {
         this.location = location;
     }
 
+    public MockMinionIdentity(String location, String id) {
+        this.location = location;
+        this.id = id;
+    }
+
     @Override
     public String getId() {
-        return "minionId";
+        return id;
     }
 
     @Override
@@ -53,4 +60,5 @@ public class MockMinionIdentity implements MinionIdentity {
     public String getType() {
         return SystemType.Minion.name();
     }
+
 }

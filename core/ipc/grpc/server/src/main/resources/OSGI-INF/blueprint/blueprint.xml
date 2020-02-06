@@ -30,8 +30,8 @@
         init-method="start" destroy-method="shutdown">
     <property name="identity" ref="identity"/>
     <property name="configAdmin" ref="configAdmin"/>
-    <property name="rpcMetrics" ref="gRpcRpcMetrics"/>
-    <property name="sinkMetrics" ref="gRpcSinkMetrics"/>
+    <property name="rpcMetrics" ref="grpcRpcMetrics"/>
+    <property name="sinkMetrics" ref="grpcSinkMetrics"/>
     <property name="tracerRegistry" ref="tracerRegistry"/>
   </bean>
 
@@ -50,8 +50,8 @@
   </service>
 
   <!-- RPC Metrics -->
-  <bean id="gRpcRpcMetrics" class="com.codahale.metrics.MetricRegistry"/>
-  <service ref="gRpcRpcMetrics" interface="com.codahale.metrics.MetricSet">
+  <bean id="grpcRpcMetrics" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="grpcRpcMetrics" interface="com.codahale.metrics.MetricSet">
     <service-properties>
       <entry key="name" value="gRPC RPC"/>
       <entry key="description" value="Metrics related to RPC messages between OpenNMS and Minion"/>
@@ -59,8 +59,8 @@
   </service>
 
   <!-- Sink Metrics -->
-  <bean id="gRpcSinkMetrics" class="com.codahale.metrics.MetricRegistry"/>
-  <service ref="gRpcSinkMetrics" interface="com.codahale.metrics.MetricSet">
+  <bean id="grpcSinkMetrics" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="grpcSinkMetrics" interface="com.codahale.metrics.MetricSet">
     <service-properties>
       <entry key="name" value="gRPC Sink Consumer"/>
       <entry key="description" value="Sink consumer Metrics on OpenNMS"/>

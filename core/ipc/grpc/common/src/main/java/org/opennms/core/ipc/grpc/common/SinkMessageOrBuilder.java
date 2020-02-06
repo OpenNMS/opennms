@@ -54,35 +54,47 @@ public interface SinkMessageOrBuilder extends
   com.google.protobuf.ByteString getContent();
 
   /**
-   * <code>string location = 3;</code>
+   * <code>string system_id = 3;</code>
+   * @return The systemId.
+   */
+  String getSystemId();
+  /**
+   * <code>string system_id = 3;</code>
+   * @return The bytes for systemId.
+   */
+  com.google.protobuf.ByteString
+      getSystemIdBytes();
+
+  /**
+   * <code>string location = 4;</code>
    * @return The location.
    */
   String getLocation();
   /**
-   * <code>string location = 3;</code>
+   * <code>string location = 4;</code>
    * @return The bytes for location.
    */
   com.google.protobuf.ByteString
       getLocationBytes();
 
   /**
-   * <code>string module_id = 4;</code>
+   * <code>string module_id = 5;</code>
    * @return The moduleId.
    */
   String getModuleId();
   /**
-   * <code>string module_id = 4;</code>
+   * <code>string module_id = 5;</code>
    * @return The bytes for moduleId.
    */
   com.google.protobuf.ByteString
       getModuleIdBytes();
 
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
   int getTracingInfoCount();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
   boolean containsTracingInfo(
           String key);
@@ -93,19 +105,19 @@ public interface SinkMessageOrBuilder extends
   java.util.Map<String, String>
   getTracingInfo();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
   java.util.Map<String, String>
   getTracingInfoMap();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
 
   String getTracingInfoOrDefault(
           String key,
           String defaultValue);
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 6;</code>
    */
 
   String getTracingInfoOrThrow(

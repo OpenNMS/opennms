@@ -48,6 +48,7 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -105,7 +106,19 @@ import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 import io.opentracing.util.GlobalTracer;
-
+/**
+ * Minion GRPC client runs both RPC/Sink together.
+ * gRPC runs in a typical web server/client mode, so gRPC client runs on each minion and gRPC server runs on OpenNMS.
+ * Minion GRPC Client tries to get two stubs/streams (RPC/Sink) from OpenNMS server when it is in active state.
+ * It also initializes RPC observer/handler to receive requests from OpenNMS.
+ * <p>
+ * RPC : RPC runs in bi-directional streaming mode. Minion gets each request and it handles each request in a separate
+ * thread. Once the request is executed, the response sender call is synchronized as writing to observer is not thread-safe.
+ * Minion also sends it's headers (SystemId/location) to OpenNMS whenever the stub is initialized.
+ * <p>
+ * Sink: Sink runs in uni-directional streaming mode. If the sink module is async and OpenNMS Server is not active, the
+ * messages are buffered and blocked till minion is able to connect to OpenNMS.
+ */
 public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionGrpcClient.class);
@@ -128,8 +141,11 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private final ThreadFactory blockingSinkMessageThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("blocking-sink-message-%d")
             .build();
+    // Each request is handled in a new thread which unmarshals and executes the request.
     private final ExecutorService requestHandlerExecutor = Executors.newCachedThreadPool(requestHandlerThreadFactory);
+    // Maintain the map of RPC modules and their ID.
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
+    // This maintains a blocking thread for each dispatch module when OpenNMS is not in active state.
     private final ScheduledExecutorService blockingSinkMessageScheduler = Executors.newScheduledThreadPool(SINK_BLOCKING_THREAD_POOL_SIZE,
             blockingSinkMessageThreadFactory);
 
@@ -235,8 +251,8 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     public void shutdown() {
-        requestHandlerExecutor.shutdownNow();
-        blockingSinkMessageScheduler.shutdownNow();
+        requestHandlerExecutor.shutdown();
+        blockingSinkMessageScheduler.shutdown();
         registerdModules.clear();
         if (rpcStream != null) {
             rpcStream.onCompleted();
@@ -339,7 +355,8 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                 return true;
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error while attempting to send sink message to gRPC IPC server", e);
+            LOG.error("Error while attempting to send sink message with id {} from module {} to gRPC IPC server",
+                    sinkMessage.getMessageId(), sinkMessage.getModuleId(), e);
         }
         return scheduleSinkMessageAfterDelay(sinkMessage);
     }
@@ -376,6 +393,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private void processRpcRequest(RpcRequestProto requestProto) {
         long currentTime = requestProto.getExpirationTime();
         if (requestProto.getExpirationTime() < currentTime) {
+            LOG.debug("ttl already expired for the request id = {}, won't process.", requestProto.getRpcId());
             return;
         }
         String moduleId = requestProto.getModuleId();
@@ -401,7 +419,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                 LOG.warn("An error occured while executing a call in {}.", rpcModule.getId(), ex);
                 rpcResponse = rpcModule.createResponseWithException(ex);
                 minionSpan.log(ex.getMessage());
-                minionSpan.setTag(TAG_RPC_FAILED, "true");
+                minionSpan.setTag(TAG_RPC_FAILED, Boolean.TRUE.toString());
             } else {
                 // No exception occurred, use the given response
                 rpcResponse = res;
@@ -414,7 +432,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
                     .setSystemId(minionIdentity.getId())
                     .setLocation(requestProto.getLocation())
                     .setModuleId(requestProto.getModuleId())
-                    .setRpcContent(ByteString.copyFrom(responseAsString.getBytes()))
+                    .setRpcContent(ByteString.copyFrom(responseAsString, StandardCharsets.UTF_8))
                     .build();
             if (getChannelState().equals(ConnectivityState.READY)) {
                 try {

@@ -120,6 +120,24 @@ import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMapExtractAdapter;
 import io.opentracing.util.GlobalTracer;
 
+/**
+ * OpenNMS GRPC Server runs as OSGI bundle and it runs both RPC/Sink together.
+ * gRPC runs in a typical web server/client mode, so gRPC client runs on each minion and gRPC server runs on OpenNMS.
+ * Server initializes and creates two observers (RPC/Sink) that receive messages from the client (Minion).
+ * <p>
+ * RPC : RPC runs in bi-directional streaming mode. OpenNMS needs a client(minion) handle for sending RPC request
+ * so minion always sends it's headers (SystemId/location) when it initializes. This Server maintains a list of
+ * client(minion) handles and sends RPC request to each minion in round-robin fashion. When it is directed RPC, server
+ * invokes specific minion handle directly.
+ * For each RPC request received, server creates a rpcId and maintains the state of this request in the concurrent map.
+ * The request is also added to a delay queue which can timeout the request if response is not received within expiration
+ * time. RPC responses are received in the observers that are created at start. Each response handling is done in a
+ * separate thread which may be used by rpc module to process the response.
+ * <p>
+ * Sink: Sink runs in uni-directional streaming mode. OpenNMS receives sink messages from client and they are dispatched
+ * in the consumer threads that are initialized at start.
+ */
+
 public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements RpcClientFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsGrpcServer.class);
@@ -160,7 +178,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     // Used to get one of the rpc handlers for a specific location.
     private Multimap<String, StreamObserver<RpcRequestProto>> rpcHandlerByLocation = LinkedListMultimap.create();
     // Maintains the state of iteration for the list of minions for a given location.
-    private Map<Collection<StreamObserver<RpcRequestProto>>, Iterator<StreamObserver<RpcRequestProto>>> rpcHandlerIteratorMap = new HashMap<>();
+    private Map<String, Iterator<StreamObserver<RpcRequestProto>>> rpcHandlerIteratorMap = new HashMap<>();
     // Maintains the map of sink modules by it's id.
     private final Map<String, SinkModule<?, Message>> sinkModulesById = new ConcurrentHashMap<>();
     // Maintains the map of sink consumer executor and by module Id.
@@ -372,19 +390,15 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         rpcHandler.onNext(rpcMessage);
     }
 
-    private synchronized StreamObserver<RpcRequestProto> getRpcHandler(String location, String systemId) {
+    @VisibleForTesting
+    public synchronized StreamObserver<RpcRequestProto> getRpcHandler(String location, String systemId) {
 
         if (!Strings.isNullOrEmpty(systemId)) {
             return rpcHandlerByMinionId.get(systemId);
         }
-        Collection<StreamObserver<RpcRequestProto>> streamObservers = rpcHandlerByLocation.get(location);
-        if (streamObservers.isEmpty()) {
-            return null;
-        }
-        Iterator<StreamObserver<RpcRequestProto>> iterator = rpcHandlerIteratorMap.get(streamObservers);
+        Iterator<StreamObserver<RpcRequestProto>> iterator = rpcHandlerIteratorMap.get(location);
         if (iterator == null) {
-            iterator = Iterables.cycle(streamObservers).iterator();
-            rpcHandlerIteratorMap.put(streamObservers, iterator);
+            return null;
         }
         return iterator.next();
     }
@@ -400,8 +414,27 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 rpcHandlerByLocation.values().remove(obsoleteObserver);
             }
             rpcHandlerByLocation.put(location, rpcHandler);
+            updateIterator(location);
             rpcHandlerByMinionId.put(systemId, rpcHandler);
             LOG.info("Added RPC handler for minion {} at location {}", systemId, location);
+        }
+    }
+
+    private synchronized void updateIterator(String location) {
+        Collection<StreamObserver<RpcRequestProto>> streamObservers = rpcHandlerByLocation.get(location);
+        Iterator<StreamObserver<RpcRequestProto>> iterator = Iterables.cycle(streamObservers).iterator();
+        rpcHandlerIteratorMap.put(location, iterator);
+    }
+
+
+    private synchronized void removeRpcHandler(StreamObserver<RpcRequestProto> rpcHandler) {
+
+        Map.Entry<String, StreamObserver<RpcRequestProto>> matchingHandler =
+                rpcHandlerByLocation.entries().stream().
+                        filter(entry -> entry.getValue().equals(rpcHandler)).findFirst().orElse(null);
+        if (matchingHandler != null) {
+            rpcHandlerByLocation.remove(matchingHandler.getKey(), matchingHandler.getValue());
+            updateIterator(matchingHandler.getKey());
         }
     }
 
@@ -525,6 +558,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 @Override
                 public void onCompleted() {
                     LOG.info("Minion RPC handler closed");
+                    removeRpcHandler(responseObserver);
                 }
             };
         }

@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>${protobufgRPCVersion}</version>
+      <version>${protobufVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

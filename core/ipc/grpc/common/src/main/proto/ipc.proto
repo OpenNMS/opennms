@@ -41,7 +41,8 @@ message RpcResponseProto {
 message SinkMessage {
     string message_id = 1;
     bytes content = 2;
-    string location = 3;
-    string module_id = 4;
-    map<string, string> tracing_info = 5;
+    string system_id = 3;
+    string location = 4;
+    string module_id = 5;
+    map<string, string> tracing_info = 6;
 }
