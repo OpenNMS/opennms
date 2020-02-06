@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
@@ -95,8 +96,9 @@ public class JtiGpbAdapter extends AbstractScriptedCollectionAdapter {
 
     private TransactionOperations transactionTemplate;
 
-    public JtiGpbAdapter(String name, MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+    public JtiGpbAdapter(final AdapterDefinition adapterConfig,
+                         final MetricRegistry metricRegistry) {
+        super(adapterConfig, metricRegistry);
     }
 
     @Override

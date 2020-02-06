@@ -58,16 +58,19 @@ public abstract class AbstractAdapter implements Adapter {
      */
     protected final Histogram packetsPerLogHistogram;
 
-    protected BundleContext bundleContext;
+    /**
+     * A single instance of an adapter will only be responsible for this one config
+     */
+    protected final AdapterDefinition adapterConfig;
 
-    protected AdapterDefinition adapterConfig;
+    public AbstractAdapter(final AdapterDefinition adapterConfig,
+                           final MetricRegistry metricRegistry) {
+        this.adapterConfig = Objects.requireNonNull(adapterConfig);
 
-    public AbstractAdapter(final String name, final MetricRegistry metricRegistry) {
-        Objects.requireNonNull(name);
         Objects.requireNonNull(metricRegistry);
 
-        this.logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
-        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
     }
 
     public abstract void handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog);
@@ -84,14 +87,5 @@ public abstract class AbstractAdapter implements Adapter {
 
     @Override
     public void destroy() {
-    }
-
-    public void setBundleContext(final BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    @Override
-    public void setConfig(final AdapterDefinition adapterConfig) {
-        this.adapterConfig = adapterConfig;
     }
 }

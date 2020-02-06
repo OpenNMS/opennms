@@ -54,6 +54,7 @@ import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.MetricRegistry;
@@ -87,6 +88,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
                     return Optional.empty();
                 }
             });
+    protected BundleContext bundleContext;
 
     @Autowired
     private FilterDao filterDao;
@@ -105,8 +107,9 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
 
     private Cache<String, ThresholdingSession> agentThresholdingSessions = CacheBuilder.newBuilder().expireAfterAccess(thresholdingSessionTtlMinutes, TimeUnit.MINUTES).build();
 
-    public AbstractCollectionAdapter(String name, MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+    public AbstractCollectionAdapter(final AdapterDefinition adapterConfig,
+                                     final MetricRegistry metricRegistry) {
+        super(adapterConfig, metricRegistry);
     }
 
     /**
@@ -212,6 +215,10 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
 
     public void setThresholdingService(ThresholdingService thresholdingService) {
         this.thresholdingService = thresholdingService;
+    }
+
+    public void setBundleContext(final BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     private static class CacheKey {

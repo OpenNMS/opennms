@@ -35,6 +35,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getS
 import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.bson.BsonDocument;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
 import org.slf4j.Logger;
@@ -57,13 +59,18 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpPeerStatusAdapter.class);
 
-    private InterfaceToNodeCache interfaceToNodeCache;
+    private final InterfaceToNodeCache interfaceToNodeCache;
 
-    private EventForwarder eventForwarder;
+    private final EventForwarder eventForwarder;
 
-    public BmpPeerStatusAdapter(final String name,
+    public BmpPeerStatusAdapter(final AdapterDefinition adapterConfig,
+                                final InterfaceToNodeCache interfaceToNodeCache,
+                                final EventForwarder eventForwarder,
                                 final MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+        super(adapterConfig, metricRegistry);
+
+        this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
+        this.eventForwarder = Objects.requireNonNull(eventForwarder);
     }
 
     @Override
@@ -118,13 +125,5 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         }
 
         this.eventForwarder.sendNow(event.getEvent());
-    }
-
-    public void setInterfaceToNodeCache(final InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public void setEventForwarder(final EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
     }
 }
