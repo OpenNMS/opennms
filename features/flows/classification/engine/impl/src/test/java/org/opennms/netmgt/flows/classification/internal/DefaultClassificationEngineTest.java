@@ -101,7 +101,7 @@ public class DefaultClassificationEngineTest {
                 new RuleBuilder().withName("SSH").withDstPort("22").withPosition(1).build(),
                 new RuleBuilder().withName("HTTP_CUSTOM").withDstAddress("192.168.0.1").withDstPort("80").withPosition(2).build(),
                 new RuleBuilder().withName("HTTP").withDstPort("80").withPosition(3).build(),
-                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.*").withDstPort("8000-9000,80,8080").withPosition(4).build(),
+                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.0-192.168.1.255").withDstPort("8000-9000,80,8080").withPosition(4).build(),
                 new RuleBuilder().withName("RANGE-TEST").withDstPort("7000-8000").withPosition(5).build(),
                 new RuleBuilder().withName("OpenNMS").withDstPort("8980").withPosition(6).build(),
                 new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").withPosition(7).build()
