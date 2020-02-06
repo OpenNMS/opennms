@@ -67,6 +67,7 @@ import org.opennms.netmgt.timeseries.api.domain.Aggregation;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.integration.aggregation.SampleAggregator;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
@@ -262,11 +263,12 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
                 List<List<Sample>> allSamples = new ArrayList<>();
 
-                // Get results for all sources
+                // get results for all sources
                 for (Source source : listOfSources) {
                     // Use the datasource as the metric name if set, otherwise use the name of the attribute
                     final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
                     final Aggregation aggregation = toAggregation(source.getAggregation());
+                    final boolean shouldAggregateNatively = storage.supportsAggregation(aggregation);
 
                     final Metric metric = Metric.builder()
                             .tag(CommonTagNames.resourceId, resourceId)
@@ -275,16 +277,31 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                             .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                             .build();
 
+                    Instant startInstant = Instant.ofEpochMilli(start.or(Timestamp.fromEpochMillis(0)).asMillis());
+                    Instant endInstant = Instant.ofEpochMilli(end.or(Timestamp.now()).asMillis());
+
+                    Aggregation aggregationToUse = shouldAggregateNatively ? aggregation : Aggregation.NONE;
                     TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
                             .metric(metric)
-                            .start(Instant.ofEpochMilli(start.or(Timestamp.fromEpochMillis(0)).asMillis()))
-                            .end(Instant.ofEpochMilli(end.or(Timestamp.now()).asMillis()))
+                            .start(startInstant)
+                            .end(endInstant)
                             .step(Duration.ofMillis(lag.getStep()))
-                            .aggregation(aggregation)
+                            .aggregation(aggregationToUse)
                             .build();
 
                     LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
                     List<Sample> samples = storage.getTimeseries(request);
+
+                    // aggregate if timeseries implementation didn't do it natively)
+                    if (!shouldAggregateNatively) {
+                        samples = SampleAggregator.builder()
+                                .expectedMetric(metric)
+                                .samples(samples)
+                                .aggregation(aggregation)
+                                .startTime(startInstant)
+                                .endTime(endInstant)
+                                .bucketSize(Duration.ofMillis(lag.getStep())).build().computeAggregatedSamples();
+                    }
                     allSamples.add(samples);
                 }
 

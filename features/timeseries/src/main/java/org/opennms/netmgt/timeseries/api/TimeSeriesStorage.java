@@ -32,6 +32,7 @@ package org.opennms.netmgt.timeseries.api;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.netmgt.timeseries.api.domain.Aggregation;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.StorageException;
@@ -51,4 +52,9 @@ public interface TimeSeriesStorage {
 
     /** Deletes the given metric. */
     void delete(Metric metric) throws StorageException;
+
+    /** Does the TimeSeriesStorage implementation support the aggregation of data in time buckets with the given aggregation function? */
+    default boolean supportsAggregation(final Aggregation aggregation) {
+        return false;
+    }
 }

@@ -273,7 +273,7 @@ public class TimeseriesFetchStrategyTest {
                 .tag(CommonTagNames.resourceId, newtsResourceId)
                 .tag(CommonTagNames.name, label)
                 .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())
-                .tag(Metric.MandatoryTag.unit.name(), "ms")
+                .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                 .build();
         Sample sample = Sample.builder()
                 .metric(metric)

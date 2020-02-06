@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.api.domain;
+package org.opennms.netmgt.timeseries;
 
-import static org.opennms.netmgt.timeseries.OpennmsAsserts.assertThrows;
+import static org.junit.Assert.fail;
 
-import org.junit.Test;
-
-public class MetricTest {
-
-    @Test
-    public void shouldValidate() {
-        // needs mandatory tags
-        assertThrows(IllegalArgumentException.class, () -> Metric.builder().build());
-        assertThrows(IllegalArgumentException.class, () -> Metric.builder().tag(Metric.MandatoryTag.unit.name(), "ms").build());
-        assertThrows(IllegalArgumentException.class, () -> Metric.builder().tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.counter.name()).build());
-        Metric.builder().tag(Metric.MandatoryTag.unit.name(), "ms").tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.counter.name()).build();
-        assertThrows(IllegalArgumentException.class, () -> Metric.builder().tag(Metric.MandatoryTag.mtype.name(), "unknown").build());
+public class OpennmsAsserts {
+    // TODO: Patrick: I think we have that functionality somewhere already: consolidate
+    public static <T extends Throwable> void assertThrows(Class<T> expectedType, Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Throwable t) {
+            if (expectedType.isInstance(t)) {
+                return; // thrown Exception is of expected type
+            }
+            fail("Expected Exception " + expectedType.getName() + " but caught " + t.getClass());
+        }
+        fail("Expected Exception " + expectedType.getName() + " was not thrown");
     }
+
 }
