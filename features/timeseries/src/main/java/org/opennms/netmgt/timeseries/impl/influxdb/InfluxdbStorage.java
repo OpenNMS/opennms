@@ -181,7 +181,7 @@ public class InfluxdbStorage implements TimeSeriesStorage {
                 " |> range(start:" + format.format(request.getStart()) + ", stop:" + format.format(request.getEnd()) + ")\n" +
                 " |> filter(fn:(r) => r._measurement == \"" + metricKeyToInflux(request.getMetric().getKey()) + "\")\n" +
                 " |> filter(fn: (r) => r._field == \"value\")";
-               // " |> aggregateWindow(every: " + stepInSeconds +"s,fn: mean)"; // TODO: Patrick: this crashes the whole Indluxdb server???
+               // " |> aggregateWindow(every: " + stepInSeconds +"s,fn: mean)"; // TODO: Patrick: this crashes the whole Indluxdb server
         List<FluxTable> tables = influxDBClient.getQueryApi().query(query);
 
         final List<Sample> samples = new ArrayList<>();

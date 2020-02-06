@@ -85,13 +85,9 @@ public class Init implements Command {
             // double check:
             stmt.execute("select * from timescale_time_series;"); // will throw exception if table doesn't exist
 
-            executeQuery(stmt,"CREATE TABLE timescale_metric(key TEXT NOT NULL)");
+            executeQuery(stmt,"CREATE TABLE timescale_metric(key TEXT NOT NULL PRIMARY KEY)");
             executeQuery(stmt,"CREATE TABLE timescale_tag(fk_timescale_metric TEXT NOT NULL, key TEXT, value TEXT NOT NULL, type TEXT NOT NULL, UNIQUE (fk_timescale_metric, key, value, type))");
-            // TODO: Patrick: add constraint and indexes
-
-            // TODO: Patrick: the creation of the timeseries_meta table should be moved into an update script
-            // executeQuery(stmt, "CREATE TABLE timeseries_meta(group VARCHAR NOT NULL, identifier VARCHAR NOT NULL, name VARCHAR NOT NULL, value VARCHAR NOT NULL, type VARCHAR NOT NULL)"); // varchar
-            // executeQuery(stmt, "CREATE TABLE timeseries_meta(resourceid VARCHAR NOT NULL, name VARCHAR NOT NULL, value VARCHAR NOT NULL, UNIQUE (resourceid, name))");
+            // TODO: Patrick: add foreign key constraint
 
             System.out.println("Done. Enjoy!");
         }

@@ -201,7 +201,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                         .collect(Collectors.toList())
                         .equals(Arrays.asList(resultPath.elements()))) {
                     // This shouldn't happen
-                    LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. " + // TODO Patrick: breakpoint
+                    LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. " +
                                     "Ignoring resource.", result.getResource(), path, 0);
                     continue;
                 }
@@ -293,7 +293,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
             results = searcher.search(path, depth, fetchMetrics);
             LOG.trace("Found {} results.", results.size());
         } catch (StorageException e) {
-            // TODO Patrick
+            LOG.error("An error occured while querying for {}", path, e);
             throw new RuntimeException(e);
         }
         return results;

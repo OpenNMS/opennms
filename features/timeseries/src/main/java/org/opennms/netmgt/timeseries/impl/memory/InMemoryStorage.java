@@ -38,9 +38,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.api.domain.Aggregation;
 import org.opennms.netmgt.timeseries.api.domain.Metric;
 import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 
@@ -77,15 +77,18 @@ public class InMemoryStorage implements TimeSeriesStorage {
     }
 
     @Override
-    public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
+    public List<Sample> getTimeseries(TimeSeriesFetchRequest request) {
         Objects.requireNonNull(request);
+        if(request.getAggregation() != Aggregation.NONE) {
+            throw new IllegalArgumentException(String.format("Aggregation %s is not supported.", request.getAggregation()));
+        }
+
         if(!data.containsKey(request.getMetric())){
             return Collections.emptyList();
         }
         return data.get(request.getMetric()).stream()
                 .filter(sample -> sample.getTime().isAfter(request.getStart()))
                 .filter(sample -> sample.getTime().isBefore(request.getEnd()))
-                // TODO Patrick: bucket and aggregate with the given aggregation function
                 .collect(Collectors.toList());
     }
 

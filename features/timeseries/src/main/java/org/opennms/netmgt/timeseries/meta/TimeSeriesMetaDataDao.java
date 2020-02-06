@@ -65,8 +65,6 @@ public class TimeSeriesMetaDataDao {
 
     private final DataSource dataSource;
 
-    private int maxBatchSize = 100; // TODO Patrick: do we need to make value configurable?
-
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource) {
         this.dataSource = dataSource;

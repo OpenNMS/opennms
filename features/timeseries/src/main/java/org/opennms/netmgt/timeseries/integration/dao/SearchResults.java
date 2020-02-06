@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.timeseries.integration.dao;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import org.opennms.newts.api.Resource;
 
-/** TODO: Patrick: was directly copied from Newts -> we probably can get rid of it. */
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
+/** Was directly copied from Newts. */
 public class SearchResults implements Iterable<SearchResults.Result> {
     private final List<Result> m_results = Lists.newArrayList();
 
