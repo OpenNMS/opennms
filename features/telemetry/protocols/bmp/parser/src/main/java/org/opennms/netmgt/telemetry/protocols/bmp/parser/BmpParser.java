@@ -204,6 +204,9 @@ public class BmpParser implements TcpParser {
             if (!message.isEmpty()) {
                 this.writer.writeString("message", message);
             }
+
+            packet.information.first(InformationElement.Type.BGP_ID)
+                              .ifPresent(v -> this.writer.writeString("bgp_id", v));
         }
 
         @Override
@@ -211,21 +214,21 @@ public class BmpParser implements TcpParser {
             this.writePeerHeader(packet.peerHeader);
 
             this.writer.writeString("local_address", packet.localAddress.getHostAddress());
-            this.writer.writeInt64("local_port", packet.localPort);
-            this.writer.writeInt64("remote_port", packet.remotePort);
+            this.writer.writeInt32("local_port", packet.localPort);
+            this.writer.writeInt32("remote_port", packet.remotePort);
 
             this.writer.writeStartDocument("send_open_msg");
             this.writer.writeInt64("version", packet.sendOpenMessage.version);
             this.writer.writeInt64("as", packet.sendOpenMessage.as);
-            this.writer.writeInt64("holdTime", packet.sendOpenMessage.holdTime);
-            this.writer.writeInt64("id", packet.sendOpenMessage.id);
+            this.writer.writeInt64("hold_time", packet.sendOpenMessage.holdTime);
+            this.writer.writeString("id", packet.sendOpenMessage.id.getHostAddress());
             this.writer.writeEndDocument();
 
             this.writer.writeStartDocument("recv_open_msg");
             this.writer.writeInt64("version", packet.recvOpenMessage.version);
             this.writer.writeInt64("as", packet.recvOpenMessage.as);
-            this.writer.writeInt64("holdTime", packet.recvOpenMessage.holdTime);
-            this.writer.writeInt64("id", packet.recvOpenMessage.id);
+            this.writer.writeInt64("hold_time", packet.recvOpenMessage.holdTime);
+            this.writer.writeString("id", packet.recvOpenMessage.id.getHostAddress());
             this.writer.writeEndDocument();
 
             packet.information.first(InformationElement.Type.SYS_NAME)
@@ -504,10 +507,10 @@ public class BmpParser implements TcpParser {
             this.writer.writeBoolean("post_policy", peerHeader.flags.postPolicy);
             this.writer.writeBoolean("legacy_as_path", peerHeader.flags.legacyASPath);
 
-            this.writer.writeInt64("distinguisher", peerHeader.distinguisher.longValue());
+            this.writer.writeString("distinguisher", peerHeader.distinguisher);
             this.writer.writeString("address", peerHeader.address.getHostAddress());
             this.writer.writeInt64("as", peerHeader.as);
-            this.writer.writeInt64("id", peerHeader.id);
+            this.writer.writeString("id", peerHeader.id.getHostAddress());
 
             this.writer.writeStartDocument("timestamp");
             this.writer.writeInt64("epoch", peerHeader.timestamp.getEpochSecond());

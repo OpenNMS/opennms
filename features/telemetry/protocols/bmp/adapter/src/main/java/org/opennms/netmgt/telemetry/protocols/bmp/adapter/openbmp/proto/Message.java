@@ -71,7 +71,7 @@ public class Message {
         serializeHeader(buffer, "R", Integer.toString(this.records.size()));
 
         // Headers and data separated by double newline
-        buffer.append('\n').append('\n');
+        buffer.append('\n');
 
         // Append data from buffer
         buffer.append(data);

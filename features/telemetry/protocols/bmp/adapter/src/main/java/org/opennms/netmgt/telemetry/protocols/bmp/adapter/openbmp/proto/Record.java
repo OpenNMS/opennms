@@ -29,11 +29,21 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
+import java.nio.charset.StandardCharsets;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
+
 public abstract class Record {
+    private final static DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd hh:mm:ss.SSSSSS")
+            .withZone(ZoneOffset.UTC);
+
     private final Type type;
 
     protected Record(final Type type) {
@@ -41,7 +51,15 @@ public abstract class Record {
     }
 
     public static String formatTimestamp(final Instant timestamp) {
-        return String.format("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL", timestamp);
+        return TIMESTAMP_FORMATTER.format(timestamp);
+    }
+
+    public static String hash(final String... values) {
+        final Hasher hasher = Hashing.md5().newHasher();
+        for (final String value : values) {
+            hasher.putString(value, StandardCharsets.UTF_8);
+        }
+        return hasher.hash().toString();
     }
 
     protected abstract String[] fields();
@@ -52,6 +70,7 @@ public abstract class Record {
 
     public final void serialize(final StringBuffer buffer) {
         final Iterator<String> fields = Arrays.stream(this.fields())
+                                              .map(field -> field != null ? field : "")
                                               .map(field -> field.replace('\t', ' ')
                                                                  .replace('\n', '\r')).iterator();
 

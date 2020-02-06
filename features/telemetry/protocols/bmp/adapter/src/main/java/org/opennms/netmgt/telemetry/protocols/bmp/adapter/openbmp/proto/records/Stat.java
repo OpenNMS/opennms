@@ -35,21 +35,27 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 
-public class Router extends Record {
+public class Stat extends Record {
     public Action action;
     public long sequence;
-    public String name;
-    public String hash; // Hash of fields [ IP address, collector hash ]
-    public InetAddress ipAddress;
-    public String description;
-    public Integer termCode;
-    public String termReason;
-    public String initData;
-    public String termData;
+    public String routerHash;
+    public InetAddress routerIp;
+    public String peerHash;
+    public InetAddress peerIp;
+    public long peerAsn;
     public Instant timestamp;
-    public InetAddress bgpId;
 
-    public Router() {
+    public int prefixesRejected;
+    public int knownDupPrefixes;
+    public int knownDupWithdraws;
+    public int invalidClusterList;
+    public int invalidAsPath;
+    public int invalidOriginatorId;
+    public int invalidAsConfed;
+    public long prefixesPrePolicy;
+    public long prefixesPostPolicy;
+
+    public Stat() {
         super(Type.ROUTER);
     }
 
@@ -58,23 +64,26 @@ public class Router extends Record {
         return new String[]{
                 this.action.value,
                 Long.toString(this.sequence),
-                this.name,
-                this.hash,
-                InetAddressUtils.toIpAddrString(this.ipAddress),
-                this.description,
-                this.termCode != null ? this.termCode.toString() : null,
-                this.termReason,
-                this.initData,
-                this.termData,
+                this.routerHash,
+                InetAddressUtils.toIpAddrString(this.routerIp),
+                this.peerHash,
+                InetAddressUtils.toIpAddrString(this.peerIp),
+                Long.toString(this.peerAsn),
                 formatTimestamp(this.timestamp),
-                this.bgpId != null ? InetAddressUtils.toIpAddrString(this.bgpId) : null,
+                Integer.toString(this.prefixesRejected),
+                Integer.toString(this.knownDupPrefixes),
+                Integer.toString(this.knownDupWithdraws),
+                Integer.toString(this.invalidClusterList),
+                Integer.toString(this.invalidAsPath),
+                Integer.toString(this.invalidOriginatorId),
+                Integer.toString(this.invalidAsConfed),
+                Long.toString(this.prefixesPrePolicy),
+                Long.toString(this.prefixesPostPolicy)
         };
     }
 
     public enum Action {
-        FIRST("first"),
-        INIT("init"),
-        TERM("term");
+        ADD("add");
 
         public final String value;
 
