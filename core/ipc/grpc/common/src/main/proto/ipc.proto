@@ -25,6 +25,7 @@ message RpcRequestProto {
     string system_id = 3;
     string location = 4;
     string module_id = 5;
+    // absolute time elapsed since the epoch in msec.
     uint64 expiration_time = 6;
     map<string, string> tracing_info = 7;
 }

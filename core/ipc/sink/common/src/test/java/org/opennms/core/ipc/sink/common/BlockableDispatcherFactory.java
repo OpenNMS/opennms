@@ -28,12 +28,12 @@
 
 package org.opennms.core.ipc.sink.common;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.osgi.framework.BundleContext;
+
+import com.codahale.metrics.MetricRegistry;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -67,6 +67,11 @@ public class BlockableDispatcherFactory<U extends Message> extends AbstractMessa
     @Override
     public Tracer getTracer() {
         return GlobalTracer.get();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        return new MetricRegistry();
     }
 
     @SuppressWarnings("unchecked")
