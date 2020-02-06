@@ -90,5 +90,19 @@ public class IpValueTest {
         new IpValue("192.168.10.255-192.168.0.1");
     }
 
-    // TODO MVR add ip6 tests
+    @Test
+    public void verifySingleValueIpV6() {
+        final IpValue value = new IpValue("2001:0DB8:0:CD30::1");
+        assertThat(value.isInRange("2001:0DB8:0:CD30::1"), is(true));
+        assertThat(value.isInRange("2001:0DB8:0:CD30::2"), is(false));
+        assertThat(value.isInRange("192.168.0.1"), is(false)); // incompatible, should be false
+    }
+
+    @Test
+    public void verifyRangedValueIpV6() {
+        final IpValue value = new IpValue("2001:0DB8:0:CD30::1-2001:0DB8:0:CD30::FFFF");
+        for (IPAddress address : new IPAddressRange("2001:0DB8:0:CD30::1", "2001:0DB8:0:CD30::FFFF")) {
+            assertThat(value.isInRange(address.toUserString()), is(true));
+        }
+    }
 }
