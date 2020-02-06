@@ -199,21 +199,17 @@ public class TimeseriesFetchStrategyTest {
         LateAggregationParams lag = TimeseriesFetchStrategy.getLagParams(300*1000L, 150*1000L, 450*1000L);
         assertEquals(300*1000L, lag.step);
         assertEquals(150*1000L, lag.interval);
-        assertEquals(450*1000L, lag.heartbeat);
 
         // Supply a step that is not a multiple of the interval, make sure this is corrected
         lag = TimeseriesFetchStrategy.getLagParams(310*1000L, 150*1000L, 450*1000L);
         assertEquals(310000L, lag.step);
         assertEquals(155000L, lag.interval);
-        assertEquals(465000L, lag.heartbeat);
 
         // Supply an interval that is much larger than the step
         lag = TimeseriesFetchStrategy.getLagParams(300*1000L, 1500*1000L, 45000*1000L);
         assertEquals(300*1000L, lag.step);
         // Interval should be reduced
         assertEquals(150*1000L, lag.interval);
-        // But the hearbeat should stay the same
-        assertEquals(45000*1000L, lag.heartbeat);
     }
 
     @Test

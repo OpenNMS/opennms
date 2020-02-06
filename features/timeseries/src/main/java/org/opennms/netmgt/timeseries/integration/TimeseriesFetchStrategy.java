@@ -105,13 +105,13 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = SystemProperties.getLong("org.opennms.newts.query.minimum_step", 5L * 60L * 1000L);
+    public static final long MIN_STEP_MS = SystemProperties.getLong("org.opennms.timeseries.query.minimum_step", 5L * 60L * 1000L);
 
-    public static final int INTERVAL_DIVIDER = SystemProperties.getInteger("org.opennms.newts.query.interval_divider", 2);
+    public static final int INTERVAL_DIVIDER = SystemProperties.getInteger("org.opennms.timeseries.query.interval_divider", 2);
 
-    public static final long DEFAULT_HEARTBEAT_MS = SystemProperties.getLong("org.opennms.newts.query.heartbeat", 450L * 1000L);
+    public static final long DEFAULT_HEARTBEAT_MS = SystemProperties.getLong("org.opennms.timeseries.query.heartbeat", 450L * 1000L);
 
-    public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
+    public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.timeseries.query.parallelism", Runtime.getRuntime().availableProcessors());
 
     @Autowired
     private ResourceDao m_resourceDao;
@@ -384,12 +384,10 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     protected static class LateAggregationParams {
         final long step;
         final long interval;
-        final long heartbeat;
 
-        public LateAggregationParams(long step, long interval, long heartbeat) {
+        public LateAggregationParams(long step, long interval) {
             this.step = step;
             this.interval = interval;
-            this.heartbeat = heartbeat;
         }
 
         public long getStep() {
@@ -400,9 +398,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             return interval;
         }
 
-        public long getHeartbeat() {
-            return heartbeat;
-        }
     }
 
     /**
@@ -448,20 +443,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             effectiveInterval = effectiveStep / INTERVAL_DIVIDER;
         }
 
-        // Use the given heartbeat if specified, fall back to the default
-        long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
-        if (effectiveInterval < effectiveHeartbeat) {
-            if (effectiveHeartbeat % effectiveInterval != 0) {
-                effectiveHeartbeat += effectiveInterval - (effectiveHeartbeat % effectiveInterval);
-            } else {
-                // Existing heartbeat is valid
-            }
-        } else {
-            effectiveHeartbeat = effectiveInterval + 1;
-            effectiveHeartbeat += effectiveHeartbeat % effectiveInterval;
-        }
-
-        return new LateAggregationParams(effectiveStep, effectiveInterval, effectiveHeartbeat);
+        return new LateAggregationParams(effectiveStep, effectiveInterval);
     }
 
     @VisibleForTesting
