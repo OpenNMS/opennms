@@ -32,6 +32,9 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -44,6 +47,8 @@ import com.google.common.collect.Iterables;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageIT extends OpenNMSSeleniumIT {
+    public final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss.SSSXXX");
+
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
@@ -78,7 +83,9 @@ public class NodeListPageIT extends OpenNMSSeleniumIT {
     }
 
     private void createNode(final String foreignId, final String location, boolean hasFlows) throws Exception {
-        final String node = "<node type=\"A\" hasFlows=\"" + hasFlows + "\" label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
+        final String currentDate = SIMPLE_DATE_FORMAT.format(new Date());
+
+        final String node = "<node type=\"A\" " + (hasFlows ? "lastIngressFlow=\"" + currentDate + "\" lastEgressFlow=\"" + currentDate + "\"" : "") + " label=\"TestMachine " + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
                 "<labelSource>H</labelSource>" +
                 "<sysContact>The Owner</sysContact>" +
                 "<sysDescription>" +
