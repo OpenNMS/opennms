@@ -94,6 +94,7 @@ public class DefaultClassificationEngineTest {
         assertNull(engine.classify(new ClassificationRequestBuilder().withSrcPort(7331).withDstPort(9999).build()));
     }
 
+    // TODO MVR add CIDR test
     @Test
     public void verifyRuleEngineExtended() {
         // Define Rule set

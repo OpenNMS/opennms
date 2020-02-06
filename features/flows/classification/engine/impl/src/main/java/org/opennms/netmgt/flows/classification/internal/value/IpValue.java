@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.classification.internal.value;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.net.util.SubnetUtils;
 import org.opennms.core.network.IPAddressRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ import com.google.common.net.InetAddresses;
 public class IpValue {
 
     private static final Logger LOG = LoggerFactory.getLogger(IpValue.class);
-    private final List<IPAddressRange> ranges = Lists.newArrayList();
+    private final List<IpAddressRange> ranges = Lists.newArrayList();
 
     public IpValue(final String input) {
         this(new StringValue(input));
@@ -67,26 +68,52 @@ public class IpValue {
                 }
                 // Ensure each range is an ip address
                 for (StringValue rangedValue : rangedValues) {
-                    verifyIpAddress(rangedValue);
+                    if (rangedValue.contains("/")) {
+                        throw new IllegalArgumentException("Ranged value may not contain a CIDR expression");
+                    }
                 }
-                // Verify the range itself
-                final IPAddressRange range = new IPAddressRange(rangedValues.get(0).getValue(), rangedValues.get(1).getValue());
-                ranges.add(range);
+                ranges.add(new IpAddressRange(rangedValues.get(0), rangedValues.get(1)));
             } else {
-                verifyIpAddress(eachValue);
-                ranges.add(new IPAddressRange(eachValue.getValue(), eachValue.getValue()));
+                ranges.add(new IpAddressRange(eachValue));
             }
         }
     }
 
     public boolean isInRange(final String address) {
-        return ranges.stream().anyMatch(r -> r.contains(address));
+        return ranges.stream().anyMatch(r -> r.isInRange(address));
     }
 
-    private static void verifyIpAddress(final StringValue stringValue) {
-        Objects.requireNonNull(stringValue);
-        if (!InetAddresses.isInetAddress(stringValue.getValue())) {
-            throw new IllegalArgumentException("Provided ip address '" + stringValue.getValue() + "' is invalid");
+    private static class IpAddressRange {
+
+        private final IPAddressRange range;
+
+        private IpAddressRange(final StringValue from, final StringValue to) {
+            verifyIpAddress(from);
+            verifyIpAddress(to);
+            this.range = new IPAddressRange(from.getValue(), to.getValue());
+        }
+
+        private IpAddressRange(final StringValue eachValue) {
+            if (eachValue.contains("/")) {
+                final SubnetUtils subnetUtils = new SubnetUtils(eachValue.getValue());
+                // Internally we use our own range, as subnetUtils.isInRange()
+                // excludes the net and broadcast address
+                this.range = new IPAddressRange(subnetUtils.getInfo().getNetworkAddress(), subnetUtils.getInfo().getBroadcastAddress());
+            } else {
+                verifyIpAddress(eachValue);
+                this.range = new IPAddressRange(eachValue.getValue());
+            }
+        }
+
+        public boolean isInRange(String input) {
+            return range.contains(input);
+        }
+
+        private static void verifyIpAddress(final StringValue stringValue) {
+            Objects.requireNonNull(stringValue);
+            if (!InetAddresses.isInetAddress(stringValue.getValue())) {
+                throw new IllegalArgumentException("Invalid ");
+            }
         }
     }
 }

@@ -70,6 +70,20 @@ public class IpValueTest {
         assertThat(ipValue.isInRange("192.168.0.10"), is(true));
     }
 
+    @Test
+    public void verifyCIDRValue() {
+        final IpValue ipValue = new IpValue("10.0.0.5,192.168.0.0/24");
+        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
+            assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
+        }
+        assertThat(ipValue.isInRange("10.0.0.5"), is(false));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void verifyCIDRValueNotAllowedInRange() {
+        new IpValue("192.0.0.0/8-192.168.0.0/24");
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void verifyWildcard() {
         new IpValue("*");

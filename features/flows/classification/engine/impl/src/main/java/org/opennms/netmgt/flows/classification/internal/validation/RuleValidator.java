@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.net.util.SubnetUtils;
 import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
@@ -172,6 +173,9 @@ public class RuleValidator {
                 }
                 // Ensure each range is an ip address
                 for (StringValue rangedValue : rangedValues) {
+                    if (rangedValue.contains("/")) {
+                        throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_RANGE_CIDR_NOT_SUPPORTED);
+                    }
                     verifyIpAddress(errorContext, rangedValue.getValue());
                 }
                 // Now verify the range itself
@@ -181,7 +185,11 @@ public class RuleValidator {
                     throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_RANGE_BEGIN_END_INVALID, begin, end);
                 }
             } else {
-                verifyIpAddress(errorContext, eachValue.getValue());
+                if (eachValue.contains("/")) {
+                    verifyCidrExpression(errorContext, eachValue.getValue());
+                } else {
+                    verifyIpAddress(errorContext, eachValue.getValue());
+                }
             }
         }
     }
@@ -198,6 +206,15 @@ public class RuleValidator {
     private static void verifyIpAddress(final String errorContext, final String input) throws InvalidRuleException {
         if (!InetAddresses.isInetAddress(input)) {
             throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, input);
+        }
+    }
+
+    // Verify input is an actual valid cidr expression
+    private static void verifyCidrExpression(String errorContext, String input) {
+        try {
+            new SubnetUtils(input);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID_CIDR_EXPRESSION, input, ex.getMessage());
         }
     }
 }
