@@ -132,7 +132,7 @@ public class TimeseriesPersisterIT {
                 .start(now)
                 .end(end)
                 .metric(metric)
-                .aggregation(Aggregation.AVERAGE)
+                .aggregation(Aggregation.NONE)
                 .step(Duration.ofMillis(1))
                 .build();
         List<org.opennms.netmgt.timeseries.api.domain.Sample> samples = this.storage.getTimeseries(request);
