@@ -35,6 +35,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -67,6 +69,7 @@ import com.google.common.collect.Lists;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
@@ -469,7 +472,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
         karafShell.runCommand("opennms-graph:force-reload --container application");
-        given().log().ifValidationFails()
+        final Response response = given().log().ifValidationFails()
                 .body(query.toString())
                 .contentType(ContentType.JSON)
                 .post("{container_id}/{namespace}", "application", "application")
@@ -477,18 +480,17 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(3))
-                .content("vertices[0].status.severity", Matchers.is("Minor"))
-                .content("vertices[1].status.severity", Matchers.is("Minor"))
-                .content("vertices[2].status.severity", Matchers.is("Normal"))
-                .content("vertices[0].status.count", Matchers.is(1))
-                .content("vertices[1].status.count", Matchers.is(1))
-                .content("vertices[2].status.count", Matchers.is(0));
+                .extract().response();
+        final ApplicationViewResponse applicationViewResponse = new ApplicationViewResponse(response);
+        assertThat(applicationViewResponse.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse.getVertexByApplicationId(application.getId()), "Minor", 1);
+        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId2), "Normal", 0);
 
         // Take node down, reload graph and verify
         restClient.sendEvent(nodeDownEvent);
         karafShell.runCommand("opennms-graph:force-reload --container application");
-        given().log().ifValidationFails()
+        final Response response2 = given().log().ifValidationFails()
                 .body(query.toString())
                 .contentType(ContentType.JSON)
                 .post("{container_id}/{namespace}", "application", "application")
@@ -496,13 +498,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(3))
-                .content("vertices[0].status.severity", Matchers.is("Major"))
-                .content("vertices[1].status.severity", Matchers.is("Minor"))
-                .content("vertices[2].status.severity", Matchers.is("Major"))
-                .content("vertices[0].status.count", Matchers.is(1))
-                .content("vertices[1].status.count", Matchers.is(1))
-                .content("vertices[2].status.count", Matchers.is(1));
+                .extract().response();
+        final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
+        assertThat(applicationViewResponse2.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Major", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Major", 1);
 
         // Finally clean up
         applicationDao.delete(application);
@@ -615,5 +616,49 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 2);
+    }
+
+    private static void verifyStatus(JSONObject vertex, String expectedStatus, int expectedCount) {
+        final JSONObject status = vertex.getJSONObject("status");
+        assertThat(status.getString("severity"), Matchers.is(expectedStatus));
+        assertThat(status.getInt("count"), Matchers.is(expectedCount));
+    }
+
+    private static class ApplicationViewResponse {
+        private final JSONArray vertices;
+
+        private ApplicationViewResponse(final Response response) {
+            Objects.requireNonNull(response);
+            final JSONTokener jsonTokener = new JSONTokener(response.getBody().asString());
+            final JSONObject jsonObject = new JSONObject(jsonTokener);
+            this.vertices = jsonObject.getJSONArray("vertices");
+        }
+
+        public int length() {
+            return vertices.length();
+        }
+
+        public JSONObject getVertexByApplicationId(int applicationId) {
+            for (int i=0; i<vertices.length(); i++) {
+                final JSONObject eachVertex = vertices.getJSONObject(i);
+                if (eachVertex.has("applicationId")
+                        && Objects.equals(eachVertex.getString("applicationId"), Integer.toString(applicationId))) {
+                    return eachVertex;
+                }
+            }
+            throw new NoSuchElementException("No Vertex with applicationId '" + applicationId + "' found");
+        }
+
+        public JSONObject getVertexByNodeId(int nodeId) {
+            for (int i=0; i<vertices.length(); i++) {
+                final JSONObject eachVertex = vertices.getJSONObject(i);
+                if (eachVertex.has("nodeCriteria")
+                        && Objects.equals(eachVertex.getString("nodeCriteria"), Integer.toString(nodeId))) {
+                    return eachVertex;
+                }
+            }
+            throw new NoSuchElementException("No Vertex with nodeCriteria '" + nodeId + "' found");
+        }
+
     }
 }
