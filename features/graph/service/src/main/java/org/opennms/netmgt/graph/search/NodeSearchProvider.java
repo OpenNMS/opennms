@@ -35,7 +35,6 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.graph.api.NodeRef;
-import org.opennms.netmgt.graph.api.aware.NodeRefAware;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.SearchContext;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
@@ -58,7 +57,7 @@ public class NodeSearchProvider implements SearchProvider {
 
     @Override
     public boolean canSuggest(GraphService graphService, String namespace) {
-        return NodeRefAware.class.isAssignableFrom(graphService.getGraphInfo(namespace).getVertexType());
+        return true; // at the moment all vertices are NodeRefAware.
     }
 
     @Override

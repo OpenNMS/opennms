@@ -28,15 +28,12 @@
 
 package org.opennms.netmgt.graph.api.info;
 
-import org.opennms.netmgt.graph.api.Vertex;
-
 /**
  * Meta information of a graph.
  * This allows to fetch a minimal set of information (namespace, label, description) without loading the whole graph.
  *
- * @param <V> the vertex type
  */
-public interface GraphInfo<V extends Vertex> {
+public interface GraphInfo {
 
     /** The namespace of the graph. Should be unique over all Graphs */
     String getNamespace();
@@ -49,14 +46,4 @@ public interface GraphInfo<V extends Vertex> {
 
     /** A user friendly name/label of the graph, e.g. "Business Service Graph" */
     String getLabel();
-
-    /**
-     * Returns the parent type of the vertex within the graph.
-     * Vertices in a graph may be of different types, but they should all share the same parent vertex.
-     * The vertex type is also relevant for implementing type safe search or enrichment later on.
-     * see {@link org.opennms.netmgt.graph.api.aware.NodeRefAware} for a concrete example.
-     *
-     * @return The parent type of the vertices within the graph
-     */
-    Class<V> getVertexType();
 }
