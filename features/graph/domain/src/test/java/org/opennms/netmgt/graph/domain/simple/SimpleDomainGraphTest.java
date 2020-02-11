@@ -86,14 +86,13 @@ public class SimpleDomainGraphTest {
 
     @Test
     public void simpleGraphShouldBeConstructedFromGraphInfo() {
-        DefaultGraphInfo info = new DefaultGraphInfo(TestObjectCreator.NAMESPACE, SimpleDomainVertex.class);
+        DefaultGraphInfo info = new DefaultGraphInfo(TestObjectCreator.NAMESPACE);
         info.setDescription("description");
         info.setLabel("label");
         SimpleDomainGraph graph = SimpleDomainGraph.builder().graphInfo(info).build();
         assertEquals(info.getNamespace(), graph.getNamespace());
         assertEquals(info.getLabel(), graph.getLabel());
         assertEquals(info.getDescription(), graph.getDescription());
-        assertEquals(info.getVertexType(), graph.getVertexType());
     }
 
 }

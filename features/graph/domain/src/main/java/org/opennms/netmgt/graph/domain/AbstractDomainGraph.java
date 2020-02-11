@@ -169,9 +169,6 @@ public abstract class AbstractDomainGraph<V extends AbstractDomainVertex, E exte
     }
 
     @Override
-    public abstract Class getVertexType();
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

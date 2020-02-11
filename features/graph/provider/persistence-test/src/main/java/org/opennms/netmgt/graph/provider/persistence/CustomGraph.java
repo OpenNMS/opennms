@@ -52,9 +52,4 @@ public class CustomGraph extends AbstractDomainGraph<CustomVertex, CustomEdge> {
     protected CustomEdge convert(GenericEdge edge) {
         return new CustomEdge(edge);
     }
-
-    @Override
-    public Class getVertexType() {
-        return CustomVertex.class;
-    }
 }
