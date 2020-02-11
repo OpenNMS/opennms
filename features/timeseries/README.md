@@ -30,8 +30,11 @@ nothing
 * init influxdb: ``sudo ./bin/influxdb init``, it will set up the influxdb instance and return an access token.
 * add the token to opennms.properties at: ``org.opennms.timeseries.influxdb.token``
 
-## Open TODOs
-* check caching strategy and cache priming
+## Open TODOs / discuss with Jesse
+* caching strategy and cache priming:
+  * they seem to depend on org.opennms.newts.cassandra.search.NewtsCassandraCachePrimer, from the Newts library, do we want to replicate that or is it sufficient to rewrite the cache to store on fetch
+  
 * clean up opennms.properties
+* go with Jesse over applicationContext-timeseries-integration.xml
 * consolidate cmd commands, they do the same
 * The code makes use of the lombok library. This makes for much faster prototyping by remvoving lots of boilerplate code. Since we haven't agreed on using this library we might need to remove it (shouldn't be a problem)

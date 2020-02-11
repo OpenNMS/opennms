@@ -78,11 +78,11 @@
 
   <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
         <!-- This options should always match the number of writer threads. See NMS-8439. -->
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.writer_threads:16}" />
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
 
   <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
-        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.max_entries:8192}" />
+        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.max_entries:8192}" />
   </bean>
 
   <bean id="redis.hostname" class="java.lang.String">
@@ -93,24 +93,21 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.redis_port:6379}" />
   </bean>
 
-  <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
-
   <bean id="contextConfigurations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod" value="org.opennms.netmgt.timeseries.integration.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
+  <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? Its also used for the GuavaSearchableResourceMetadataCache-->
 
-  <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
-
-  <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-      <constructor-arg ref="newtsMetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
+  <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="timeseriesMetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
   </bean>
 
-  <bean id="newtsMetricRegistryDomainedJmxReporterBuilder" factory-bean="newtsMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+  <bean id="timeseriesMetricRegistryDomainedJmxReporterBuilder" factory-bean="timeseriesMetricRegistryJmxReporterBuilder" factory-method="inDomain">
       <constructor-arg value="org.opennms.newts"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
   </bean>
 
-  <bean id="newtsMetricRegistryJmxReporter"
-        factory-bean="newtsMetricRegistryDomainedJmxReporterBuilder"
+  <bean id="timeseriesMetricRegistryJmxReporter"
+        factory-bean="timeseriesMetricRegistryDomainedJmxReporterBuilder"
         factory-method="build"
         init-method="start"
         destroy-method="stop" /><!-- TODO Patrick: discuss with Jesse: do we still need this? -->

@@ -77,7 +77,7 @@ public class TimeseriesFetchStrategyTest {
     private final static long END_TIME = 1431047069000L -1;
     private final static long STEP = (300 * 1000);
 
-    private ResourceDao m_resourceDao;
+    private ResourceDao resourceDao;
     private TimeSeriesStorage timeSeriesStorage;
 
     private TimeseriesFetchStrategy fetchStrategy;
@@ -87,17 +87,17 @@ public class TimeseriesFetchStrategyTest {
 
     @Before
     public void setUp() {
-        m_resourceDao = EasyMock.createNiceMock(ResourceDao.class);
+        resourceDao = EasyMock.createNiceMock(ResourceDao.class);
         timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
  
         fetchStrategy = new TimeseriesFetchStrategy();
-        fetchStrategy.setResourceDao(m_resourceDao);
+        fetchStrategy.setResourceDao(resourceDao);
         fetchStrategy.setTimeseriesStorage(timeSeriesStorage);
     }
 
     @After
     public void tearDown() {
-        EasyMock.verify(m_resourceDao, timeSeriesStorage);
+        EasyMock.verify(resourceDao, timeSeriesStorage);
     }
 
     @Test
@@ -313,9 +313,9 @@ public class TimeseriesFetchStrategyTest {
 
     private void replay() {
         for (Entry<ResourceId, OnmsResource> entry : m_resources.entrySet()) {
-            EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
+            EasyMock.expect(resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
         }
 
-        EasyMock.replay(m_resourceDao, timeSeriesStorage);
+        EasyMock.replay(resourceDao, timeSeriesStorage);
     }
 }

@@ -31,10 +31,9 @@ package org.opennms.netmgt.timeseries.impl.memory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
@@ -44,13 +43,21 @@ import org.opennms.netmgt.timeseries.api.domain.Sample;
 import org.opennms.netmgt.timeseries.api.domain.Tag;
 import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 /**
- * Simulates a timeseries storage in memory. The implementation is super simple and not very efficient.
+ * Simulates a timeseries storage in memory (Guava cache). The implementation is super simple and not very efficient.
  * For testing and evaluating purposes only, not for production.
  */
 public class InMemoryStorage implements TimeSeriesStorage {
 
-    private final Map<Metric, Collection<Sample>> data = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Metric, Collection<Sample>> data;
+
+    public InMemoryStorage () {
+        Cache<Metric, Collection<Sample>> cache = CacheBuilder.newBuilder().maximumSize(10000).build();
+        data = cache.asMap();
+    }
 
     @Override
     public void store(List<Sample> samples) {

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.timeseries.meta;
 
+import java.util.Objects;
+
 import lombok.Data;
 import lombok.NonNull;
 
@@ -37,4 +39,10 @@ public class MetaData {
     private final String resourceId;
     private final String name;
     private final String value;
+
+    public MetaData(final String resourceId, final String name, final String value) {
+        this.resourceId = Objects.requireNonNull(resourceId);
+        this.name = Objects.requireNonNull(name);
+        this.value = value;
+    }
 }
