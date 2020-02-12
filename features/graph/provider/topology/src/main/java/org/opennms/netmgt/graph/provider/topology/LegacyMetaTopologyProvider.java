@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.graph.provider.topology;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -71,6 +74,19 @@ public class LegacyMetaTopologyProvider implements MetaTopologyProvider {
 
     @Override
     public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
+        Objects.requireNonNull(vertexRef);
+        final GraphProvider graphProvider = providers.get(vertexRef.getNamespace());
+        if (graphProvider.getCurrentGraph() != null) {
+            final EdgeRef[] referencingEdges = graphProvider.getCurrentGraph().getEdgeIdsForVertex(vertexRef);
+            final List<VertexRef> oppositeVertices = graphProvider.getCurrentGraph().getEdges(Arrays.asList(referencingEdges)) // resolve edges
+                    .stream()
+                    // select edges which point to another namespace
+                    .filter(edge -> !edge.getSource().getVertex().getNamespace().equals(vertexRef.getNamespace()) || !edge.getTarget().getVertex().getNamespace().equals(vertexRef.getNamespace()))
+                    // get the "other" vertex (the one where the namespace does not match)
+                    .map(edge -> edge.getSource().getVertex().getNamespace().equals(vertexRef.getNamespace()) ? edge.getTarget().getVertex() : edge.getSource().getVertex())
+                    .collect(Collectors.toList());
+            return oppositeVertices;
+        }
         return Collections.EMPTY_LIST;
     }
 
