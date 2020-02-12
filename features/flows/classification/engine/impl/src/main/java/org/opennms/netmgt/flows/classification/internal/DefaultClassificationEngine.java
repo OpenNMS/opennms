@@ -213,6 +213,11 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     }
 
     @Override
+    public List<Rule> getInvalidRules() {
+        return Collections.unmodifiableList(invalidRules);
+    }
+
+    @Override
     public String classify(ClassificationRequest classificationRequest) {
         final Collection<Classifier> filteredClassifiers = getClassifiers(classificationRequest);
         final Optional<String> first = filteredClassifiers.stream()
