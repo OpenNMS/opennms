@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -54,9 +55,9 @@ import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -162,11 +163,11 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
         for (final Result result : results) {
             for(String metricName: result.getMetrics()) {
-                Metric metric = Metric.builder()
+                Metric metric = ImmutableMetric.builder()
                         .tag(CommonTagNames.resourceId, result.getResource().getId())
                         .tag(CommonTagNames.name, metricName)
-                        .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name()) // TODO Patrick: discuss with Jesse: where do we get the type from?
-                        .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
+                        .tag(ImmutableMetric.MandatoryTag.mtype.name(), ImmutableMetric.Mtype.gauge.name()) // TODO Patrick: discuss with Jesse: where do we get the type from?
+                        .tag(ImmutableMetric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                         .build();
                 try {
                     storage.delete(metric);

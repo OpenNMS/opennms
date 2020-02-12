@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.timeseries.integration;
 
-import static org.opennms.netmgt.timeseries.api.domain.Utils.asMap;
+import static org.opennms.netmgt.timeseries.integration.Utils.asMap;
 
 import java.io.File;
 import java.time.Duration;
@@ -49,6 +49,13 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
@@ -62,11 +69,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.aggregation.SampleAggregator;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -270,7 +272,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     final Aggregation aggregation = toAggregation(source.getAggregation());
                     final boolean shouldAggregateNatively = storage.supportsAggregation(aggregation);
 
-                    final Metric metric = Metric.builder()
+                    final ImmutableMetric metric = ImmutableMetric.builder()
                             .tag(CommonTagNames.resourceId, resourceId)
                             .tag(CommonTagNames.name, metricName)
                             .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())  // TODO Patrick: discuss with Jesse: where do we get the type from?
@@ -281,7 +283,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     Instant endInstant = Instant.ofEpochMilli(end.or(Timestamp.now()).asMillis());
 
                     Aggregation aggregationToUse = shouldAggregateNatively ? aggregation : Aggregation.NONE;
-                    TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+                    TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                             .metric(metric)
                             .start(startInstant)
                             .end(endInstant)

@@ -39,9 +39,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 
@@ -55,9 +57,9 @@ public class SampleAggregatorTest {
         samples = new ArrayList<>();
     }
 
-    private final Metric metric = Metric.builder()
-            .tag(Metric.MandatoryTag.mtype, Metric.Mtype.counter.name())
-            .tag(Metric.MandatoryTag.unit, CommonTagValues.unknown).build();
+    private final ImmutableMetric metric = ImmutableMetric.builder()
+            .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
+            .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown).build();
 
     @Test
     public void shouldAggregateToAverage() {
@@ -124,28 +126,28 @@ public class SampleAggregatorTest {
 
     @Test
     public void shouldRejectWrongMetric() {
-        Metric wrongMetric = Metric.builder()
-                .tag(Metric.MandatoryTag.mtype, Metric.Mtype.counter.name())
-                .tag(Metric.MandatoryTag.unit, CommonTagValues.unknown)
+        ImmutableMetric wrongMetric = ImmutableMetric.builder()
+                .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
+                .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
                 .tag(CommonTagNames.resourceId, "otherResource").build();
 
         sample(10, 10);
-        samples.add(Sample.builder().metric(wrongMetric).time(Instant.ofEpochMilli(11)).value(11d).build());
+        samples.add(ImmutableSample.builder().metric(wrongMetric).time(Instant.ofEpochMilli(11)).value(11d).build());
         assertThrows(IllegalArgumentException.class, () -> compute(Aggregation.AVERAGE, 10, 24, 5));
     }
 
     @Test
     public void shouldRejectNullValues() {
-        Metric wrongMetric = Metric.builder()
-                .tag(Metric.MandatoryTag.mtype, Metric.Mtype.counter.name())
-                .tag(Metric.MandatoryTag.unit, CommonTagValues.unknown)
+        Metric wrongMetric = ImmutableMetric.builder()
+                .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
+                .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
                 .tag(CommonTagNames.resourceId, "otherResource").build();
         assertThrows(NullPointerException.class, () -> compute(null, 10, 24, 5));
         // assertThrows(NullPointerException.class, () -> compute(Aggregation.AVERAGE, 10, 24, 5));
     }
 
     private void sample(long timeInMillis, double value) {
-        samples.add(Sample.builder().metric(metric).time(Instant.ofEpochMilli(timeInMillis)).value(value).build());
+        samples.add(ImmutableSample.builder().metric(metric).time(Instant.ofEpochMilli(timeInMillis)).value(value).build());
     }
 
     private void compute(final Aggregation aggregation, final long startTime, final long endTime, final long bucketSize) {

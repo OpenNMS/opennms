@@ -54,6 +54,8 @@ import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
@@ -64,13 +66,12 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,11 +178,11 @@ public class TimeseriesRoundtripIT {
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
 
         List<Metric> metrics = timeseriesStorage.getMetrics(Arrays.asList(
-                new Tag(CommonTagNames.resourceId, resourceId),
-                new Tag(CommonTagNames.name, name)));
+                new ImmutableTag(CommonTagNames.resourceId, resourceId),
+                new ImmutableTag(CommonTagNames.name, name)));
         assertEquals(1, metrics.size());
 
-        TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+        TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .aggregation(Aggregation.NONE)
                 .start(Instant.ofEpochMilli(0))
                 .end(Instant.now())

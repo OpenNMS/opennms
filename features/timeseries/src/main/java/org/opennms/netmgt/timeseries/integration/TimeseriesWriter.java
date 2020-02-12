@@ -44,10 +44,12 @@ import javax.inject.Named;
 
 import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.timeseries.meta.MetaData;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.MetricType;
@@ -222,7 +224,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     }
 
     private void storeTimeseriesData(SampleBatchEvent event) throws StorageException {
-        List<org.opennms.netmgt.timeseries.api.domain.Sample> samples
+        List<org.opennms.integration.api.v1.timeseries.Sample> samples
                 = event.getSamples().stream().map(this::toApiSample).collect(Collectors.toList());
         this.storage.store(samples);
     }
@@ -240,9 +242,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         this.timeSeriesMetaDataDao.store(metaData);
     }
 
-    private org.opennms.netmgt.timeseries.api.domain.Sample toApiSample(final Sample sample) {
+    private org.opennms.integration.api.v1.timeseries.Sample toApiSample(final Sample sample) {
 
-        Metric.MetricBuilder builder = Metric.builder()
+        ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
                 .tag(CommonTagNames.resourceId, sample.getResource().getId())
                 .tag(CommonTagNames.name, sample.getName())
                 .tag(typeToTag(sample.getType()))
@@ -252,23 +254,23 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             sample.getResource().getAttributes().get().forEach(builder::metaTag);
         }
 
-        final Metric metric = builder.build();
+        final ImmutableMetric metric = builder.build();
         final Instant time = Instant.ofEpochMilli(sample.getTimestamp().asMillis());
         final Double value = sample.getValue().doubleValue();
 
-        return org.opennms.netmgt.timeseries.api.domain.Sample.builder().metric(metric).time(time).value(value).build();
+        return ImmutableSample.builder().metric(metric).time(time).value(value).build();
     }
 
     private Tag typeToTag (MetricType type) {
-        Metric.Mtype mtype;
+        ImmutableMetric.Mtype mtype;
         if(type == MetricType.GAUGE){
-            mtype = Metric.Mtype.gauge;
+            mtype = ImmutableMetric.Mtype.gauge;
         } else if(type == MetricType.COUNTER) {
-            mtype = Metric.Mtype.count;
+            mtype = ImmutableMetric.Mtype.count;
         } else {
             throw new IllegalArgumentException("Implement me"); // no other tyes exist
         }
-        return new Tag(Metric.MandatoryTag.mtype.name(), mtype.name());
+        return new ImmutableTag(ImmutableMetric.MandatoryTag.mtype.name(), mtype.name());
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

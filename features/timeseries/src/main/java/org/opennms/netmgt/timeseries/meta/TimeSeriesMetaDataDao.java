@@ -47,7 +47,7 @@ import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -55,12 +55,14 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -275,13 +277,13 @@ public class TimeseriesFetchStrategyTest {
 
 
         String name = ds != null ? ds : attr;
-        Metric metric = Metric.builder()
+        ImmutableMetric metric = ImmutableMetric.builder()
                 .tag(CommonTagNames.resourceId, newtsResourceId)
                 .tag(CommonTagNames.name, name)
-                .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())
-                .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
+                .tag(ImmutableMetric.MandatoryTag.mtype.name(), ImmutableMetric.Mtype.gauge.name())
+                .tag(ImmutableMetric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                 .build();
-        Sample sample = Sample.builder()
+        Sample sample = ImmutableSample.builder()
                 .metric(metric)
                 .time(Instant.ofEpochMilli(START_TIME))
                 .value(33.0)
@@ -289,7 +291,7 @@ public class TimeseriesFetchStrategyTest {
 
         results.add(sample);
 
-        TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+        TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .metric(metric)
                 .aggregation(Aggregation.NONE) // we do the aggregation in the JVM
                 .start(Instant.ofEpochMilli(START_TIME))

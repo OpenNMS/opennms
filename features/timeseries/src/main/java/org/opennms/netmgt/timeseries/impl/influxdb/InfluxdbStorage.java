@@ -45,12 +45,15 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 
 import com.influxdb.client.InfluxDBClient;
@@ -104,13 +107,13 @@ public class InfluxdbStorage implements TimeSeriesStorage {
                     .measurement(metricKeyToInflux(sample.getMetric().getKey())) // make sure the measurement has only allowed characters
                     .addField("value", sample.getValue())
                     .time(sample.getTime().toEpochMilli(), WritePrecision.MS);
-            storeTags(point, Metric.TagType.intrinsic, sample.getMetric().getTags());
-            storeTags(point, Metric.TagType.meta, sample.getMetric().getMetaTags());
+            storeTags(point, ImmutableMetric.TagType.intrinsic, sample.getMetric().getTags());
+            storeTags(point, ImmutableMetric.TagType.meta, sample.getMetric().getMetaTags());
             influxDBClient.getWriteApi().writePoint(configBucket, configOrg, point);
         }
     }
 
-    private void storeTags(final Point point, final Metric.TagType tagType, final Collection<Tag> tags) {
+    private void storeTags(final Point point, final ImmutableMetric.TagType tagType, final Collection<Tag> tags) {
         for(final Tag tag : tags) {
             String value = tag.getValue();
             value = tagValueToInflux(value); // Influx has a problem with a colon in a tag value if we query for it
@@ -118,7 +121,7 @@ public class InfluxdbStorage implements TimeSeriesStorage {
         }
     }
 
-    private String toClassifiedTagKey(final Metric.TagType tagType, final Tag tag) {
+    private String toClassifiedTagKey(final ImmutableMetric.TagType tagType, final Tag tag) {
          return tagType.name() + "_" + tag.getKey();
     }
 
@@ -150,15 +153,15 @@ public class InfluxdbStorage implements TimeSeriesStorage {
 
     /** Restore the metric from the tags we get out of InfluxDb */
     private Metric createMetricFromMap(final Map<String, Object> map) {
-        Metric.MetricBuilder metric = Metric.builder();
+        ImmutableMetric.MetricBuilder metric = ImmutableMetric.builder();
         for(Map.Entry<String, Object> entry : map.entrySet()) {
-            getIfMatching(Metric.TagType.intrinsic, entry).ifPresent(metric::tag);
-            getIfMatching(Metric.TagType.meta, entry).ifPresent(metric::metaTag);
+            getIfMatching(ImmutableMetric.TagType.intrinsic, entry).ifPresent(metric::tag);
+            getIfMatching(ImmutableMetric.TagType.meta, entry).ifPresent(metric::metaTag);
         }
         return metric.build();
     }
 
-    private Optional<Tag> getIfMatching(final Metric.TagType tagType, final Map.Entry<String, Object> entry) {
+    private Optional<Tag> getIfMatching(final ImmutableMetric.TagType tagType, final Map.Entry<String, Object> entry) {
         // Check if the key starts with the prefix. If so it is an opennms key, if not something InfluxDb specific and
         // we can ignore it.
         final String prefix = tagType.name() + '_';
@@ -167,7 +170,7 @@ public class InfluxdbStorage implements TimeSeriesStorage {
         if(key.startsWith(prefix)) {
             key = key.substring(prefix.length());
             String value = tagValueFromInflux(entry.getValue().toString()); // convert
-            return Optional.of(new Tag(key, value));
+            return Optional.of(new ImmutableTag(key, value));
         }
         return Optional.empty();
     }
@@ -188,7 +191,7 @@ public class InfluxdbStorage implements TimeSeriesStorage {
         for (FluxTable fluxTable : tables) {
             List<FluxRecord> records = fluxTable.getRecords();
             for (FluxRecord record : records) {
-                Sample sample = Sample.builder()
+                Sample sample = ImmutableSample.builder()
                         .metric(request.getMetric())
                         .time(record.getTime())
                         .value((Double)record.getValue())

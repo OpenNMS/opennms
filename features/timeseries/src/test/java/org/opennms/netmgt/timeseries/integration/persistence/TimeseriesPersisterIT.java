@@ -52,12 +52,13 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.newts.api.Resource;
@@ -122,20 +123,20 @@ public class TimeseriesPersisterIT {
         Resource resource = new Resource("snmp:1:metrics");
         Instant end = Instant.now();
 
-        Metric metric = Metric.builder()
-                .tag(Metric.MandatoryTag.unit, CommonTagValues.unknown)
-                .tag(Metric.MandatoryTag.mtype, Metric.Mtype.gauge.name())
+        ImmutableMetric metric = ImmutableMetric.builder()
+                .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
+                .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.gauge.name())
                 .tag(CommonTagNames.resourceId, resource.getId())
                 .tag(CommonTagNames.name, "metric")
                 .build();
-        TimeSeriesFetchRequest request = TimeSeriesFetchRequest.builder()
+        TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .start(now)
                 .end(end)
                 .metric(metric)
                 .aggregation(Aggregation.NONE)
                 .step(Duration.ofMillis(1))
                 .build();
-        List<org.opennms.netmgt.timeseries.api.domain.Sample> samples = this.storage.getTimeseries(request);
+        List<Sample> samples = this.storage.getTimeseries(request);
 
         assertEquals(1, samples.size());
         Sample row = samples.get(0);

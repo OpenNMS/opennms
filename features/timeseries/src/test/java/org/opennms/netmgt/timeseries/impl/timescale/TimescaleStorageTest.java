@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 
 public class TimescaleStorageTest {
 
@@ -43,10 +43,10 @@ public class TimescaleStorageTest {
         assertEquals("select distinct fk_timescale_metric from timescale_tag;",
                 new TimescaleStorage().createMetricsSQL(Collections.emptyList()));
         assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=1 AND (key='a' AND value='b');",
-                new TimescaleStorage().createMetricsSQL(Collections.singletonList(new Tag("a", "b"))));
+                new TimescaleStorage().createMetricsSQL(Collections.singletonList(new ImmutableTag("a", "b"))));
         assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=1 AND (key='a' AND value='b') AND (key='c' AND value='d');",
-                new TimescaleStorage().createMetricsSQL(Arrays.asList(new Tag("a", "b"), new Tag("c", "d"))));
+                new TimescaleStorage().createMetricsSQL(Arrays.asList(new ImmutableTag("a", "b"), new ImmutableTag("c", "d"))));
         assertEquals("select distinct fk_timescale_metric from timescale_tag where 1=1 AND (key is null AND value='b');",
-                new TimescaleStorage().createMetricsSQL(Collections.singletonList(new Tag(null, "b"))));
+                new TimescaleStorage().createMetricsSQL(Collections.singletonList(new ImmutableTag(null, "b"))));
     }
 }

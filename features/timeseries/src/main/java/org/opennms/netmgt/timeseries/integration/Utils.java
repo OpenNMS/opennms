@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.api;
+package org.opennms.netmgt.timeseries.integration;
 
-/**
- * This package contains the classes to be used by a timeseries implementation. If you want to add a new
- * implementation please implement TimeSeriesStorage.
- */
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.opennms.integration.api.v1.timeseries.Tag;
+
+public class Utils {
+
+    public static Map<String, String> asMap (Collection<Tag> tags) {
+        Map<String, String> map = new HashMap<>();
+        for (Tag tag : tags) {
+            map.put(tag.getKey(), tag.getValue());
+        }
+        return map;
+    }
+}

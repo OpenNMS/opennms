@@ -39,12 +39,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
-import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.MetricType;
@@ -130,7 +129,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public void store(List<org.opennms.netmgt.timeseries.api.domain.Sample> samples) {
+        public void store(List<org.opennms.integration.api.v1.timeseries.Sample> samples) {
             latch.countDown();
             try {
                 latch.await();
@@ -158,7 +157,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public void store(List<org.opennms.netmgt.timeseries.api.domain.Sample> samples) throws StorageException {
+        public void store(List<org.opennms.integration.api.v1.timeseries.Sample> samples) throws StorageException {
             numThreadsLocked.incrementAndGet();
             lock.lock();
             numSamplesInserted.addAndGet(samples.size());
@@ -170,7 +169,7 @@ public class TimeseriesWriterTest {
     private static class MockTimeSeriesStorage implements TimeSeriesStorage {
 
         @Override
-        public void store(List<org.opennms.netmgt.timeseries.api.domain.Sample> samples) throws StorageException {
+        public void store(List<org.opennms.integration.api.v1.timeseries.Sample> samples) throws StorageException {
             // Do nothing, we are a mock
         }
 
@@ -180,7 +179,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public List<org.opennms.netmgt.timeseries.api.domain.Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
+        public List<org.opennms.integration.api.v1.timeseries.Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
             return null;
         }
 

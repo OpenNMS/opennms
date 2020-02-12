@@ -40,12 +40,13 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Resource;
 import org.slf4j.Logger;
@@ -110,7 +111,7 @@ public class TimeseriesSearcher {
 
         String key = "_idx"+idxSuffix;
         String value = String.format("(%s,%d)", toResourceId(path), targetLen);
-        Tag indexTag = new Tag(key, value);
+        Tag indexTag = new ImmutableTag(key, value);
 
         List<Metric> metrics = timeSeriesStorage.getMetrics(Collections.singletonList(indexTag));
 

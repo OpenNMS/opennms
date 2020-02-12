@@ -42,9 +42,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 
 import lombok.Builder;
 
@@ -96,7 +97,7 @@ public class SampleAggregator {
             Instant currentInstant = Instant.ofEpochMilli(l);
             List<Sample> bucket = getBucket(buckets, currentInstant); // will create bucket automatically
             if(bucket.isEmpty()) {
-                bucket.add(Sample.builder().metric(expectedMetric).time(currentInstant).value(Double.NaN).build());
+                bucket.add(ImmutableSample.builder().metric(expectedMetric).time(currentInstant).value(Double.NaN).build());
             }
         }
 
@@ -113,7 +114,7 @@ public class SampleAggregator {
         }
         List<Double> values = samples.stream().map(Sample::getValue).collect(Collectors.toList());
         Double value = getAggregation().apply(values);
-        return Sample.builder()
+        return ImmutableSample.builder()
                 .metric(this.expectedMetric)
                 .time(startOfBucket)
                 .value(value).build();

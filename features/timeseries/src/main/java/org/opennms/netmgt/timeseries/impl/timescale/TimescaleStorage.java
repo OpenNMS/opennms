@@ -46,13 +46,16 @@ import javax.sql.DataSource;
 
 import org.joda.time.Duration;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.timeseries.api.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.api.domain.Aggregation;
-import org.opennms.netmgt.timeseries.api.domain.Metric;
-import org.opennms.netmgt.timeseries.api.domain.Sample;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
-import org.opennms.netmgt.timeseries.api.domain.Tag;
-import org.opennms.netmgt.timeseries.api.domain.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +96,8 @@ public class TimescaleStorage implements TimeSeriesStorage {
                     ps.setString(2, sample.getMetric().getKey());
                     ps.setDouble(3, sample.getValue());
                     ps.addBatch();
-                    storeTags(sample.getMetric(), Metric.TagType.intrinsic, sample.getMetric().getTags());
-                    storeTags(sample.getMetric(), Metric.TagType.meta, sample.getMetric().getMetaTags());
+                    storeTags(sample.getMetric(), ImmutableMetric.TagType.intrinsic, sample.getMetric().getTags());
+                    storeTags(sample.getMetric(), ImmutableMetric.TagType.meta, sample.getMetric().getMetaTags());
                 }
                 ps.executeBatch();
 
@@ -113,7 +116,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
         }
     }
 
-    private void storeTags(final Metric metric, final Metric.TagType tagType, final Collection<Tag> tags) throws SQLException {
+    private void storeTags(final Metric metric, final ImmutableMetric.TagType tagType, final Collection<Tag> tags) throws SQLException {
         final String sql = "INSERT INTO timescale_tag(fk_timescale_metric, key, value, type)  values (?, ?, ?, ?) ON CONFLICT (fk_timescale_metric, key, value, type) DO NOTHING;";
 
         final DBUtils db = new DBUtils(this.getClass());
@@ -165,11 +168,11 @@ public class TimescaleStorage implements TimeSeriesStorage {
                 db.watch(ps);
                 ps.setString(1, metricKey);
                 rs = ps.executeQuery();
-                Metric.MetricBuilder metric = Metric.builder();
+                ImmutableMetric.MetricBuilder metric = ImmutableMetric.builder();
                 while (rs.next()) {
-                    Tag tag = new Tag(rs.getString("key"), rs.getString("value"));
-                    Metric.TagType type = Metric.TagType.valueOf(rs.getString("type"));
-                    if ((type == Metric.TagType.intrinsic)) {
+                    Tag tag = new ImmutableTag(rs.getString("key"), rs.getString("value"));
+                    ImmutableMetric.TagType type = ImmutableMetric.TagType.valueOf(rs.getString("type"));
+                    if ((type == ImmutableMetric.TagType.intrinsic)) {
                         metric.tag(tag);
                     } else {
                         metric.metaTag(tag);
@@ -234,7 +237,7 @@ public class TimescaleStorage implements TimeSeriesStorage {
             samples = new ArrayList<>();
             while (rs.next()) {
                 long timestamp = rs.getTimestamp("step").getTime();
-                samples.add(Sample.builder().metric(request.getMetric()).time(Instant.ofEpochMilli(timestamp)).value(rs.getDouble("aggregation")).build());
+                samples.add(ImmutableSample.builder().metric(request.getMetric()).time(Instant.ofEpochMilli(timestamp)).value(rs.getDouble("aggregation")).build());
             }
             rs.close();
         } catch (SQLException e) {

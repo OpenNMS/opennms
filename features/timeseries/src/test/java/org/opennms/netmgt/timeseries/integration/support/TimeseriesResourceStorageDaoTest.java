@@ -49,7 +49,7 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.integration.dao.SearchResults;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher;
-import org.opennms.netmgt.timeseries.api.domain.StorageException;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 
