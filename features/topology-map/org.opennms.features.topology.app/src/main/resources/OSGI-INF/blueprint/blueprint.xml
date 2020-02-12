@@ -104,7 +104,8 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     </service>
     
     <bean id="metaTopologySelector" class="org.opennms.features.topology.app.internal.operations.MetaTopologySelector">
-    	<property name="bundleContext" ref="blueprintBundleContext" />
+    	<argument ref="blueprintBundleContext" />
+    	<argument ref="topologyService" />
     </bean>
 
     <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
