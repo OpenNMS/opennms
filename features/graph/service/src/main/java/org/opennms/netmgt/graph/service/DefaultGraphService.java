@@ -34,6 +34,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -49,13 +50,11 @@ import org.opennms.netmgt.graph.api.service.osgi.GraphContainerProviderRegistrat
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import com.google.common.collect.Maps;
-
 public class DefaultGraphService implements GraphService {
 
     private List<GraphContainerProvider> graphContainerProviders = new CopyOnWriteArrayList<>();
     private final BundleContext bundleContext;
-    private final Map<GraphContainerProvider, ServiceRegistration<GraphContainerProviderRegistration>> serviceRegistrationMap = Maps.newHashMap();
+    private final Map<GraphContainerProvider, ServiceRegistration<GraphContainerProviderRegistration>> serviceRegistrationMap = new ConcurrentHashMap<>();
 
     public DefaultGraphService() {
         this(null);
