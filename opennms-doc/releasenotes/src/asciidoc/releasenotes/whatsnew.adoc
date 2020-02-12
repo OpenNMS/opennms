@@ -11,6 +11,13 @@
 
 === Breaking Changes
 
+The Flow Classification UI accepted invalid ip address values, e.g. `10,192.1,168.1,5.1-160`.
+When upgrading {opennms-product-name} existing Flow Classification Rules may be considered invalid.
+In this case they are silently ignored by the Flow Classification Engine.
+In order to assure no invalid Flow Classification Rules exist, please run the OSGi shell command `opennms-classification:list-invalid-rules` to list all invalid rules.
+If there are any invalid rules, they must be manually fixed using the Flow Classification UI.
+For more details, refer to issue https://issues.opennms.org/browse/NMS-12422[NMS-12422].
+
 ==== PostgreSQL 10
 
 OpenNMS Horizon 25 is supported on PostgreSQL 10 or later.
