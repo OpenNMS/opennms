@@ -79,7 +79,6 @@ public class GraphContainerProviderManager {
 
             final MetaTopologyProvider metaTopologyProvider = new LegacyMetaTopologyProvider(configuration, nodeDao, graphService, containerId);
             final ServiceRegistration<MetaTopologyProvider> metaTopologyProviderServiceRegistration = bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, serviceProperties);
-            serviceRegistrations.get(containerProvider).add(metaTopologyProviderServiceRegistration);
 
             // Register Search provider
             metaTopologyProvider.getGraphProviders().forEach(topologyProvider -> {
@@ -104,6 +103,10 @@ public class GraphContainerProviderManager {
                     serviceRegistrations.get(containerProvider).add(edgeStatusProviderServiceRegistration);
                 });
             }
+
+            // The MetaTopologyProvider is registered last, to avoid missing icons or missing edges.
+            // This way everything is registered before anyone tries to access/select the meta topology
+            serviceRegistrations.get(containerProvider).add(metaTopologyProviderServiceRegistration);
         }
     }
 
