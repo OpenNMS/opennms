@@ -355,6 +355,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 attributes.add(new ExternalValueAttribute("nodeId", m_snmpInterface.getNodeId().toString()));
                 attributes.add(new ExternalValueAttribute("ifIndex", m_snmpInterface.getIfIndex().toString()));
                 attributes.add(new ExternalValueAttribute("hasFlows", String.valueOf(m_snmpInterface.getHasFlows())));
+                attributes.add(new ExternalValueAttribute("hasIngressFlows", String.valueOf(m_snmpInterface.getHasIngressFlows())));
+                attributes.add(new ExternalValueAttribute("hasEgressFlows", String.valueOf(m_snmpInterface.getHasEgressFlows())));
                 if (m_snmpInterface.getIfSpeed() != null) {
                     String ifSpeedFriendly = SIUtils.getHumanReadableIfSpeed(m_snmpInterface.getIfSpeed());
                     attributes.add(new ExternalValueAttribute("ifSpeed", m_snmpInterface.getIfSpeed().toString()));

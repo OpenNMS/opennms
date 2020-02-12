@@ -486,7 +486,8 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 	location        text not null,
-	hasFlows        boolean not null default false,
+	last_ingress_flow timestamp with time zone,
+	last_egress_flow timestamp with time zone,
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
@@ -555,7 +556,8 @@ create table snmpInterface (
     snmpCollect     varchar(2) default 'N',
     snmpPoll     varchar(1) default 'N',
     snmpLastSnmpPoll timestamp with time zone,
-	hasFlows        boolean not null default false,
+	last_ingress_flow timestamp with time zone,
+	last_egress_flow timestamp with time zone,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE

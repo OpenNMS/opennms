@@ -163,7 +163,19 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
 
     private void addCriteriaForFlows(final OnmsCriteria criteria, final Boolean hasFlows) {
-        criteria.add(Restrictions.eq("node.hasFlows", hasFlows));
+        if (hasFlows) {
+            if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+                criteria.add(Restrictions.sqlRestriction("EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE));
+            } else {
+                criteria.add(Restrictions.sqlRestriction("EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE));
+            }
+        } else {
+            if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+                criteria.add(Restrictions.sqlRestriction("(last_ingress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ") OR (last_egress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ")"));
+            } else {
+                criteria.add(Restrictions.sqlRestriction("(last_ingress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ") AND (last_egress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ")"));
+            }
+        }
     }
 
     private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
