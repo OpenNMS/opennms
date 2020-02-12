@@ -50,7 +50,7 @@ public class ClassificationListInvalidRuleCommand implements Action {
     @Override
     public Object execute() throws Exception {
         final List<Rule> invalidRules = getInvalidRules();
-        final String TEMPLATE = "%-20s   %4s   %-20s   %-15s   %10s   %-15s   %-10s   %-15s   %-10s   %-20s   %-15s   %s";
+        final String TEMPLATE = "%-20s   %4s   %-20s   %-15s   %10s   %-40s   %-10s   %-40s   %-10s   %-20s   %-15s   %s";
         if (!invalidRules.isEmpty()) {
             System.out.println(String.format(TEMPLATE, "Group", "Pos", "Name", "Protocol", "ID", "Dest. Addr.", "Dest. Port", "Src. Addr.", "Src. Port", "Exporter Filter", "Bidirectional", "Error"));
             for (Rule rule : invalidRules) {

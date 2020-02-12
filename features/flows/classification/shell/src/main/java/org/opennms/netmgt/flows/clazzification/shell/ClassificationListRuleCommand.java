@@ -60,7 +60,7 @@ public class ClassificationListRuleCommand implements Action {
                 .orderBy("position", true)
                 .toCriteria();
         final List<Rule> rules = classificationService.findMatchingRules(criteria);
-        final String TEMPLATE = "%4s   %-20s   %-15s   %10s   %-15s   %-10s   %-15s   %-10s   %-20s   %-15s   %s";
+        final String TEMPLATE = "%4s   %-20s   %-15s   %10s   %-40s   %-10s   %-40s   %-10s   %-20s   %-15s   %s";
         if (!rules.isEmpty()) {
             System.out.println(String.format(TEMPLATE, "Pos", "Name", "Protocol", "ID", "Dest. Addr.", "Dest. Port", "Src. Addr.", "Src. Port", "Exporter Filter", "Bidirectional", "Group"));
             for (Rule rule : rules) {
