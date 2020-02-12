@@ -86,7 +86,7 @@ public class IpValue {
     private static void verifyIpAddress(final StringValue stringValue) {
         Objects.requireNonNull(stringValue);
         if (!InetAddresses.isInetAddress(stringValue.getValue())) {
-            throw new IllegalArgumentException("Invalid ");
+            throw new IllegalArgumentException("Provided ip address '" + stringValue.getValue() + "' is invalid");
         }
     }
 }
