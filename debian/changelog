@@ -1,3 +1,14 @@
+opennms (25.2.0-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes including a performance
+    fix for topology updating, and an enhancement to the sink API to persist to
+    disk when the Minion can't reach the broker.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/25.2.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 04 Feb 2020 14:24:00 -0400
+
 opennms (25.1.2-1) stable; urgency=medium
 
   * New stable release.  It contains a number of alarm classification bug fixes

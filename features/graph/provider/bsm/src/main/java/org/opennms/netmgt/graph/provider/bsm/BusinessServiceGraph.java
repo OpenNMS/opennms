@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.graph.provider.bsm;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.graph.api.ImmutableGraph;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
@@ -59,11 +58,6 @@ public final class BusinessServiceGraph extends AbstractDomainGraph<BusinessServ
         return new BusinessServiceEdge(edge);
     }
 
-    @Override
-    public Class getVertexType() {
-        return BusinessService.class;
-    }
-    
     public static BusinessServiceGraphBuilder builder() {
         return new BusinessServiceGraphBuilder();
     }

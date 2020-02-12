@@ -33,4 +33,8 @@
     </bean>
     <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="applicationSearchProvider"/>
 
+    <bean id="applicationStatusEnrichment" class="org.opennms.netmgt.graph.provider.application.ApplicationStatusEnrichment">
+        <argument ref="applicationDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="applicationStatusEnrichment"/>
 </blueprint>

@@ -34,4 +34,5 @@ package org.opennms.netmgt.events.api.model;
 public interface IParm {
     String getParmName();
     IValue getValue();
+    boolean isValid();
 }

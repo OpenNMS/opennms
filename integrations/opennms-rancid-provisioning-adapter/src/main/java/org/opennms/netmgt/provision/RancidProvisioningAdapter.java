@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,13 +47,14 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.rancid.ConnectionProperties;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidApiException;
@@ -725,10 +726,10 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>handleReloadConfigEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadConfigEvent(Event event) {
+    public void handleReloadConfigEvent(IEvent event) {
         if (isReloadConfigEventTarget(event)) {
             EventBuilder ebldr = null;
             LOG.debug("reloading the rancid adapter configuration");
@@ -761,12 +762,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
-    private boolean isReloadConfigEventTarget(Event event) {
+    private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
         
-        List<Parm> parmCollection = event.getParmCollection();
+        List<IParm> parmCollection = event.getParmCollection();
 
-        for (Parm parm : parmCollection) {
+        for (IParm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond.RancidProvisioningAdapter".equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
@@ -780,10 +781,10 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>handleRancidDownLoadFailure</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_FAILURE_UEI)
-    public void handleRancidDownLoadFailure(Event e) {
+    public void handleRancidDownLoadFailure(IEvent e) {
         LOG.debug("handleRancidDownLoadFailure: get Event uei/id: {} / {}", e.getDbid(), e.getUei());
         if (e.hasNodeid()) {
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -798,10 +799,10 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>handleRancidDownLoadSuccess</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI)
-    public void handleRancidDownLoadSuccess(Event e) {
+    public void handleRancidDownLoadSuccess(IEvent e) {
         LOG.debug("handleRancidDownLoadSuccess: get Event uei/id: {} / {}", e.getDbid(), e.getUei());
         if (e.hasNodeid() ) {
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
@@ -816,12 +817,12 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>handleRancidGroupProcessingCompleted</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI)
-    public void handleRancidGroupProcessingCompleted(Event e) {
+    public void handleRancidGroupProcessingCompleted(IEvent e) {
         LOG.debug("handleRancidGroupProcessingCompleted: get Event uei/id: {} / {}", e.getDbid(), e.getUei());
-        for (Parm parm : e.getParmCollection()) {
+        for (IParm parm : e.getParmCollection()) {
             LOG.debug("handleRancidGroupProcessingCompleted: parm name: {}", parm.getParmName());
             if (parm.getParmName().equals(".1.3.6.1.4.1.31543.1.1.2.1.1.3")) {
                 updateGroupConfiguration(parm.getValue().getContent());

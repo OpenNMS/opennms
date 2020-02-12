@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.junit.Test;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 
 public class PendingPollEventTest {
@@ -41,7 +42,7 @@ public class PendingPollEventTest {
     public void testPollEventTimeout() throws Exception {
         final Date d = new Date();
         final EventBuilder eb = new EventBuilder("foo", "bar", d);
-        final PendingPollEvent ppe = new PendingPollEvent(eb.getEvent());
+        final PendingPollEvent ppe = new PendingPollEvent(ImmutableMapper.fromMutableEvent(eb.getEvent()));
         ppe.setExpirationTimeInMillis(Long.MAX_VALUE);
         assertFalse("timedOut should be false: " + ppe.isTimedOut(), ppe.isTimedOut());
         assertTrue("pending should be true: " + ppe.isPending(), ppe.isPending());

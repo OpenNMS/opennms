@@ -30,8 +30,6 @@ package org.opennms.netmgt.graph.api.info;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.graph.api.Vertex;
-
 import com.google.common.base.MoreObjects;
 
 public class DefaultGraphInfo implements GraphInfo {
@@ -39,22 +37,16 @@ public class DefaultGraphInfo implements GraphInfo {
     private String namespace;
     private String description;
     private String label;
-    private Class<? extends Vertex> vertexType;
 
-    public DefaultGraphInfo(final String namespace, Class<? extends Vertex> vertexType) {
+    public DefaultGraphInfo(final String namespace) {
         this.namespace = Objects.requireNonNull(namespace);
-        this.vertexType = Objects.requireNonNull(vertexType);
-    }
-
-    public DefaultGraphInfo(GraphInfo copy) {
-        this(copy, copy.getVertexType());
     }
 
     /**
      * Constructor to change the vertex Type of the given GraphInfo.
      */
-    public DefaultGraphInfo(GraphInfo copy, Class<? extends Vertex> vertexType) {
-        this(copy.getNamespace(), vertexType);
+    public DefaultGraphInfo(final GraphInfo copy) {
+        this(Objects.requireNonNull(copy).getNamespace());
         setLabel(copy.getLabel());
         setDescription(copy.getDescription());
     }
@@ -72,11 +64,6 @@ public class DefaultGraphInfo implements GraphInfo {
     @Override
     public String getLabel() {
         return label;
-    }
-
-    @Override
-    public Class<? extends Vertex> getVertexType() {
-        return vertexType;
     }
 
     public void setNamespace(String namespace) {
@@ -108,13 +95,12 @@ public class DefaultGraphInfo implements GraphInfo {
         DefaultGraphInfo graphInfo = (DefaultGraphInfo) o;
         return Objects.equals(namespace, graphInfo.namespace)
                 && Objects.equals(description, graphInfo.description)
-                && Objects.equals(label, graphInfo.label)
-                && Objects.equals(vertexType, graphInfo.vertexType);
+                && Objects.equals(label, graphInfo.label);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespace, description, label, vertexType);
+        return Objects.hash(namespace, description, label);
     }
 
     @Override

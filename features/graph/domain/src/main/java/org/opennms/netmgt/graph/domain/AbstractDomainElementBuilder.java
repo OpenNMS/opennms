@@ -53,7 +53,7 @@ public abstract class AbstractDomainElementBuilder<T extends AbstractDomainEleme
             return (T) this;
         }
         
-        public T property(String name, String value){
+        public <V> T property(String name, V value){
             properties.put(name, value);
             return (T) this;
         }

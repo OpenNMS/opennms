@@ -253,9 +253,7 @@ public final class ChangeSet<G extends ImmutableGraph<V, E>, V extends Vertex, E
 
         private GraphInfo createGraphInfo(G graph) {
             if (graph != null) {
-                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graph.getNamespace(), graph.getVertexType());
-                graphInfo.setDescription(graph.getDescription());
-                graphInfo.setLabel(graph.getLabel());
+                final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graph);
                 return graphInfo;
             }
             return null;

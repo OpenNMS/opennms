@@ -131,7 +131,7 @@ public class ChangeSetTest {
         assertEquals("e3", changeSet.getEdgesAdded().get(0).getId());
         assertEquals("e1", changeSet.getEdgesRemoved().get(0).getId());
         assertEquals("e2", changeSet.getEdgesUpdated().get(0).getId());
-        assertEquals(new DefaultGraphInfo(NAMESPACE, GenericVertex.class)
+        assertEquals(new DefaultGraphInfo(NAMESPACE)
                 .withDescription("Some Description")
                 .withLabel("Some Label"), changeSet.getGraphInfo());
     }

@@ -1,9 +1,8 @@
 /* eslint no-console: 0 */
 
 const angular = require('vendor/angular-js');
-const moment = require('moment');
-const JSJoda = require('js-joda');
-require('js-joda-timezone');
+const moment = require('moment-timezone');
+require('@rangerrick/moment-javaformat/dist/moment-javaformat');
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 function OnmsDateFormatter() {
@@ -51,53 +50,31 @@ OnmsDateFormatter.prototype.assertInitialized = function assertInitialized() {
 	}
 };
 
-OnmsDateFormatter.prototype.getFormatter = function getFormatter() {
-	var self = this;
-	self.assertInitialized();
-
-	if (!self._formatter) {
-		self._formatter = JSJoda.DateTimeFormatter.ofPattern(window._onmsDateTimeFormat);
-	}
-	return self._formatter;
-};
-
 OnmsDateFormatter.prototype.getZoneId = function getZoneId() {
-	var self = this;
-	self.assertInitialized();
+	this.assertInitialized();
 
-	if (!self._zoneId) {
+	if (!this._zoneId) {
 		if (window._onmsZoneId) {
-			try {
-				self._zoneId = JSJoda.ZoneId.of(window._onmsZoneId);
-			} catch (err) {
-				console.log('Unhandled zone ID ' + window._onmsZoneId + ': ' + err);
-				console.log('Falling back to default browser zone.');
-				self._zoneId = JSJoda.ZoneId.SYSTEM;
-			}
+			this._zoneId = window._onmsZoneId;
 		} else {
-			self._zoneId = JSJoda.ZoneId.SYSTEM;
+			console.warn('No zone ID specified from the server; guessing based on browser.');
+			this._zoneId = moment.tz.guess();
 		}
 	}
-	return self._zoneId;
+	return this._zoneId;
 };
 
 OnmsDateFormatter.prototype.format = function format(date) {
-	var self = this;
-	self.assertInitialized();
+	this.assertInitialized();
 
 	if (date === undefined || date === null) {
 		return date;
 	}
 
-	//console.log('Formatting "' + date + '" with formatter "' + window._onmsDateTimeFormat + '" and zone ID "' + window._onmsZoneId + '"');
-	var jodaDate = JSJoda.ZonedDateTime
-	.from(JSJoda.nativeJs(moment(date)))
-	.withZoneSameLocal(self.getZoneId());
-
-	return self.getFormatter().format(jodaDate);
+	const zoneId = this.getZoneId();
+	const momentDate = moment.tz(date, zoneId);
+	return momentDate.formatJavaDTF(window._onmsDateTimeFormat);
 };
-
-//window.OnmsDateFormatter = OnmsDateFormatter;
 
 (function() {
 	'use strict';

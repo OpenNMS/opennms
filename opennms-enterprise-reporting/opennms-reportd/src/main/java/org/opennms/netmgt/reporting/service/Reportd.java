@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,9 +39,9 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -159,13 +159,13 @@ public class Reportd implements SpringServiceDaemon {
     /**
      * <p>handleRunReportEvent</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.REPORTD_RUN_REPORT)
-    public void handleRunReportEvent(Event e){
+    public void handleRunReportEvent(IEvent e){
        String reportName = "";
        
-       for(Parm parm : e.getParmCollection()){
+       for(IParm parm : e.getParmCollection()){
        
            if(EventConstants.PARM_REPORT_NAME.equals(parm.getParmName()))
                reportName = parm.getValue().getContent();
@@ -189,10 +189,10 @@ public class Reportd implements SpringServiceDaemon {
     /**
      * <p>handleReloadConfigEvent</p>
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadConfigEvent(Event e) {
+    public void handleReloadConfigEvent(IEvent e) {
 
         if (isReloadConfigEventTarget(e)) {
             LOG.info("handleReloadConfigEvent: reloading configuration...");
@@ -232,12 +232,12 @@ public class Reportd implements SpringServiceDaemon {
 
     }
 
-    private boolean isReloadConfigEventTarget(Event event) {
+    private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
 
-        List<Parm> parmCollection = event.getParmCollection();
+        List<IParm> parmCollection = event.getParmCollection();
 
-        for (Parm parm : parmCollection) {
+        for (IParm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Reportd".equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
