@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,8 @@
 
 package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-
-public interface TopologyService extends TopologyCache {
-
-    Graph getGraph(String metaTopologyId, String namespace, Criteria[] criteria, int semanticZoomLevel);
-
-    GraphProvider getGraphProvider(String metaTopologyId, String namespace);
-
-    // Determines preferred/default layout
-    LayoutAlgorithm getPreferredLayoutAlgorithm(String metaTopologyId, String namespace);
-
-    MetaTopologyProvider getMetaTopologyProvider(String metaTopologyId);
-
-	boolean isCategoryAware(String namespace);
+public interface TopologyCache {
+    void invalidate(String metaTopologyId, String namespace);
+    void invalidate(String namespace);
+    void invalidateAll();
 }

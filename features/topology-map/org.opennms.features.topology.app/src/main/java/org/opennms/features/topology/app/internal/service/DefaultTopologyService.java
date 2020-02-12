@@ -225,23 +225,28 @@ public class DefaultTopologyService implements TopologyService {
         this.topologyEntityCache = Objects.requireNonNull(topologyEntityCache);
     }
 
+    @Override
     public void invalidate(String namespace) {
         if(namespace.startsWith("nodes")) {
             topologyEntityCache.refresh();
         }
 
-        // Tt the moment the namespace of each topology must be unique overall meta topology providers, even if they
+        // At the moment the namespace of each topology must be unique overall meta topology providers, even if they
         // are encapsulated by the meta topology provider. It should be addressed by <metaId>:<namespace>.
         // This is at the moment not the case, therefore we iterate over all meta topology providers and invalidate
         // The cache if the meta topology provider has a graph with the given namespace. In the future this should
         // be handled differently.
         serviceLocator.findServices(MetaTopologyProvider.class, null).stream()
             .filter(metaTopologyProvider -> metaTopologyProvider.getGraphProviderBy(namespace) != null)
-            .forEach(metaTopologyProvider ->  {
-                graphProviderCache.invalidate(new GraphProviderKey(metaTopologyProvider.getId(), namespace));
-            });
+            .forEach(metaTopologyProvider -> invalidate(metaTopologyProvider.getId(), namespace));
     }
 
+    @Override
+    public void invalidate(String metaTopologyId, String namespace) {
+        graphProviderCache.invalidate(new GraphProviderKey(metaTopologyId, namespace));
+    }
+
+    @Override
     public void invalidateAll() {
         topologyEntityCache.refresh();
         graphProviderCache.invalidateAll();

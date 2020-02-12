@@ -140,6 +140,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
         <property name="topologyEntityCache" ref="topologyEntityCache"/>
     </bean>
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
+    <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyCache" />
 
     <!-- Listener to invalidate the Topology Service Cache -->
     <bean id="topologyEventListener"
