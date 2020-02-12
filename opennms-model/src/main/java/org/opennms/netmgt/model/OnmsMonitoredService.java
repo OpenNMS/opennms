@@ -70,10 +70,10 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.hibernate.annotations.Where;
 
 import com.google.common.base.MoreObjects;
@@ -162,7 +162,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
     @Column(nullable=false)
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
-    @XmlTransient
+    @XmlAttribute
     public Integer getId() {
         return m_id;
     }
@@ -416,12 +416,18 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @XmlIDREF
-    @JsonBackReference
+    @JsonIgnore
     @XmlElement(name="ipInterfaceId")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getIpInterface() {
         return m_ipInterface;
+    }
+
+    @JsonProperty("ipInterfaceId")
+    @Transient
+    public Integer getFoo() {
+        return m_ipInterface.getId();
     }
 
     /**
