@@ -162,11 +162,16 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
     @Column(nullable=false)
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
-    @XmlAttribute
+    @XmlTransient
     public Integer getId() {
         return m_id;
     }
 
+    @Transient
+    @JsonProperty("id")
+    public Integer getJsonId() {
+        return m_id;
+    }
     /**
      * <p>setId</p>
      *
