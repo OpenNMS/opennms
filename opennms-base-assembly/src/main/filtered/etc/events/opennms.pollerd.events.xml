@@ -214,11 +214,9 @@
    <event>
       <uei>uei.opennms.org/nodes/nodeAdded</uei>
       <event-label>OpenNMS-defined node event: nodeAdded</event-label>
-      <descr>&lt;p>A new node (%parm[nodelabel]%) was discovered by
-            OpenNMS.&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            A new node (%parm[nodelabel]%) was discovered by OpenNMS.
-        </logmsg>
+      <descr>The node (%parm[nodelabel]%) was added and is now being monitored.</descr>
+      <logmsg dest="logndisplay">A new node (%parm[nodelabel]%) was added.</logmsg>
+      <operinstruct>This event is for information only. Please make sure that the newly added device &lt;a href=&quot;element/node.jsp?node=%nodeid%&quot;>%nodeid%&lt;/a> is monitored as desired.</operinstruct>
       <severity>Warning</severity>
    </event>
    <event>
