@@ -89,9 +89,9 @@ public class GraphMapper {
         return convertedGraphContainer;
     }
 
-    public GraphInfo<?> map(final org.opennms.integration.api.v1.graph.GraphInfo extensionGraphInfo) {
+    public GraphInfo map(final org.opennms.integration.api.v1.graph.GraphInfo extensionGraphInfo) {
         Objects.requireNonNull(extensionGraphInfo, "extensionGraphInfo must not be null");
-        return new org.opennms.netmgt.graph.api.info.GraphInfo<GenericVertex>() {
+        return new org.opennms.netmgt.graph.api.info.GraphInfo() {
 
             @Override
             public String getNamespace() {
@@ -106,11 +106,6 @@ public class GraphMapper {
             @Override
             public String getLabel() {
                 return extensionGraphInfo.getLabel();
-            }
-
-            @Override
-            public Class<GenericVertex> getVertexType() {
-                return GenericVertex.class;
             }
         };
     }

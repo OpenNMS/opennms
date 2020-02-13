@@ -56,7 +56,7 @@ public class GraphProviderManager extends InterfaceMapper<GraphProvider, org.ope
             }
 
             @Override
-            public org.opennms.netmgt.graph.api.info.GraphInfo<?> getGraphInfo() {
+            public org.opennms.netmgt.graph.api.info.GraphInfo getGraphInfo() {
                 final GraphInfo extensionGraphInfo = extension.getGraphInfo();
                 return new GraphMapper().map(extensionGraphInfo);
             }
