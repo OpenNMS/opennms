@@ -43,31 +43,16 @@ OnmsDateFormatter.prototype.assertInitialized = function assertInitialized() {
 	}
 };
 
-OnmsDateFormatter.prototype.getFormatter = function getFormatter() {
-	var self = this;
-	self.assertInitialized();
-
-	if (!self._formatter) {
-		self._formatter = JSJoda.DateTimeFormatter.ofPattern(window._onmsDateTimeFormat);
-	}
-	return self._formatter;
-};
-
 OnmsDateFormatter.prototype.getZoneId = function getZoneId() {
 	var self = this;
 	self.assertInitialized();
 
 	if (!self._zoneId) {
 		if (window._onmsZoneId) {
-			try {
-				self._zoneId = JSJoda.ZoneId.of(window._onmsZoneId);
-			} catch (err) {
-				console.log('Unhandled zone ID ' + window._onmsZoneId + ': ' + err);
-				console.log('Falling back to default browser zone.');
-				self._zoneId = JSJoda.ZoneId.SYSTEM;
-			}
+			self._zoneId = window._onmsZoneId;
 		} else {
-			self._zoneId = JSJoda.ZoneId.SYSTEM;
+			console.warn('No zone ID specified from the server; guessing based on browser.');
+			self._zoneId = moment.tz.guess();
 		}
 	}
 	return self._zoneId;
@@ -82,11 +67,9 @@ OnmsDateFormatter.prototype.format = function format(date) {
 	}
 
 	//console.log('Formatting "' + date + '" with formatter "' + window._onmsDateTimeFormat + '" and zone ID "' + window._onmsZoneId + '"');
-	var jodaDate = JSJoda.ZonedDateTime
-	.from(JSJoda.nativeJs(moment(date)))
-	.withZoneSameLocal(self.getZoneId());
-
-	return self.getFormatter().format(jodaDate);
+	var zoneId = this.getZoneId();
+	var momentDate = moment.tz(date, zoneId);
+	return momentDate.formatJavaDTF(window._onmsDateTimeFormat);
 };
 
 window.OnmsDateFormatter = OnmsDateFormatter;

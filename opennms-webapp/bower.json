@@ -34,8 +34,10 @@
     "font-awesome": "4.6.3",
     "ionicons": "2.0.1",
     "leaflet": "1.0.2",
-    "leaflet.markercluster" : "1.0.0",
-    "moment": "2.22.2",
+    "leaflet.markercluster": "1.0.0",
+    "moment": "2.24.0",
+    "moment-timezone": "0.5.27",
+    "moment-javaformat": "RangerRick/moment-javaformat#^1.0.2",
     "js-joda": "1.8.2",
     "js-joda-timezone": "2.0.0"
   },
