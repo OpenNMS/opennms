@@ -28,45 +28,37 @@
 
 package org.opennms.netmgt.flows.clazzification.shell;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Completion;
-import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
+import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-@Command(scope="opennms-classification", name="list-rules", description = "Lists classification rules stored in the database")
+@Command(scope="opennms-classification", name="list-invalid-rules", description = "Lists invalid classification rules")
 @Service
-public class ClassificationListRuleCommand implements Action {
-
-    @Option(name = "-g", aliases = {"--group"}, description = "Only shows rules for this group")
-    @Completion(value=GroupCompleter.class)
-    private String group = "user-defined";
+public class ClassificationListInvalidRuleCommand implements Action {
 
     @Reference
     private ClassificationService classificationService;
 
     @Override
     public Object execute() throws Exception {
-        final Criteria criteria = new CriteriaBuilder(Rule.class)
-                .alias("group", "group")
-                .eq("group.name", group)
-                .orderBy("position", true)
-                .toCriteria();
-        final List<Rule> rules = classificationService.findMatchingRules(criteria);
-        final String TEMPLATE = "%4s   %-20s   %-15s   %10s   %-40s   %-10s   %-40s   %-10s   %-20s   %-15s   %s";
-        if (!rules.isEmpty()) {
-            System.out.println(String.format(TEMPLATE, "Pos", "Name", "Protocol", "ID", "Dest. Addr.", "Dest. Port", "Src. Addr.", "Src. Port", "Exporter Filter", "Bidirectional", "Group"));
-            for (Rule rule : rules) {
+        final List<Rule> invalidRules = getInvalidRules();
+        final String TEMPLATE = "%-20s   %4s   %-20s   %-15s   %10s   %-40s   %-10s   %-40s   %-10s   %-20s   %-15s   %s";
+        if (!invalidRules.isEmpty()) {
+            System.out.println(String.format(TEMPLATE, "Group", "Pos", "Name", "Protocol", "ID", "Dest. Addr.", "Dest. Port", "Src. Addr.", "Src. Port", "Exporter Filter", "Bidirectional", "Error"));
+            for (Rule rule : invalidRules) {
+                final String error = getErrorReason(rule);
                 System.out.println(
                         String.format(
                                 TEMPLATE,
+                                rule.getGroup().getName(),
                                 rule.getPosition(),
                                 rule.getName(),
                                 rule.getProtocol() == null ? "" : rule.getProtocol(),
@@ -77,12 +69,32 @@ public class ClassificationListRuleCommand implements Action {
                                 rule.getSrcPort() == null ? "" : rule.getSrcPort(),
                                 rule.getExporterFilter() == null ? "" : rule.getExporterFilter(),
                                 rule.isOmnidirectional() ? "Y" : "N",
-                                rule.getGroup().getName()
+                                error
                         ));
             }
             System.out.println();
         }
-        System.out.println("=> " + rules.size() + " rule(s) defined for group '" + group + "'");
+        System.out.println("=> " + invalidRules.size() + " invalid rule(s) found.");
+        if (!invalidRules.isEmpty()) {
+            System.out.println();
+            System.out.println("Please manually fix these rules via the Flow Classification UI");
+        }
         return null;
+    }
+
+    private List<Rule> getInvalidRules() {
+        return classificationService.getInvalidRules().stream()
+                .sorted(Comparator.comparing(Rule::getGroupPosition)
+                        .thenComparing(Rule::getPosition))
+                .collect(Collectors.toList());
+    }
+
+    private String getErrorReason(final Rule rule) {
+        try {
+            classificationService.validateRule(rule);
+            return "Unknown";
+        } catch (InvalidRuleException ex) {
+            return ex.getMessage();
+        }
     }
 }

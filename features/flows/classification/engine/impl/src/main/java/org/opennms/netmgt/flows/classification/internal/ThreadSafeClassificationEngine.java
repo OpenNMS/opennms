@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.flows.classification.internal;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class ThreadSafeClassificationEngine implements ClassificationEngine {
 
@@ -62,6 +64,16 @@ public class ThreadSafeClassificationEngine implements ClassificationEngine {
             delegate.reload();
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public List<Rule> getInvalidRules() {
+        lock.readLock().lock();
+        try {
+            return delegate.getInvalidRules();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 }
