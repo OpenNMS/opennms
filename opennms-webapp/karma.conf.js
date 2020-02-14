@@ -17,6 +17,8 @@ module.exports = function(config) {
     files: [
       // Third-party libraries
       'src/main/webapp/lib/moment/moment.js',
+      'src/main/webapp/lib/moment-timezone/builds/moment-timezone-with-data-10-year-range.min.js',
+      'src/main/webapp/lib/moment-javaformat/dist/moment-javaformat.min.js',
       'src/main/webapp/lib/js-joda/dist/js-joda.js',
       'src/main/webapp/lib/js-joda-timezone/dist/js-joda-timezone.js',
       'src/main/webapp/lib/jquery/dist/jquery.js',
