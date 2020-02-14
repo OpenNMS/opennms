@@ -44,12 +44,12 @@ import javax.inject.Named;
 
 import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.MetaData;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.MetricType;
@@ -89,19 +89,19 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
 
-    private WorkerPool<SampleBatchEvent> m_workerPool;
+    private WorkerPool<SampleBatchEvent> workerPool;
 
-    private RingBuffer<SampleBatchEvent> m_ringBuffer;
+    private RingBuffer<SampleBatchEvent> ringBuffer;
 
 
-    private final int m_ringBufferSize;
+    private final int ringBufferSize;
 
-    private final int m_numWriterThreads;
+    private final int numWriterThreads;
 
-    private final Meter m_droppedSamples;
+    private final Meter droppedSamples;
 
     @Autowired
-    private TimeSeriesStorage storage;
+    private TimeseriesStorageManager storage;
 
     @Autowired
     private TimeSeriesMetaDataDao timeSeriesMetaDataDao;
@@ -110,39 +110,39 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
      */
-    private final AtomicLong m_numEntriesOnRingBuffer = new AtomicLong();
+    private final AtomicLong numEntriesOnRingBuffer = new AtomicLong();
 
     @Inject
     public TimeseriesWriter(@Named("timeseries.max_batch_size") Integer maxBatchSize, @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
-                            @Named("timeseries.writer_threads") Integer numWriterThreads, @Named("newtsMetricRegistry") MetricRegistry registry) {
+                            @Named("timeseries.writer_threads") Integer numWriterThreads, @Named("timeseriesMetricRegistry") MetricRegistry registry) {
         Preconditions.checkArgument(maxBatchSize > 0, "maxBatchSize must be strictly positive");
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");
         Preconditions.checkArgument(numWriterThreads > 0, "numWriterThreads must be positive");
         Preconditions.checkNotNull(registry, "metric registry");
 
-        m_ringBufferSize = ringBufferSize;
-        m_numWriterThreads = numWriterThreads;
-        m_numEntriesOnRingBuffer.set(0L);
+        this.ringBufferSize = ringBufferSize;
+        this.numWriterThreads = numWriterThreads;
+        numEntriesOnRingBuffer.set(0L);
 
         registry.register(MetricRegistry.name("ring-buffer", "size"),
                 new Gauge<Long>() {
                     @Override
                     public Long getValue() {
-                        return m_numEntriesOnRingBuffer.get();
+                        return numEntriesOnRingBuffer.get();
                     }
                 });
         registry.register(MetricRegistry.name("ring-buffer", "max-size"),
                 new Gauge<Long>() {
                     @Override
                     public Long getValue() {
-                        return Long.valueOf(m_ringBufferSize);
+                        return Long.valueOf(TimeseriesWriter.this.ringBufferSize);
                     }
                 });
 
-        m_droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
+        droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
 
-        LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, m_ringBufferSize);
+        LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, this.ringBufferSize);
         setUpWorkerPool();
 
     }
@@ -154,26 +154,26 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         final Executor executor = Executors.newCachedThreadPool(namedThreadFactory);
 
         @SuppressWarnings("unchecked")
-        final WorkHandler<SampleBatchEvent> handlers[] = new WorkHandler[m_numWriterThreads];
-        for (int i = 0; i < m_numWriterThreads; i++) {
+        final WorkHandler<SampleBatchEvent> handlers[] = new WorkHandler[numWriterThreads];
+        for (int i = 0; i < numWriterThreads; i++) {
             handlers[i] = this;
         }
 
-        m_ringBuffer = RingBuffer.createMultiProducer(SampleBatchEvent::new, m_ringBufferSize);
-        m_workerPool = new WorkerPool<SampleBatchEvent>(
-                m_ringBuffer,
-                m_ringBuffer.newBarrier(),
+        ringBuffer = RingBuffer.createMultiProducer(SampleBatchEvent::new, ringBufferSize);
+        workerPool = new WorkerPool<SampleBatchEvent>(
+                ringBuffer,
+                ringBuffer.newBarrier(),
                 new FatalExceptionHandler(),
                 handlers);
-        m_ringBuffer.addGatingSequences(m_workerPool.getWorkerSequences());
+        ringBuffer.addGatingSequences(workerPool.getWorkerSequences());
 
-        m_workerPool.start(executor);
+        workerPool.start(executor);
     }
 
     @Override
     public void destroy() throws Exception {
-        if (m_workerPool != null) {
-            m_workerPool.drainAndHalt();
+        if (workerPool != null) {
+            workerPool.drainAndHalt();
         }
     }
 
@@ -187,7 +187,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
-        if (!m_ringBuffer.tryPublishEvent(translator, samples)) {
+        if (!ringBuffer.tryPublishEvent(translator, samples)) {
             RATE_LIMITED_LOGGER.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
                     samples.size(), new Object() {
                         @Override
@@ -200,11 +200,11 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
                                     .collect(Collectors.joining(", "));
                         }
                     });
-            m_droppedSamples.mark(samples.size());
+            droppedSamples.mark(samples.size());
             return;
         }
         // Increase our entry counter
-        m_numEntriesOnRingBuffer.incrementAndGet();
+        numEntriesOnRingBuffer.incrementAndGet();
     }
 
     @Override
@@ -213,7 +213,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         Logging.putPrefix("collectd");
 
         // Decrement our entry counter
-        m_numEntriesOnRingBuffer.decrementAndGet();
+        numEntriesOnRingBuffer.decrementAndGet();
 
         if (event.isIndexOnly()) {
             storeMetadata(event);
@@ -226,7 +226,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private void storeTimeseriesData(SampleBatchEvent event) throws StorageException {
         List<org.opennms.integration.api.v1.timeseries.Sample> samples
                 = event.getSamples().stream().map(this::toApiSample).collect(Collectors.toList());
-        this.storage.store(samples);
+        this.storage.get().store(samples);
     }
 
     private void storeMetadata(SampleBatchEvent event) throws SQLException {
@@ -289,7 +289,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
                 }
             };
 
-    public void setTimeSeriesStorage(final TimeSeriesStorage timeseriesStorage) {
+    public void setTimeSeriesStorage(final TimeseriesStorageManager timeseriesStorage) {
         this.storage = timeseriesStorage;
     }
 

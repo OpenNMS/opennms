@@ -99,18 +99,18 @@
     <property name="staticMethod" value="org.opennms.netmgt.timeseries.integration.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
 
-  <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
-  <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-      <constructor-arg ref="newtsMetricRegistry"/>
+  <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="timeseroesMetricRegistry"/>
   </bean>
 
-  <bean id="newtsMetricRegistryDomainedJmxReporterBuilder" factory-bean="newtsMetricRegistryJmxReporterBuilder" factory-method="inDomain">
-      <constructor-arg value="org.opennms.newts"/>
+  <bean id="timeseriesMetricRegistryDomainedJmxReporterBuilder" factory-bean="timeseriesMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.timeseries"/>
   </bean>
 
-  <bean id="newtsMetricRegistryJmxReporter"
-        factory-bean="newtsMetricRegistryDomainedJmxReporterBuilder"
+  <bean id="timeseriesMetricRegistryJmxReporter"
+        factory-bean="timeseriesMetricRegistryDomainedJmxReporterBuilder"
         factory-method="build"
         init-method="start"
         destroy-method="stop" />
@@ -121,14 +121,15 @@
 
   <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
-  <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
+  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 
-  <bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/>
+  <!--bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/-->
+
+  <bean id="timeseriesStorage" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager"/>
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
   <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />

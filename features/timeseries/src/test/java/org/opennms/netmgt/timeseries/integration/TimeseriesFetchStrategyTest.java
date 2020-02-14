@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,6 +64,7 @@ import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -80,6 +82,7 @@ public class TimeseriesFetchStrategyTest {
     private final static long STEP = (300 * 1000);
 
     private ResourceDao resourceDao;
+    private TimeseriesStorageManager storageManager;
     private TimeSeriesStorage timeSeriesStorage;
 
     private TimeseriesFetchStrategy fetchStrategy;
@@ -90,11 +93,13 @@ public class TimeseriesFetchStrategyTest {
     @Before
     public void setUp() {
         resourceDao = EasyMock.createNiceMock(ResourceDao.class);
-        timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
- 
+        this.timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
+        storageManager = new TimeseriesStorageManager();
+        storageManager.onBind(this.timeSeriesStorage, new HashMap<String, String>());
+
         fetchStrategy = new TimeseriesFetchStrategy();
         fetchStrategy.setResourceDao(resourceDao);
-        fetchStrategy.setTimeseriesStorage(timeSeriesStorage);
+        fetchStrategy.setTimeseriesStorageManager(storageManager);
     }
 
     @After

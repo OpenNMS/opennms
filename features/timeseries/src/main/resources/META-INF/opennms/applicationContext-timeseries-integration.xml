@@ -93,6 +93,8 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.redis_port:6379}" />
   </bean>
 
+  <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
+
   <bean id="contextConfigurations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod" value="org.opennms.netmgt.timeseries.integration.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
@@ -119,8 +121,12 @@
   <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
   <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
-
+<!--
   <bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/>
+-->
+
+  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" />
+  <onmsgi:service interface="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" ref="timeseriesStorageManager" />
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 

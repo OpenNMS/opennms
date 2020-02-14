@@ -43,22 +43,22 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
+import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
 import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
@@ -92,10 +92,10 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesResourceStorageDao.class);
 
     @Autowired
-    private TimeSeriesStorage storage;
+    private TimeseriesStorageManager storageManager;
 
     @Autowired
-    private Context m_context;
+    private Context context;
 
     @Autowired
     @Setter
@@ -170,7 +170,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                         .tag(ImmutableMetric.MandatoryTag.unit.name(), CommonTagValues.unknown)
                         .build();
                 try {
-                    storage.delete(metric);
+                    storageManager.get().delete(metric);
                 } catch (StorageException e) {
                     LOG.error("Could not delete {}, will ignore problem and continue ", metric, e);
                 }
@@ -240,7 +240,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                 .put(key, value)
                 .build();
         Resource resource = new Resource(toResourceId(path), Optional.of(attributes));
-        Sample sample = TimeseriesUtils.createSampleForIndexingStrings(m_context, resource);
+        Sample sample = TimeseriesUtils.createSampleForIndexingStrings(context, resource);
 
         // Index, but do not insert the sample(s)
         // The key/value pair specified in the attributes map will be merged with the others.
@@ -278,7 +278,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     private boolean hasCachedEntry(ResourcePath path, int minDepth, int maxDepth) {
         List<String> cachedResourceIds = searchableCache.getResourceIdsWithPrefix(
-                m_context, toResourceId(path));
+                context, toResourceId(path));
         for (String resourceId : cachedResourceIds) {
             int relativeDepth = path.relativeDepth(toResourcePath(resourceId));
             if (relativeDepth >= minDepth && relativeDepth <= maxDepth) {
@@ -322,7 +322,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     }
 
     public void setContext(Context context) {
-        m_context = context;
+        this.context = context;
     }
 
     public void setWriter(TimeseriesWriter writer) {

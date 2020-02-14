@@ -43,6 +43,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -52,13 +58,7 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.Aggregation;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.Sample;
-import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.newts.api.Resource;
@@ -91,7 +91,7 @@ public class TimeseriesPersisterIT {
     private TimeseriesPersisterFactory persisterFactory;
 
     @Autowired
-    private TimeSeriesStorage storage;
+    private TimeseriesStorageManager storage;
 
     @Test
     public void canPersist() throws InterruptedException, StorageException {
@@ -136,7 +136,7 @@ public class TimeseriesPersisterIT {
                 .aggregation(Aggregation.NONE)
                 .step(Duration.ofMillis(1))
                 .build();
-        List<Sample> samples = this.storage.getTimeseries(request);
+        List<Sample> samples = this.storage.get().getTimeseries(request);
 
         assertEquals(1, samples.size());
         Sample row = samples.get(0);

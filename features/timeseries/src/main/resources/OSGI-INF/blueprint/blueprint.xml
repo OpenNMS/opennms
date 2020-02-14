@@ -193,4 +193,10 @@
             </entry>
         </service-properties>
     </service>
+
+    <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" />
+    <reference-list interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="timeseriesStorageManager" />
+    </reference-list>
+
 </blueprint>

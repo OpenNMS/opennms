@@ -71,12 +71,12 @@
     <dependency>
       <groupId>org.opennms.integration.api</groupId>
       <artifactId>api</artifactId>
-      <version>0.3.1-SNAPSHOT</version><!-- TODO: Patrick: use stable version once the interfaces are stable -->
+      <version>${opennmsApiVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.integration.api</groupId>
       <artifactId>common</artifactId>
-      <version>0.3.1-SNAPSHOT</version><!-- TODO: Patrick: use stable version once the interfaces are stable -->
+      <version>${opennmsApiVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.googlecode.concurrent-trees</groupId>

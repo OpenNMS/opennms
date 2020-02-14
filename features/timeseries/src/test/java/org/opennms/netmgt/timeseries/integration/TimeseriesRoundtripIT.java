@@ -47,6 +47,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.Persister;
@@ -54,9 +61,6 @@ import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
-import org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
@@ -66,12 +70,8 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.Aggregation;
-import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.Sample;
-import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +103,7 @@ public class TimeseriesRoundtripIT {
 
 
     @Autowired
-    private TimeSeriesStorage timeseriesStorage;
+    private TimeseriesStorageManager timeseriesStorageManager;
 
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
@@ -177,7 +177,7 @@ public class TimeseriesRoundtripIT {
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
 
-        List<Metric> metrics = timeseriesStorage.getMetrics(Arrays.asList(
+        List<Metric> metrics = timeseriesStorageManager.get().getMetrics(Arrays.asList(
                 new ImmutableTag(CommonTagNames.resourceId, resourceId),
                 new ImmutableTag(CommonTagNames.name, name)));
         assertEquals(1, metrics.size());
@@ -189,7 +189,7 @@ public class TimeseriesRoundtripIT {
                 .step(Duration.ofSeconds(1))
                 .metric(metrics.get(0)).build();
 
-        List<Sample> sample = timeseriesStorage.getTimeseries(request);
+        List<Sample> sample = timeseriesStorageManager.get().getTimeseries(request);
         assertEquals(1, sample.size());
         assertEquals(expectedValue, sample.get(0).getValue());
 

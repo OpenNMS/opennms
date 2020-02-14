@@ -39,14 +39,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
-import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.integration.CommonTagNames;
+import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Resource;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class TimeseriesSearcher {
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesSearcher.class);
 
     @Autowired
-    private TimeSeriesStorage timeSeriesStorage;
+    private TimeseriesStorageManager timeseriesStorageManager;
 
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
@@ -79,7 +79,7 @@ public class TimeseriesSearcher {
 
     private Set<ResourcePath> getAllResources() throws StorageException {
 
-        List<Metric> metrics = timeSeriesStorage.getMetrics(new ArrayList<>());
+        List<Metric> metrics = timeseriesStorageManager.get().getMetrics(new ArrayList<>());
         Set<ResourcePath> resources = new HashSet<>();
         for (Metric metric : metrics){
             String resourceString = metric.getFirstTagByKey("resourceId").getValue();
@@ -113,7 +113,7 @@ public class TimeseriesSearcher {
         String value = String.format("(%s,%d)", toResourceId(path), targetLen);
         Tag indexTag = new ImmutableTag(key, value);
 
-        List<Metric> metrics = timeSeriesStorage.getMetrics(Collections.singletonList(indexTag));
+        List<Metric> metrics = timeseriesStorageManager.get().getMetrics(Collections.singletonList(indexTag));
 
         Map<String, SearchResults.Result> resultPerResources = new HashMap<>();
 

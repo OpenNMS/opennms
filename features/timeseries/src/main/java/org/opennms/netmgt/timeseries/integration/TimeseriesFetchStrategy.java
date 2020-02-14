@@ -53,7 +53,6 @@ import org.opennms.integration.api.v1.timeseries.Aggregation;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -69,6 +68,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.aggregation.SampleAggregator;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -116,7 +116,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.timeseries.query.parallelism", Runtime.getRuntime().availableProcessors());
 
     @Autowired
-    private ResourceDao m_resourceDao;
+    private ResourceDao resourceDao;
 
     private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("TimeseriesFetchStrateg-%d").build();
 
@@ -126,7 +126,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
     @Autowired
-    private TimeSeriesStorage storage;
+    private TimeseriesStorageManager storage;
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
@@ -270,7 +270,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     // Use the datasource as the metric name if set, otherwise use the name of the attribute
                     final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
                     final Aggregation aggregation = toAggregation(source.getAggregation());
-                    final boolean shouldAggregateNatively = storage.supportsAggregation(aggregation);
+                    final boolean shouldAggregateNatively = storage.get().supportsAggregation(aggregation);
 
                     final ImmutableMetric metric = ImmutableMetric.builder()
                             .tag(CommonTagNames.resourceId, resourceId)
@@ -292,7 +292,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                             .build();
 
                     LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
-                    List<Sample> samples = storage.getTimeseries(request);
+                    List<Sample> samples = storage.get().getTimeseries(request);
 
                     // aggregate if timeseries implementation didn't do it natively)
                     if (!shouldAggregateNatively) {
@@ -354,7 +354,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         return new Callable<OnmsResource>() {
             @Override
             public OnmsResource call() throws IllegalArgumentException {
-                final OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+                final OnmsResource resource = resourceDao.getResourceById(resourceId);
                 if (resource != null) {
                     // The attributes are typically lazy loaded, so we trigger the load here
                     // while we're in a threaded context
@@ -450,11 +450,11 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
     @VisibleForTesting
     protected void setResourceDao(ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
+        this.resourceDao = resourceDao;
     }
 
     @VisibleForTesting
-    protected void setTimeseriesStorage(final TimeSeriesStorage timeseriesStorage) {
+    protected void setTimeseriesStorageManager(final TimeseriesStorageManager timeseriesStorage) {
         this.storage = timeseriesStorage;
     }
 
@@ -465,7 +465,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         } catch (final ObjectRetrievalFailureException e) {
         }
         if (node == null) {
-            final OnmsResource otherResource = m_resourceDao.getResourceById(ResourceId.fromString(source.getResourceId()).getParent());
+            final OnmsResource otherResource = resourceDao.getResourceById(ResourceId.fromString(source.getResourceId()).getParent());
             node = ResourceTypeUtils.getNodeFromResource(otherResource);
         }
         return node;

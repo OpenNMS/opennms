@@ -31,6 +31,7 @@ package org.opennms.netmgt.timeseries.integration;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,6 +45,7 @@ import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.MetricType;
@@ -70,7 +72,9 @@ public class TimeseriesWriterTest {
         MetricRegistry registry = new MetricRegistry();
         TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
-        writer.setTimeSeriesStorage(store);
+        TimeseriesStorageManager manager = new TimeseriesStorageManager();
+        manager.onBind(store, new HashMap<>());
+        writer.setTimeSeriesStorage(manager);
 
         for (int i = 0; i < ringBufferSize*2; i++) {
             Resource x = new Resource("x");
@@ -93,7 +97,9 @@ public class TimeseriesWriterTest {
         LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
         TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
-        writer.setTimeSeriesStorage(timeseriesStorage);
+        TimeseriesStorageManager manager = new TimeseriesStorageManager();
+        manager.onBind(timeseriesStorage, new HashMap<>());
+        writer.setTimeSeriesStorage(manager);
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
 
         lock.lock();
