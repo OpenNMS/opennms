@@ -76,7 +76,20 @@ public class IpValueTest {
         for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
             assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
         }
-        assertThat(ipValue.isInRange("10.0.0.5"), is(false));
+
+        assertThat(ipValue.isInRange("192.168.1.0"), is(false));
+        assertThat(ipValue.isInRange("192.168.2.0"), is(false));
+
+        assertThat(ipValue.isInRange("10.0.0.0"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.1"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.2"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.3"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.4"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.5"), is(true));
+        assertThat(ipValue.isInRange("10.0.0.7"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.8"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.9"), is(false));
+        assertThat(ipValue.isInRange("10.0.0.10"), is(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
