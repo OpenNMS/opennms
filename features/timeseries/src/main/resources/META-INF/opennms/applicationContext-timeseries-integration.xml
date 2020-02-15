@@ -126,12 +126,13 @@
 -->
 
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" />
-  <onmsgi:service interface="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" ref="timeseriesStorageManager" />
+  <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">
+    <onmsgi:listener ref="timeseriesStorageManager" bind-method="onBind" unbind-method="onUnbind"/>
+  </onmsgi:list>
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
   <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
