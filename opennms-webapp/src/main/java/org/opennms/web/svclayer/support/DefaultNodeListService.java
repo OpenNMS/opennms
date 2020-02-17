@@ -68,6 +68,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.Lists;
+
 /**
  * <p>DefaultNodeListService class.</p>
  *
@@ -178,8 +180,17 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         if(snmpParmMatchType.equals("contains")) {
             criteria.add(Restrictions.ilike("snmpInterface.".concat(snmpParm), snmpParmValue, MatchMode.ANYWHERE));
         } else if(snmpParmMatchType.equals("equals")) {
+            final List<String> acceptedParamNames = Lists.newArrayList(
+                    "snmpphysaddr", "snmpifindex", "snmpifdescr", "snmpiftype", "snmpifname",
+                    "snmpifspeed", "snmpifadminstatus", "snmpifoperstatus", "snmpifalias", "snmpcollect",
+                    "snmplastcapsdpoll", "snmppoll", "snmplastsnmppoll");
+            final String snmpParameterName = ("snmp" + snmpParm).toLowerCase();
+            if (!acceptedParamNames.contains(snmpParameterName)) {
+                throw new IllegalArgumentException("Provided parameter '" + snmpParm + "' is not supported");
+            }
             snmpParmValue = snmpParmValue.toLowerCase();
             criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where snmpcollect != 'D' and lower(snmp" + snmpParm + ") = '" + snmpParmValue + "')"));
+            criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where snmpcollect != 'D' and " + snmpParameterName + " = ?)", snmpParmValue, new StringType()));
         }
     }
 
