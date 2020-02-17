@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.opennms.core.network.IPAddressRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.InetAddresses;
@@ -85,34 +88,121 @@ public class IpValue {
 
     private static class IpAddressRange {
 
-        private final IPAddressRange range;
+        private final IpAddressMatcher matcher;
 
         private IpAddressRange(final StringValue from, final StringValue to) {
-            verifyIpAddress(from);
-            verifyIpAddress(to);
-            this.range = new IPAddressRange(from.getValue(), to.getValue());
+            this.matcher = new IpAddressRangeMatcher(from.getValue(), to.getValue());
         }
 
         private IpAddressRange(final StringValue eachValue) {
             if (eachValue.contains("/")) {
-                final SubnetUtils subnetUtils = new SubnetUtils(eachValue.getValue());
-                // Internally we use our own range, as subnetUtils.isInRange()
-                // excludes the net and broadcast address
-                this.range = new IPAddressRange(subnetUtils.getInfo().getNetworkAddress(), subnetUtils.getInfo().getBroadcastAddress());
+                this.matcher = new IpV6CidrExpressionMatcher(eachValue.getValue());
             } else {
-                verifyIpAddress(eachValue);
-                this.range = new IPAddressRange(eachValue.getValue());
+                this.matcher = new IpAddressRangeMatcher(eachValue.getValue());
             }
         }
 
         public boolean isInRange(String input) {
-            return range.contains(input);
+            return matcher.matches(input);
+        }
+    }
+
+    private interface IpAddressMatcher {
+        boolean matches(String address);
+    }
+
+    private static class IpAddressRangeMatcher implements IpAddressMatcher {
+
+        private final IPAddressRange range;
+
+        private IpAddressRangeMatcher(final String from, final String to) {
+            verifyIpAddress(from);
+            verifyIpAddress(to);
+            this.range = new IPAddressRange(from, to);
         }
 
-        private static void verifyIpAddress(final StringValue stringValue) {
-            Objects.requireNonNull(stringValue);
-            if (!InetAddresses.isInetAddress(stringValue.getValue())) {
-                throw new IllegalArgumentException("Invalid ");
+        public IpAddressRangeMatcher(String value) {
+            verifyIpAddress(value);
+            this.range = new IPAddressRange(value);
+        }
+
+        @Override
+        public boolean matches(String address) {
+            return range.contains(address);
+        }
+
+        private static void verifyIpAddress(final String value) {
+            Objects.requireNonNull(value);
+            if (!InetAddresses.isInetAddress(value)) {
+                throw new IllegalArgumentException("Provided ip address '" + value + "' is invalid");
+            }
+        }
+    }
+
+    // Copied from spring-security-web => IpAddressMatcher
+    private final static class IpV6CidrExpressionMatcher implements IpAddressMatcher {
+
+        private final int nMaskBits;
+        private final InetAddress requiredAddress;
+
+        /**
+         * Takes a specific IP address or a range specified using the
+         * IP/Netmask (e.g. 192.168.1.0/24 or 202.24.0.0/14).
+         *
+         * @param ipAddress the address or range of addresses from which the request must come.
+         */
+        private IpV6CidrExpressionMatcher(String ipAddress) {
+            if (ipAddress.indexOf('/') > 0) {
+                String[] addressAndMask = StringUtils.split(ipAddress, "/");
+                ipAddress = addressAndMask[0];
+                nMaskBits = Integer.parseInt(addressAndMask[1]);
+            } else {
+                nMaskBits = -1;
+            }
+            requiredAddress = parseAddress(ipAddress);
+        }
+
+        @Override
+        public boolean matches(String address) {
+            InetAddress remoteAddress = parseAddress(address);
+
+            if (!requiredAddress.getClass().equals(remoteAddress.getClass())) {
+                return false;
+            }
+
+            if (nMaskBits < 0) {
+                return remoteAddress.equals(requiredAddress);
+            }
+
+            byte[] remAddr = remoteAddress.getAddress();
+            byte[] reqAddr = requiredAddress.getAddress();
+
+            int oddBits = nMaskBits % 8;
+            int nMaskBytes = nMaskBits/8 + (oddBits == 0 ? 0 : 1);
+            byte[] mask = new byte[nMaskBytes];
+
+            Arrays.fill(mask, 0, oddBits == 0 ? mask.length : mask.length - 1, (byte)0xFF);
+
+            if (oddBits != 0) {
+                int finalByte = (1 << oddBits) - 1;
+                finalByte <<= 8-oddBits;
+                mask[mask.length - 1] = (byte) finalByte;
+            }
+
+            for (int i=0; i < mask.length; i++) {
+                if ((remAddr[i] & mask[i]) != (reqAddr[i] & mask[i])) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private InetAddress parseAddress(String address) {
+            try {
+                return InetAddress.getByName(address);
+            } catch (UnknownHostException e) {
+                throw new IllegalArgumentException("Failed to parse address" + address, e);
             }
         }
     }

@@ -132,4 +132,22 @@ public class IpValueTest {
             assertThat(value.isInRange(address.toUserString()), is(true));
         }
     }
+
+    @Test
+    public void verifyCIDRValueIpV6() {
+        final IpValue value = new IpValue("2001:0DB8:0:CD30::1/120");
+        for (IPAddress ipAddress : new IPAddressRange("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::FF")) {
+            assertThat(value.isInRange(ipAddress.toUserString()), is(true));
+        }
+        assertThat(value.isInRange("192.168.0.1"), is(false)); // incompatible, should be false
+    }
+
+    @Test
+    public void verifyCIDRValueIpV6_2() {
+        final IpValue value = new IpValue("2001:0DB8:0:CD30::1/127");
+        for (IPAddress ipAddress : new IPAddressRange("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::1")) {
+            assertThat(value.isInRange(ipAddress.toUserString()), is(true));
+        }
+        assertThat(value.isInRange("2001:0DB8:0:CD30::2"), is(false));
+    }
 }
