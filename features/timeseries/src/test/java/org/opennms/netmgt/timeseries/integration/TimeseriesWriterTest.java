@@ -29,22 +29,23 @@
 package org.opennms.netmgt.timeseries.integration;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Counter;
@@ -59,6 +60,13 @@ import com.google.common.collect.Lists;
 
 public class TimeseriesWriterTest {
 
+    private TimeseriesStorageManager storageManager;
+
+    @Before
+    public void setUp(){
+        this.storageManager = Mockito.mock(TimeseriesStorageManager.class);
+    }
+
     /**
      * Uses a latch to verify that multiple that multiple threads
      * are used to concurrently insert samples into the SampleRepository.
@@ -72,9 +80,8 @@ public class TimeseriesWriterTest {
         MetricRegistry registry = new MetricRegistry();
         TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
-        TimeseriesStorageManager manager = new TimeseriesStorageManager();
-        manager.onBind(store, new HashMap<>());
-        writer.setTimeSeriesStorage(manager);
+        when(storageManager.get()).thenReturn(store);
+        writer.setTimeSeriesStorage(storageManager);
 
         for (int i = 0; i < ringBufferSize*2; i++) {
             Resource x = new Resource("x");
@@ -97,9 +104,8 @@ public class TimeseriesWriterTest {
         LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
         TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
-        TimeseriesStorageManager manager = new TimeseriesStorageManager();
-        manager.onBind(timeseriesStorage, new HashMap<>());
-        writer.setTimeSeriesStorage(manager);
+        when(storageManager.get()).thenReturn(timeseriesStorage);
+        writer.setTimeSeriesStorage(storageManager);
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
 
         lock.lock();

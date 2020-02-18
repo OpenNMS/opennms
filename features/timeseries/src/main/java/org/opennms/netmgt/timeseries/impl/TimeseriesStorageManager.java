@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.timeseries.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,37 +47,52 @@ public class TimeseriesStorageManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesStorageManager.class);
 
-    private List<TimeSeriesStorage> stackOfStorages;
+    private CopyOnWriteArrayList<TimeSeriesStorage> stackOfStorages;
 
-    private TimeSeriesStorage currentStorage;
+    private ServiceLookup<Class<?>, String> LOOKUP;
 
     public TimeseriesStorageManager() {
-        this.currentStorage = new NoOpsTimeseriesStorage(); // make sure we have at least a storage
-        stackOfStorages = new ArrayList<>();
-        this.stackOfStorages.add(currentStorage);
+        this(new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+                .blocking()
+                .build());
+    }
+
+    public TimeseriesStorageManager(final ServiceLookup<Class<?>, String> lookup) {
+        stackOfStorages = new CopyOnWriteArrayList<>();
+        LOOKUP = Objects.requireNonNull(lookup);
     }
 
     public TimeSeriesStorage get() {
-        return this.currentStorage;
+        if(this.stackOfStorages.isEmpty()) {
+            TimeSeriesStorage storage = LOOKUP.lookup(TimeSeriesStorage.class, null);
+            if(storage != null) {
+                this.stackOfStorages.addIfAbsent(storage);
+            } else {
+                LOG.warn("Could not find a TimeSeriesStorage implementation. The collection of metrics won't work properly. Please refer to the documentation."); // TODO: Patrick add link
+            }
+        }
+        return getOrNull();
+    }
+
+    private TimeSeriesStorage getOrNull() {
+        return this.stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1);
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized void onBind(final TimeSeriesStorage storage, final Map properties) {
         LOG.debug("Bind called with {}: {}", storage, properties);
-        if (storage != null && !this.stackOfStorages.contains(storage)) {
-            LOG.info("Found new TimeSeriesStorage {}, it will replace the existing one: {}", storage, this.currentStorage);
-            this.stackOfStorages.add(storage);
-            this.currentStorage = storage;
+        TimeSeriesStorage currentStorage = getOrNull();
+        if (storage != null && this.stackOfStorages.addIfAbsent(storage)) {
+            LOG.info("Found new TimeSeriesStorage {}, will replace the existing one: {}", storage, currentStorage);
         }
     }
 
     @SuppressWarnings("rawtypes")
     public synchronized void onUnbind(final TimeSeriesStorage storage, Map properties) {
         LOG.debug("Unbind called with {}: {}", storage, properties);
-        if (storage != null) {
-            this.stackOfStorages.remove(storage);
-            this.currentStorage = this.stackOfStorages.get(this.stackOfStorages.size()-1);
-            LOG.info("Remove TimeSeriesStorage {}, it will replaced by: {}", storage, this.currentStorage);
+        if (storage != null && this.stackOfStorages.remove(storage)) {
+            TimeSeriesStorage currentStorage = getOrNull();
+            LOG.info("Remove TimeSeriesStorage {}, it will be replaced by: {}", storage, currentStorage);
         }
     }
 }

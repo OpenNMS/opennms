@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.timeseries.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -46,6 +47,15 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.Source;
@@ -56,14 +66,6 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.Aggregation;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.Sample;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
-import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.newts.api.Measurement;
@@ -87,14 +89,15 @@ public class TimeseriesFetchStrategyTest {
 
     private TimeseriesFetchStrategy fetchStrategy;
 
-    private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
+    private Map<ResourceId, OnmsResource> resources = Maps.newHashMap();
 
 
     @Before
     public void setUp() {
         resourceDao = EasyMock.createNiceMock(ResourceDao.class);
         this.timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
-        storageManager = new TimeseriesStorageManager();
+        storageManager = Mockito.mock(TimeseriesStorageManager.class);
+        when(storageManager.get()).thenReturn(this.timeSeriesStorage);
         storageManager.onBind(this.timeSeriesStorage, new HashMap<String, String>());
 
         fetchStrategy = new TimeseriesFetchStrategy();
@@ -253,7 +256,7 @@ public class TimeseriesFetchStrategyTest {
         final String newtsResourceId = "response:" + node + ":" + attr;
         final ResourceId parentId = ResourceId.get("nodeSource", "NODES:" + nodeId);
         final ResourceId resourceId = parentId.resolve("responseTime", node);
-        OnmsResource parent = m_resources.get(parentId);
+        OnmsResource parent = resources.get(parentId);
         if (parent == null) {
             parent = new OnmsResource("NODES:" + nodeId, ""+nodeId, nodeType, Sets.newHashSet(), ResourcePath.get("foo"));
             final OnmsNode entity = new OnmsNode();
@@ -262,13 +265,13 @@ public class TimeseriesFetchStrategyTest {
             entity.setForeignId(""+nodeId);
             entity.setLabel(""+nodeId);
             parent.setEntity(entity);
-            m_resources.put(parentId, parent);
+            resources.put(parentId, parent);
         }
-        OnmsResource resource = m_resources.get(resourceId);
+        OnmsResource resource = resources.get(resourceId);
         if (resource == null) {
             resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
             resource.setParent(parent);
-            m_resources.put(resourceId, resource);
+            resources.put(resourceId, resource);
         }
         Set<OnmsAttribute> attributes = resource.getAttributes();
         attributes.add(new RrdGraphAttribute(attr, "", newtsResourceId));
@@ -319,7 +322,7 @@ public class TimeseriesFetchStrategyTest {
     }
 
     private void replay() {
-        for (Entry<ResourceId, OnmsResource> entry : m_resources.entrySet()) {
+        for (Entry<ResourceId, OnmsResource> entry : resources.entrySet()) {
             EasyMock.expect(resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
         }
 

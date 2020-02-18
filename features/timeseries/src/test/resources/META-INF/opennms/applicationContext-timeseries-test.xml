@@ -125,9 +125,12 @@
 
   <!--bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/-->
 
-  <bean id="timeseriesStorage" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager"/>
+  <bean id="timeseriesStorage" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManagerTest"/>
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
+
+  <bean id="timeserieStorageImpl" class="org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage" />
+  <onmsgi:service interface="org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage" ref="timeserieStorageIml" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
