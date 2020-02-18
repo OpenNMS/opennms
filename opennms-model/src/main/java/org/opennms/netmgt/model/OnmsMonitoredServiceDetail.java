@@ -75,7 +75,7 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
         m_statusCode = service.getStatus();
         m_status = service.getStatusLong();
         m_id = service.getXmlId();
-        m_ipInterfaceId = service.getIpInterface().getId();
+        m_ipInterfaceId = service.getIpInterfaceId();
     }
 
     @XmlElement(name="status")
@@ -144,7 +144,7 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
     }
 
     @XmlAttribute(name="ipInterfaceId")
-    public Integer getIpinterfaceId() {
+    public Integer getIpInterfaceId() {
         return m_ipInterfaceId;
     }
 

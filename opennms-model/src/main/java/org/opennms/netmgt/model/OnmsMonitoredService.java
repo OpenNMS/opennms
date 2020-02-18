@@ -431,7 +431,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
 
     @JsonProperty("ipInterfaceId")
     @Transient
-    public Integer getFoo() {
+    public Integer getIpInterfaceId() {
         return m_ipInterface.getId();
     }
 
