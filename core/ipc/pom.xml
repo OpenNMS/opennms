@@ -14,5 +14,7 @@
     <module>common</module>
     <module>rpc</module>
     <module>sink</module>
+    <module>grpc</module>
+    <module>osgi</module>
   </modules>
 </project>

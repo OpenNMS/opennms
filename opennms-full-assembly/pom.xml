@@ -592,6 +592,7 @@
                 <feature>opennms-threshold-states-shell</feature>
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
+                <feature>opennms-core-ipc-grpc-server</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
@@ -1034,6 +1035,11 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.karaf-health</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
       <version>${project.version}</version>
     </dependency>
 

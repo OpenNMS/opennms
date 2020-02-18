@@ -53,7 +53,7 @@ import com.google.common.base.Strings;
 public class StressCommand implements Action {
 
     @Reference
-    public RpcClientFactory rpcClientFactory;
+    private RpcClientFactory rpcClientFactory;
 
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location = null;

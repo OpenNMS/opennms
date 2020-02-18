@@ -108,10 +108,10 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
                     @Override
                     public void run() {
                         try {
-                            LOG.info("Starting to consume messages for module: {}", module);
+                            LOG.info("Starting to consume messages for module: {}", module.getId());
                             startConsumingForModule(module);
                         } catch (Exception e) {
-                            LOG.error("Unexpected exception while trying to start consumer for module: {}", module, e);
+                            LOG.error("Unexpected exception while trying to start consumer for module: {}", module.getId(), e);
                         }
                     }
                 });
@@ -136,10 +136,10 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
                     @Override
                     public void run() {
                         try {
-                            LOG.info("Stopping consumption of messages for module: {}", module);
+                            LOG.info("Stopping consumption of messages for module: {}", module.getId());
                             stopConsumingForModule(module);
                         } catch (Exception e) {
-                            LOG.error("Unexpected exception while trying to stop consumer for module: {}", module, e);
+                            LOG.error("Unexpected exception while trying to stop consumer for module: {}", module.getId(), e);
                         }
                     }
                 });

@@ -263,7 +263,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
-            LOG.info("Starting consumers for module: {}", module);
+            LOG.info("Starting consumers for module: {}", module.getId());
 
             final int numConsumerThreads = getNumConsumerThreads(module);
             final List<KafkaConsumerRunner> consumerRunners = new ArrayList<>(numConsumerThreads);
@@ -280,7 +280,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Override
     protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (consumerRunnersByModule.containsKey(module)) {
-            LOG.info("Stopping consumers for module: {}", module);
+            LOG.info("Stopping consumers for module: {}", module.getId());
             final List<KafkaConsumerRunner> consumerRunners = consumerRunnersByModule.get(module);
             for (KafkaConsumerRunner consumerRunner : consumerRunners) {
                 consumerRunner.shutdown();

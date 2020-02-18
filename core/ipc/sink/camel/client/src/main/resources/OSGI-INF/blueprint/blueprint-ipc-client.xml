@@ -33,6 +33,7 @@
         <property name="bundleContext" ref="blueprintBundleContext"/>
         <property name="tracerRegistry" ref="tracerRegistry"/>
         <property name="identity" ref="identity"/>
+        <property name="metrics" ref="camelSinkMetricRegistry"/>
     </bean>
     <service ref="camelRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 
@@ -50,5 +51,15 @@
         </recipientList>
       </route>
     </camelContext>
+
+    <!-- Sink Metrics -->
+    <bean id="camelSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <service ref="camelSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+      <service-properties>
+        <entry key="name" value="Camel Sink Producer" />
+        <entry key="description" value="Sink Producer Metrics" />
+      </service-properties>
+    </service>
 
 </blueprint>
