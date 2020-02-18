@@ -5,7 +5,7 @@ Modern infrastructure allows you to deploy and run workloads in containers.
 With _{opennms-product-name}_ we provide and publish container images on link:https://hub.docker.com/u/opennms[DockerHub].
 
 NOTE: We don't install all available plugins in our published Docker image.
-      If you want ot customize and maintain your own image, you can find the _Dockerfiles_ in our link:https://github.com/OpenNMS/opennms/tree/develop/opennms-container[source repository].
+      If you want to customize and maintain your own image, you can find the _Dockerfiles_ in our link:https://github.com/OpenNMS/opennms/tree/develop/opennms-container[source repository].
 
 ==== Objectives
 
@@ -15,11 +15,11 @@ NOTE: We don't install all available plugins in our published Docker image.
 
 ==== Before you begin
 
-It is required you have at least the following components installed:
+You must have at least the following components installed:
 
 * Current stable _Docker_ release installed, e.g. installed from link:https://docs.docker.com/[Docker Documentation]
 * Current stable _Docker Compose_ installed, e.g. installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
-* You should have a basic knowledge about _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
+* You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
 
 ==== Quickstart service stack
 
@@ -28,8 +28,8 @@ It is required you have at least the following components installed:
 
 ===== Step 1: Create service stack for PostgreSQL and _{opennms-product-name}_
 
-The first section describes how to setup _{opennms-product-name}_ service stack in a `docker-compose.yml` file.
-Create a project directory withg `mkdir opennms-horizon` and create inside a `docker-compose.yml` file with the following content:
+The first section describes how to set up _{opennms-product-name}_ service stack in a `docker-compose.yml` file.
+Create a project directory with `mkdir opennms-horizon` and create a `docker-compose.yml` file in that directory with the following content:
 
 [source]
 ----
@@ -105,14 +105,14 @@ cd opennms-horizon
 docker-compose up -d
 ----
 
-NOTE: The startup and download can take a while, you can use the `docker-compose ps` command and wait until the health check for the `horizon` service is `up (healthy)`.
+NOTE: The startup and download can take a while; you can use the `docker-compose ps` command and wait until the health check for the `horizon` service is `up (healthy)`.
       
 ===== Step 3: Login to the Web UI
 
-After download and startup verify if you can access the web user interface with going to http://localhost:8980.
+After download and startup verify if you can access the web user interface by going to http://localhost:8980.
 The default login is `admin` with password `admin`.
 
-IMPORTANT: Please change immediately your admin account and set a strong password.
+IMPORTANT: Please immediately change your admin account and set a strong password.
 
 // Enable section numbers
 :sectnums:
