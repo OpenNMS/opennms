@@ -145,12 +145,6 @@ public class IpValue {
         private final int nMaskBits;
         private final InetAddress requiredAddress;
 
-        /**
-         * Takes a specific IP address or a range specified using the
-         * IP/Netmask (e.g. 192.168.1.0/24 or 202.24.0.0/14).
-         *
-         * @param ipAddress the address or range of addresses from which the request must come.
-         */
         public IpV6CidrExpressionMatcher(String ipAddress) {
             if (ipAddress.indexOf('/') > 0) {
                 String[] addressAndMask = StringUtils.split(ipAddress, "/");
