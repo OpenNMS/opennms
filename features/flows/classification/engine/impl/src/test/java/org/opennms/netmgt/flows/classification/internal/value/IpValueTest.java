@@ -92,6 +92,16 @@ public class IpValueTest {
         assertThat(ipValue.isInRange("10.0.0.10"), is(false));
     }
 
+    @Test
+    public void verifyCIDRValue_2() {
+        final IpValue ipValue = new IpValue("192.168.0.17/16");
+        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.255.255")) {
+            assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
+        }
+        assertThat(ipValue.isInRange("192.169.0.0"), is(false));
+        assertThat(ipValue.isInRange("192.0.0.0"), is(false));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void verifyCIDRValueNotAllowedInRange() {
         new IpValue("192.0.0.0/8-192.168.0.0/24");
