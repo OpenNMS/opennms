@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -139,8 +139,8 @@ public class IpValue {
         }
     }
 
-    // Copied from spring-security-web => IpAddressMatcher
-    private final static class IpV6CidrExpressionMatcher implements IpAddressMatcher {
+    // Inspired by spring-security-web's IpAddressMatcher
+    public final static class IpV6CidrExpressionMatcher implements IpAddressMatcher {
 
         private final int nMaskBits;
         private final InetAddress requiredAddress;
@@ -151,7 +151,7 @@ public class IpValue {
          *
          * @param ipAddress the address or range of addresses from which the request must come.
          */
-        private IpV6CidrExpressionMatcher(String ipAddress) {
+        public IpV6CidrExpressionMatcher(String ipAddress) {
             if (ipAddress.indexOf('/') > 0) {
                 String[] addressAndMask = StringUtils.split(ipAddress, "/");
                 ipAddress = addressAndMask[0];
@@ -160,6 +160,8 @@ public class IpValue {
                 nMaskBits = -1;
             }
             requiredAddress = parseAddress(ipAddress);
+            boolean isIpV6 = requiredAddress instanceof Inet6Address;
+            rangeCheck(nMaskBits, 0, isIpV6 ? 128 : 32);
         }
 
         @Override
@@ -199,11 +201,19 @@ public class IpValue {
         }
 
         private InetAddress parseAddress(String address) {
-            try {
-                return InetAddress.getByName(address);
-            } catch (UnknownHostException e) {
-                throw new IllegalArgumentException("Failed to parse address" + address, e);
+            return InetAddresses.forString(address);
+        }
+
+        /*
+         * Convenience function to check integer boundaries.
+         * Checks if a value x is in the range [begin,end].
+         * Returns x if it is in range, throws an exception otherwise.
+         */
+        private int rangeCheck(int value, int begin, int end) {
+            if (value >= begin && value <= end) { // (begin,end]
+                return value;
             }
+            throw new IllegalArgumentException("Value [" + value + "] not in range [" + begin + "," + end + "]");
         }
     }
 }

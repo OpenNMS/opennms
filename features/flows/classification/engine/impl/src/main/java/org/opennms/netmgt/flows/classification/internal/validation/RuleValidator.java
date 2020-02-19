@@ -34,12 +34,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
+import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 import org.opennms.netmgt.flows.classification.internal.value.StringValue;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -212,7 +212,7 @@ public class RuleValidator {
     // Verify input is an actual valid cidr expression
     private static void verifyCidrExpression(String errorContext, String input) {
         try {
-            new SubnetUtils(input);
+            new IpValue.IpV6CidrExpressionMatcher(input);
         } catch (IllegalArgumentException ex) {
             throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID_CIDR_EXPRESSION, input, ex.getMessage());
         }
