@@ -7,7 +7,7 @@
 
 To identify configuration problems there is a config-tester located in `$OPENNMS_HOME/bin/`.
 The `config-tester` will be run while OpenNMS starts and prints the issues into `output.log`.
-But the tool can be used while OpenNMS is running to check configuration beforehand.
+The tool can be used while OpenNMS is running to check configuration beforehand.
 
 Possible Parameters:
 
