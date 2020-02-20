@@ -14,6 +14,9 @@ umask 002
 MINION_HOME="/opt/minion"
 MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
+CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
+CONFD_CONFIG_DIR="/opt/minion/confd"
+CONFD_BIN="/usr/local/bin/confd"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 
@@ -149,10 +152,40 @@ applyOverlayConfig() {
   fi
 }
 
+applyConfd() {
+  if [ -f "${CONFD_KEY_STORE}" ]; then
+    echo "Found a configuration key store, applying configuration via confd."
+    runConfd
+  else
+    echo "No configuration key store present, skipping confd configuration."
+  fi
+}
+
 start() {
     export KARAF_EXEC="exec"
     cd ${MINION_HOME}/bin
     exec ./karaf server
+}
+
+runConfd() {
+  # Create any directories that confd might write to
+  while IFS= read -r dir; do
+    local dirToCreate="$MINION_HOME"/"$dir"
+    echo "Creating $dirToCreate so confd can write to it"
+    mkdir -p "$dirToCreate"
+  done < "$CONFD_CONFIG_DIR"/directories
+
+  "$CONFD_BIN" -log-level debug -onetime -backend=file -file "$CONFD_KEY_STORE" -confdir "$CONFD_CONFIG_DIR"
+}
+
+# Order of precedence is (later overwrites former):
+# 1. Config set via environment variable
+# 2. Config set via overlayed keystore (confd)
+# 3. Config set via direct file overlay
+configure() {
+  initConfig
+  applyConfd
+  applyOverlayConfig
 }
 
 # Evaluate arguments for build script.
@@ -166,16 +199,14 @@ while getopts csfh flag; do
     case ${flag} in
         c)
             useEnvCredentials
-            initConfig
-            applyOverlayConfig
+            configure
             start
             ;;
         s)
             setCredentials
             ;;
         f)
-            initConfig
-            applyOverlayConfig
+            configure
             start
             ;;
         h)

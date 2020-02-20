@@ -1,0 +1,7 @@
+[template]
+src = "system.properties.tmpl"
+dest = "/opt/minion/etc/system.properties"
+keys = [
+    "/snmp/snmp4j",
+    "/tracing"
+]

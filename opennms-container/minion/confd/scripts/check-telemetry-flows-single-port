@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+. "/opt/minion/confd/scripts/confd_lib.sh"
+
+TELEMETRY_LISTENERS_DIR="telemetry.listeners.d"
+
+# If the single port file was empty, it was not configured so we will instead copy the default config
+if removeIfEmpty "$1"; then
+  echo "Copying default telemetry listeners to config dir..."
+  cp "$STATIC_DIR"/"$TELEMETRY_LISTENERS_DIR"/* "$MINION_ETC_DIR"
+fi

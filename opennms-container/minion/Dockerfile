@@ -68,6 +68,15 @@ RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y in
 
 COPY ./assets/* /
 
+# Install confd
+ARG CONFD_VERSION="0.16.0"
+ARG CONFD_ARCH="amd64"
+ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-${CONFD_ARCH}"
+ADD ${CONFD_URL} /usr/local/bin/confd
+RUN chmod +x /usr/local/bin/confd
+COPY ./confd/ /opt/minion/confd/
+RUN chmod +x /opt/minion/confd/scripts/*
+
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION

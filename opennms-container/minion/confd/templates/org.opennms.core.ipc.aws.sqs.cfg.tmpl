@@ -1,0 +1,6 @@
+{{range gets "/aws/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}
+{{range gets "/ipc/sqs/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

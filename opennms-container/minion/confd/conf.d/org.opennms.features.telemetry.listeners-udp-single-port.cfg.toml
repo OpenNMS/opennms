@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.features.telemetry.listeners-udp-single-port.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.features.telemetry.listeners-udp-single-port.cfg"
+keys = [
+    "/telemetry/flows"
+]
+reload_cmd = "/opt/minion/confd/scripts/check-telemetry-flows-single-port /opt/minion/etc/org.opennms.features.telemetry.listeners-udp-single-port.cfg"
