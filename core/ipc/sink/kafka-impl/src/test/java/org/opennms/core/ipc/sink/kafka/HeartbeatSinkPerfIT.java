@@ -158,10 +158,10 @@ public class HeartbeatSinkPerfIT {
         consumerManager.unregisterAllConsumers();
     }
 
-    @Test(timeout=30000)
+    @Test(timeout=60000)
     public void quickRun() throws Exception {
         configureGenerators();
-        await().until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
+        await().atMost(60, TimeUnit.SECONDS).until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
     }
 
     @Ignore
