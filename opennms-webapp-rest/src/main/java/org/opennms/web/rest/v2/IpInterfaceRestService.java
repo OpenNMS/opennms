@@ -101,7 +101,7 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     }
 
     @Override
-    protected JaxbListWrapper<OnmsIpInterface> createListWrapper(Collection<OnmsIpInterface> list) {
+    protected final JaxbListWrapper<OnmsIpInterface> createListWrapper(Collection<OnmsIpInterface> list) {
         return new OnmsIpInterfaceList(list);
     }
 
@@ -129,7 +129,7 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
     }
 
     @Override
-    protected OnmsIpInterface doGet(UriInfo uriInfo, String ipAddress) {
+    protected final OnmsIpInterface doGet(UriInfo uriInfo, String ipAddress) {
         final List<OnmsIpInterface> addresses = getDao().findByIpAddress(ipAddress);
         if (addresses.isEmpty()) {
             return null;
