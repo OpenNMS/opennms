@@ -98,7 +98,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     }
 
     @Override
-    protected JaxbListWrapper<OnmsSnmpInterface> createListWrapper(Collection<OnmsSnmpInterface> list) {
+    protected final JaxbListWrapper<OnmsSnmpInterface> createListWrapper(Collection<OnmsSnmpInterface> list) {
         return new OnmsSnmpInterfaceList(list);
     }
 
@@ -126,7 +126,7 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
     }
 
     @Override
-    protected OnmsSnmpInterface doGet(final UriInfo uriInfo, final String id) {
+    protected final OnmsSnmpInterface doGet(final UriInfo uriInfo, final String id) {
         return getDao().get(Integer.valueOf(id));
     }
 }
