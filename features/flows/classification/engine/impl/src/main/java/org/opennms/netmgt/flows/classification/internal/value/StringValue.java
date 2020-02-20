@@ -72,9 +72,9 @@ public class StringValue {
 
     public List<StringValue> splitBy(String separator) {
         return Arrays.stream(input.split(separator))
-                .map(segment -> segment.trim())
-                .filter(segment -> segment != null && segment.length() > 0)
-                .map(segment -> new StringValue(segment))
+                .map(String::trim)
+                .filter(segment -> segment.length() > 0)
+                .map(StringValue::new)
                 .collect(Collectors.toList());
     }
 }

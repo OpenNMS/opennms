@@ -35,10 +35,6 @@ package org.opennms.features.geolocation.api;
  */
 public enum StatusCalculationStrategy {
     /**
-     * Do not calculate the status.
-     */
-    None,
-    /**
      * Calculate the status based on alarms.
      */
     Alarms,
