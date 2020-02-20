@@ -40,7 +40,6 @@ import org.opennms.features.geolocation.api.GeolocationConfiguration;
 import org.opennms.features.geolocation.api.GeolocationInfo;
 import org.opennms.features.geolocation.api.GeolocationQueryBuilder;
 import org.opennms.features.geolocation.api.GeolocationService;
-import org.opennms.features.geolocation.api.StatusCalculationStrategy;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.InfoPanelItemProvider;
 import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
@@ -76,7 +75,6 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
         }
         final List<GeolocationInfo> locations = geolocationService.getLocations(new GeolocationQueryBuilder()
                 .withNodeIds(nodeIds)
-                .withStatusCalculationStrategy(StatusCalculationStrategy.None)
                 .build());
         final List<Marker> markers = locations.stream()
                 .filter(locationInfo -> locationInfo.getCoordinates() != null)

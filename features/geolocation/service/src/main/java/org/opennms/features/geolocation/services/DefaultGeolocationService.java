@@ -171,7 +171,6 @@ public class DefaultGeolocationService implements GeolocationService {
             final List<OnmsSeverity> severityFilter = Arrays.stream(OnmsSeverity.values()).filter(s -> s.isGreaterThanOrEqual(severity)).collect(Collectors.toList());
             nodeStatusCalculatorConfig.setSeverities(severityFilter);
         }
-        nodeStatusCalculatorConfig.setCalculationStrategy(NodeStatusCalculationStrategy.None);
         if (query.getStatusCalculationStrategy() != null) {
             nodeStatusCalculatorConfig.setCalculationStrategy(NodeStatusCalculationStrategy.valueOf(query.getStatusCalculationStrategy().name()));
         }
