@@ -71,6 +71,10 @@ public class StatusInfo {
         return (T) properties.get(name);
     }
 
+    public static StatusInfoBuilder defaultStatus() {
+        return StatusInfo.builder(Severity.Normal);
+    }
+
     public static StatusInfoBuilder builder(final Severity severity) {
         Objects.requireNonNull(severity);
         return new StatusInfoBuilder().severity(severity).count(0);

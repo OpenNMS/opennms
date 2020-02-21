@@ -109,6 +109,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_TELEMETRY_JTI_PORT = 50001;
     private static final int OPENNMS_TELEMETRY_NXOS_PORT = 50002;
     private static final int OPENNMS_DEBUG_PORT = 8001;
+    private static final int OPENNMMS_GRPC_PORT = 8990;
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
@@ -120,6 +121,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             .put(NetworkProtocol.IPFIX_TCP, OPENNMS_TELEMETRY_IPFIX_TCP_PORT)
             .put(NetworkProtocol.JTI, OPENNMS_TELEMETRY_JTI_PORT)
             .put(NetworkProtocol.NXOS, OPENNMS_TELEMETRY_NXOS_PORT)
+            .put(NetworkProtocol.GRPC, OPENNMMS_GRPC_PORT)
             .build();
 
     private final StackModel model;
@@ -313,6 +315,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             props.put("org.opennms.core.ipc.rpc.strategy", "kafka");
             props.put("org.opennms.core.ipc.rpc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
         }
+        if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            props.put("org.opennms.core.ipc.strategy", "osgi");
+        }
 
         if (TimeSeriesStrategy.RRD.equals(model.getTimeSeriesStrategy())) {
             // Use jrrd2
@@ -331,6 +336,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
+        if(IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            featuresOnBoot.add("opennms-core-ipc-grpc-server");
+        }
         if (model.isElasticsearchEnabled()) {
             featuresOnBoot.add("opennms-es-rest");
             // Disabled for now as this can cause intermittent health check failures

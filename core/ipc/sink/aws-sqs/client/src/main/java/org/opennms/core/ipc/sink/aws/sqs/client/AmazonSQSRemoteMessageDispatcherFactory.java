@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.codahale.metrics.MetricRegistry;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -67,6 +68,8 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
     private AmazonSQSManager awsSqsManager;
 
     private BundleContext bundleContext;
+
+    private MetricRegistry metrics;
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#dispatch(org.opennms.core.ipc.sink.api.SinkModule, java.lang.Object, org.opennms.core.ipc.sink.api.Message)
@@ -138,5 +141,14 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        return new MetricRegistry();
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 }
