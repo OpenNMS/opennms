@@ -32,6 +32,7 @@ import static org.junit.Assert.assertThat;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 public class SeverityTest {
 
@@ -84,5 +85,15 @@ public class SeverityTest {
         assertThat(Severity.Critical.isLessThan(Severity.Minor), Matchers.is(false));
         assertThat(Severity.Critical.isLessThan(Severity.Major), Matchers.is(false));
         assertThat(Severity.Critical.isLessThan(Severity.Critical), Matchers.is(false));
+    }
+
+    @Test
+    public void verifyCreateFrom() {
+        assertThat(Severity.createFrom(OnmsSeverity.INDETERMINATE), Matchers.is(Severity.Unknown));
+        assertThat(Severity.createFrom(OnmsSeverity.NORMAL), Matchers.is(Severity.Normal));
+        assertThat(Severity.createFrom(OnmsSeverity.WARNING), Matchers.is(Severity.Warning));
+        assertThat(Severity.createFrom(OnmsSeverity.MINOR), Matchers.is(Severity.Minor));
+        assertThat(Severity.createFrom(OnmsSeverity.MAJOR), Matchers.is(Severity.Major));
+        assertThat(Severity.createFrom(OnmsSeverity.CRITICAL), Matchers.is(Severity.Critical));
     }
 }

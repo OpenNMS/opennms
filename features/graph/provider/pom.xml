@@ -17,5 +17,6 @@
         <module>graphml</module>
         <module>legacy</module>
         <module>persistence-test</module>
+        <module>topology</module>
     </modules>
 </project>

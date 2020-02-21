@@ -173,7 +173,7 @@ public class GenericGraphContainer implements ImmutableGraphContainer<GenericGra
         
         public GenericGraphContainerBuilder properties(Map<String, Object> properties){
             Objects.requireNonNull(properties, "properties cannot be null");
-            for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
                 property(entry.getKey(), entry.getValue());
             }
             return this;

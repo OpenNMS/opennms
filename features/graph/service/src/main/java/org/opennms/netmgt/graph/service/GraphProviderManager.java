@@ -85,7 +85,7 @@ public class GraphProviderManager {
         }
     }
 
-    private static Map<String, String> getActualProperties(Map<String, String> properties) {
+    public static Map<String, String> getActualProperties(Map<String, String> properties) {
         final Map<String, String> actualProperties = new HashMap<>();
         properties.keySet().stream()
                 .filter(key -> !key.startsWith("service") && !key.startsWith("osgi") && !key.equals("objectClass"))

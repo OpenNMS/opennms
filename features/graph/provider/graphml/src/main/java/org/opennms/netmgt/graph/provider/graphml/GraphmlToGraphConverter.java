@@ -80,7 +80,7 @@ public class GraphmlToGraphConverter {
 
     private final GenericGraph convert(GraphMLGraph graphMLGraph) {
         final GenericGraph.GenericGraphBuilder graphBuilder = GenericGraph.builder()
-                .property(GenericProperties.ENRICHMENT_RESOLVE_NODES, true) // Enable Node Enrichment first so it can be overridden
+                .property(GenericProperties.Enrichment.RESOLVE_NODES, true) // Enable Node Enrichment first so it can be overridden
                 .properties(graphMLGraph.getProperties());
         final List<GenericVertex> vertices = graphMLGraph.getNodes()
                 .stream().map(n -> {

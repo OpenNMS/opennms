@@ -34,6 +34,7 @@ import java.util.Objects;
 
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -82,6 +83,14 @@ public class NodeRef {
 
     public String getForeignId() {
         return foreignId;
+    }
+
+    public boolean matches(OnmsNode node) {
+        Objects.requireNonNull(node);
+        boolean match = Objects.equals(node.getId(), nodeId)
+            || Objects.equals(node.getForeignSource(), foreignSource)
+                && Objects.equals(node.getForeignId(), foreignId);
+        return match;
     }
 
     @Override

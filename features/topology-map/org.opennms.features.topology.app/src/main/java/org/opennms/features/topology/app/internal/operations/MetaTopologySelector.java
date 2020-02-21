@@ -34,6 +34,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.TopologyCache;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -45,11 +46,13 @@ public class MetaTopologySelector {
     private static final Logger LOG = LoggerFactory.getLogger(MetaTopologySelector.class);
 
     private BundleContext m_bundleContext;
+    private final TopologyCache m_topologyCache;
     private final Map<MetaTopologyProvider, MetaTopologySelectorOperation> m_operations = new HashMap<>();
     private final Map<MetaTopologyProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<>();
 
-    public void setBundleContext(BundleContext bundleContext) {
+    public MetaTopologySelector(final BundleContext bundleContext, final TopologyCache topologyCache) {
         m_bundleContext = bundleContext;
+        m_topologyCache = topologyCache;
     }
 
     public synchronized void addMetaTopologyProvider(MetaTopologyProvider metaTopologyProvider, Map<?, ?> metaData) {
@@ -82,6 +85,8 @@ public class MetaTopologySelector {
             if (reg != null) {
                 reg.unregister();
             }
+            // Ensure the TopologyCache is invalidated properly
+            metaTopologyProvider.getGraphProviders().forEach(gp -> m_topologyCache.invalidate(metaTopologyProvider.getId(), gp.getNamespace()));
         } catch (Throwable e) {
             LOG.warn("Exception during removeMetaTopologyProvider()", e);
         }
