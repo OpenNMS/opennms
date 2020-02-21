@@ -69,6 +69,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * <p>DefaultNodeListService class.</p>
@@ -80,7 +81,11 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
     private static final Comparator<OnmsArpInterface> ARP_INTERFACE_COMPARATOR = new ArpInterfaceComparator();
     private static final Comparator<OnmsSnmpInterface> SNMP_INTERFACE_COMPARATOR = new SnmpInterfaceComparator();
-    
+    private static final Set<String> ACCEPTED_SNMP_PARAM_NAMES = Sets.newLinkedHashSet(
+            Lists.newArrayList("snmpphysaddr", "snmpifindex", "snmpifdescr", "snmpiftype", "snmpifname",
+                    "snmpifspeed", "snmpifadminstatus", "snmpifoperstatus", "snmpifalias", "snmpcollect",
+                    "snmplastcapsdpoll", "snmppoll", "snmplastsnmppoll"));
+
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SiteStatusViewConfigDao m_siteStatusViewConfigDao;
@@ -180,12 +185,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         if(snmpParmMatchType.equals("contains")) {
             criteria.add(Restrictions.ilike("snmpInterface.".concat(snmpParm), snmpParmValue, MatchMode.ANYWHERE));
         } else if(snmpParmMatchType.equals("equals")) {
-            final List<String> acceptedParamNames = Lists.newArrayList(
-                    "snmpphysaddr", "snmpifindex", "snmpifdescr", "snmpiftype", "snmpifname",
-                    "snmpifspeed", "snmpifadminstatus", "snmpifoperstatus", "snmpifalias", "snmpcollect",
-                    "snmplastcapsdpoll", "snmppoll", "snmplastsnmppoll");
             final String snmpParameterName = ("snmp" + snmpParm).toLowerCase();
-            if (!acceptedParamNames.contains(snmpParameterName)) {
+            if (!ACCEPTED_SNMP_PARAM_NAMES.contains(snmpParameterName)) {
                 throw new IllegalArgumentException("Provided parameter '" + snmpParm + "' is not supported");
             }
             snmpParmValue = snmpParmValue.toLowerCase();
