@@ -135,6 +135,16 @@
          <parameter key="ds-name" value="jmx-kafka"/>
          <parameter key="friendly-name" value="jmx-kafka"/>
       </service>
+      <service name="JMX-Java8-JVM" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="18980"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-base-name" value="java"/>
+         <parameter key="collection" value="jmx-java8-jvm"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="ds-name" value="jmx-java8-jvm"/>
+         <parameter key="friendly-name" value="jmx-java8-jvm"/>
+      </service>
       <service name="PostgreSQL" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="PostgreSQL"/>
          <parameter key="thresholding-enabled" value="true"/>
@@ -161,4 +171,5 @@
    <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
    <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Java8-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 </collectd-configuration>
