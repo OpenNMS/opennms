@@ -44,10 +44,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-/**
- * TODO
- * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
