@@ -1,0 +1,208 @@
+syntax = "proto3";
+
+option java_package = "org.opennms.netmgt.telemetry.protocols.bmp.transport";
+option java_outer_classname = "Transport";
+
+import public "google/protobuf/empty.proto";
+import public "google/protobuf/timestamp.proto";
+
+message IpAddress {
+    oneof address {
+        bytes v4 = 1;
+        bytes v6 = 2;
+    }
+}
+
+message Peer {
+    enum Type {
+        GLOBAL_INSTANCE = 0;
+        RD_INSTANCE = 1;
+        LOCAL_INSTANCE = 2;
+    }
+
+    message Flags {
+        enum IpVersion {
+            IP_V4 = 0;
+            IP_V6 = 1;
+        }
+
+        enum Policy {
+            PRE_POLICY = 0;
+            POST_POLICY = 1;
+        }
+
+        IpVersion ipVersion = 1;
+        Policy policy = 2;
+        bool legacyAsPath = 3;
+    }
+
+    Type type = 1;
+    Flags flags = 2;
+
+    fixed64 distinguisher = 3;
+    IpAddress address = 4;
+    fixed32 as = 5;
+    fixed32 id = 6;
+
+    google.protobuf.Timestamp timestamp = 7;
+}
+
+message InitiationPacket {
+    string sysName = 1;
+    string sysDesc = 2;
+    string message = 3;
+}
+
+message TerminationPacket {
+    repeated string information = 1;
+}
+
+message PeerUpPacket {
+    message OpenMessage {
+        uint32 version = 1;
+        fixed32 as = 2;
+        uint32 holdTime = 3;
+        fixed32 id = 4;
+    }
+
+    Peer peer = 1;
+
+    IpAddress localAddress = 2;
+    uint32 localPort = 3;
+    uint32 remotePort = 4;
+
+    OpenMessage sendMsg = 5;
+    OpenMessage recvMsg = 6;
+
+    string sysName = 7;
+    string sysDesc = 8;
+    string message = 9;
+}
+
+message PeerDownPacket {
+    Peer peer = 1;
+
+    oneof reason {
+        string localBgpNotification = 2;
+        uint32 localNoNotification = 3;
+        string remoteBgpNotification = 4;
+        google.protobuf.Empty remoteNoNotification = 5;
+        google.protobuf.Empty unknown = 6;
+    }
+}
+
+message RouteMonitoringPacket {
+    message Route {
+        IpAddress prefix = 1;
+        uint32 length = 2;
+    }
+
+    message PathAttribute {
+        enum Origin {
+            IGP = 0;
+            EGP = 1;
+            INCOMPLETE = 2;
+        }
+
+        message AsPath {
+            message Segment {
+                enum Type {
+                    AS_SET = 0;
+                    AS_SEQUENCE = 1;
+                }
+
+                Type type = 1;
+                repeated fixed32 path = 2;
+            }
+
+            repeated Segment segments = 1;
+        }
+
+        message NextHop {
+            IpAddress address = 1;
+        }
+
+        message MultiExitDisc {
+            uint32 discriminator = 1;
+        }
+
+        message LocalPref {
+            uint32 preference = 1;
+        }
+
+        message AtomicAggregate {
+        }
+
+        message Aggregator {
+            fixed32 as = 1;
+            IpAddress address = 2;
+        }
+
+        bool optional = 1;
+        bool transitive = 2;
+        bool partial = 3;
+        bool extended = 4;
+
+        oneof value {
+            Origin origin = 5;
+            AsPath asPath = 6;
+            NextHop nextHop = 7;
+            MultiExitDisc multiExitDisc = 8;
+            LocalPref localPref = 9;
+            AtomicAggregate atomicAggregate = 10;
+            Aggregator aggregator = 11;
+        }
+    }
+
+    Peer peer = 1;
+
+    repeated Route withdraw = 2;
+    repeated Route reachable = 3;
+
+    repeated PathAttribute attributes = 4;
+}
+
+message StatisticsReportPacket {
+    message Gauge {
+        uint64 value = 1;
+    }
+
+    message Counter {
+        uint32 count = 1;
+    }
+
+    Peer peer = 1;
+
+    Counter rejected = 100;
+    Counter duplicatePrefix = 101;
+    Counter duplicateWithdraw = 102;
+    Counter invalidUpdateDueToAsConfedLoop = 103;
+    Counter invalidUpdateDueToAsPathLoop = 104;
+    Counter invalidUpdateDueToClusterListLoop = 105;
+    Counter invalidUpdateDueToOriginatorId = 106;
+    Gauge adjRibIn = 107;
+    Gauge adjRibOut = 108;
+    map<string, Gauge> perAfiAdjRibIn = 109;
+    map<string, Gauge> perAfiLocRib = 110;
+    Counter updateTreatAsWithdraw = 111;
+    Counter prefixTreatAsWithdraw = 112;
+    Counter duplicate_update = 113;
+    Gauge locRib = 114;
+    Gauge exportRib = 115;
+}
+
+message Message {
+    uint32 version = 1;
+    reserved 2, 3, 4;
+
+    oneof packet {
+        InitiationPacket initiation = 5;
+        TerminationPacket termination = 6;
+        PeerUpPacket peerUp = 7;
+        PeerDownPacket peerDown = 8;
+        RouteMonitoringPacket routeMonitoring = 9;
+        StatisticsReportPacket statisticsReport = 10;
+    }
+
+    reserved 11, 12, 13, 14, 15;
+}

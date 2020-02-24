@@ -11,6 +11,7 @@
   <name>OpenNMS :: Features :: Telemetry :: Protocols :: BMP</name>
   <packaging>pom</packaging>
   <modules>
+    <module>transport</module>
     <module>parser</module>
     <module>adapter</module>
   </modules>

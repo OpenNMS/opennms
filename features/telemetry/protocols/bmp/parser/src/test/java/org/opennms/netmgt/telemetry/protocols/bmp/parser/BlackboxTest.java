@@ -277,7 +277,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(final PeerDownPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -319,7 +319,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(PeerUpPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -348,7 +348,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(RouteMonitoringPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -419,7 +419,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(StatisticsReportPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
