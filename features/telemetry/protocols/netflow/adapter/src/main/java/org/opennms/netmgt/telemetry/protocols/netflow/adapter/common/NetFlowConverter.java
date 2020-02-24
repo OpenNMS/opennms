@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
+package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
-public class Netflow9Converter implements Converter<BsonDocument> {
+public class NetFlowConverter implements Converter<FlowMessage> {
 
     @Override
-    public List<Flow> convert(final BsonDocument packet) {
-        return Collections.singletonList(new Netflow9Flow(packet));
+    public List<Flow> convert(FlowMessage packet) {
+        return Collections.singletonList(new NetFlowMessage(packet));
     }
 }

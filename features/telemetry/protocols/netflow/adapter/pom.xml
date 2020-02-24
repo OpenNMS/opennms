@@ -48,6 +48,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.transport</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
     </dependency>
@@ -73,6 +78,12 @@
       <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>${protobufVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
