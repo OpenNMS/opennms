@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatCou
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -68,6 +69,10 @@ public class AsPath implements Attribute {
                     default:
                         throw new IllegalArgumentException("Unknown segment type: " + type);
                 }
+            }
+
+            public <R> R map(final Function<Type, R> mapper) {
+                return mapper.apply(this);
             }
         }
 

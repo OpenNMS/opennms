@@ -49,7 +49,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
-      <artifactId>org.opennms.features.telemetry.protocols.bmp.parser</artifactId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.transport</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

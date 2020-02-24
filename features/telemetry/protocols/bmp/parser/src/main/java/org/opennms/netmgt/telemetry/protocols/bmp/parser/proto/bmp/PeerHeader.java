@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.function.Function;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
@@ -47,7 +48,7 @@ public class PeerHeader {
 
     public final PeerFlags flags; // uint8
 
-    public final UnsignedLong distinguisher; // uint32
+    public final UnsignedLong distinguisher; // uint64
 
     public final InetAddress address; // 16 bytes
 
@@ -88,6 +89,10 @@ public class PeerHeader {
                 default:
                     throw new InvalidPacketException(buffer, "Unknown peer type: %d", type);
             }
+        }
+
+        public <R> R map(final Function<Type, R> mapper) {
+            return mapper.apply(this);
         }
     }
 
