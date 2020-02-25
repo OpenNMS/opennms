@@ -32,7 +32,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
 
-public class OpenBMPMessageTest {
+public class RecordSerdesTest {
 
     @Test
     public void canSerdesCollectorRecords() {

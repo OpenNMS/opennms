@@ -64,7 +64,7 @@ public class Message {
         }
 
         // Write headers
-        serializeHeader(buffer, "V", "1");
+        serializeHeader(buffer, "V", "1.7");
         serializeHeader(buffer, "C_HASH_ID", this.collectorHashId);
         serializeHeader(buffer, "T", this.type.toString());
         serializeHeader(buffer, "L", Integer.toString(data.length()));
