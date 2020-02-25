@@ -28,6 +28,12 @@
         <parser name="NXOS-GPB" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="NXOS" />
     </listener>
 
+    <listener name="BMP-TCP-11019" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="true">
+        <parameter key="port" value="11019"/>
+
+        <parser name="BMP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser" queue="BMP" />
+    </listener>
+
     {# Only enable queue processing when Sentinel is not enabled. #}
     {% if model.getSentinels().isEmpty() %}
     <queue name="Netflow-5">
@@ -78,6 +84,24 @@
             </package>
         </adapter>
     </queue>
+
+    <queue name="BMP">
+        <adapter name="BMP-Telemetry-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapter" enabled="true">
+
+            <package name="BMP-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+        <adapter name="BMP-PeerStatus-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter" enabled="true">
+        </adapter>
+    </queue>
+
     {% else %}
     {# Sentinel is enabled. Define empty queues. Packets we receive won't get processed - tests should be sending these to a Minion instead #}
     <queue name="Netflow-5"/>
@@ -86,5 +110,6 @@
     <queue name="SFlow"/>
     <queue name="JTI"/>
     <queue name="NXOS"/>
+    <queue name="BMP"/>
     {% endif %}
 </telemetryd-config>
