@@ -35,10 +35,14 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -93,17 +97,28 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 
+import io.netty.buffer.ByteBuf;
+
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
+
+    public final static long HEARTBEAT_INTERVAL = 4 * 60 * 60 * 1000;
 
     private final String name;
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
     private final Meter recordsDispatched;
+
+    private ScheduledFuture<?> heartbeatFuture;
+
+    private HashSet<InetAddress> connections = Sets.newHashSet();
 
     public BmpParser(final String name,
                      final AsyncDispatcher<TelemetryMessage> dispatcher,
@@ -121,46 +136,96 @@ public class BmpParser implements TcpParser {
 
     @Override
     public void start(final ScheduledExecutorService executorService) {
+        this.sendHeartbeat(HeartbeatMode.STARTED);
+        this.heartbeatFuture = executorService.scheduleAtFixedRate(() -> this.sendHeartbeat(HeartbeatMode.PERIODIC),
+                                                                   HEARTBEAT_INTERVAL,
+                                                                   HEARTBEAT_INTERVAL,
+                                                                   TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void stop() {
+        this.heartbeatFuture.cancel(false);
+        this.sendHeartbeat(HeartbeatMode.STOPPED);
     }
 
     @Override
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
-        return buffer -> {
-            buffer.markReaderIndex();
+        return new Handler() {
+            @Override
+            public Optional<CompletableFuture<?>> parse(ByteBuf buffer) throws Exception {
+                buffer.markReaderIndex();
 
-            final Header header;
-            if (buffer.isReadable(Header.SIZE)) {
-                header = new Header(slice(buffer, Header.SIZE));
-            } else {
-                buffer.resetReaderIndex();
-                return Optional.empty();
+                final Header header;
+                if (buffer.isReadable(Header.SIZE)) {
+                    header = new Header(slice(buffer, Header.SIZE));
+                } else {
+                    buffer.resetReaderIndex();
+                    return Optional.empty();
+                }
+
+                final Packet packet;
+                if (buffer.isReadable(header.payloadLength())) {
+                    packet = header.parsePayload(slice(buffer, header.payloadLength()));
+                } else {
+                    buffer.resetReaderIndex();
+                    return Optional.empty();
+                }
+
+                LOG.trace("Got packet: {}", packet);
+
+                final Transport.Message.Builder message = Transport.Message.newBuilder()
+                                                                           .setVersion(header.version);
+
+                packet.accept(new Serializer(message));
+
+                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
+                BmpParser.this.recordsDispatched.mark();
+
+                return Optional.of(dispatched);
             }
 
-            final Packet packet;
-            if (buffer.isReadable(header.payloadLength())) {
-                packet = header.parsePayload(slice(buffer, header.payloadLength()));
-            } else {
-                buffer.resetReaderIndex();
-                return Optional.empty();
+            @Override
+            public void active() {
+                BmpParser.this.connections.add(remoteAddress.getAddress());
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGED);
             }
 
-            LOG.trace("Got packet: {}", packet);
-
-            final Transport.Message.Builder message = Transport.Message.newBuilder()
-                                                                       .setVersion(header.version);
-
-            packet.accept(new Serializer(message));
-
-            final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
-            this.recordsDispatched.mark();
-
-            return Optional.of(dispatched);
+            @Override
+            public void inactive() {
+                BmpParser.this.connections.remove(remoteAddress.getAddress());
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGED);
+            }
         };
+    }
+
+    private enum HeartbeatMode {
+        STARTED,
+        CHANGED,
+        PERIODIC,
+        STOPPED;
+
+        public <R> R map(final Function<HeartbeatMode, R> mapper) {
+            return mapper.apply(this);
+        }
+    }
+
+    private void sendHeartbeat(final HeartbeatMode mode) {
+        final Transport.Message.Builder message = Transport.Message.newBuilder();
+
+        message.getHeartbeatBuilder()
+               .setMode(mode.map(m -> { switch(m) {
+                   case STARTED: return Transport.Heartbeat.Mode.STARTED;
+                   case STOPPED: return Transport.Heartbeat.Mode.STOPPED;
+                   case PERIODIC: return Transport.Heartbeat.Mode.PERIODIC;
+                   case CHANGED: return Transport.Heartbeat.Mode.CHANGED;
+                   default: throw new IllegalStateException();
+               }}))
+               .addAllRouters(Iterables.transform(this.connections, BmpParser::address));
+
+        this.dispatcher.send(new TelemetryMessage(null, ByteBuffer.wrap(message.build().toByteArray())));
+        BmpParser.this.recordsDispatched.mark();
     }
 
     private static class Serializer implements Packet.Visitor {
@@ -219,19 +284,6 @@ public class BmpParser implements TcpParser {
                 .setNanos(peerHeader.timestamp.getNano());
 
             return peer.build();
-        }
-
-        private static Transport.IpAddress address(final InetAddress address) {
-            final Transport.IpAddress.Builder builder = Transport.IpAddress.newBuilder();
-            if (address instanceof Inet4Address) {
-                builder.setV4(ByteString.copyFrom(address.getAddress()));
-            } else if (address instanceof Inet6Address) {
-                builder.setV6(ByteString.copyFrom(address.getAddress()));
-            } else {
-                throw new IllegalStateException();
-            }
-
-            return builder.build();
         }
 
         @Override
@@ -521,5 +573,18 @@ public class BmpParser implements TcpParser {
         public void visit(final RouteMirroringPacket packet) {
             // Don't send out mirrored BGP packets.
         }
+    }
+
+    private static Transport.IpAddress address(final InetAddress address) {
+        final Transport.IpAddress.Builder builder = Transport.IpAddress.newBuilder();
+        if (address instanceof Inet4Address) {
+            builder.setV4(ByteString.copyFrom(address.getAddress()));
+        } else if (address instanceof Inet6Address) {
+            builder.setV6(ByteString.copyFrom(address.getAddress()));
+        } else {
+            throw new IllegalStateException();
+        }
+
+        return builder.build();
     }
 }
