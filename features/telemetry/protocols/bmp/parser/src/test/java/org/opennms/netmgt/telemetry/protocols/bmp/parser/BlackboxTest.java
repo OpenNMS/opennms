@@ -137,6 +137,11 @@ public class BlackboxTest implements Packet.Visitor {
         public void visit(Origin origin) {
             fail("Wrong Attribute Origin");
         }
+
+        @Override
+        public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown unknown) {
+            fail("Wrong Attribute Unknown");
+        }
     }
 
     private static class MetricVisitorAdapter implements org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Metric.Visitor {
@@ -218,6 +223,11 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(Rejected rejected) {
             fail("Wrong Metric Rejected");
+        }
+
+        @Override
+        public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Unknown unknown) {
+            fail("Wrong Attribute Unknown");
         }
     }
 
