@@ -28,44 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
-
-import java.util.function.Function;
-
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
 
-public class Origin implements Attribute {
-    public final Value value;
-
-    public Origin(final ByteBuf buffer, final PeerFlags flags) {
-        this.value = Value.from(uint8(buffer));
-    }
-
-    public enum Value {
-        IGP,
-        EGP,
-        INCOMPLETE,
-        UNKNOWN;
-
-        private static Value from(final int code) {
-            switch (code) {
-                case 0: return IGP;
-                case 1: return EGP;
-                case 2: return INCOMPLETE;
-                default:
-                    BmpParser.LOG.warn("Unknown Originator Code: {}", code);
-                    return UNKNOWN;
-            }
-        }
-
-        public <R> R map(final Function<Value, R> mapper) {
-            return mapper.apply(this);
-        }
+public class Unknown implements Attribute {
+    public Unknown(final ByteBuf buffer, final PeerFlags flags) {
     }
 
     @Override
@@ -76,7 +46,6 @@ public class Origin implements Attribute {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("value", this.value)
                 .toString();
     }
 }

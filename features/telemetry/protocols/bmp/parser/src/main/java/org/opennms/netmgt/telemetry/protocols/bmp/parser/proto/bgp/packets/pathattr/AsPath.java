@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
@@ -60,14 +61,16 @@ public class AsPath implements Attribute {
 
         public enum Type {
             AS_SET,
-            AS_SEQUENCE;
+            AS_SEQUENCE,
+            UNKNOWN;
 
             public static Type from(final int type) {
                 switch (type) {
                     case 1: return AS_SET;
                     case 2: return AS_SEQUENCE;
                     default:
-                        throw new IllegalArgumentException("Unknown segment type: " + type);
+                        BmpParser.LOG.warn("Unknown AS Path Type: {}", type);
+                        return UNKNOWN;
                 }
             }
 

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
@@ -173,6 +175,13 @@ public class UpdatePacket implements Packet {
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new Aggregator(buffer, flags);
                 }
+            },
+
+            UNKNOWN {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    return new Unknown(buffer, flags);
+                }
             };
 
             public abstract Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
@@ -187,7 +196,8 @@ public class UpdatePacket implements Packet {
                     case 6: return ATOMIC_AGGREGATE;
                     case 7: return AGGREGATOR;
                     default:
-                        throw new IllegalArgumentException("Unknown path attribute type: " + type);
+                        BmpParser.LOG.warn("Unknown Update Packet Type: {}", type);
+                        return UNKNOWN;
                 }
             }
         }

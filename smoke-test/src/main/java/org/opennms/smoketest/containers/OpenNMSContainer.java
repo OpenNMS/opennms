@@ -110,6 +110,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_TELEMETRY_NXOS_PORT = 50002;
     private static final int OPENNMS_DEBUG_PORT = 8001;
     private static final int OPENNMMS_GRPC_PORT = 8990;
+    private static final int OPENNMMS_BMP_PORT = 11019;
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
@@ -122,6 +123,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             .put(NetworkProtocol.JTI, OPENNMS_TELEMETRY_JTI_PORT)
             .put(NetworkProtocol.NXOS, OPENNMS_TELEMETRY_NXOS_PORT)
             .put(NetworkProtocol.GRPC, OPENNMMS_GRPC_PORT)
+            .put(NetworkProtocol.BMP, OPENNMMS_BMP_PORT)
             .build();
 
     private final StackModel model;

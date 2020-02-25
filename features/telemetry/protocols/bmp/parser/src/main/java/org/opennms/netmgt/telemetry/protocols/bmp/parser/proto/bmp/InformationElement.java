@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import io.netty.buffer.ByteBuf;
@@ -70,6 +71,13 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
             @Override
             public String parse(final ByteBuf buffer, final Void parameter) {
                 return InetAddressUtils.toIpAddrString(bytes(buffer, buffer.readableBytes()));
+	    }
+	},
+
+        UNKNOWN {
+            @Override
+            public String parse(final ByteBuf buffer, final Void parameter) {
+                return "Unknown";
             }
         };
 
@@ -84,7 +92,8 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
                 case 65531:
                     return BGP_ID;
                 default:
-                    throw new IllegalArgumentException("Unknown information type");
+                    BmpParser.LOG.warn("Unknown Information Element Type: {}", type);
+                    return UNKNOWN;
             }
         }
     }

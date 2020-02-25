@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Unknown;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
 
 import com.google.common.base.MoreObjects;
@@ -102,6 +104,7 @@ public class StatisticsReportPacket implements Packet {
             DUPLICATE_UPDATE(DuplicateUpdate::new),
             ADJ_RIB_OUT(AdjRibOut::new),
             EXPORT_RIB(ExportRib::new),
+            UNKNOWN(Unknown::new)
             ;
 
             private final Function<ByteBuf, Metric> parser;
@@ -128,9 +131,9 @@ public class StatisticsReportPacket implements Packet {
                     case 13: return DUPLICATE_UPDATE;
                     case 14: return ADJ_RIB_OUT;
                     case 15: return EXPORT_RIB;
-
                     default:
-                        throw new IllegalArgumentException("Unknown statistic type");
+                        BmpParser.LOG.warn("Unknown Statistic Report Type: {}", type);
+                        return UNKNOWN;
                 }
             }
 

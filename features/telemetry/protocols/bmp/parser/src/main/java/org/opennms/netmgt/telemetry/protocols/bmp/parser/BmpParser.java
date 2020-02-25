@@ -406,6 +406,10 @@ public class BmpParser implements TcpParser {
                     public void visit(final Rejected rejected) {
                         message.getRejectedBuilder().setCount((int) rejected.counter);
                     }
+
+                    @Override
+                    public void visit(final org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Unknown unknown) {
+                    }
                 });
             }
         }
@@ -453,6 +457,8 @@ public class BmpParser implements TcpParser {
                                         return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET;
                                     case AS_SEQUENCE:
                                         return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SEQUENCE;
+                                    case UNKNOWN:
+                                        return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.UNRECOGNIZED;
                                     default:
                                         throw new IllegalStateException();
                                 }
@@ -496,10 +502,16 @@ public class BmpParser implements TcpParser {
                                     return Transport.RouteMonitoringPacket.PathAttribute.Origin.EGP;
                                 case INCOMPLETE:
                                     return Transport.RouteMonitoringPacket.PathAttribute.Origin.INCOMPLETE;
+                                case UNKNOWN:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.Origin.UNRECOGNIZED;
                                 default:
                                     throw new IllegalStateException();
                             }
                         }));
+                    }
+
+                    @Override
+                    public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown unknown) {
                     }
                 });
             }

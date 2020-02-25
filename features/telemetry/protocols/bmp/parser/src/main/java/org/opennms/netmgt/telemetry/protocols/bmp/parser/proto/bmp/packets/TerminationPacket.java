@@ -35,6 +35,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
@@ -92,6 +93,13 @@ public class TerminationPacket implements Packet {
                             return "Unknown reason";
                     }
                 }
+            },
+
+            UNKNOWN {
+                @Override
+                public String parse(final ByteBuf buffer, final Void parameter) throws InvalidPacketException {
+                    return "Unknown reason";
+                }
             };
 
             private static Element.Type from(final int type) {
@@ -101,7 +109,8 @@ public class TerminationPacket implements Packet {
                     case 1:
                         return REASON;
                     default:
-                        throw new IllegalArgumentException("Unknown termination type");
+                        BmpParser.LOG.warn("Unknown Termination Packet Type: {}", type);
+                        return UNKNOWN;
                 }
             }
         }

@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRem
 
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
@@ -82,16 +83,21 @@ public class RouteMirroringPacket implements Packet {
                 public Mirroring parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
                     return new Information(buffer, flags);
                 }
+            },
+            UNKNOWN{
+                @Override
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags parameter) throws InvalidPacketException {
+                    return null;
+                }
             };
 
             private static Type from(final int type) {
                 switch (type) {
-                    case 0:
-                        return BGP_MESSAGE;
-                    case 1:
-                        return INFORMATION;
+                    case 0: return BGP_MESSAGE;
+                    case 1: return INFORMATION;
                     default:
-                        throw new IllegalArgumentException("Unknown message type");
+                        BmpParser.LOG.warn("Unknown Route Mirroring Packet Type: {}", type);
+                        return UNKNOWN;
                 }
             }
         }
