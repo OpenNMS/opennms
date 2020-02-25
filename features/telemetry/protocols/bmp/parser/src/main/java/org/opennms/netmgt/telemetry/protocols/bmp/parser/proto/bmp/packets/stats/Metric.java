@@ -48,5 +48,6 @@ public interface Metric {
         void visit(final LocRib locRib);
         void visit(final DuplicateUpdate duplicateUpdate);
         void visit(final Rejected rejected);
+        void visit(final Unknown unknown);
     }
 }

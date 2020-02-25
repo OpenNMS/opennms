@@ -120,7 +120,11 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
 
             @Override
             public Object key(TelemetryMessage telemetryMessage) {
-                return telemetryMessage.getSource();
+                if (telemetryMessage.getSource() != null) {
+                    return telemetryMessage.getSource();
+                } else {
+                    return this;
+                }
             }
 
             @Override
@@ -128,9 +132,11 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
                 if (accumulator == null) {
                     accumulator = TelemetryProtos.TelemetryMessageLog.newBuilder()
                             .setLocation(systemLocation)
-                            .setSystemId(systemId)
-                            .setSourceAddress(message.getSource().getHostString())
-                            .setSourcePort(message.getSource().getPort());
+                            .setSystemId(systemId);
+                    if (message.getSource() != null) {
+                        accumulator.setSourceAddress(message.getSource().getHostString())
+                                   .setSourcePort(message.getSource().getPort());
+                    }
                 }
                 final TelemetryProtos.TelemetryMessage messageDto = TelemetryProtos.TelemetryMessage.newBuilder()
                         .setTimestamp(message.getReceivedAt().getTime())

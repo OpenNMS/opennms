@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners;
+package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import java.net.InetSocketAddress;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
 
-public interface TcpParser extends Parser {
-    interface Handler {
-        void inactive();
-        void active();
-
-        Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception;
+public class Unknown implements Attribute {
+    public Unknown(final ByteBuf buffer, final PeerFlags flags) {
     }
 
-    Handler accept(final InetSocketAddress remoteAddress,
-                   final InetSocketAddress localAddress);
+    @Override
+    public void accept(final Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .toString();
+    }
 }

@@ -191,6 +191,19 @@ message StatisticsReportPacket {
     Gauge exportRib = 115;
 }
 
+message Heartbeat {
+    enum Mode {
+        STARTED = 0;
+        CHANGED = 1;
+        PERIODIC = 2;
+        STOPPED = 3;
+    }
+
+    Mode mode = 1;
+
+    repeated IpAddress routers = 2;
+}
+
 message Message {
     uint32 version = 1;
     reserved 2, 3, 4;
@@ -202,7 +215,9 @@ message Message {
         PeerDownPacket peerDown = 8;
         RouteMonitoringPacket routeMonitoring = 9;
         StatisticsReportPacket statisticsReport = 10;
+
+        Heartbeat heartbeat = 15;
     }
 
-    reserved 11, 12, 13, 14, 15;
+    reserved 11, 12, 13, 14;
 }
