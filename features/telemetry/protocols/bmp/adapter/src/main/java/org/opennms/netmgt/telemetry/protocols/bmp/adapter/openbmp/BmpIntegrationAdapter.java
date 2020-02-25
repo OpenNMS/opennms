@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -64,7 +65,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
-    private final static AtomicInteger SEQUENCE = new AtomicInteger();
+    private final static AtomicLong SEQUENCE = new AtomicLong();
     private final KafkaProducer<String, String> producer;
 
     public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
@@ -141,7 +142,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.remoteBgpId = InetAddressUtils.str(address(peerUp.getRecvMsg().getId())); // FIXME; This is weird
         peer.routerIp = context.sourceAddress;
         peer.timestamp = context.timestamp;
-        peer.remoteAsn = peerUp.getRecvMsg().getAs();
+        peer.remoteAsn = (long) peerUp.getRecvMsg().getAs();
         peer.remoteIp = address(bgpPeer.getAddress());
         peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
         peer.remotePort = peerUp.getRemotePort();
@@ -183,7 +184,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.remoteBgpId = null; // FIXME: Can populate?
         peer.routerIp = context.sourceAddress;
         peer.timestamp = context.timestamp;
-        peer.remoteAsn = 0; // FIXME: Can populate?
+        peer.remoteAsn = 0L; // FIXME: Can populate?
         peer.remoteIp = address(bgpPeer.getAddress());
         peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
         peer.remotePort = null;
@@ -221,7 +222,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.routerIp = context.sourceAddress;
         stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
         stat.peerIp = address(peer.getAddress());
-        stat.peerAsn = peer.getAs();
+        stat.peerAsn = (long)peer.getAs();
         stat.timestamp = context.timestamp;
         stat.prefixesRejected = statisticsReport.getRejected().getCount();
         stat.knownDupPrefixes = statisticsReport.getDuplicatePrefix().getCount();

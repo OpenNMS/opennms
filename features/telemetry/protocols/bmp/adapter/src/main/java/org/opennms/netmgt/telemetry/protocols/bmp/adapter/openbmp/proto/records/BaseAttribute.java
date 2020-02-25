@@ -31,27 +31,26 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records
 import java.net.InetAddress;
 import java.time.Instant;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 
 public class BaseAttribute extends Record {
-    public String action;
-    public long sequence;
+    public Action action = Action.ADD;
+    public Long sequence;
     public String hash; // Hash of fields [ as path, next hop, aggregator, origin, med, local pref, community list, ext community list, peer hash ]
     public String routerHash;
     public InetAddress routerIp;
     public String peerHash;
     public InetAddress peerIp;
-    public long peerAsn;
+    public Long peerAsn;
     public Instant timestamp;
     public String origin;
     public String asPath;
-    public int asPathCount;
-    public long originAs;
+    public Integer asPathCount;
+    public Long originAs;
     public InetAddress nextHop;
-    public int med;
-    public int localPref;
+    public Integer med;
+    public Integer localPref;
     public String aggregator;
     public String communityList;
     public String extCommunityList;
@@ -68,22 +67,22 @@ public class BaseAttribute extends Record {
     @Override
     protected String[] fields() {
         return new String[]{
-                this.action,
-                Long.toString(this.sequence),
+                this.action != null ? this.action.value : null,
+                nullSafeStr(this.sequence),
                 this.hash,
                 this.routerHash,
-                InetAddressUtils.toIpAddrString(this.routerIp),
+                nullSafeStr(this.routerIp),
                 this.peerHash,
-                InetAddressUtils.toIpAddrString(this.peerIp),
-                Long.toString(this.peerAsn),
+                nullSafeStr(this.peerIp),
+                nullSafeStr(this.peerAsn),
                 formatTimestamp(this.timestamp),
                 this.origin,
                 this.asPath,
-                Integer.toString(this.asPathCount),
-                Long.toString(this.originAs),
-                InetAddressUtils.toIpAddrString(this.nextHop),
-                Integer.toString(this.med),
-                Integer.toString(this.localPref),
+                nullSafeStr(this.asPathCount),
+                nullSafeStr(this.originAs),
+                nullSafeStr(this.nextHop),
+                nullSafeStr(this.med),
+                nullSafeStr(this.localPref),
                 this.aggregator,
                 this.communityList,
                 this.extCommunityList,
@@ -93,5 +92,15 @@ public class BaseAttribute extends Record {
                 this.originatorId,
                 this.largeCommunityList
         };
+    }
+
+    public enum Action {
+        ADD("add");
+
+        public final String value;
+
+        Action(final String value) {
+            this.value = value;
+        }
     }
 }

@@ -31,13 +31,12 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records
 import java.net.InetAddress;
 import java.time.Instant;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 
 public class UnicastPrefix extends Record {
-    public String action;
-    public long sequence;
+    public Action action;
+    public Long sequence;
     public String hash; // Hash of fields [ prefix, prefix length, peer hash, path_id, 1 if has label(s) ]
     public String routerHash;
 
@@ -45,18 +44,18 @@ public class UnicastPrefix extends Record {
     public String baseAttrHash;
     public String peerHash;
     public InetAddress peerIp;
-    public long peerAsn;
+    public Long peerAsn;
     public Instant timestamp;
     public InetAddress prefix;
-    public int length;
+    public Integer length;
     public boolean ipv4;
     public String origin;
     public String asPath;
     public String asPathCount;
     public String originAs;
     public InetAddress nextHop;
-    public int med;
-    public int localPref;
+    public Integer med;
+    public Integer localPref;
     public String aggregator;
     public String communityList;
     public String extCommunityList;
@@ -64,7 +63,7 @@ public class UnicastPrefix extends Record {
     public boolean atomicAgg;
     public boolean nextHopIpv4;
     public InetAddress originatorId;
-    public int pathId;
+    public Integer pathId;
     public String labels;
     public boolean prePolicy;
     public boolean adjIn;
@@ -77,38 +76,49 @@ public class UnicastPrefix extends Record {
     @Override
     protected String[] fields() {
         return new String[]{
-                this.action,
-                Long.toString(this.sequence),
+                this.action != null ? this.action.value : null,
+                nullSafeStr(this.sequence),
                 this.hash,
                 this.routerHash,
-                InetAddressUtils.toIpAddrString(this.routerIp),
+                nullSafeStr(this.routerIp),
                 this.baseAttrHash,
                 this.peerHash,
-                InetAddressUtils.toIpAddrString(this.peerIp),
-                Long.toString(this.peerAsn),
+                nullSafeStr(this.peerIp),
+                nullSafeStr(this.peerAsn),
                 formatTimestamp(this.timestamp),
-                InetAddressUtils.toIpAddrString(this.prefix),
-                Integer.toString(this.length),
+                nullSafeStr(this.prefix),
+                nullSafeStr(this.length),
                 Boolean.toString(this.ipv4),
                 this.origin,
                 this.asPath,
                 this.asPathCount,
                 this.originAs,
-                InetAddressUtils.toIpAddrString(this.nextHop),
-                Integer.toString(this.med),
-                Integer.toString(this.localPref),
+                nullSafeStr(this.nextHop),
+                nullSafeStr(this.med),
+                nullSafeStr(this.localPref),
                 this.aggregator,
                 this.communityList,
                 this.extCommunityList,
                 this.clusterList,
                 Boolean.toString(this.atomicAgg),
                 Boolean.toString(this.nextHopIpv4),
-                InetAddressUtils.toIpAddrString(this.originatorId),
-                Integer.toString(this.pathId),
+                nullSafeStr(this.originatorId),
+                nullSafeStr(this.pathId),
                 this.labels,
                 Boolean.toString(this.prePolicy),
                 Boolean.toString(this.adjIn),
                 this.largeCommunityList
         };
+    }
+
+    public enum Action {
+        ADD("add"),
+        DELETE("del");
+
+        public final String value;
+
+        Action(final String value) {
+            this.value = value;
+        }
     }
 }

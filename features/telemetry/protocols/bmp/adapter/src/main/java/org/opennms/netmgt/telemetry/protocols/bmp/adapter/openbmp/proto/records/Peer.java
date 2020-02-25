@@ -31,20 +31,19 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records
 import java.net.InetAddress;
 import java.time.Instant;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 
 public class Peer extends Record {
     public Action action;
-    public long sequence;
+    public Long sequence;
     public String hash; // Hash of fields [ remote/peer ip, peer RD, router hash ]
     public String routerHash;
     public String name;
     public String remoteBgpId;
     public InetAddress routerIp;
     public Instant timestamp;
-    public long remoteAsn; // FIXME: long vs Long
+    public Long remoteAsn;
     public InetAddress remoteIp;
     public String peerRd;
     public Integer remotePort;
@@ -75,30 +74,30 @@ public class Peer extends Record {
     @Override
     protected String[] fields() {
         return new String[]{
-                this.action.value,
-                Long.toString(this.sequence),
+                this.action != null ? this.action.value : null,
+                nullSafeStr(this.sequence),
                 this.hash,
                 this.routerHash,
                 this.name,
                 this.remoteBgpId,
-                this.routerIp != null ? this.routerIp.toString() : null,
+                nullSafeStr(this.routerIp),
                 formatTimestamp(this.timestamp),
-                Long.toString(this.remoteAsn),
-                InetAddressUtils.toIpAddrString(this.remoteIp),
+                nullSafeStr(this.remoteAsn),
+                nullSafeStr(remoteIp),
                 this.peerRd,
-                Integer.toString(this.remotePort),
-                Long.toString(this.localAsn),
-                InetAddressUtils.toIpAddrString(this.localIp),
-                Integer.toString(this.localPort),
+                nullSafeStr(this.remotePort),
+                nullSafeStr(this.localAsn),
+                nullSafeStr(this.localIp),
+                nullSafeStr(this.localPort),
                 this.localBgpId,
                 this.infoData,
                 this.advertisedCapabilities,
                 this.receivedCapabilities,
-                this.remoteHolddown != null ? Long.toString(this.remoteHolddown) : null,
-                this.advertisedHolddown != null ? Long.toString(this.advertisedHolddown) : null,
-                this.bmpReason != null ? Integer.toString(this.bmpReason) : null,
-                this.bgpErrorCode != null ? Integer.toString(this.bgpErrorCode) : null,
-                this.bgpErrorSubcode != null ? Integer.toString(this.bgpErrorSubcode) : null,
+                nullSafeStr(this.remoteHolddown),
+                nullSafeStr(this.advertisedHolddown),
+                nullSafeStr(this.bmpReason),
+                nullSafeStr(this.bgpErrorCode),
+                nullSafeStr(this.bgpErrorSubcode),
                 this.errorText,
                 Boolean.toString(this.l3vpn),
                 Boolean.toString(this.prePolicy),

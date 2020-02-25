@@ -31,13 +31,12 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records
 import java.net.InetAddress;
 import java.time.Instant;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 
 public class Router extends Record {
     public Action action;
-    public long sequence;
+    public Long sequence;
     public String name;
     public String hash; // Hash of fields [ IP address, collector hash ]
     public InetAddress ipAddress;
@@ -56,18 +55,18 @@ public class Router extends Record {
     @Override
     protected String[] fields() {
         return new String[]{
-                this.action.value,
-                Long.toString(this.sequence),
+                this.action != null ? this.action.value : null,
+                nullSafeStr(this.sequence),
                 this.name,
                 this.hash,
-                InetAddressUtils.toIpAddrString(this.ipAddress),
+                nullSafeStr(this.ipAddress),
                 this.description,
-                this.termCode != null ? this.termCode.toString() : null,
+                nullSafeStr(termCode),
                 this.termReason,
                 this.initData,
                 this.termData,
                 formatTimestamp(this.timestamp),
-                this.bgpId != null ? InetAddressUtils.toIpAddrString(this.bgpId) : null,
+                nullSafeStr(bgpId)
         };
     }
 

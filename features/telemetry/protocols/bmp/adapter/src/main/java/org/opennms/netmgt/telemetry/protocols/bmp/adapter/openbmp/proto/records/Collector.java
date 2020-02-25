@@ -37,8 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import com.google.common.base.Joiner;
 
 public class Collector extends Record {
-    public String action;
-    public long sequence;
+    public Action action;
+    public Long sequence;
     public String adminId;
     public String hash;
     public List<String> routers;
@@ -51,13 +51,26 @@ public class Collector extends Record {
     @Override
     protected String[] fields() {
         return new String[]{
-                this.action,
-                Long.toString(this.sequence),
+                this.action != null ? this.action.value : null,
+                nullSafeStr(this.sequence),
                 this.adminId,
                 this.hash,
-                Joiner.on(',').join(this.routers),
-                Integer.toString(this.routers.size()),
+                this.routers != null ? Joiner.on(',').join(this.routers) : "",
+                this.routers != null ? Integer.toString(this.routers.size()) : "0",
                 Record.formatTimestamp(this.timestamp)
         };
+    }
+
+    public enum Action {
+        STARTED("started"),
+        CHANGE("change"),
+        HEARTBEAT("heartbeat"),
+        STOPPED("stopped");
+
+        public final String value;
+
+        Action(final String value) {
+            this.value = value;
+        }
     }
 }

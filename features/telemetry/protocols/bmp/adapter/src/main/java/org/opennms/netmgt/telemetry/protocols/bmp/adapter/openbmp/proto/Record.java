@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto;
 
+import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +38,7 @@ import java.util.Objects;
 
 import java.nio.charset.StandardCharsets;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 
 import com.google.common.hash.Hasher;
@@ -54,6 +56,9 @@ public abstract class Record {
     }
 
     public static String formatTimestamp(final Instant timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
         return TIMESTAMP_FORMATTER.format(timestamp);
     }
 
@@ -77,9 +82,8 @@ public abstract class Record {
 
     public final void serialize(final StringBuffer buffer) {
         final Iterator<String> fields = Arrays.stream(this.fields())
-                                              .map(field -> field != null ? field : "")
-                                              .map(field -> field.replace('\t', ' ')
-                                                                 .replace('\n', '\r')).iterator();
+                                              .map(field -> field != null ? field.replace('\t', ' ')
+                                                                 .replace('\n', '\r') : null).iterator();
 
         if (fields.hasNext()) {
             buffer.append(fields.next());
@@ -91,4 +95,30 @@ public abstract class Record {
 
         buffer.append('\n');
     }
+
+    public static String nullSafeStr(Long val) {
+        if (val == null) {
+            return null;
+        } else {
+            return Long.toString(val);
+        }
+    }
+
+    public static String nullSafeStr(Integer val) {
+        if (val == null) {
+            return null;
+        } else {
+            return Integer.toString(val);
+        }
+    }
+
+    public static String nullSafeStr(InetAddress addr) {
+        if (addr == null) {
+            return null;
+        } else {
+            return InetAddressUtils.str(addr);
+        }
+    }
+
+
 }
