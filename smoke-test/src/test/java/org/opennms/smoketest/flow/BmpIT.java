@@ -141,7 +141,7 @@ public class BmpIT {
         final String node = "<node type=\"A\" label=\"TestNode\" foreignSource=\"SmokeTests\" foreignId=\"TestNode\">" +
                             "<labelSource>H</labelSource>" +
                             "<sysContact>Me</sysContact>" +
-                            "<sysDescription>PDP-8</sysDescription>" +
+                            "<sysDescription>Black Ops 4</sysDescription>" +
                             "<sysLocation>German DevJam 2020</sysLocation>" +
                             "<sysName>TestNode</sysName>" +
                             "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
