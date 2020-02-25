@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
 import java.nio.charset.StandardCharsets;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import io.netty.buffer.ByteBuf;
@@ -62,6 +63,13 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
             public String parse(final ByteBuf buffer, final Void parameter) {
                 return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.US_ASCII);
             }
+        },
+
+        UNKNOWN {
+            @Override
+            public String parse(final ByteBuf buffer, final Void parameter) {
+                return "Unknown";
+            }
         };
 
         private static Type from(final int type) {
@@ -73,7 +81,8 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
                 case 2:
                     return SYS_NAME;
                 default:
-                    throw new IllegalArgumentException("Unknown information type");
+                    BmpParser.LOG.warn("Unknown Information Element Type: {}", type);
+                    return UNKNOWN;
             }
         }
     }

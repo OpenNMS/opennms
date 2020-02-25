@@ -30,6 +30,8 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirr
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
+import org.omg.CORBA.UNKNOWN;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import io.netty.buffer.ByteBuf;
@@ -48,15 +50,16 @@ public class Information implements Mirroring {
 
     public enum Code {
         ERRORED_PDU,
-        MESSAGES_LOST;
+        MESSAGES_LOST,
+        UNKNOWN;
 
         private static Code from(final int code) {
             switch (code) {
                 case 0: return ERRORED_PDU;
                 case 1: return MESSAGES_LOST;
-
                 default:
-                    throw new IllegalArgumentException("Unknown message code");
+                    BmpParser.LOG.warn("Unknown Mirroring Information Code: {}", code);
+                    return UNKNOWN;
             }
         }
     }

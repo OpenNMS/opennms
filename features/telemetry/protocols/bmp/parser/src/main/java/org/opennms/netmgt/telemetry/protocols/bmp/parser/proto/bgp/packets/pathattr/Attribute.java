@@ -39,5 +39,6 @@ public interface Attribute {
         void visit(final MultiExistDisc multiExistDisc);
         void visit(final NextHop nextHop);
         void visit(final Origin origin);
+        void visit(final Unknown unknown);
     }
 }

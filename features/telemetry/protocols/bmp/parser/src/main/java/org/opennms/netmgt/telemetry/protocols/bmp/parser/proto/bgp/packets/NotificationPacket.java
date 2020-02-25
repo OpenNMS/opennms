@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
@@ -99,6 +100,8 @@ public class NotificationPacket implements Packet {
         OTHER_CONFIGURATION_CHANGE,         // 6
         CONNECTION_COLLISION_RESOLUTION,    // 7
         OUT_OF_RESOURCES,                   // 8
+
+        UNKNOWN,
         ;
 
         public static Error from(final int code, final int subcode) {
@@ -140,7 +143,8 @@ public class NotificationPacket implements Packet {
                 case (6 << 8) + 8: return OUT_OF_RESOURCES;
 
                 default:
-                    throw new IllegalArgumentException("Unknown error code: " + code + "/" + subcode);
+                    BmpParser.LOG.warn("Unknown Notification Packet Code: {}/{}", code, subcode);
+                    return UNKNOWN;
             }
         }
     }

@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
@@ -103,10 +104,9 @@ public class PeerDownPacket implements Packet {
                 case 2: return LOCAL_NO_NOTIFICATION;
                 case 3: return REMOTE_BGP_NOTIFICATION;
                 case 4: return REMOTE_NO_NOTIFICATION;
-                case 5: return UNKNOWN;
-
                 default:
-                    throw new IllegalArgumentException("Unknown statistic type");
+                    BmpParser.LOG.warn("Unknown Peer Down Type: {}", type);
+                    return UNKNOWN;
             }
         }
     }
