@@ -167,7 +167,7 @@ public class HeartbeatSinkPerfIT {
     @Test(timeout=30000)
     public void quickRun() throws Exception {
         configureGenerators();
-        await().until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
+        await().atMost(20, TimeUnit.SECONDS).until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
     }
 
     @Ignore
