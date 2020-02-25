@@ -277,7 +277,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(final PeerDownPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -319,7 +319,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(PeerUpPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -333,13 +333,13 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.sendOpenMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
         assertThat(packet.sendOpenMessage.version, is(4));
         assertThat(packet.sendOpenMessage.as, is(65002));
-        assertThat(packet.sendOpenMessage.id, is(3232238087L));
+        assertThat(packet.sendOpenMessage.id, is(InetAddressUtils.addr("192.168.10.7")));
         assertThat(packet.sendOpenMessage.holdTime, is(90));
         assertThat(packet.recvOpenMessage.header.length, is(45));
         assertThat(packet.recvOpenMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
         assertThat(packet.recvOpenMessage.version, is(4));
         assertThat(packet.recvOpenMessage.as, is(64512));
-        assertThat(packet.recvOpenMessage.id, is(3232238085L));
+        assertThat(packet.recvOpenMessage.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.recvOpenMessage.holdTime, is(90));
         assertThat(packet.information.size(), is(0));
     }
@@ -348,7 +348,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(RouteMonitoringPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -419,7 +419,7 @@ public class BlackboxTest implements Packet.Visitor {
     public void visit(StatisticsReportPacket packet) {
         assertThat(packet.peerHeader.type, is(PeerHeader.Type.GLOBAL_INSTANCE));
         assertThat(packet.peerHeader.flags.addressVersion, is(PeerFlags.AddressVersion.IP_V4));
-        assertThat(packet.peerHeader.flags.postPolicy, is(false));
+        assertThat(packet.peerHeader.flags.policy, is(PeerFlags.Policy.PRE_POLICY));
         assertThat(packet.peerHeader.flags.legacyASPath, is(false));
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));

@@ -51,14 +51,22 @@ public class PeerFlags {
             return mapper.apply(this);
         }
     }
+    public enum Policy {
+        PRE_POLICY,
+        POST_POLICY;
+
+        public <R> R map(final Function<Policy, R> mapper) {
+            return mapper.apply(this);
+        }
+    }
 
     public final AddressVersion addressVersion;  // uint8 x0000000
-    public final boolean postPolicy;             // ..... 0x000000
+    public final Policy policy;             // ..... 0x000000
     public final boolean legacyASPath;           // ..... 00x00000
 
     public PeerFlags(final int flags) {
         this.addressVersion = ((flags >> 7 & 0x01) == 1) ? AddressVersion.IP_V6 : AddressVersion.IP_V4;
-        this.postPolicy = (flags >> 6 & 0x01) == 1;
+        this.policy = ((flags >> 6 & 0x01) == 1) ? Policy.POST_POLICY : Policy.PRE_POLICY;
         this.legacyASPath = (flags >> 5 & 0x01) == 1;
     }
 
@@ -66,7 +74,7 @@ public class PeerFlags {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("addressVersion", this.addressVersion)
-                .add("postPolicy", this.postPolicy)
+                .add("policy", this.policy)
                 .add("legacyASPath", this.legacyASPath)
                 .toString();
     }

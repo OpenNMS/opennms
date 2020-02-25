@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getBool;
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getInt32;
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getInt64;
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
 
 import java.net.InetAddress;
 import java.time.Instant;
@@ -43,8 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.bson.BsonDocument;
-import org.bson.RawBsonDocument;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
@@ -56,7 +51,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
+import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpIntegrationAdapter extends AbstractAdapter {
 
@@ -90,26 +86,28 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
     }
 
-    private Optional<Message> handleInitiationMessage(final BsonDocument document,
+    private Optional<Message> handleInitiationMessage(final Transport.Message message,
+                                                      final Transport.InitiationPacket initiation,
                                                       final Context context) {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = SEQUENCE.getAndIncrement();
-        router.name = getString(document, "sys_name").orElse("");
+        router.name = initiation.getSysName();
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
-        router.description = getString(document, "sys_desc").orElse(null);
+        router.description = initiation.getSysDesc();
         router.termCode = null;
         router.termReason = null;
-        router.initData = getString(document, "message").orElse(null);
+        router.initData = initiation.getMessage();
         router.termData = null;
         router.timestamp = context.timestamp;
-        router.bgpId = getString(document, "bgp_id").map(InetAddressUtils::addr).orElse(null);
+        router.bgpId = null; // TODO: Where is this at?
 
         return Optional.of(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
-    private Optional<Message> handleTerminationMessage(final BsonDocument document,
+    private Optional<Message> handleTerminationMessage(final Transport.Message message,
+                                                       final Transport.TerminationPacket termination,
                                                        final Context context) {
         final Router router = new Router();
         router.action = Router.Action.TERM;
@@ -128,39 +126,41 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return Optional.of(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
-    private Optional<Message> handlePeerUpNotification(final BsonDocument document,
+    private Optional<Message> handlePeerUpNotification(final Transport.Message message,
+                                                       final Transport.PeerUpPacket peerUp,
                                                        final Context context) {
+        final Transport.Peer bgpPeer = peerUp.getPeer();
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = SEQUENCE.getAndIncrement();
-        peer.name = getString(document, "sys_name").orElse(null);
-        peer.hash = Record.hash(getString(document, "peer", "address").get(),
-                                getString(document, "peer", "distinguisher").get(),
+        peer.name = peerUp.getSysName();
+        peer.hash = Record.hash(bgpPeer.getAddress(),
+                                bgpPeer.getDistinguisher(),
                                 context.routerHashId);
         peer.routerHash = context.routerHashId;
-        peer.remoteBgpId = getString(document, "recv_open_msg", "id").get();
+        peer.remoteBgpId = InetAddressUtils.str(address(peerUp.getRecvMsg().getId())); // FIXME; This is weird
         peer.routerIp = context.sourceAddress;
         peer.timestamp = context.timestamp;
-        peer.remoteAsn = getInt64(document, "recv_open_msg", "as").get();
-        peer.remoteIp = getString(document, "peer", "address").map(InetAddressUtils::addr).get();
-        peer.peerRd = getString(document, "peer", "distinguisher").get();
-        peer.remotePort = getInt32(document, "remote_port").get();
-        peer.localAsn = getInt64(document, "send_open_msg", "as").get();
-        peer.localIp = getString(document, "local_address").map(InetAddressUtils::addr).get();
-        peer.localPort = getInt32(document, "local_port").get();
-        peer.localBgpId = getString(document, "send_open_msg", "id").get();
-        peer.infoData = getString(document, "message").orElse(null);
+        peer.remoteAsn = peerUp.getRecvMsg().getAs();
+        peer.remoteIp = address(bgpPeer.getAddress());
+        peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
+        peer.remotePort = peerUp.getRemotePort();
+        peer.localAsn = (long) peerUp.getSendMsg().getAs(); // FIXME: long vs int?
+        peer.localIp = address(peerUp.getLocalAddress());
+        peer.localPort = peerUp.getLocalPort();
+        peer.localBgpId = InetAddressUtils.str(address(peerUp.getSendMsg().getId())); // FIXME; still weird
+        peer.infoData = peerUp.getMessage();
         peer.advertisedCapabilities = ""; // TODO: Not parsed right now
         peer.receivedCapabilities = ""; // TODO: Not parsed right now
-        peer.remoteHolddown = getInt64(document, "recv_open_msg", "hold_time").orElse(null);
-        peer.advertisedHolddown = getInt64(document, "send_open_msg", "hold_time").orElse(null);
+        peer.remoteHolddown = (long) peerUp.getRecvMsg().getHoldTime(); // FIXME: long vs int?
+        peer.advertisedHolddown = (long) peerUp.getRecvMsg().getHoldTime();
         peer.bmpReason = null;
         peer.bgpErrorCode = null;
         peer.bgpErrorSubcode = null;
         peer.errorText = null;
         peer.l3vpn = false; // TODO: Extract from document
-        peer.prePolicy = !getBool(document, "peer", "post_policy").get();
-        peer.ipv4 = getInt64(document, "peer", "ip_version").get() == 4;
+        peer.prePolicy = false; // TODO?
+        peer.ipv4 = Transport.IpAddress.AddressCase.V4.equals(bgpPeer.getAddress().getAddressCase());
         peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
@@ -168,22 +168,24 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return Optional.of(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
-    private Optional<Message> handlePeerDownNotification(final BsonDocument document,
+    private Optional<Message> handlePeerDownNotification(final Transport.Message message,
+                                                         final Transport.PeerDownPacket peerDown,
                                                          final Context context) {
+        final Transport.Peer bgpPeer = peerDown.getPeer();
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
         peer.sequence = SEQUENCE.getAndIncrement();
-        peer.name = getString(document, "sys_name").orElse(null);
-        peer.hash = Record.hash(getString(document, "peer", "address").get(),
-                                getString(document, "peer", "distinguisher").get(),
-                                context.routerHashId);
+        peer.name = null; // FIXME: Can populate?
+        peer.hash = Record.hash(bgpPeer.getAddress(),
+                bgpPeer.getDistinguisher(),
+                context.routerHashId);
         peer.routerHash = context.routerHashId;
-        peer.remoteBgpId = getString(document, "recv_open_msg", "id").get();
+        peer.remoteBgpId = null; // FIXME: Can populate?
         peer.routerIp = context.sourceAddress;
         peer.timestamp = context.timestamp;
-        peer.remoteAsn = getInt64(document, "recv_open_msg", "as").get();
-        peer.remoteIp = getString(document, "peer", "address").map(InetAddressUtils::addr).get();
-        peer.peerRd = getString(document, "peer", "distinguisher").get();
+        peer.remoteAsn = 0; // FIXME: Can populate?
+        peer.remoteIp = address(bgpPeer.getAddress());
+        peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
         peer.remotePort = null;
         peer.localAsn = null;
         peer.localIp = null;
@@ -199,8 +201,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.bgpErrorSubcode = null; // TODO: Extract from document
         peer.errorText = null; // TODO: Extract from document
         peer.l3vpn = false; // TODO: Extract from document
-        peer.prePolicy = !getBool(document, "peer", "post_policy").get();
-        peer.ipv4 = getInt64(document, "peer", "ip_version").get() == 4;
+        peer.prePolicy = false; // TODO?
+        peer.ipv4 = Transport.IpAddress.AddressCase.V4.equals(bgpPeer.getAddress().getAddressCase());
         peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
@@ -208,78 +210,73 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return Optional.of(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
-    private Optional<Message> handleStatisticReport(final BsonDocument document,
+    private Optional<Message> handleStatisticReport(final Transport.Message message,
+                                                    final Transport.StatisticsReportPacket statisticsReport,
                                                     final Context context) {
+        final Transport.Peer peer = statisticsReport.getPeer();
         final Stat stat = new Stat();
         stat.action = Stat.Action.ADD;
         stat.sequence = SEQUENCE.getAndIncrement();
         stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
         stat.routerIp = context.sourceAddress;
-        stat.peerHash = Record.hash(getString(document, "peer", "address").get(),
-                                    getString(document, "peer", "distinguisher").get(),
-                                    stat.routerHash);
-        stat.peerIp = getString(document, "peer", "address").map(InetAddressUtils::addr).get();
-        stat.peerAsn = getInt64(document, "recv_open_msg", "as").get();
+        stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
+        stat.peerIp = address(peer.getAddress());
+        stat.peerAsn = peer.getAs();
         stat.timestamp = context.timestamp;
-        stat.prefixesRejected = getInt64(document, "rejected", "counter").map(Long::intValue).orElse(0);
-        stat.knownDupPrefixes = getInt64(document, "duplicate_prefix", "counter").map(Long::intValue).orElse(0);
-        stat.knownDupWithdraws = getInt64(document, "duplicate_withdraw", "counter").map(Long::intValue).orElse(0);
-        stat.invalidClusterList = getInt64(document, "invalid_update_due_to_cluster_list_loop", "counter").map(Long::intValue).orElse(0);
-        stat.invalidAsPath = getInt64(document, "invalid_update_due_to_as_path_loop", "counter").map(Long::intValue).orElse(0);
-        stat.invalidOriginatorId = getInt64(document, "invalid_update_due_to_originator_id", "counter").map(Long::intValue).orElse(0);
-        stat.invalidAsConfed = getInt64(document, "invalid_update_due_to_as_confed_loop", "counter").map(Long::intValue).orElse(0);
-        stat.prefixesPrePolicy = getInt64(document, "adj_rib_in", "gauge").orElse(0L);
-        stat.prefixesPostPolicy = getInt64(document, "loc_rib", "gauge").orElse(0L);
-
+        stat.prefixesRejected = statisticsReport.getRejected().getCount();
+        stat.knownDupPrefixes = statisticsReport.getDuplicatePrefix().getCount();
+        stat.knownDupWithdraws = statisticsReport.getDuplicateWithdraw().getCount();
+        stat.invalidClusterList = statisticsReport.getInvalidUpdateDueToClusterListLoop().getCount();
+        stat.invalidAsPath = statisticsReport.getInvalidUpdateDueToAsPathLoop().getCount();
+        stat.invalidOriginatorId = statisticsReport.getInvalidUpdateDueToOriginatorId().getCount();
+        stat.invalidAsConfed = statisticsReport.getInvalidUpdateDueToAsConfedLoop().getCount();
+        stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
+        stat.prefixesPostPolicy = statisticsReport.getLocRib().getValue();
         return Optional.of(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
-
     }
 
     @Override
-    public void handleMessage(final TelemetryMessageLogEntry message,
+    public void handleMessage(final TelemetryMessageLogEntry messageLogEntry,
                               final TelemetryMessageLog messageLog) {
-        LOG.trace("Parsing packet: {}", message);
-        final BsonDocument document = new RawBsonDocument(message.getByteArray());
-
+        LOG.trace("Parsing packet: {}", messageLogEntry);
+        final Transport.Message message;
+        try {
+            message = Transport.Message.parseFrom(messageLogEntry.getByteArray());
+        } catch (final InvalidProtocolBufferException e) {
+            LOG.error("Invalid message", e);
+            return;
+        }
 
         final String collectorHashId = Record.hash(messageLog.getSystemId());
         final String routerHashId = Record.hash(messageLog.getSourceAddress(), Integer.toString(messageLog.getSourcePort()), collectorHashId);
         final Context context = new Context(collectorHashId,
                                             routerHashId,
-                                            Instant.ofEpochMilli(message.getTimestamp()),
+                                            Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
                                             InetAddressUtils.addr(messageLog.getSourceAddress()),
                                             messageLog.getSourcePort());
 
-        getString(document, "@type")
-                .map(Header.Type::valueOf)
-                .orElseThrow(IllegalStateException::new)
-                .<Optional<Message>>map(type -> {
-                    switch (type) {
-                        case ROUTE_MONITORING: {
-                            return Optional.empty();
-                        }
-                        case STATISTICS_REPORT: {
-                            return this.handleStatisticReport(document, context);
-                        }
-                        case PEER_DOWN_NOTIFICATION: {
-                            return this.handlePeerUpNotification(document, context);
-                        }
-                        case PEER_UP_NOTIFICATION: {
-                            return this.handlePeerDownNotification(document, context);
-                        }
-                        case INITIATION_MESSAGE: {
-                            return this.handleInitiationMessage(document, context);
-                        }
-                        case TERMINATION_MESSAGE: {
-                            return this.handleTerminationMessage(document, context);
-                        }
-                        case ROUTE_MIRRORING_MESSAGE: {
-                            return Optional.empty();
-                        }
-                        default:
-                            throw new IllegalStateException();
-                    }
-                }).ifPresent(this::send);
+        Optional<Message> messageToSend = Optional.empty();
+        switch(message.getPacketCase()) {
+            case INITIATION:
+                messageToSend = this.handleInitiationMessage(message, message.getInitiation(), context);
+                break;
+            case TERMINATION:
+                messageToSend =  this.handleTerminationMessage(message, message.getTermination(), context);
+                break;
+            case PEERUP:
+                messageToSend = this.handlePeerUpNotification(message, message.getPeerUp(), context);
+                break;
+            case PEERDOWN:
+                messageToSend = this.handlePeerDownNotification(message, message.getPeerDown(), context);
+                break;
+            case STATISTICSREPORT:
+                messageToSend = this.handleStatisticReport(message, message.getStatisticsReport(), context);
+                break;
+            case ROUTEMONITORING:
+            case PACKET_NOT_SET:
+                break;
+        }
+        messageToSend.ifPresent(this::send);
     }
 
     @Override

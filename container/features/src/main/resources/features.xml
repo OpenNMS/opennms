@@ -994,6 +994,7 @@
         <feature>opennms-telemetry-collection</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>

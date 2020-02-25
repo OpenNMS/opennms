@@ -36,6 +36,9 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import java.nio.charset.StandardCharsets;
+
+import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
+
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -60,6 +63,10 @@ public abstract class Record {
             hasher.putString(value, StandardCharsets.UTF_8);
         }
         return hasher.hash().toString();
+    }
+
+    public static String hash(Transport.IpAddress address, long distinguisher, String routerHashId) {
+        return "TODO";
     }
 
     protected abstract String[] fields();

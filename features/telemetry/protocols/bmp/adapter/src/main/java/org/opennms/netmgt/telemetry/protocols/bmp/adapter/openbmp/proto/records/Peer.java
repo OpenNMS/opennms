@@ -44,7 +44,7 @@ public class Peer extends Record {
     public String remoteBgpId;
     public InetAddress routerIp;
     public Instant timestamp;
-    public long remoteAsn;
+    public long remoteAsn; // FIXME: long vs Long
     public InetAddress remoteIp;
     public String peerRd;
     public Integer remotePort;

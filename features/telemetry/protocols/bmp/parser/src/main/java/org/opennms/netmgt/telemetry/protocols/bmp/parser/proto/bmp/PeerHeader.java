@@ -28,19 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.function.Function;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedLong;
 
 import io.netty.buffer.ByteBuf;
 
@@ -49,12 +48,12 @@ public class PeerHeader {
 
     public final PeerFlags flags; // uint8
 
-    public final String distinguisher; // uint32
+    public final UnsignedLong distinguisher; // uint64
 
     public final InetAddress address; // 16 bytes
 
     public final long as; // uint32
-    public final InetAddress id; // uint32
+    public final long id; // uint32
 
     public final Instant timestamp; // uint32 (seconds) + uint32(microseconds)
 
@@ -63,12 +62,12 @@ public class PeerHeader {
 
         this.flags = new PeerFlags(uint8(buffer));
 
-        this.distinguisher = parseDistinguisher(slice(buffer, 8));
+        this.distinguisher = uint64(buffer);
 
         this.address = this.flags.parsePaddedAddress(buffer);
 
         this.as = uint32(buffer);
-        this.id = InetAddressUtils.getInetAddress(bytes(buffer, 4));
+        this.id = uint32(buffer);
 
         this.timestamp = Instant.ofEpochSecond(uint32(buffer), uint32(buffer) * 1000);
     }
@@ -91,6 +90,10 @@ public class PeerHeader {
                     throw new InvalidPacketException(buffer, "Unknown peer type: %d", type);
             }
         }
+
+        public <R> R map(final Function<Type, R> mapper) {
+            return mapper.apply(this);
+        }
     }
 
     @Override
@@ -104,32 +107,5 @@ public class PeerHeader {
                 .add("id", this.id)
                 .add("timestamp", this.timestamp)
                 .toString();
-    }
-
-    private static String parseDistinguisher(final ByteBuf buffer) throws InvalidPacketException {
-        final int type = uint16(buffer);
-        switch (type) {
-            case 0: {
-                final int as = uint16(buffer);
-                final long assigned = uint32(buffer);
-                return String.format("%d:%d", as, assigned);
-            }
-
-            case 1: {
-                final InetAddress admin = InetAddressUtils.getInetAddress(bytes(buffer, 4));
-                final int assigned = uint16(buffer);
-                return String.format("%s:%d", admin.getHostAddress(), assigned);
-            }
-
-            case 2: {
-                final long as = uint32(buffer);
-                final int assigned = uint16(buffer);
-                return String.format("%d:%d", as, assigned);
-            }
-
-            default: {
-                throw new InvalidPacketException(buffer, "Unknown route distinguisher type: {}", type);
-            }
-        }
     }
 }

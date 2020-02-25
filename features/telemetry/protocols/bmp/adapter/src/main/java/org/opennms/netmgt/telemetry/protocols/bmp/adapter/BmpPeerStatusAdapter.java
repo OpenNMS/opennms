@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.first;
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getInt64;
-import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
 
 import java.net.InetAddress;
 import java.time.Instant;
@@ -38,8 +36,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.bson.BsonDocument;
-import org.bson.RawBsonDocument;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -48,12 +44,13 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
+import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpPeerStatusAdapter extends AbstractAdapter {
 
@@ -74,16 +71,21 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
     }
 
     @Override
-    public void handleMessage(final TelemetryMessageLogEntry message,
+    public void handleMessage(final TelemetryMessageLogEntry messageLogEntry,
                               final TelemetryMessageLog messageLog) {
-        LOG.trace("Parsing packet: {}", message);
-        final BsonDocument document = new RawBsonDocument(message.getByteArray());
+        LOG.trace("Parsing packet: {}", messageLogEntry);
+        final Transport.Message message;
+        try {
+            message = Transport.Message.parseFrom(messageLogEntry.getByteArray());
+        } catch (final InvalidProtocolBufferException e) {
+            LOG.error("Invalid message", e);
+            return;
+        }
 
         // This adapter only cares about peer up/down packets
-        if (!getString(document, "@type")
-                .map(type -> Header.Type.PEER_UP_NOTIFICATION.name().equals(type) ||
-                             Header.Type.PEER_DOWN_NOTIFICATION.name().equals(type))
-                .orElse(false)) {
+        final Transport.PeerUpPacket peerUp = message.getPeerUp();
+        final Transport.PeerDownPacket peerDown = message.getPeerDown();
+        if (peerUp == null && peerDown == null) {
             return;
         }
 
@@ -95,33 +97,45 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
             return;
         }
 
-        final boolean up = getString(document, "@type")
-                .map(type -> Header.Type.PEER_UP_NOTIFICATION.name().equals(type))
-                .orElse(false);
-
-        final String uei = up
+        final String uei = peerUp != null
                            ? EventConstants.BMP_PEER_UP
                            : EventConstants.BMP_PEER_DOWN;
 
-        final Instant timestamp = Instant.ofEpochSecond(getInt64(document, "peer", "timestamp", "epoch").get(),
-                                                        getInt64(document, "peer", "timestamp", "nanos").orElse(0L));
+        final Transport.Peer peer = peerUp != null
+                                    ? peerUp.getPeer()
+                                    : peerDown.getPeer();
+
+        final Instant timestamp = Instant.ofEpochSecond(peer.getTimestamp().getSeconds(), peer.getTimestamp().getNanos());
 
         final EventBuilder event = new EventBuilder(uei, "telemetryd:" + this.adapterConfig.getName(), Date.from(timestamp));
         event.setNodeid(exporterNodeId.get());
         event.setInterface(exporterAddress);
 
         // Extract peer details
-        getInt64(document, "peer", "distinguisher").ifPresent(value -> event.addParam("distinguisher", Long.toString(value)));
-        getString(document, "peer", "address").ifPresent(value -> event.addParam("address", value));
-        getInt64(document, "peer", "as").ifPresent(value -> event.addParam("as", Long.toString(value)));
-        getInt64(document, "peer", "id").ifPresent(value -> event.addParam("id", Long.toString(value)));
+        event.addParam("distinguisher", peer.getDistinguisher());
+        event.addParam("address", InetAddressUtils.str(address(peer.getAddress())));
+        event.addParam("as", Long.toString(peer.getAs()));
+        event.addParam("id", Long.toString(peer.getId()));
 
         // Extract error details
-        if (!up) {
-            getString(document, "type").ifPresent(value -> event.addParam("type", value));
-            first(getInt64(document, "code").map(code -> "Code " + code),
-                  getString(document, "error"))
-                    .ifPresent(value -> event.addParam("error", value));
+        if (peerDown != null) {
+            switch (peerDown.getReasonCase()) {
+                case LOCALBGPNOTIFICATION:
+                    event.addParam("error", "Local disconnect: " + peerDown.getLocalBgpNotification());
+                    break;
+
+                case LOCALNONOTIFICATION:
+                    event.addParam("error", "Local disconnect without notification: code = " + peerDown.getLocalNoNotification());
+                    break;
+
+                case REMOTEBGPNOTIFICATION:
+                    event.addParam("error", "Remote disconnect: " + peerDown.getRemoteBgpNotification());
+                    break;
+
+                case REMOTENONOTIFICATION:
+                    event.addParam("error", "Remote disconnect without notification");
+                    break;
+            }
         }
 
         this.eventForwarder.sendNow(event.getEvent());

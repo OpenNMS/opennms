@@ -30,15 +30,17 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
-import org.bson.BsonBinaryWriter;
-import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
@@ -85,32 +87,17 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
+import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.primitives.UnsignedLong;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Empty;
 
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
-
-    public static final String METRIC_DUPLICATE_PREFIX = "duplicate_prefix";
-    public static final String METRIC_ADJ_RIB_IN = "adj_rib_in";
-    public static final String METRIC_DUPLICATE_WITHDRAW = "duplicate_withdraw";
-    public static final String METRIC_ADJ_RIB_OUT = "adj_rib_out";
-    public static final String METRIC_EXPORT_RIB = "export_rib";
-    public static final String METRIC_INVALID_UPDATE_DUE_TO_AS_CONFED_LOOP = "invalid_update_due_to_as_confed_loop";
-    public static final String METRIC_INVALID_UPDATE_DUE_TO_AS_PATH_LOOP = "invalid_update_due_to_as_path_loop";
-    public static final String METRIC_INVALID_UPDATE_DUE_TO_CLUSTER_LIST_LOOP = "invalid_update_due_to_cluster_list_loop";
-    public static final String METRIC_INVALID_UPDATE_DUE_TO_ORIGINATOR_ID = "invalid_update_due_to_originator_id";
-    public static final String METRIC_PER_AFI_ADJ_RIB_IN = "per_afi_adj_rib_in";
-    public static final String METRIC_PER_AFI_LOC_RIB = "per_afi_loc_rib";
-    public static final String METRIC_PREFIX_TREAT_AS_WITHDRAW = "prefix_treat_as_withdraw";
-    public static final String METRIC_UPDATE_TREAT_AS_WITHDRAW = "update_treat_as_withdraw";
-    public static final String METRIC_LOC_RIB = "loc_rib";
-    public static final String METRIC_DUPLICATE_UPDATE = "duplicate_update";
-    public static final String METRIC_REJECTED = "rejected";
 
     private final String name;
 
@@ -124,7 +111,7 @@ public class BmpParser implements TcpParser {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
 
-        this.recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
+        this.recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsDispatched"));
     }
 
     @Override
@@ -133,10 +120,12 @@ public class BmpParser implements TcpParser {
     }
 
     @Override
-    public void start(final ScheduledExecutorService executorService) {}
+    public void start(final ScheduledExecutorService executorService) {
+    }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
     public Handler accept(final InetSocketAddress remoteAddress,
@@ -162,364 +151,363 @@ public class BmpParser implements TcpParser {
 
             LOG.trace("Got packet: {}", packet);
 
-            final BasicOutputBuffer output = new BasicOutputBuffer();
-            try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
-                writer.writeStartDocument();
+            final Transport.Message.Builder message = Transport.Message.newBuilder()
+                                                                       .setVersion(header.version);
 
-                writer.writeInt32("@version", header.version);
-                writer.writeString("@type", header.type.name());
+            packet.accept(new Serializer(message));
 
-                packet.accept(new Serializer(writer));
-
-                writer.writeEndDocument();
-            }
-
+            final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
             this.recordsDispatched.mark();
 
-            final TelemetryMessage message = new TelemetryMessage(remoteAddress, output.getByteBuffers().get(0).asNIO());
-            return Optional.of(dispatcher.send(message));
+            return Optional.of(dispatched);
         };
     }
 
     private static class Serializer implements Packet.Visitor {
-        private final BsonBinaryWriter writer;
+        private final Transport.Message.Builder message;
 
-        private Serializer(final BsonBinaryWriter writer) {
-            this.writer = Objects.requireNonNull(writer);
+        private Serializer(final Transport.Message.Builder message) {
+            this.message = Objects.requireNonNull(message);
+        }
+
+        private static Transport.Peer peer(final PeerHeader peerHeader) {
+            final Transport.Peer.Builder peer = Transport.Peer.newBuilder();
+
+            peer.setType(peerHeader.type.map(v -> {
+                switch (v) {
+                    case GLOBAL_INSTANCE:
+                        return Transport.Peer.Type.GLOBAL_INSTANCE;
+                    case RD_INSTANCE:
+                        return Transport.Peer.Type.RD_INSTANCE;
+                    case LOCAL_INSTANCE:
+                        return Transport.Peer.Type.LOCAL_INSTANCE;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }));
+
+            final Transport.Peer.Flags.Builder flags = peer.getFlagsBuilder();
+            flags.setIpVersion(peerHeader.flags.addressVersion.map(v -> {
+                switch (v) {
+                    case IP_V4:
+                        return Transport.Peer.Flags.IpVersion.IP_V4;
+                    case IP_V6:
+                        return Transport.Peer.Flags.IpVersion.IP_V6;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }));
+            flags.setPolicy(peerHeader.flags.policy.map(v -> {
+                switch (v) {
+                    case PRE_POLICY:
+                        return Transport.Peer.Flags.Policy.PRE_POLICY;
+                    case POST_POLICY:
+                        return Transport.Peer.Flags.Policy.POST_POLICY;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }));
+            flags.setLegacyAsPath(peerHeader.flags.legacyASPath);
+
+            peer.setDistinguisher(peerHeader.distinguisher.longValue());
+            peer.setAddress(address(peerHeader.address));
+            peer.setAs((int) peerHeader.as);
+            peer.setId((int) peerHeader.id);
+
+            peer.getTimestampBuilder()
+                .setSeconds(peerHeader.timestamp.getEpochSecond())
+                .setNanos(peerHeader.timestamp.getNano());
+
+            return peer.build();
+        }
+
+        private static Transport.IpAddress address(final InetAddress address) {
+            final Transport.IpAddress.Builder builder = Transport.IpAddress.newBuilder();
+            if (address instanceof Inet4Address) {
+                builder.setV4(ByteString.copyFrom(address.getAddress()));
+            } else if (address instanceof Inet6Address) {
+                builder.setV6(ByteString.copyFrom(address.getAddress()));
+            } else {
+                throw new IllegalStateException();
+            }
+
+            return builder.build();
         }
 
         @Override
         public void visit(final InitiationPacket packet) {
-            packet.information.first(InformationElement.Type.SYS_NAME)
-                    .ifPresent(v -> this.writer.writeString("sys_name", v));
+            final Transport.InitiationPacket.Builder message = this.message.getInitiationBuilder();
+            message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
+                                                 .orElse(""));
+            message.setSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
+                                                 .collect(Collectors.joining("\n")));
+            message.setMessage(packet.information.all(InformationElement.Type.STRING)
+                                                 .collect(Collectors.joining("\n")));
+        }
 
-            final String sysDescr = packet.information.all(InformationElement.Type.SYS_DESCR)
-                    .collect(Collectors.joining("\n"));
-            if (!sysDescr.isEmpty()) {
-                this.writer.writeString("sys_desc", sysDescr);
-            }
-
-            final String message = packet.information.all(InformationElement.Type.STRING)
-                    .collect(Collectors.joining("\n"));
-            if (!message.isEmpty()) {
-                this.writer.writeString("message", message);
-            }
-
-            packet.information.first(InformationElement.Type.BGP_ID)
-                              .ifPresent(v -> this.writer.writeString("bgp_id", v));
+        @Override
+        public void visit(final TerminationPacket packet) {
+            final Transport.TerminationPacket.Builder message = this.message.getTerminationBuilder();
+            message.addAllInformation(packet.information.stream()
+                                                        .map(e -> e.value).collect(Collectors.toList()));
         }
 
         @Override
         public void visit(final PeerUpPacket packet) {
-            this.writePeerHeader(packet.peerHeader);
+            final Transport.PeerUpPacket.Builder message = this.message.getPeerUpBuilder();
+            message.setPeer(peer(packet.peerHeader));
 
-            this.writer.writeString("local_address", packet.localAddress.getHostAddress());
-            this.writer.writeInt32("local_port", packet.localPort);
-            this.writer.writeInt32("remote_port", packet.remotePort);
+            message.setLocalAddress(address(packet.localAddress));
+            message.setLocalPort(packet.localPort);
+            message.setRemotePort(packet.remotePort);
 
-            this.writer.writeStartDocument("send_open_msg");
-            this.writer.writeInt64("version", packet.sendOpenMessage.version);
-            this.writer.writeInt64("as", packet.sendOpenMessage.as);
-            this.writer.writeInt64("hold_time", packet.sendOpenMessage.holdTime);
-            this.writer.writeString("id", packet.sendOpenMessage.id.getHostAddress());
-            this.writer.writeEndDocument();
+            message.getSendMsgBuilder()
+                   .setVersion(packet.sendOpenMessage.version)
+                   .setAs(packet.sendOpenMessage.as)
+                   .setHoldTime(packet.sendOpenMessage.holdTime)
+                   .setId(address(packet.sendOpenMessage.id));
 
-            this.writer.writeStartDocument("recv_open_msg");
-            this.writer.writeInt64("version", packet.recvOpenMessage.version);
-            this.writer.writeInt64("as", packet.recvOpenMessage.as);
-            this.writer.writeInt64("hold_time", packet.recvOpenMessage.holdTime);
-            this.writer.writeString("id", packet.recvOpenMessage.id.getHostAddress());
-            this.writer.writeEndDocument();
+            message.getRecvMsgBuilder()
+                   .setVersion(packet.recvOpenMessage.version)
+                   .setAs(packet.recvOpenMessage.as)
+                   .setHoldTime(packet.recvOpenMessage.holdTime)
+                   .setId(address(packet.recvOpenMessage.id));
 
-            packet.information.first(InformationElement.Type.SYS_NAME)
-                    .ifPresent(v -> this.writer.writeString("sys_name", v));
-
-            final String sysDescr = packet.information.all(InformationElement.Type.SYS_DESCR)
-                    .collect(Collectors.joining("\n"));
-            if (!sysDescr.isEmpty()) {
-                this.writer.writeString("sys_desc", sysDescr);
-            }
-
-            final String message = packet.information.all(InformationElement.Type.STRING)
-                    .collect(Collectors.joining("\n"));
-            if (!message.isEmpty()) {
-                this.writer.writeString("message", message);
-            }
+            message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
+                                                 .orElse(""));
+            message.setSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
+                                                 .collect(Collectors.joining("\n")));
+            message.setMessage(packet.information.all(InformationElement.Type.STRING)
+                                                 .collect(Collectors.joining("\n")));
         }
 
         @Override
         public void visit(final PeerDownPacket packet) {
-            this.writePeerHeader(packet.peerHeader);
-
-            this.writer.writeString("type", packet.type.name());
+            final Transport.PeerDownPacket.Builder message = this.message.getPeerDownBuilder();
+            message.setPeer(peer(packet.peerHeader));
 
             packet.reason.accept(new Reason.Visitor() {
                 @Override
-                public void visit(final LocalBgpNotification localNotification) {
-                    Serializer.this.writer.writeString("error", localNotification.notification.error.name());
+                public void visit(final LocalBgpNotification localBgpNotification) {
+                    message.setLocalBgpNotification(localBgpNotification.notification.error.name());
                 }
 
                 @Override
                 public void visit(final LocalNoNotification localNoNotification) {
-                    Serializer.this.writer.writeInt64("code", localNoNotification.code);
+                    message.setLocalNoNotification(localNoNotification.code);
                 }
 
                 @Override
-                public void visit(final RemoteBgpNotification remoteNotification) {
-                    Serializer.this.writer.writeString("error", remoteNotification.notification.error.name());
+                public void visit(final RemoteBgpNotification remoteBgpNotification) {
+                    message.setRemoteBgpNotification(remoteBgpNotification.notification.error.name());
                 }
 
                 @Override
                 public void visit(final RemoteNoNotification remoteNoNotification) {
-                    // No data
+                    message.setRemoteNoNotification(Empty.getDefaultInstance());
                 }
 
                 @Override
                 public void visit(final Unknown unknown) {
-                    // No data
+                    message.setUnknown(Empty.getDefaultInstance());
                 }
             });
         }
 
         @Override
-        public void visit(final RouteMonitoringPacket packet) {
-            this.writePeerHeader(packet.peerHeader);
-
-            this.writer.writeStartArray("withdraw");
-            for (final UpdatePacket.Prefix prefix : packet.updateMessage.withdrawRoutes) {
-                this.writer.writeStartDocument();
-                this.writer.writeInt64("length", prefix.length);
-                this.writer.writeString("prefix", prefix.prefix.getHostAddress());
-                this.writer.writeEndDocument();
-            }
-            this.writer.writeEndArray();
-
-            this.writer.writeStartArray("reachable");
-            for (final UpdatePacket.Prefix prefix : packet.updateMessage.reachableRoutes) {
-                this.writer.writeStartDocument();
-                this.writer.writeInt64("length", prefix.length);
-                this.writer.writeString("prefix", prefix.prefix.getHostAddress());
-                this.writer.writeEndDocument();
-            }
-            this.writer.writeEndArray();
-
-            this.writer.writeStartArray("path_attributes");
-            for (final UpdatePacket.PathAttribute attribute : packet.updateMessage.pathAttributes) {
-                this.writer.writeStartDocument();
-                this.writer.writeBoolean("optional", attribute.optional);
-                this.writer.writeBoolean("transitive", attribute.transitive);
-                this.writer.writeBoolean("partial", attribute.partial);
-                this.writer.writeBoolean("extended", attribute.extended);
-
-                this.writer.writeString("type", attribute.type.name());
-
-                attribute.attribute.accept(new Attribute.Visitor() {
-                    @Override
-                    public void visit(final Aggregator aggregator) {
-                        Serializer.this.writer.writeInt64("as", aggregator.as);
-                        Serializer.this.writer.writeString("address", aggregator.address.getHostAddress());
-                    }
-
-                    @Override
-                    public void visit(final AsPath asPath) {
-                        Serializer.this.writer.writeStartArray("segments");
-                        for (final AsPath.Segment segment : asPath.segments) {
-                            Serializer.this.writer.writeStartDocument();
-                            Serializer.this.writer.writeString("type", segment.type.name());
-                            Serializer.this.writer.writeStartArray("path");
-                            for (final long as : segment.path) {
-                                Serializer.this.writer.writeInt64(as);
-                            }
-                            Serializer.this.writer.writeEndArray();
-                            Serializer.this.writer.writeEndDocument();
-                        }
-                        Serializer.this.writer.writeEndArray();
-                    }
-
-                    @Override
-                    public void visit(final AtomicAggregate atomicAggregate) {
-                        // No data
-                    }
-
-                    @Override
-                    public void visit(final LocalPref localPref) {
-                        Serializer.this.writer.writeInt64("preference", localPref.preference);
-                    }
-
-                    @Override
-                    public void visit(final MultiExistDisc multiExistDisc) {
-                        Serializer.this.writer.writeInt64("discriminator", multiExistDisc.discriminator);
-                    }
-
-                    @Override
-                    public void visit(final NextHop nextHop) {
-                        Serializer.this.writer.writeString("address", nextHop.address.getHostAddress());
-                    }
-
-                    @Override
-                    public void visit(final Origin origin) {
-                        Serializer.this.writer.writeString("value", origin.value.name());
-                    }
-                });
-
-                this.writer.writeEndDocument();
-            }
-            this.writer.writeEndArray();
-        }
-
-        @Override
         public void visit(final StatisticsReportPacket packet) {
-            this.writePeerHeader(packet.peerHeader);
+            final Transport.StatisticsReportPacket.Builder message = this.message.getStatisticsReportBuilder();
+            message.setPeer(peer(packet.peerHeader));
 
-            this.writer.writeStartDocument("stats");
             for (final StatisticsReportPacket.Element statistic : packet.statistics) {
                 statistic.value.accept(new Metric.Visitor() {
                     @Override
                     public void visit(final DuplicatePrefix duplicatePrefix) {
-                        this.writeCounter(BmpParser.METRIC_DUPLICATE_PREFIX, duplicatePrefix.counter);
+                        message.getDuplicatePrefixBuilder().setCount((int) duplicatePrefix.counter);
                     }
 
                     @Override
                     public void visit(final DuplicateWithdraw duplicateWithdraw) {
-                        this.writeCounter(BmpParser.METRIC_DUPLICATE_WITHDRAW, duplicateWithdraw.counter);
+                        message.getDuplicateWithdrawBuilder().setCount((int) duplicateWithdraw.counter);
                     }
 
                     @Override
                     public void visit(final AdjRibIn adjRibIn) {
-                        this.writeGauge(BmpParser.METRIC_ADJ_RIB_IN, adjRibIn.gauge);
+                        message.getAdjRibInBuilder().setValue(adjRibIn.gauge.longValue());
                     }
 
                     @Override
                     public void visit(final AdjRibOut adjRibOut) {
-                        this.writeGauge(BmpParser.METRIC_ADJ_RIB_OUT, adjRibOut.gauge);
+                        message.getAdjRibOutBuilder().setValue(adjRibOut.gauge.longValue());
                     }
 
                     @Override
                     public void visit(final ExportRib exportRib) {
-                        this.writeGauge(BmpParser.METRIC_EXPORT_RIB, exportRib.gauge);
+                        message.getExportRibBuilder().setValue(exportRib.gauge.longValue());
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToAsConfedLoop invalidUpdateDueToAsConfedLoop) {
-                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_AS_CONFED_LOOP, invalidUpdateDueToAsConfedLoop.counter);
+                        message.getInvalidUpdateDueToAsConfedLoopBuilder().setCount((int) invalidUpdateDueToAsConfedLoop.counter);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToAsPathLoop invalidUpdateDueToAsPathLoop) {
-                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_AS_PATH_LOOP, invalidUpdateDueToAsPathLoop.counter);
+                        message.getInvalidUpdateDueToAsPathLoopBuilder().setCount((int) invalidUpdateDueToAsPathLoop.counter);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToClusterListLoop invalidUpdateDueToClusterListLoop) {
-                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_CLUSTER_LIST_LOOP, invalidUpdateDueToClusterListLoop.counter);
+                        message.getInvalidUpdateDueToClusterListLoopBuilder().setCount((int) invalidUpdateDueToClusterListLoop.counter);
                     }
 
                     @Override
                     public void visit(final InvalidUpdateDueToOriginatorId invalidUpdateDueToOriginatorId) {
-                        this.writeCounter(BmpParser.METRIC_INVALID_UPDATE_DUE_TO_ORIGINATOR_ID, invalidUpdateDueToOriginatorId.counter);
+                        message.getInvalidUpdateDueToOriginatorIdBuilder().setCount((int) invalidUpdateDueToOriginatorId.counter);
                     }
 
                     @Override
                     public void visit(final PerAfiAdjRibIn perAfiAdjRibIn) {
-                        final String name = new StringJoiner(":")
-                                .add(BmpParser.METRIC_PER_AFI_ADJ_RIB_IN)
-                                .add(Integer.toString(perAfiAdjRibIn.afi))
-                                .add(Integer.toString(perAfiAdjRibIn.safi))
-                                .toString();
-                        this.writeGauge(name, perAfiAdjRibIn.gauge);
+                        final String key = String.format("%d:%d", perAfiAdjRibIn.afi, perAfiAdjRibIn.safi);
+                        message.putPerAfiAdjRibIn(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
+                                                                                             .setValue(perAfiAdjRibIn.gauge.longValue())
+                                                                                             .build());
                     }
 
                     @Override
                     public void visit(final PerAfiLocRib perAfiLocRib) {
-                        final String name = new StringJoiner(":")
-                            .add(BmpParser.METRIC_PER_AFI_LOC_RIB)
-                                .add(Integer.toString(perAfiLocRib.afi))
-                                .add(Integer.toString(perAfiLocRib.safi))
-                                .toString();
-                        this.writeGauge(name, perAfiLocRib.gauge);
+                        final String key = String.format("%d:%d", perAfiLocRib.afi, perAfiLocRib.safi);
+                        message.putPerAfiLocRib(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
+                                                                                           .setValue(perAfiLocRib.gauge.longValue())
+                                                                                           .build());
                     }
 
                     @Override
                     public void visit(final PrefixTreatAsWithdraw prefixTreatAsWithdraw) {
-                        this.writeCounter(BmpParser.METRIC_PREFIX_TREAT_AS_WITHDRAW, prefixTreatAsWithdraw.counter);
+                        message.getPrefixTreatAsWithdrawBuilder().setCount((int) prefixTreatAsWithdraw.counter);
                     }
 
                     @Override
                     public void visit(final UpdateTreatAsWithdraw updateTreatAsWithdraw) {
-                        this.writeCounter(BmpParser.METRIC_UPDATE_TREAT_AS_WITHDRAW, updateTreatAsWithdraw.counter);
+                        message.getUpdateTreatAsWithdrawBuilder().setCount((int) updateTreatAsWithdraw.counter);
                     }
 
                     @Override
                     public void visit(final LocRib locRib) {
-                        this.writeGauge(BmpParser.METRIC_LOC_RIB, locRib.gauge);
+                        message.getLocRibBuilder().setValue(locRib.gauge.longValue());
                     }
 
                     @Override
                     public void visit(final DuplicateUpdate duplicateUpdate) {
-                        this.writeCounter(BmpParser.METRIC_DUPLICATE_UPDATE, duplicateUpdate.counter);
+                        message.getDuplicateUpdateBuilder().setCount((int) duplicateUpdate.counter);
                     }
 
                     @Override
                     public void visit(final Rejected rejected) {
-                        this.writeCounter(BmpParser.METRIC_REJECTED, rejected.counter);
-                    }
-
-                    private void writeCounter(final String name, final long counter) {
-                        Serializer.this.writer.writeStartDocument(name);
-                        Serializer.this.writer.writeInt64("counter", counter);
-                        Serializer.this.writer.writeEndDocument();
-                    }
-
-                    private void writeGauge(final String name, final UnsignedLong gauge) {
-                        Serializer.this.writer.writeStartDocument(name);
-                        Serializer.this.writer.writeInt64("gauge", gauge.longValue());
-                        Serializer.this.writer.writeEndDocument();
+                        message.getRejectedBuilder().setCount((int) rejected.counter);
                     }
                 });
             }
-            this.writer.writeEndDocument();
         }
 
         @Override
-        public void visit(final TerminationPacket packet) {
-            this.writer.writeStartArray("information");
-            for (final TerminationPacket.Element information : packet.information) {
-                this.writer.writeString(information.value);
+        public void visit(final RouteMonitoringPacket packet) {
+            final Transport.RouteMonitoringPacket.Builder message = this.message.getRouteMonitoringBuilder();
+            message.setPeer(peer(packet.peerHeader));
+
+            for (final UpdatePacket.Prefix prefix : packet.updateMessage.withdrawRoutes) {
+                message.addWithdrawBuilder()
+                       .setPrefix(address(prefix.prefix))
+                       .setLength(prefix.length);
             }
-            this.writer.writeEndArray();
+
+            for (final UpdatePacket.Prefix prefix : packet.updateMessage.reachableRoutes) {
+                message.addReachableBuilder()
+                       .setPrefix(address(prefix.prefix))
+                       .setLength(prefix.length);
+            }
+
+            for (final UpdatePacket.PathAttribute attribute : packet.updateMessage.pathAttributes) {
+                final Transport.RouteMonitoringPacket.PathAttribute.Builder attributesBuilder = message.addAttributesBuilder();
+                attributesBuilder.setOptional(attribute.optional)
+                                 .setTransitive(attribute.transitive)
+                                 .setPartial(attribute.partial)
+                                 .setExtended(attribute.extended);
+
+                attribute.attribute.accept(new Attribute.Visitor() {
+                    @Override
+                    public void visit(final Aggregator aggregator) {
+                        attributesBuilder.getAggregatorBuilder()
+                                         .setAs(aggregator.as)
+                                         .setAddress(address(aggregator.address));
+                    }
+
+                    @Override
+                    public void visit(final AsPath asPath) {
+                        final Transport.RouteMonitoringPacket.PathAttribute.AsPath.Builder asPathBuilder = attributesBuilder.getAsPathBuilder();
+                        for (final AsPath.Segment segment : asPath.segments) {
+                            final Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Builder segmentBuilder = asPathBuilder.addSegmentsBuilder();
+                            segmentBuilder.setType(segment.type.map(t -> {
+                                switch (t) {
+                                    case AS_SET:
+                                        return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET;
+                                    case AS_SEQUENCE:
+                                        return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SEQUENCE;
+                                    default:
+                                        throw new IllegalStateException();
+                                }
+                            }));
+                            for (final long as : segment.path) {
+                                segmentBuilder.addPath((int) as);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void visit(final AtomicAggregate atomicAggregate) {
+                        attributesBuilder.getAtomicAggregateBuilder();
+                    }
+
+                    @Override
+                    public void visit(final LocalPref localPref) {
+                        attributesBuilder.getLocalPrefBuilder()
+                                         .setPreference((int) localPref.preference);
+                    }
+
+                    @Override
+                    public void visit(final MultiExistDisc multiExistDisc) {
+                        attributesBuilder.getMultiExitDiscBuilder()
+                                         .setDiscriminator((int) multiExistDisc.discriminator);
+                    }
+
+                    @Override
+                    public void visit(final NextHop nextHop) {
+                        attributesBuilder.getNextHopBuilder()
+                                         .setAddress(address(nextHop.address));
+                    }
+
+                    @Override
+                    public void visit(final Origin origin) {
+                        attributesBuilder.setOrigin(origin.value.map(v -> {
+                            switch (v) {
+                                case IGP:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.Origin.IGP;
+                                case EGP:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.Origin.EGP;
+                                case INCOMPLETE:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.Origin.INCOMPLETE;
+                                default:
+                                    throw new IllegalStateException();
+                            }
+                        }));
+                    }
+                });
+            }
         }
 
         @Override
         public void visit(final RouteMirroringPacket packet) {
             // Don't send out mirrored BGP packets.
-        }
-
-        private void writePeerHeader(final PeerHeader peerHeader) {
-            this.writer.writeStartDocument("peer");
-
-            this.writer.writeString("type", peerHeader.type.name());
-
-            this.writer.writeInt32("ip_version", peerHeader.flags.addressVersion.map(v -> {switch(v) {
-                case IP_V4: return 4;
-                case IP_V6: return 6;
-                default: throw new IllegalStateException();
-            }}));
-            this.writer.writeBoolean("post_policy", peerHeader.flags.postPolicy);
-            this.writer.writeBoolean("legacy_as_path", peerHeader.flags.legacyASPath);
-
-            this.writer.writeString("distinguisher", peerHeader.distinguisher);
-            this.writer.writeString("address", peerHeader.address.getHostAddress());
-            this.writer.writeInt64("as", peerHeader.as);
-            this.writer.writeString("id", peerHeader.id.getHostAddress());
-
-            this.writer.writeStartDocument("timestamp");
-            this.writer.writeInt64("epoch", peerHeader.timestamp.getEpochSecond());
-            if (peerHeader.timestamp.getNano() != 0) {
-                this.writer.writeInt64("nanos", peerHeader.timestamp.getNano());
-            }
-            this.writer.writeEndDocument();
-
-            this.writer.writeEndDocument();
         }
     }
 }

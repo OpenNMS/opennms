@@ -30,6 +30,8 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.path
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
+import java.util.function.Function;
+
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
@@ -56,6 +58,10 @@ public class Origin implements Attribute {
                 default:
                     throw new IllegalArgumentException("Unknown originator code: " + code);
             }
+        }
+
+        public <R> R map(final Function<Value, R> mapper) {
+            return mapper.apply(this);
         }
     }
 
