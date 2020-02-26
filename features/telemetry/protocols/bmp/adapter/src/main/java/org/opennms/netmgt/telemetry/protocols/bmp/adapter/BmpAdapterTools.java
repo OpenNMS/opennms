@@ -36,6 +36,7 @@ import java.util.Optional;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 
+import com.google.common.primitives.UnsignedInts;
 import com.google.protobuf.Timestamp;
 
 public interface BmpAdapterTools {
@@ -70,4 +71,7 @@ public interface BmpAdapterTools {
         return Transport.IpAddress.AddressCase.V4.equals(ipAddress.getAddressCase());
     }
 
+    static long uint32(int i) {
+        return UnsignedInts.toLong(i);
+    }
 }

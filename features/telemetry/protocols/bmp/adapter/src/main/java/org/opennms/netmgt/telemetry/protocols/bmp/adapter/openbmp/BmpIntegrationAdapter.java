@@ -29,16 +29,15 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
-import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.addressAsStr;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.isV4;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 
 import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -227,15 +226,15 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = null; // FIXME: Can populate?
+        peer.name = InetAddressUtils.str(address(bgpPeer.getAddress())); // TODO: resolve Ip via DNS?
         peer.hash = Record.hash(bgpPeer.getAddress(),
                 bgpPeer.getDistinguisher(),
                 context.routerHashId);
         peer.routerHash = context.routerHashId;
-        peer.remoteBgpId = null; // FIXME: Can populate?
+        peer.remoteBgpId = address(bgpPeer.getId());
         peer.routerIp = context.sourceAddress;
         peer.timestamp = context.timestamp;
-        peer.remoteAsn = 0L; // FIXME: Can populate?
+        peer.remoteAsn = uint32(bgpPeer.getAs());
         peer.remoteIp = address(bgpPeer.getAddress());
         peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
         peer.remotePort = null;
@@ -248,9 +247,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.receivedCapabilities = null;
         peer.remoteHolddown = null;
         peer.advertisedHolddown = null;
-        peer.bmpReason = null; // TODO: Extract from document
-        peer.bgpErrorCode = null; // TODO: Extract from document
-        peer.bgpErrorSubcode = null; // TODO: Extract from document
+        peer.bmpReason = peerDown.getReasonCase().getNumber() - 1;
+        peer.bgpErrorCode = peerDown.getErrorCode();
+        peer.bgpErrorSubcode = peerDown.getErrorSubCode();
         peer.errorText = null; // TODO: Extract from document
         peer.l3vpn = false; // TODO: Extract from document
         peer.prePolicy = false; // TODO?

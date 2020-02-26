@@ -46,13 +46,17 @@ import io.netty.buffer.ByteBuf;
 
 public class NotificationPacket implements Packet {
     public final Header header;
+    public final int code, subcode;
 
     public final Error error; // uint8 + uint8
 
     public NotificationPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
         this.header = Objects.requireNonNull(header);
 
-        this.error = Error.from(uint8(buffer), uint8(buffer));
+        this.code = uint8(buffer);
+        this.subcode = uint8(buffer);
+
+        this.error = Error.from(code, subcode);
 
         // Skip the error data (see https://tools.ietf.org/html/rfc4271#section-6)
         skip(buffer, buffer.readableBytes());

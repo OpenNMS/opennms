@@ -32,7 +32,6 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
 
 import java.net.InetAddress;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -111,7 +110,7 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         builder.withTimestamp(Date.from(timestamp(stats.getPeer().getTimestamp())));
         builder.withStringAttribute(peerResource, "bmp", "address", peerAddress);
         builder.withStringAttribute(peerResource, "bmp", "as", Long.toString(stats.getPeer().getAs()));
-        builder.withStringAttribute(peerResource, "bmp", "id", Long.toString(stats.getPeer().getId()));
+        builder.withStringAttribute(peerResource, "bmp", "id", InetAddressUtils.str(BmpAdapterTools.address(stats.getPeer().getId())));
 
         final Function<String, Consumer<Transport.StatisticsReportPacket.Counter>> addCounter = (name) -> (counter) -> {
             final String identifier = String.format("bmp_%s_%s", peerAddress, name);

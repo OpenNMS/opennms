@@ -292,7 +292,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257076L)));
         assertThat(packet.type, is(PeerDownPacket.Type.REMOTE_BGP_NOTIFICATION));
         packet.reason.accept(new Reason.Visitor(){
@@ -334,7 +334,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257049L)));
         assertThat(packet.localAddress, is(InetAddressUtils.addr("10.0.255.7")));
         assertThat(packet.localPort, is(179));
@@ -363,7 +363,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, either(is(Instant.ofEpochSecond(1574257996L))).or(is(Instant.ofEpochSecond(1574257061L))));
 
         assertThat(packet.updateMessage.header.length, either(is(27)).or(is(47)));
@@ -434,7 +434,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257732L)));
 
         assertThat(packet.statistics.size(), is(4));

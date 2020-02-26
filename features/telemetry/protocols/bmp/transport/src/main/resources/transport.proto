@@ -42,7 +42,7 @@ message Peer {
     fixed64 distinguisher = 3;
     IpAddress address = 4;
     fixed32 as = 5;
-    fixed32 id = 6;
+    IpAddress id = 6;
 
     google.protobuf.Timestamp timestamp = 7;
 }
@@ -92,6 +92,9 @@ message PeerDownPacket {
         google.protobuf.Empty remote_no_notification = 5;
         google.protobuf.Empty unknown = 6;
     }
+
+    uint32 errorCode = 7;
+    uint32 errorSubCode = 8;
 }
 
 message RouteMonitoringPacket {

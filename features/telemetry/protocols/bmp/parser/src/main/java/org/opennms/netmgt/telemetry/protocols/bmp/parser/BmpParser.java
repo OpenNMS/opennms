@@ -277,7 +277,7 @@ public class BmpParser implements TcpParser {
             peer.setDistinguisher(peerHeader.distinguisher.longValue());
             peer.setAddress(address(peerHeader.address));
             peer.setAs((int) peerHeader.as);
-            peer.setId((int) peerHeader.id);
+            peer.setId(address(peerHeader.id));
 
             peer.getTimestampBuilder()
                 .setSeconds(peerHeader.timestamp.getEpochSecond())
