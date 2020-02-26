@@ -84,10 +84,11 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         }
 
         // This adapter only cares about statistic packets
-        final Transport.StatisticsReportPacket stats = message.getStatisticsReport();
-        if (stats == null) {
+        if (!message.hasStatisticsReport()) {
             return Stream.empty();
         }
+
+        final Transport.StatisticsReportPacket stats = message.getStatisticsReport();
 
         // Find the node for the router who has exported the stats and build a collection agent for it
         final InetAddress exporterAddress = InetAddressUtils.getInetAddress(messageLog.getSourceAddress());

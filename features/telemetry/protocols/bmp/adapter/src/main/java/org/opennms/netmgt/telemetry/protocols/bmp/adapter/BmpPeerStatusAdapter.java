@@ -83,8 +83,8 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         }
 
         // This adapter only cares about peer up/down packets
-        final Transport.PeerUpPacket peerUp = message.getPeerUp();
-        final Transport.PeerDownPacket peerDown = message.getPeerDown();
+        final Transport.PeerUpPacket peerUp = message.hasPeerUp() ? message.getPeerUp() : null;
+        final Transport.PeerDownPacket peerDown = message.hasPeerDown() ? message.getPeerDown() : null;
         if (peerUp == null && peerDown == null) {
             return;
         }
