@@ -35,7 +35,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -46,9 +45,11 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
@@ -59,14 +60,17 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
-    private final static AtomicLong SEQUENCE = new AtomicLong();
+
     private final KafkaProducer<String, String> producer;
+
+    private final AtomicLong sequence = new AtomicLong();
 
     public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
                                  final MetricRegistry metricRegistry) {
@@ -87,12 +91,41 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
     }
 
+    private Optional<Message> handleHeartbeatMessage(final Transport.Message message,
+                                                     final Transport.Heartbeat heartbeat,
+                                                     final Context context) {
+        final Collector collector = new Collector();
+
+        switch (heartbeat.getMode()) {
+            case STARTED:
+                collector.action = Collector.Action.STARTED;
+                break;
+            case STOPPED:
+                collector.action = Collector.Action.STOPPED;
+                break;
+            case PERIODIC:
+                collector.action = Collector.Action.HEARTBEAT;
+                break;
+            case CHANGED:
+                collector.action = Collector.Action.CHANGE;
+                break;
+        }
+
+        collector.sequence = sequence.getAndIncrement();
+        collector.adminId = context.adminId;
+        collector.hash = context.collectorHashId;
+        collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
+        collector.timestamp = context.timestamp;
+
+        return Optional.of(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
+    }
+
     private Optional<Message> handleInitiationMessage(final Transport.Message message,
                                                       final Transport.InitiationPacket initiation,
                                                       final Context context) {
         final Router router = new Router();
         router.action = Router.Action.INIT;
-        router.sequence = SEQUENCE.getAndIncrement();
+        router.sequence = sequence.getAndIncrement();
         router.name = initiation.getSysName();
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
@@ -112,7 +145,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                                                        final Context context) {
         final Router router = new Router();
         router.action = Router.Action.TERM;
-        router.sequence = SEQUENCE.getAndIncrement();
+        router.sequence = sequence.getAndIncrement();
         router.name = null;
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
@@ -133,7 +166,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Transport.Peer bgpPeer = peerUp.getPeer();
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
-        peer.sequence = SEQUENCE.getAndIncrement();
+        peer.sequence = sequence.getAndIncrement();
         peer.name = peerUp.getSysName();
         peer.hash = Record.hash(bgpPeer.getAddress(),
                                 bgpPeer.getDistinguisher(),
@@ -175,7 +208,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Transport.Peer bgpPeer = peerDown.getPeer();
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
-        peer.sequence = SEQUENCE.getAndIncrement();
+        peer.sequence = sequence.getAndIncrement();
         peer.name = null; // FIXME: Can populate?
         peer.hash = Record.hash(bgpPeer.getAddress(),
                 bgpPeer.getDistinguisher(),
@@ -217,7 +250,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Transport.Peer peer = statisticsReport.getPeer();
         final Stat stat = new Stat();
         stat.action = Stat.Action.ADD;
-        stat.sequence = SEQUENCE.getAndIncrement();
+        stat.sequence = sequence.getAndIncrement();
         stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
         stat.routerIp = context.sourceAddress;
         stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
@@ -250,7 +283,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
         final String collectorHashId = Record.hash(messageLog.getSystemId());
         final String routerHashId = Record.hash(messageLog.getSourceAddress(), Integer.toString(messageLog.getSourcePort()), collectorHashId);
-        final Context context = new Context(collectorHashId,
+        final Context context = new Context(messageLog.getSystemId(),
+                                            collectorHashId,
                                             routerHashId,
                                             Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
                                             InetAddressUtils.addr(messageLog.getSourceAddress()),
@@ -258,6 +292,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
         Optional<Message> messageToSend = Optional.empty();
         switch(message.getPacketCase()) {
+            case HEARTBEAT:
+                messageToSend = this.handleHeartbeatMessage(message, message.getHeartbeat(), context);
+                break;
             case INITIATION:
                 messageToSend = this.handleInitiationMessage(message, message.getInitiation(), context);
                 break;
@@ -303,6 +340,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     private static class Context {
+        public final String adminId;
+
         public final String collectorHashId;
         public final String routerHashId;
 
@@ -311,11 +350,13 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         public final InetAddress sourceAddress;
         public final int sourcePort;
 
-        private Context(final String collectorHashId,
+        private Context(final String adminId,
+                        final String collectorHashId,
                         final String routerHashId,
                         final Instant timestamp,
                         final InetAddress sourceAddress,
                         final int sourcePort) {
+            this.adminId = Objects.requireNonNull(adminId);
             this.collectorHashId = Objects.requireNonNull(collectorHashId);
             this.routerHashId = Objects.requireNonNull(routerHashId);
             this.timestamp = Objects.requireNonNull(timestamp);
