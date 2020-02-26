@@ -59,7 +59,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
-    private final static AtomicLong SEQUENCE = new AtomicLong();
+    private final AtomicLong sequence = new AtomicLong();
     private final BmpMessageHandler handler;
 
     public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
@@ -80,7 +80,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                                                       final Context context) {
         final Router router = new Router();
         router.action = Router.Action.INIT;
-        router.sequence = SEQUENCE.getAndIncrement();
+        router.sequence = sequence.getAndIncrement();
         router.name = initiation.getSysName();
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
@@ -100,7 +100,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                                                        final Context context) {
         final Router router = new Router();
         router.action = Router.Action.TERM;
-        router.sequence = SEQUENCE.getAndIncrement();
+        router.sequence = sequence.getAndIncrement();
         router.name = null;
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
@@ -121,7 +121,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Transport.Peer bgpPeer = peerUp.getPeer();
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
-        peer.sequence = SEQUENCE.getAndIncrement();
+        peer.sequence = sequence.getAndIncrement();
         peer.name = peerUp.getSysName();
         peer.hash = Record.hash(bgpPeer.getAddress(),
                                 bgpPeer.getDistinguisher(),
@@ -163,7 +163,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Transport.Peer bgpPeer = peerDown.getPeer();
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
-        peer.sequence = SEQUENCE.getAndIncrement();
+        peer.sequence = sequence.getAndIncrement();
         peer.name = null; // FIXME: Can populate?
         peer.hash = Record.hash(bgpPeer.getAddress(),
                 bgpPeer.getDistinguisher(),
@@ -205,7 +205,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Transport.Peer peer = statisticsReport.getPeer();
         final Stat stat = new Stat();
         stat.action = Stat.Action.ADD;
-        stat.sequence = SEQUENCE.getAndIncrement();
+        stat.sequence = sequence.getAndIncrement();
         stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
         stat.routerIp = context.sourceAddress;
         stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
@@ -227,7 +227,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     private Optional<Message> handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
         final BaseAttribute baseAttr = new BaseAttribute();
         baseAttr.action = BaseAttribute.Action.ADD;
-        baseAttr.sequence = SEQUENCE.getAndIncrement();
+        baseAttr.sequence = sequence.getAndIncrement();
         baseAttr.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
         // See UpdateMsg::parseAttr_AsPath
         baseAttr.asPathCount = 0;
