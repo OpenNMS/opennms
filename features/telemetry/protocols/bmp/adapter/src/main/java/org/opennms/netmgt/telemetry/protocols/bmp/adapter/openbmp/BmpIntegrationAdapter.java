@@ -237,7 +237,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.initData = initiation.getMessage();
         router.termData = null;
         router.timestamp = context.timestamp;
-        router.bgpId = BmpAdapterTools.address(initiation.getBgpId());
+        router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
 
         this.handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
