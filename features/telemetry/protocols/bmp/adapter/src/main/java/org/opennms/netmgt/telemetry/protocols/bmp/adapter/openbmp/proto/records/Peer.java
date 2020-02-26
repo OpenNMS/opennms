@@ -50,7 +50,7 @@ public class Peer extends Record {
     public Long localAsn;
     public InetAddress localIp;
     public Integer localPort;
-    public String localBgpId;
+    public InetAddress localBgpId;
     public String infoData;
     public String advertisedCapabilities;
     public String receivedCapabilities;
@@ -89,7 +89,7 @@ public class Peer extends Record {
                 nullSafeStr(this.localAsn),
                 nullSafeStr(this.localIp),
                 nullSafeStr(this.localPort),
-                this.localBgpId,
+                nullSafeStr(this.localBgpId),
                 this.infoData,
                 this.advertisedCapabilities,
                 this.receivedCapabilities,
@@ -104,7 +104,7 @@ public class Peer extends Record {
                 Boolean.toString(this.ipv4),
                 Boolean.toString(this.locRib),
                 Boolean.toString(this.locRibFiltered),
-                this.tableName
+                this.tableName,
         };
     }
 

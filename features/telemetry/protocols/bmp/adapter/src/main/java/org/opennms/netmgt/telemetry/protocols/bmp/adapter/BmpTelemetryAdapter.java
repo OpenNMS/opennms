@@ -110,7 +110,7 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         builder.withTimestamp(Date.from(timestamp(stats.getPeer().getTimestamp())));
         builder.withStringAttribute(peerResource, "bmp", "address", peerAddress);
         builder.withStringAttribute(peerResource, "bmp", "as", Long.toString(stats.getPeer().getAs()));
-        builder.withStringAttribute(peerResource, "bmp", "id", InetAddressUtils.str(BmpAdapterTools.address(stats.getPeer().getId())));
+        builder.withStringAttribute(peerResource, "bmp", "id", InetAddressUtils.str(address(stats.getPeer().getId())));
 
         final Function<String, Consumer<Transport.StatisticsReportPacket.Counter>> addCounter = (name) -> (counter) -> {
             final String identifier = String.format("bmp_%s_%s", peerAddress, name);

@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.isV4;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
 
 import java.net.InetAddress;
 import java.time.Instant;
@@ -118,8 +119,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     private void handleInitiationMessage(final Transport.Message message,
-                                                      final Transport.InitiationPacket initiation,
-                                                      final Context context) {
+                                         final Transport.InitiationPacket initiation,
+                                         final Context context) {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
@@ -138,8 +139,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     private void handleTerminationMessage(final Transport.Message message,
-                                                       final Transport.TerminationPacket termination,
-                                                       final Context context) {
+                                          final Transport.TerminationPacket termination,
+                                          final Context context) {
         final Router router = new Router();
         router.action = Router.Action.TERM;
         router.sequence = sequence.getAndIncrement();
@@ -178,9 +179,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     private void handlePeerUpNotification(final Transport.Message message,
-                                                       final Transport.PeerUpPacket peerUp,
-                                                       final Context context) {
+                                          final Transport.PeerUpPacket peerUp,
+                                          final Context context) {
         final Transport.Peer bgpPeer = peerUp.getPeer();
+
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = sequence.getAndIncrement();
@@ -191,20 +193,20 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.routerHash = context.routerHashId;
         peer.remoteBgpId = address(peerUp.getRecvMsg().getId());
         peer.routerIp = context.sourceAddress;
-        peer.timestamp = context.timestamp;
-        peer.remoteAsn = (long) peerUp.getRecvMsg().getAs();
+        peer.timestamp = timestamp(bgpPeer.getTimestamp());
+        peer.remoteAsn = uint32(peerUp.getRecvMsg().getAs());
         peer.remoteIp = address(bgpPeer.getAddress());
         peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
         peer.remotePort = peerUp.getRemotePort();
-        peer.localAsn = (long) peerUp.getSendMsg().getAs(); // FIXME: long vs int?
+        peer.localAsn = uint32(peerUp.getSendMsg().getAs());
         peer.localIp = address(peerUp.getLocalAddress());
         peer.localPort = peerUp.getLocalPort();
-        peer.localBgpId = InetAddressUtils.str(address(peerUp.getSendMsg().getId())); // FIXME; still weird
+        peer.localBgpId = address(peerUp.getSendMsg().getId());
         peer.infoData = peerUp.getMessage();
         peer.advertisedCapabilities = ""; // TODO: Not parsed right now
         peer.receivedCapabilities = ""; // TODO: Not parsed right now
-        peer.remoteHolddown = (long) peerUp.getRecvMsg().getHoldTime(); // FIXME: long vs int?
-        peer.advertisedHolddown = (long) peerUp.getRecvMsg().getHoldTime();
+        peer.remoteHolddown = uint32(peerUp.getRecvMsg().getHoldTime());
+        peer.advertisedHolddown = uint32(peerUp.getSendMsg().getHoldTime());
         peer.bmpReason = null;
         peer.bgpErrorCode = null;
         peer.bgpErrorSubcode = null;
@@ -220,9 +222,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     private void handlePeerDownNotification(final Transport.Message message,
-                                                         final Transport.PeerDownPacket peerDown,
-                                                         final Context context) {
+                                            final Transport.PeerDownPacket peerDown,
+                                            final Context context) {
         final Transport.Peer bgpPeer = peerDown.getPeer();
+
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
         peer.sequence = sequence.getAndIncrement();
@@ -262,9 +265,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     private void handleStatisticReport(final Transport.Message message,
-                                                    final Transport.StatisticsReportPacket statisticsReport,
-                                                    final Context context) {
+                                       final Transport.StatisticsReportPacket statisticsReport,
+                                       final Context context) {
         final Transport.Peer peer = statisticsReport.getPeer();
+
         final Stat stat = new Stat();
         stat.action = Stat.Action.ADD;
         stat.sequence = sequence.getAndIncrement();
@@ -272,8 +276,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.routerIp = context.sourceAddress;
         stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
         stat.peerIp = address(peer.getAddress());
-        stat.peerAsn = (long)peer.getAs();
-        stat.timestamp = context.timestamp;
+        stat.peerAsn = uint32(peer.getAs());
+        stat.timestamp = timestamp(peer.getTimestamp());
         stat.prefixesRejected = statisticsReport.getRejected().getCount();
         stat.knownDupPrefixes = statisticsReport.getDuplicatePrefix().getCount();
         stat.knownDupWithdraws = statisticsReport.getDuplicateWithdraw().getCount();

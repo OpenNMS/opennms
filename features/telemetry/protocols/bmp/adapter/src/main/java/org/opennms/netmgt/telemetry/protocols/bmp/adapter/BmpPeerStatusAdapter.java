@@ -115,7 +115,7 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         event.addParam("distinguisher", peer.getDistinguisher());
         event.addParam("address", InetAddressUtils.str(address(peer.getAddress())));
         event.addParam("as", Long.toString(peer.getAs()));
-        event.addParam("id", InetAddressUtils.str(BmpAdapterTools.address(peer.getId())));
+        event.addParam("id", InetAddressUtils.str(address(peer.getId())));
 
         // Extract error details
         if (peerDown != null) {
