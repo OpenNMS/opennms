@@ -156,7 +156,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
                     .setFlags(Transport.Peer.Flags.newBuilder()
                                                   .setIpVersion(Transport.Peer.Flags.IpVersion.IP_V4)
                                                   .setLegacyAsPath(false)
-                                                  .setPolicy(Transport.Peer.Flags.Policy.POST_POLICY)
+                                                  .setPolicy(Transport.Peer.Flags.Policy.PRE_POLICY)
                                                   .build())
                     .setDistinguisher(0)
                     .setAddress(Transport.IpAddress.newBuilder()
@@ -227,9 +227,9 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(peer.bgpErrorCode, is(nullValue()));
         assertThat(peer.bgpErrorSubcode, is(nullValue()));
         assertThat(peer.errorText, is(nullValue()));
-//        assertThat(peer.l3vpn, is(""));
-//        assertThat(peer.prePolicy, is(""));
-//        assertThat(peer.ipv4, is(""));
+        assertThat(peer.l3vpn, is(false));
+        assertThat(peer.prePolicy, is(true));
+        assertThat(peer.ipv4, is(true));
 //        assertThat(peer.locRib, is(""));
 //        assertThat(peer.locRibFiltered, is(""));
 //        assertThat(peer.tableName, is(""));

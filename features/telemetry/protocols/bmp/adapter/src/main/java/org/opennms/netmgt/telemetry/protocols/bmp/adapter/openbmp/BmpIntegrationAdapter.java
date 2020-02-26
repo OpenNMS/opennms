@@ -211,8 +211,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.bgpErrorCode = null;
         peer.bgpErrorSubcode = null;
         peer.errorText = null;
-        peer.l3vpn = false; // TODO: Extract from document
-        peer.prePolicy = false; // TODO?
+        peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
+        peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());
         peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
@@ -254,8 +254,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.bgpErrorCode = peerDown.getErrorCode();
         peer.bgpErrorSubcode = peerDown.getErrorSubCode();
         peer.errorText = null; // TODO: Extract from document
-        peer.l3vpn = false; // TODO: Extract from document
-        peer.prePolicy = false; // TODO?
+        peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
+        peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());
         peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
