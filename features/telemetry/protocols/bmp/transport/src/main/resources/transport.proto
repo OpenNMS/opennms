@@ -85,16 +85,18 @@ message PeerUpPacket {
 message PeerDownPacket {
     Peer peer = 1;
 
+    message Code {
+        uint32 code = 1;
+        uint32 subcode = 2;
+    }
+
     oneof reason {
-        string local_bgp_notification = 2;
+        Code local_bgp_notification = 2;
         uint32 local_no_notification = 3;
-        string remote_bgp_notification = 4;
+        Code remote_bgp_notification = 4;
         google.protobuf.Empty remote_no_notification = 5;
         google.protobuf.Empty unknown = 6;
     }
-
-    uint32 errorCode = 7;
-    uint32 errorSubCode = 8;
 }
 
 message RouteMonitoringPacket {

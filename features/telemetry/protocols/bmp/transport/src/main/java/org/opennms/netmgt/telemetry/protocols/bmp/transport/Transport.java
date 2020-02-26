@@ -7717,16 +7717,19 @@ public final class Transport {
     org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerOrBuilder getPeerOrBuilder();
 
     /**
-     * <code>string local_bgp_notification = 2;</code>
+     * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+     * @return Whether the localBgpNotification field is set.
+     */
+    boolean hasLocalBgpNotification();
+    /**
+     * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
      * @return The localBgpNotification.
      */
-    java.lang.String getLocalBgpNotification();
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getLocalBgpNotification();
     /**
-     * <code>string local_bgp_notification = 2;</code>
-     * @return The bytes for localBgpNotification.
+     * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
      */
-    com.google.protobuf.ByteString
-        getLocalBgpNotificationBytes();
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder getLocalBgpNotificationOrBuilder();
 
     /**
      * <code>uint32 local_no_notification = 3;</code>
@@ -7735,16 +7738,19 @@ public final class Transport {
     int getLocalNoNotification();
 
     /**
-     * <code>string remote_bgp_notification = 4;</code>
+     * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+     * @return Whether the remoteBgpNotification field is set.
+     */
+    boolean hasRemoteBgpNotification();
+    /**
+     * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
      * @return The remoteBgpNotification.
      */
-    java.lang.String getRemoteBgpNotification();
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getRemoteBgpNotification();
     /**
-     * <code>string remote_bgp_notification = 4;</code>
-     * @return The bytes for remoteBgpNotification.
+     * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
      */
-    com.google.protobuf.ByteString
-        getRemoteBgpNotificationBytes();
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder getRemoteBgpNotificationOrBuilder();
 
     /**
      * <code>.google.protobuf.Empty remote_no_notification = 5;</code>
@@ -7775,18 +7781,6 @@ public final class Transport {
      * <code>.google.protobuf.Empty unknown = 6;</code>
      */
     com.google.protobuf.EmptyOrBuilder getUnknownOrBuilder();
-
-    /**
-     * <code>uint32 errorCode = 7;</code>
-     * @return The errorCode.
-     */
-    int getErrorCode();
-
-    /**
-     * <code>uint32 errorSubCode = 8;</code>
-     * @return The errorSubCode.
-     */
-    int getErrorSubCode();
 
     public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.ReasonCase getReasonCase();
   }
@@ -7849,9 +7843,17 @@ public final class Transport {
               break;
             }
             case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder subBuilder = null;
+              if (reasonCase_ == 2) {
+                subBuilder = ((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_).toBuilder();
+              }
+              reason_ =
+                  input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_);
+                reason_ = subBuilder.buildPartial();
+              }
               reasonCase_ = 2;
-              reason_ = s;
               break;
             }
             case 24: {
@@ -7860,9 +7862,17 @@ public final class Transport {
               break;
             }
             case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder subBuilder = null;
+              if (reasonCase_ == 4) {
+                subBuilder = ((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_).toBuilder();
+              }
+              reason_ =
+                  input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_);
+                reason_ = subBuilder.buildPartial();
+              }
               reasonCase_ = 4;
-              reason_ = s;
               break;
             }
             case 42: {
@@ -7891,16 +7901,6 @@ public final class Transport {
                 reason_ = subBuilder.buildPartial();
               }
               reasonCase_ = 6;
-              break;
-            }
-            case 56: {
-
-              errorCode_ = input.readUInt32();
-              break;
-            }
-            case 64: {
-
-              errorSubCode_ = input.readUInt32();
               break;
             }
             default: {
@@ -7933,6 +7933,560 @@ public final class Transport {
       return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerDownPacket_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Builder.class);
+    }
+
+    public interface CodeOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:PeerDownPacket.Code)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>uint32 code = 1;</code>
+       * @return The code.
+       */
+      int getCode();
+
+      /**
+       * <code>uint32 subcode = 2;</code>
+       * @return The subcode.
+       */
+      int getSubcode();
+    }
+    /**
+     * Protobuf type {@code PeerDownPacket.Code}
+     */
+    public  static final class Code extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:PeerDownPacket.Code)
+        CodeOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Code.newBuilder() to construct.
+      private Code(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Code() {
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Code();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Code(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+
+                code_ = input.readUInt32();
+                break;
+              }
+              case 16: {
+
+                subcode_ = input.readUInt32();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerDownPacket_Code_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerDownPacket_Code_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder.class);
+      }
+
+      public static final int CODE_FIELD_NUMBER = 1;
+      private int code_;
+      /**
+       * <code>uint32 code = 1;</code>
+       * @return The code.
+       */
+      public int getCode() {
+        return code_;
+      }
+
+      public static final int SUBCODE_FIELD_NUMBER = 2;
+      private int subcode_;
+      /**
+       * <code>uint32 subcode = 2;</code>
+       * @return The subcode.
+       */
+      public int getSubcode() {
+        return subcode_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (code_ != 0) {
+          output.writeUInt32(1, code_);
+        }
+        if (subcode_ != 0) {
+          output.writeUInt32(2, subcode_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (code_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(1, code_);
+        }
+        if (subcode_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(2, subcode_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code)) {
+          return super.equals(obj);
+        }
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) obj;
+
+        if (getCode()
+            != other.getCode()) return false;
+        if (getSubcode()
+            != other.getSubcode()) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (37 * hash) + CODE_FIELD_NUMBER;
+        hash = (53 * hash) + getCode();
+        hash = (37 * hash) + SUBCODE_FIELD_NUMBER;
+        hash = (53 * hash) + getSubcode();
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code PeerDownPacket.Code}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:PeerDownPacket.Code)
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerDownPacket_Code_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerDownPacket_Code_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder.class);
+        }
+
+        // Construct using org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          code_ = 0;
+
+          subcode_ = 0;
+
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerDownPacket_Code_descriptor;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getDefaultInstanceForType() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code build() {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code buildPartial() {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code(this);
+          result.code_ = code_;
+          result.subcode_ = subcode_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) {
+            return mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code other) {
+          if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance()) return this;
+          if (other.getCode() != 0) {
+            setCode(other.getCode());
+          }
+          if (other.getSubcode() != 0) {
+            setSubcode(other.getSubcode());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+
+        private int code_ ;
+        /**
+         * <code>uint32 code = 1;</code>
+         * @return The code.
+         */
+        public int getCode() {
+          return code_;
+        }
+        /**
+         * <code>uint32 code = 1;</code>
+         * @param value The code to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCode(int value) {
+          
+          code_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint32 code = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCode() {
+          
+          code_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int subcode_ ;
+        /**
+         * <code>uint32 subcode = 2;</code>
+         * @return The subcode.
+         */
+        public int getSubcode() {
+          return subcode_;
+        }
+        /**
+         * <code>uint32 subcode = 2;</code>
+         * @param value The subcode to set.
+         * @return This builder for chaining.
+         */
+        public Builder setSubcode(int value) {
+          
+          subcode_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint32 subcode = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearSubcode() {
+          
+          subcode_ = 0;
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:PeerDownPacket.Code)
+      }
+
+      // @@protoc_insertion_point(class_scope:PeerDownPacket.Code)
+      private static final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code();
+      }
+
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<Code>
+          PARSER = new com.google.protobuf.AbstractParser<Code>() {
+        @java.lang.Override
+        public Code parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Code(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Code> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Code> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
     }
 
     private int reasonCase_ = 0;
@@ -8007,47 +8561,30 @@ public final class Transport {
 
     public static final int LOCAL_BGP_NOTIFICATION_FIELD_NUMBER = 2;
     /**
-     * <code>string local_bgp_notification = 2;</code>
-     * @return The localBgpNotification.
+     * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+     * @return Whether the localBgpNotification field is set.
      */
-    public java.lang.String getLocalBgpNotification() {
-      java.lang.Object ref = "";
-      if (reasonCase_ == 2) {
-        ref = reason_;
-      }
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (reasonCase_ == 2) {
-          reason_ = s;
-        }
-        return s;
-      }
+    public boolean hasLocalBgpNotification() {
+      return reasonCase_ == 2;
     }
     /**
-     * <code>string local_bgp_notification = 2;</code>
-     * @return The bytes for localBgpNotification.
+     * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+     * @return The localBgpNotification.
      */
-    public com.google.protobuf.ByteString
-        getLocalBgpNotificationBytes() {
-      java.lang.Object ref = "";
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getLocalBgpNotification() {
       if (reasonCase_ == 2) {
-        ref = reason_;
+         return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
       }
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        if (reasonCase_ == 2) {
-          reason_ = b;
-        }
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
+      return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+    }
+    /**
+     * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder getLocalBgpNotificationOrBuilder() {
+      if (reasonCase_ == 2) {
+         return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
       }
+      return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
     }
 
     public static final int LOCAL_NO_NOTIFICATION_FIELD_NUMBER = 3;
@@ -8064,47 +8601,30 @@ public final class Transport {
 
     public static final int REMOTE_BGP_NOTIFICATION_FIELD_NUMBER = 4;
     /**
-     * <code>string remote_bgp_notification = 4;</code>
-     * @return The remoteBgpNotification.
+     * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+     * @return Whether the remoteBgpNotification field is set.
      */
-    public java.lang.String getRemoteBgpNotification() {
-      java.lang.Object ref = "";
-      if (reasonCase_ == 4) {
-        ref = reason_;
-      }
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (reasonCase_ == 4) {
-          reason_ = s;
-        }
-        return s;
-      }
+    public boolean hasRemoteBgpNotification() {
+      return reasonCase_ == 4;
     }
     /**
-     * <code>string remote_bgp_notification = 4;</code>
-     * @return The bytes for remoteBgpNotification.
+     * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+     * @return The remoteBgpNotification.
      */
-    public com.google.protobuf.ByteString
-        getRemoteBgpNotificationBytes() {
-      java.lang.Object ref = "";
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getRemoteBgpNotification() {
       if (reasonCase_ == 4) {
-        ref = reason_;
+         return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
       }
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        if (reasonCase_ == 4) {
-          reason_ = b;
-        }
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
+      return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+    }
+    /**
+     * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder getRemoteBgpNotificationOrBuilder() {
+      if (reasonCase_ == 4) {
+         return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
       }
+      return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
     }
 
     public static final int REMOTE_NO_NOTIFICATION_FIELD_NUMBER = 5;
@@ -8163,26 +8683,6 @@ public final class Transport {
       return com.google.protobuf.Empty.getDefaultInstance();
     }
 
-    public static final int ERRORCODE_FIELD_NUMBER = 7;
-    private int errorCode_;
-    /**
-     * <code>uint32 errorCode = 7;</code>
-     * @return The errorCode.
-     */
-    public int getErrorCode() {
-      return errorCode_;
-    }
-
-    public static final int ERRORSUBCODE_FIELD_NUMBER = 8;
-    private int errorSubCode_;
-    /**
-     * <code>uint32 errorSubCode = 8;</code>
-     * @return The errorSubCode.
-     */
-    public int getErrorSubCode() {
-      return errorSubCode_;
-    }
-
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -8201,26 +8701,20 @@ public final class Transport {
         output.writeMessage(1, getPeer());
       }
       if (reasonCase_ == 2) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
+        output.writeMessage(2, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_);
       }
       if (reasonCase_ == 3) {
         output.writeUInt32(
             3, (int)((java.lang.Integer) reason_));
       }
       if (reasonCase_ == 4) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, reason_);
+        output.writeMessage(4, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_);
       }
       if (reasonCase_ == 5) {
         output.writeMessage(5, (com.google.protobuf.Empty) reason_);
       }
       if (reasonCase_ == 6) {
         output.writeMessage(6, (com.google.protobuf.Empty) reason_);
-      }
-      if (errorCode_ != 0) {
-        output.writeUInt32(7, errorCode_);
-      }
-      if (errorSubCode_ != 0) {
-        output.writeUInt32(8, errorSubCode_);
       }
       unknownFields.writeTo(output);
     }
@@ -8236,7 +8730,8 @@ public final class Transport {
           .computeMessageSize(1, getPeer());
       }
       if (reasonCase_ == 2) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_);
       }
       if (reasonCase_ == 3) {
         size += com.google.protobuf.CodedOutputStream
@@ -8244,7 +8739,8 @@ public final class Transport {
               3, (int)((java.lang.Integer) reason_));
       }
       if (reasonCase_ == 4) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, reason_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_);
       }
       if (reasonCase_ == 5) {
         size += com.google.protobuf.CodedOutputStream
@@ -8253,14 +8749,6 @@ public final class Transport {
       if (reasonCase_ == 6) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, (com.google.protobuf.Empty) reason_);
-      }
-      if (errorCode_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(7, errorCode_);
-      }
-      if (errorSubCode_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(8, errorSubCode_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -8282,10 +8770,6 @@ public final class Transport {
         if (!getPeer()
             .equals(other.getPeer())) return false;
       }
-      if (getErrorCode()
-          != other.getErrorCode()) return false;
-      if (getErrorSubCode()
-          != other.getErrorSubCode()) return false;
       if (!getReasonCase().equals(other.getReasonCase())) return false;
       switch (reasonCase_) {
         case 2:
@@ -8326,10 +8810,6 @@ public final class Transport {
         hash = (37 * hash) + PEER_FIELD_NUMBER;
         hash = (53 * hash) + getPeer().hashCode();
       }
-      hash = (37 * hash) + ERRORCODE_FIELD_NUMBER;
-      hash = (53 * hash) + getErrorCode();
-      hash = (37 * hash) + ERRORSUBCODE_FIELD_NUMBER;
-      hash = (53 * hash) + getErrorSubCode();
       switch (reasonCase_) {
         case 2:
           hash = (37 * hash) + LOCAL_BGP_NOTIFICATION_FIELD_NUMBER;
@@ -8493,10 +8973,6 @@ public final class Transport {
           peer_ = null;
           peerBuilder_ = null;
         }
-        errorCode_ = 0;
-
-        errorSubCode_ = 0;
-
         reasonCase_ = 0;
         reason_ = null;
         return this;
@@ -8531,13 +9007,21 @@ public final class Transport {
           result.peer_ = peerBuilder_.build();
         }
         if (reasonCase_ == 2) {
-          result.reason_ = reason_;
+          if (localBgpNotificationBuilder_ == null) {
+            result.reason_ = reason_;
+          } else {
+            result.reason_ = localBgpNotificationBuilder_.build();
+          }
         }
         if (reasonCase_ == 3) {
           result.reason_ = reason_;
         }
         if (reasonCase_ == 4) {
-          result.reason_ = reason_;
+          if (remoteBgpNotificationBuilder_ == null) {
+            result.reason_ = reason_;
+          } else {
+            result.reason_ = remoteBgpNotificationBuilder_.build();
+          }
         }
         if (reasonCase_ == 5) {
           if (remoteNoNotificationBuilder_ == null) {
@@ -8553,8 +9037,6 @@ public final class Transport {
             result.reason_ = unknownBuilder_.build();
           }
         }
-        result.errorCode_ = errorCode_;
-        result.errorSubCode_ = errorSubCode_;
         result.reasonCase_ = reasonCase_;
         onBuilt();
         return result;
@@ -8607,17 +9089,9 @@ public final class Transport {
         if (other.hasPeer()) {
           mergePeer(other.getPeer());
         }
-        if (other.getErrorCode() != 0) {
-          setErrorCode(other.getErrorCode());
-        }
-        if (other.getErrorSubCode() != 0) {
-          setErrorSubCode(other.getErrorSubCode());
-        }
         switch (other.getReasonCase()) {
           case LOCAL_BGP_NOTIFICATION: {
-            reasonCase_ = 2;
-            reason_ = other.reason_;
-            onChanged();
+            mergeLocalBgpNotification(other.getLocalBgpNotification());
             break;
           }
           case LOCAL_NO_NOTIFICATION: {
@@ -8625,9 +9099,7 @@ public final class Transport {
             break;
           }
           case REMOTE_BGP_NOTIFICATION: {
-            reasonCase_ = 4;
-            reason_ = other.reason_;
-            onChanged();
+            mergeRemoteBgpNotification(other.getRemoteBgpNotification());
             break;
           }
           case REMOTE_NO_NOTIFICATION: {
@@ -8805,91 +9277,142 @@ public final class Transport {
         return peerBuilder_;
       }
 
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder> localBgpNotificationBuilder_;
       /**
-       * <code>string local_bgp_notification = 2;</code>
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+       * @return Whether the localBgpNotification field is set.
+       */
+      public boolean hasLocalBgpNotification() {
+        return reasonCase_ == 2;
+      }
+      /**
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
        * @return The localBgpNotification.
        */
-      public java.lang.String getLocalBgpNotification() {
-        java.lang.Object ref = "";
-        if (reasonCase_ == 2) {
-          ref = reason_;
-        }
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getLocalBgpNotification() {
+        if (localBgpNotificationBuilder_ == null) {
           if (reasonCase_ == 2) {
-            reason_ = s;
+            return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
           }
-          return s;
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
         } else {
-          return (java.lang.String) ref;
+          if (reasonCase_ == 2) {
+            return localBgpNotificationBuilder_.getMessage();
+          }
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
         }
       }
       /**
-       * <code>string local_bgp_notification = 2;</code>
-       * @return The bytes for localBgpNotification.
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
        */
-      public com.google.protobuf.ByteString
-          getLocalBgpNotificationBytes() {
-        java.lang.Object ref = "";
-        if (reasonCase_ == 2) {
-          ref = reason_;
-        }
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          if (reasonCase_ == 2) {
-            reason_ = b;
+      public Builder setLocalBgpNotification(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code value) {
+        if (localBgpNotificationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
           }
-          return b;
+          reason_ = value;
+          onChanged();
         } else {
-          return (com.google.protobuf.ByteString) ref;
+          localBgpNotificationBuilder_.setMessage(value);
         }
+        reasonCase_ = 2;
+        return this;
       }
       /**
-       * <code>string local_bgp_notification = 2;</code>
-       * @param value The localBgpNotification to set.
-       * @return This builder for chaining.
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
        */
       public Builder setLocalBgpNotification(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  reasonCase_ = 2;
-        reason_ = value;
-        onChanged();
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder builderForValue) {
+        if (localBgpNotificationBuilder_ == null) {
+          reason_ = builderForValue.build();
+          onChanged();
+        } else {
+          localBgpNotificationBuilder_.setMessage(builderForValue.build());
+        }
+        reasonCase_ = 2;
         return this;
       }
       /**
-       * <code>string local_bgp_notification = 2;</code>
-       * @return This builder for chaining.
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+       */
+      public Builder mergeLocalBgpNotification(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code value) {
+        if (localBgpNotificationBuilder_ == null) {
+          if (reasonCase_ == 2 &&
+              reason_ != org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance()) {
+            reason_ = org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.newBuilder((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            reason_ = value;
+          }
+          onChanged();
+        } else {
+          if (reasonCase_ == 2) {
+            localBgpNotificationBuilder_.mergeFrom(value);
+          }
+          localBgpNotificationBuilder_.setMessage(value);
+        }
+        reasonCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
        */
       public Builder clearLocalBgpNotification() {
-        if (reasonCase_ == 2) {
-          reasonCase_ = 0;
-          reason_ = null;
-          onChanged();
+        if (localBgpNotificationBuilder_ == null) {
+          if (reasonCase_ == 2) {
+            reasonCase_ = 0;
+            reason_ = null;
+            onChanged();
+          }
+        } else {
+          if (reasonCase_ == 2) {
+            reasonCase_ = 0;
+            reason_ = null;
+          }
+          localBgpNotificationBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>string local_bgp_notification = 2;</code>
-       * @param value The bytes for localBgpNotification to set.
-       * @return This builder for chaining.
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
        */
-      public Builder setLocalBgpNotificationBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder getLocalBgpNotificationBuilder() {
+        return getLocalBgpNotificationFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder getLocalBgpNotificationOrBuilder() {
+        if ((reasonCase_ == 2) && (localBgpNotificationBuilder_ != null)) {
+          return localBgpNotificationBuilder_.getMessageOrBuilder();
+        } else {
+          if (reasonCase_ == 2) {
+            return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
+          }
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.PeerDownPacket.Code local_bgp_notification = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder> 
+          getLocalBgpNotificationFieldBuilder() {
+        if (localBgpNotificationBuilder_ == null) {
+          if (!(reasonCase_ == 2)) {
+            reason_ = org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+          }
+          localBgpNotificationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder>(
+                  (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_,
+                  getParentForChildren(),
+                  isClean());
+          reason_ = null;
+        }
         reasonCase_ = 2;
-        reason_ = value;
-        onChanged();
-        return this;
+        onChanged();;
+        return localBgpNotificationBuilder_;
       }
 
       /**
@@ -8926,91 +9449,142 @@ public final class Transport {
         return this;
       }
 
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder> remoteBgpNotificationBuilder_;
       /**
-       * <code>string remote_bgp_notification = 4;</code>
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+       * @return Whether the remoteBgpNotification field is set.
+       */
+      public boolean hasRemoteBgpNotification() {
+        return reasonCase_ == 4;
+      }
+      /**
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
        * @return The remoteBgpNotification.
        */
-      public java.lang.String getRemoteBgpNotification() {
-        java.lang.Object ref = "";
-        if (reasonCase_ == 4) {
-          ref = reason_;
-        }
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code getRemoteBgpNotification() {
+        if (remoteBgpNotificationBuilder_ == null) {
           if (reasonCase_ == 4) {
-            reason_ = s;
+            return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
           }
-          return s;
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
         } else {
-          return (java.lang.String) ref;
+          if (reasonCase_ == 4) {
+            return remoteBgpNotificationBuilder_.getMessage();
+          }
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
         }
       }
       /**
-       * <code>string remote_bgp_notification = 4;</code>
-       * @return The bytes for remoteBgpNotification.
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
        */
-      public com.google.protobuf.ByteString
-          getRemoteBgpNotificationBytes() {
-        java.lang.Object ref = "";
-        if (reasonCase_ == 4) {
-          ref = reason_;
-        }
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          if (reasonCase_ == 4) {
-            reason_ = b;
+      public Builder setRemoteBgpNotification(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code value) {
+        if (remoteBgpNotificationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
           }
-          return b;
+          reason_ = value;
+          onChanged();
         } else {
-          return (com.google.protobuf.ByteString) ref;
+          remoteBgpNotificationBuilder_.setMessage(value);
         }
+        reasonCase_ = 4;
+        return this;
       }
       /**
-       * <code>string remote_bgp_notification = 4;</code>
-       * @param value The remoteBgpNotification to set.
-       * @return This builder for chaining.
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
        */
       public Builder setRemoteBgpNotification(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  reasonCase_ = 4;
-        reason_ = value;
-        onChanged();
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder builderForValue) {
+        if (remoteBgpNotificationBuilder_ == null) {
+          reason_ = builderForValue.build();
+          onChanged();
+        } else {
+          remoteBgpNotificationBuilder_.setMessage(builderForValue.build());
+        }
+        reasonCase_ = 4;
         return this;
       }
       /**
-       * <code>string remote_bgp_notification = 4;</code>
-       * @return This builder for chaining.
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+       */
+      public Builder mergeRemoteBgpNotification(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code value) {
+        if (remoteBgpNotificationBuilder_ == null) {
+          if (reasonCase_ == 4 &&
+              reason_ != org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance()) {
+            reason_ = org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.newBuilder((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            reason_ = value;
+          }
+          onChanged();
+        } else {
+          if (reasonCase_ == 4) {
+            remoteBgpNotificationBuilder_.mergeFrom(value);
+          }
+          remoteBgpNotificationBuilder_.setMessage(value);
+        }
+        reasonCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
        */
       public Builder clearRemoteBgpNotification() {
-        if (reasonCase_ == 4) {
-          reasonCase_ = 0;
-          reason_ = null;
-          onChanged();
+        if (remoteBgpNotificationBuilder_ == null) {
+          if (reasonCase_ == 4) {
+            reasonCase_ = 0;
+            reason_ = null;
+            onChanged();
+          }
+        } else {
+          if (reasonCase_ == 4) {
+            reasonCase_ = 0;
+            reason_ = null;
+          }
+          remoteBgpNotificationBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>string remote_bgp_notification = 4;</code>
-       * @param value The bytes for remoteBgpNotification to set.
-       * @return This builder for chaining.
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
        */
-      public Builder setRemoteBgpNotificationBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder getRemoteBgpNotificationBuilder() {
+        return getRemoteBgpNotificationFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder getRemoteBgpNotificationOrBuilder() {
+        if ((reasonCase_ == 4) && (remoteBgpNotificationBuilder_ != null)) {
+          return remoteBgpNotificationBuilder_.getMessageOrBuilder();
+        } else {
+          if (reasonCase_ == 4) {
+            return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_;
+          }
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.PeerDownPacket.Code remote_bgp_notification = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder> 
+          getRemoteBgpNotificationFieldBuilder() {
+        if (remoteBgpNotificationBuilder_ == null) {
+          if (!(reasonCase_ == 4)) {
+            reason_ = org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.getDefaultInstance();
+          }
+          remoteBgpNotificationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.CodeOrBuilder>(
+                  (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerDownPacket.Code) reason_,
+                  getParentForChildren(),
+                  isClean());
+          reason_ = null;
+        }
         reasonCase_ = 4;
-        reason_ = value;
-        onChanged();
-        return this;
+        onChanged();;
+        return remoteBgpNotificationBuilder_;
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -9287,66 +9861,6 @@ public final class Transport {
         reasonCase_ = 6;
         onChanged();;
         return unknownBuilder_;
-      }
-
-      private int errorCode_ ;
-      /**
-       * <code>uint32 errorCode = 7;</code>
-       * @return The errorCode.
-       */
-      public int getErrorCode() {
-        return errorCode_;
-      }
-      /**
-       * <code>uint32 errorCode = 7;</code>
-       * @param value The errorCode to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorCode(int value) {
-        
-        errorCode_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>uint32 errorCode = 7;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearErrorCode() {
-        
-        errorCode_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int errorSubCode_ ;
-      /**
-       * <code>uint32 errorSubCode = 8;</code>
-       * @return The errorSubCode.
-       */
-      public int getErrorSubCode() {
-        return errorSubCode_;
-      }
-      /**
-       * <code>uint32 errorSubCode = 8;</code>
-       * @param value The errorSubCode to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorSubCode(int value) {
-        
-        errorSubCode_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>uint32 errorSubCode = 8;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearErrorSubCode() {
-        
-        errorSubCode_ = 0;
-        onChanged();
-        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -26608,6 +27122,11 @@ public final class Transport {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_PeerDownPacket_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_PeerDownPacket_Code_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_PeerDownPacket_Code_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_RouteMonitoringPacket_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -26729,93 +27248,95 @@ public final class Transport {
       "\001(\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t \001(\t\032U" +
       "\n\013OpenMessage\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002 \001" +
       "(\007\022\021\n\thold_time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.IpAd" +
-      "dress\"\243\002\n\016PeerDownPacket\022\023\n\004peer\030\001 \001(\0132\005" +
-      ".Peer\022 \n\026local_bgp_notification\030\002 \001(\tH\000\022" +
-      "\037\n\025local_no_notification\030\003 \001(\rH\000\022!\n\027remo" +
-      "te_bgp_notification\030\004 \001(\tH\000\0228\n\026remote_no" +
-      "_notification\030\005 \001(\0132\026.google.protobuf.Em" +
-      "ptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.protobuf" +
-      ".EmptyH\000\022\021\n\terrorCode\030\007 \001(\r\022\024\n\014errorSubC" +
-      "ode\030\010 \001(\rB\010\n\006reason\"\222\n\n\025RouteMonitoringP" +
-      "acket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdraws\030" +
-      "\002 \003(\0132\034.RouteMonitoringPacket.Route\0220\n\nr" +
-      "eachables\030\003 \003(\0132\034.RouteMonitoringPacket." +
-      "Route\0228\n\nattributes\030\004 \003(\0132$.RouteMonitor" +
-      "ingPacket.PathAttribute\0323\n\005Route\022\032\n\006pref" +
-      "ix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\032\221\010\n" +
-      "\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntran" +
-      "sitive\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010extende" +
-      "d\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitorin" +
-      "gPacket.PathAttribute.OriginH\000\022>\n\007as_pat" +
-      "h\030\006 \001(\0132+.RouteMonitoringPacket.PathAttr" +
-      "ibute.AsPathH\000\022@\n\010next_hop\030\007 \001(\0132,.Route" +
-      "MonitoringPacket.PathAttribute.NextHopH\000" +
-      "\022M\n\017multi_exit_disc\030\010 \001(\01322.RouteMonitor" +
-      "ingPacket.PathAttribute.MultiExitDiscH\000\022" +
-      "D\n\nlocal_pref\030\t \001(\0132..RouteMonitoringPac" +
-      "ket.PathAttribute.LocalPrefH\000\022P\n\020atomic_" +
-      "aggregate\030\n \001(\01324.RouteMonitoringPacket." +
-      "PathAttribute.AtomicAggregateH\000\022E\n\naggre" +
-      "gator\030\013 \001(\0132/.RouteMonitoringPacket.Path" +
-      "Attribute.AggregatorH\000\032\327\001\n\006AsPath\022E\n\010seg" +
-      "ments\030\001 \003(\01323.RouteMonitoringPacket.Path" +
-      "Attribute.AsPath.Segment\032\205\001\n\007Segment\022F\n\004" +
-      "type\030\001 \001(\01628.RouteMonitoringPacket.PathA" +
-      "ttribute.AsPath.Segment.Type\022\r\n\005paths\030\002 " +
-      "\003(\007\"#\n\004Type\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE\020\001" +
-      "\032&\n\007NextHop\022\033\n\007address\030\001 \001(\0132\n.IpAddress" +
-      "\032&\n\rMultiExitDisc\022\025\n\rdiscriminator\030\001 \001(\r" +
-      "\032\037\n\tLocalPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017Ato" +
-      "micAggregate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007\022\033" +
-      "\n\007address\030\002 \001(\0132\n.IpAddress\"*\n\006Origin\022\007\n" +
-      "\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005value" +
-      "\"\210\n\n\026StatisticsReportPacket\022\023\n\004peer\030\001 \001(" +
-      "\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.StatisticsR" +
-      "eportPacket.Counter\0229\n\020duplicate_prefix\030" +
-      "e \001(\0132\037.StatisticsReportPacket.Counter\022;" +
-      "\n\022duplicate_withdraw\030f \001(\0132\037.StatisticsR" +
-      "eportPacket.Counter\022M\n$invalid_update_du" +
-      "e_to_as_confed_loop\030g \001(\0132\037.StatisticsRe" +
-      "portPacket.Counter\022K\n\"invalid_update_due" +
-      "_to_as_path_loop\030h \001(\0132\037.StatisticsRepor" +
-      "tPacket.Counter\022P\n\'invalid_update_due_to" +
-      "_cluster_list_loop\030i \001(\0132\037.StatisticsRep" +
-      "ortPacket.Counter\022L\n#invalid_update_due_" +
-      "to_originator_id\030j \001(\0132\037.StatisticsRepor" +
-      "tPacket.Counter\0221\n\nadj_rib_in\030k \001(\0132\035.St" +
-      "atisticsReportPacket.Gauge\0222\n\013adj_rib_ou" +
-      "t\030l \001(\0132\035.StatisticsReportPacket.Gauge\022G" +
-      "\n\022per_afi_adj_rib_in\030m \003(\0132+.StatisticsR" +
-      "eportPacket.PerAfiAdjRibInEntry\022B\n\017per_a" +
-      "fi_loc_rib\030n \003(\0132).StatisticsReportPacke" +
-      "t.PerAfiLocRibEntry\022A\n\030update_treat_as_w" +
-      "ithdraw\030o \001(\0132\037.StatisticsReportPacket.C" +
-      "ounter\022A\n\030prefix_treat_as_withdraw\030p \001(\013" +
-      "2\037.StatisticsReportPacket.Counter\0229\n\020dup" +
-      "licate_update\030q \001(\0132\037.StatisticsReportPa" +
-      "cket.Counter\022.\n\007loc_rib\030r \001(\0132\035.Statisti" +
-      "csReportPacket.Gauge\0221\n\nexport_rib\030s \001(\013" +
-      "2\035.StatisticsReportPacket.Gauge\032\026\n\005Gauge" +
-      "\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 \001(" +
-      "\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022,\n" +
-      "\005value\030\002 \001(\0132\035.StatisticsReportPacket.Ga" +
-      "uge:\0028\001\032R\n\021PerAfiLocRibEntry\022\013\n\003key\030\001 \001(" +
-      "\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportPacke" +
-      "t.Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(\0162" +
-      "\017.Heartbeat.Mode\022\033\n\007routers\030\002 \003(\0132\n.IpAd" +
-      "dress\":\n\004Mode\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001\022\014" +
-      "\n\010PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\365\002\n\007Message\022\017\n" +
-      "\007version\030\001 \001(\r\022\'\n\ninitiation\030\005 \001(\0132\021.Ini" +
-      "tiationPacketH\000\022)\n\013termination\030\006 \001(\0132\022.T" +
-      "erminationPacketH\000\022 \n\007peer_up\030\007 \001(\0132\r.Pe" +
-      "erUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.PeerDo" +
-      "wnPacketH\000\0222\n\020route_monitoring\030\t \001(\0132\026.R" +
-      "outeMonitoringPacketH\000\0224\n\021statistics_rep" +
-      "ort\030\n \001(\0132\027.StatisticsReportPacketH\000\022\037\n\t" +
-      "heartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006packetJ" +
-      "\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020" +
-      "\017BA\n4org.opennms.netmgt.telemetry.protoc" +
-      "ols.bmp.transportB\tTransportP\000P\001b\006proto3"
+      "dress\"\315\002\n\016PeerDownPacket\022\023\n\004peer\030\001 \001(\0132\005" +
+      ".Peer\0226\n\026local_bgp_notification\030\002 \001(\0132\024." +
+      "PeerDownPacket.CodeH\000\022\037\n\025local_no_notifi" +
+      "cation\030\003 \001(\rH\000\0227\n\027remote_bgp_notificatio" +
+      "n\030\004 \001(\0132\024.PeerDownPacket.CodeH\000\0228\n\026remot" +
+      "e_no_notification\030\005 \001(\0132\026.google.protobu" +
+      "f.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.prot" +
+      "obuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007su" +
+      "bcode\030\002 \001(\rB\010\n\006reason\"\222\n\n\025RouteMonitorin" +
+      "gPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdraw" +
+      "s\030\002 \003(\0132\034.RouteMonitoringPacket.Route\0220\n" +
+      "\nreachables\030\003 \003(\0132\034.RouteMonitoringPacke" +
+      "t.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMonit" +
+      "oringPacket.PathAttribute\0323\n\005Route\022\032\n\006pr" +
+      "efix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\032\221" +
+      "\010\n\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntr" +
+      "ansitive\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010exten" +
+      "ded\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitor" +
+      "ingPacket.PathAttribute.OriginH\000\022>\n\007as_p" +
+      "ath\030\006 \001(\0132+.RouteMonitoringPacket.PathAt" +
+      "tribute.AsPathH\000\022@\n\010next_hop\030\007 \001(\0132,.Rou" +
+      "teMonitoringPacket.PathAttribute.NextHop" +
+      "H\000\022M\n\017multi_exit_disc\030\010 \001(\01322.RouteMonit" +
+      "oringPacket.PathAttribute.MultiExitDiscH" +
+      "\000\022D\n\nlocal_pref\030\t \001(\0132..RouteMonitoringP" +
+      "acket.PathAttribute.LocalPrefH\000\022P\n\020atomi" +
+      "c_aggregate\030\n \001(\01324.RouteMonitoringPacke" +
+      "t.PathAttribute.AtomicAggregateH\000\022E\n\nagg" +
+      "regator\030\013 \001(\0132/.RouteMonitoringPacket.Pa" +
+      "thAttribute.AggregatorH\000\032\327\001\n\006AsPath\022E\n\010s" +
+      "egments\030\001 \003(\01323.RouteMonitoringPacket.Pa" +
+      "thAttribute.AsPath.Segment\032\205\001\n\007Segment\022F" +
+      "\n\004type\030\001 \001(\01628.RouteMonitoringPacket.Pat" +
+      "hAttribute.AsPath.Segment.Type\022\r\n\005paths\030" +
+      "\002 \003(\007\"#\n\004Type\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE" +
+      "\020\001\032&\n\007NextHop\022\033\n\007address\030\001 \001(\0132\n.IpAddre" +
+      "ss\032&\n\rMultiExitDisc\022\025\n\rdiscriminator\030\001 \001" +
+      "(\r\032\037\n\tLocalPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017A" +
+      "tomicAggregate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007" +
+      "\022\033\n\007address\030\002 \001(\0132\n.IpAddress\"*\n\006Origin\022" +
+      "\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005val" +
+      "ue\"\210\n\n\026StatisticsReportPacket\022\023\n\004peer\030\001 " +
+      "\001(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.Statistic" +
+      "sReportPacket.Counter\0229\n\020duplicate_prefi" +
+      "x\030e \001(\0132\037.StatisticsReportPacket.Counter" +
+      "\022;\n\022duplicate_withdraw\030f \001(\0132\037.Statistic" +
+      "sReportPacket.Counter\022M\n$invalid_update_" +
+      "due_to_as_confed_loop\030g \001(\0132\037.Statistics" +
+      "ReportPacket.Counter\022K\n\"invalid_update_d" +
+      "ue_to_as_path_loop\030h \001(\0132\037.StatisticsRep" +
+      "ortPacket.Counter\022P\n\'invalid_update_due_" +
+      "to_cluster_list_loop\030i \001(\0132\037.StatisticsR" +
+      "eportPacket.Counter\022L\n#invalid_update_du" +
+      "e_to_originator_id\030j \001(\0132\037.StatisticsRep" +
+      "ortPacket.Counter\0221\n\nadj_rib_in\030k \001(\0132\035." +
+      "StatisticsReportPacket.Gauge\0222\n\013adj_rib_" +
+      "out\030l \001(\0132\035.StatisticsReportPacket.Gauge" +
+      "\022G\n\022per_afi_adj_rib_in\030m \003(\0132+.Statistic" +
+      "sReportPacket.PerAfiAdjRibInEntry\022B\n\017per" +
+      "_afi_loc_rib\030n \003(\0132).StatisticsReportPac" +
+      "ket.PerAfiLocRibEntry\022A\n\030update_treat_as" +
+      "_withdraw\030o \001(\0132\037.StatisticsReportPacket" +
+      ".Counter\022A\n\030prefix_treat_as_withdraw\030p \001" +
+      "(\0132\037.StatisticsReportPacket.Counter\0229\n\020d" +
+      "uplicate_update\030q \001(\0132\037.StatisticsReport" +
+      "Packet.Counter\022.\n\007loc_rib\030r \001(\0132\035.Statis" +
+      "ticsReportPacket.Gauge\0221\n\nexport_rib\030s \001" +
+      "(\0132\035.StatisticsReportPacket.Gauge\032\026\n\005Gau" +
+      "ge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 " +
+      "\001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022" +
+      ",\n\005value\030\002 \001(\0132\035.StatisticsReportPacket." +
+      "Gauge:\0028\001\032R\n\021PerAfiLocRibEntry\022\013\n\003key\030\001 " +
+      "\001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportPac" +
+      "ket.Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(" +
+      "\0162\017.Heartbeat.Mode\022\033\n\007routers\030\002 \003(\0132\n.Ip" +
+      "Address\":\n\004Mode\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001" +
+      "\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\365\002\n\007Message\022" +
+      "\017\n\007version\030\001 \001(\r\022\'\n\ninitiation\030\005 \001(\0132\021.I" +
+      "nitiationPacketH\000\022)\n\013termination\030\006 \001(\0132\022" +
+      ".TerminationPacketH\000\022 \n\007peer_up\030\007 \001(\0132\r." +
+      "PeerUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.Peer" +
+      "DownPacketH\000\0222\n\020route_monitoring\030\t \001(\0132\026" +
+      ".RouteMonitoringPacketH\000\0224\n\021statistics_r" +
+      "eport\030\n \001(\0132\027.StatisticsReportPacketH\000\022\037" +
+      "\n\theartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006packe" +
+      "tJ\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010" +
+      "\016\020\017BA\n4org.opennms.netmgt.telemetry.prot" +
+      "ocols.bmp.transportB\tTransportP\000P\001b\006prot" +
+      "o3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -26870,7 +27391,13 @@ public final class Transport {
     internal_static_PeerDownPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PeerDownPacket_descriptor,
-        new java.lang.String[] { "Peer", "LocalBgpNotification", "LocalNoNotification", "RemoteBgpNotification", "RemoteNoNotification", "Unknown", "ErrorCode", "ErrorSubCode", "Reason", });
+        new java.lang.String[] { "Peer", "LocalBgpNotification", "LocalNoNotification", "RemoteBgpNotification", "RemoteNoNotification", "Unknown", "Reason", });
+    internal_static_PeerDownPacket_Code_descriptor =
+      internal_static_PeerDownPacket_descriptor.getNestedTypes().get(0);
+    internal_static_PeerDownPacket_Code_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_PeerDownPacket_Code_descriptor,
+        new java.lang.String[] { "Code", "Subcode", });
     internal_static_RouteMonitoringPacket_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_RouteMonitoringPacket_fieldAccessorTable = new

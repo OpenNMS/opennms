@@ -49,7 +49,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.NotificationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Aggregator;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPath;
@@ -310,7 +309,6 @@ public class BlackboxTest implements Packet.Visitor {
             public void visit(RemoteBgpNotification remoteNotification) {
                 assertThat(remoteNotification.notification.header.length, is(21));
                 assertThat(remoteNotification.notification.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.NOTIFICATION));
-                assertThat(remoteNotification.notification.error, is(NotificationPacket.Error.PEER_DECONFIGURED));
             }
 
             @Override

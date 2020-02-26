@@ -361,7 +361,9 @@ public class BmpParser implements TcpParser {
             packet.reason.accept(new Reason.Visitor() {
                 @Override
                 public void visit(final LocalBgpNotification localBgpNotification) {
-                    message.setLocalBgpNotification(localBgpNotification.notification.error.name());
+                    message.getLocalBgpNotificationBuilder()
+                            .setCode(localBgpNotification.notification.code)
+                            .setSubcode(localBgpNotification.notification.subcode);
                 }
 
                 @Override
@@ -371,7 +373,9 @@ public class BmpParser implements TcpParser {
 
                 @Override
                 public void visit(final RemoteBgpNotification remoteBgpNotification) {
-                    message.setRemoteBgpNotification(remoteBgpNotification.notification.error.name());
+                    message.getRemoteBgpNotificationBuilder()
+                            .setCode(remoteBgpNotification.notification.code)
+                            .setSubcode(remoteBgpNotification.notification.subcode);
                 }
 
                 @Override
