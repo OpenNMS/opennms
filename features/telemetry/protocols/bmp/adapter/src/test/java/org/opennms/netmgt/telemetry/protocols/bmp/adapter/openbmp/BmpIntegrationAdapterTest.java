@@ -102,18 +102,18 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     public void canGenerateBaseAttributeMessages() {
         // Send a route monitoring packet
         Transport.RouteMonitoringPacket.Builder updatePacket = Transport.RouteMonitoringPacket.newBuilder()
-                .addReachable(Transport.RouteMonitoringPacket.Route.newBuilder()
+                .addReachables(Transport.RouteMonitoringPacket.Route.newBuilder()
                         .setPrefix(address(InetAddressUtils.addr("10.1.1.0")))
                         .setLength(28))
                 .addAttributes(Transport.RouteMonitoringPacket.PathAttribute.newBuilder()
                         .setAsPath(Transport.RouteMonitoringPacket.PathAttribute.AsPath.newBuilder()
                                 .addSegments(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.newBuilder()
                                         .setType(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SEQUENCE)
-                                        .addPath(64512)
-                                        .addPath(64513))
+                                        .addPaths(64512)
+                                        .addPaths(64513))
                                 .addSegments(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.newBuilder()
                                         .setType(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET)
-                                        .addPath(64514))));
+                                        .addPaths(64514))));
         Transport.Message message = Transport.Message.newBuilder()
                 .setVersion(1)
                 .setRouteMonitoring(updatePacket)

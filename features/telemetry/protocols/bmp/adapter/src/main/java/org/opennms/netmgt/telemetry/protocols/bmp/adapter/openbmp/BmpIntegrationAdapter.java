@@ -240,7 +240,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                         if (Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET.equals(segment.getType())) {
                             asPath.append("{");
                         }
-                        segment.getPathList().forEach(segmentPath -> {
+                        segment.getPathsList().forEach(segmentPath -> {
                             asPath.append(segmentPath);
                             asPath.append(" ");
                             baseAttr.asPathCount++;
@@ -283,16 +283,16 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             case TERMINATION:
                 messageToSend =  this.handleTerminationMessage(message, message.getTermination(), context);
                 break;
-            case PEERUP:
+            case PEER_UP:
                 messageToSend = this.handlePeerUpNotification(message, message.getPeerUp(), context);
                 break;
-            case PEERDOWN:
+            case PEER_DOWN:
                 messageToSend = this.handlePeerDownNotification(message, message.getPeerDown(), context);
                 break;
-            case STATISTICSREPORT:
+            case STATISTICS_REPORT:
                 messageToSend = this.handleStatisticReport(message, message.getStatisticsReport(), context);
                 break;
-            case ROUTEMONITORING:
+            case ROUTE_MONITORING:
                 messageToSend = this.handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context);
                 break;
             case PACKET_NOT_SET:
