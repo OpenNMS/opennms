@@ -77,55 +77,59 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     private final BmpMessageHandler handler;
 
     public enum Error {
-        // Message Header Error                                1
-        CONNECTION_NOT_SYNCHRONIZED(""),                        // 1
-        BAD_MESSAGE_LENGTH("Bad message header length"),    // 2
-        BAD_MESSAGE_TYPE("Bad message header type"),        // 3
+        // Message Header Error
+        CONNECTION_NOT_SYNCHRONIZED("Connection not synchronized"),
+        BAD_MESSAGE_LENGTH("Bad message header length"),
+        BAD_MESSAGE_TYPE("Bad message header type"),
 
-        // Open Message Error                                               2
-        UNSUPPORTED_VERSION_NUMBER("Unsupported BGP version"),           // 1
-        BAD_PEER_AS("Incorrect peer AS"),                                // 2
-        BAD_BGP_IDENTIFIER("Bad BGP ID"),                                // 3
-        UNSUPPORTED_OPTIONAL_PARAMETER("Unsupported optinal parameter"), // 4
-        AUTHENTICATION_FAILURE(""),                                          // 5
-        UNACCEPTABLE_HOLD_TIME("Unacceptable hold time"),                // 6
+        // Open Message Error
+        UNSUPPORTED_VERSION_NUMBER("Unsupported BGP version"),
+        BAD_PEER_AS("Incorrect peer AS"),
+        BAD_BGP_IDENTIFIER("Bad BGP ID"),
+        UNSUPPORTED_OPTIONAL_PARAMETER("Unsupported optinal parameter"),
+        AUTHENTICATION_FAILURE("Authentication failure"),
+        UNACCEPTABLE_HOLD_TIME("Unacceptable hold time"),
 
-        // Update Message Error                3
-        MALFORMED_ATTRIBUTE_LIST(""),           // 1
-        UNRECOGNIZED_WELL_KNOWN_ATTRIBUTE(""),  // 2
-        MISSING_WELL_KNOWN_ATTRIBUTE(""),       // 3
-        ATTRIBUTE_FLAGS_ERROR(""),              // 4
-        ATTRIBUTE_LENGTH_ERROR(""),             // 5
-        INVALID_ORIGIN_ATTRIBUTE(""),           // 6
-        ROUTING_LOOP(""),                       // 7
-        INVALID_NEXT_HOP_ATTRIBUTE(""),         // 8
-        OPTIONAL_ATTRIBUTE_ERROR(""),           // 9
-        INVALID_NETWORK_FIELD(""),              // 10
-        MALFORMED_AS_PATH(""),                  // 11
+        // Update Message Error
+        MALFORMED_ATTRIBUTE_LIST("Malformed attribute list"),
+        UNRECOGNIZED_WELL_KNOWN_ATTRIBUTE("Unrecognized well known attribute"),
+        MISSING_WELL_KNOWN_ATTRIBUTE("Missing well known attribute"),
+        ATTRIBUTE_FLAGS_ERROR("Update attribute flags error"),
+        ATTRIBUTE_LENGTH_ERROR("Update attribute length error"),
+        INVALID_ORIGIN_ATTRIBUTE("Invalid origin"),
+        ROUTING_LOOP("Routing loop"),
+        INVALID_NEXT_HOP_ATTRIBUTE("Invalid next hop address/attribute"),
+        OPTIONAL_ATTRIBUTE_ERROR("Update optional attribute error"),
+        INVALID_NETWORK_FIELD("Invalid network field"),
+        MALFORMED_AS_PATH("Malformed AS_PATH"),
 
-        // Hold Timer Expired      4
-        HOLD_TIMER_EXPIRED(""),     // 1
+        // Hold Timer Expired
+        HOLD_TIMER_EXPIRED("Hold timer expired"),
 
-        // FSM Error   5
-        FSM_ERROR(""),  // 1
+        // FSM Error
+        FSM_ERROR("FSM error"),
 
-        // Cease                               6 - see RFC 4486
-        MAXIMUM_NUMBER_OF_PREFIXES_REACHED(""), // 1
-        ADMINISTRATIVE_SHUTDOWN(""),            // 2
-        PEER_DECONFIGURED(""),                  // 3
-        ADMINISTRATIVE_RESET(""),               // 4
-        CONNECTION_RESET(""),                   // 5
-        OTHER_CONFIGURATION_CHANGE(""),         // 6
-        CONNECTION_COLLISION_RESOLUTION(""),    // 7
-        OUT_OF_RESOURCES(""),                   // 8
+        // Cease
+        MAXIMUM_NUMBER_OF_PREFIXES_REACHED("Maximum number of prefixes reached"),
+        ADMINISTRATIVE_SHUTDOWN("Administrative shutdown"),
+        PEER_DECONFIGURED("Peer de-configured"),
+        ADMINISTRATIVE_RESET("Administrative reset"),
+        CONNECTION_RESET("Connection rejected"),
+        OTHER_CONFIGURATION_CHANGE("Other configuration change"),
+        CONNECTION_COLLISION_RESOLUTION("Connection collision resolution"),
+        OUT_OF_RESOURCES("Maximum number of prefixes reached"),
 
-        UNKNOWN(""),
+        UNKNOWN("Unknown notification type"),
         ;
 
         private String errorText;
 
         Error(final String errorText) {
             this.errorText = errorText;
+        }
+
+        public String getErrorText() {
+            return errorText;
         }
 
         public static Error from(final int code, final int subcode) {
@@ -363,7 +367,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 peer.bgpErrorSubcode = null;
         }
 
-        peer.errorText = null; // TODO: Extract from document
+        peer.errorText = Error.from(peer.bgpErrorCode, peer.bgpErrorSubcode).getErrorText();
         peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
         peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());
