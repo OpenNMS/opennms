@@ -23313,9 +23313,9 @@ public final class Transport {
        */
       STARTED(0),
       /**
-       * <code>CHANGED = 1;</code>
+       * <code>CHANGE = 1;</code>
        */
-      CHANGED(1),
+      CHANGE(1),
       /**
        * <code>PERIODIC = 2;</code>
        */
@@ -23332,9 +23332,9 @@ public final class Transport {
        */
       public static final int STARTED_VALUE = 0;
       /**
-       * <code>CHANGED = 1;</code>
+       * <code>CHANGE = 1;</code>
        */
-      public static final int CHANGED_VALUE = 1;
+      public static final int CHANGE_VALUE = 1;
       /**
        * <code>PERIODIC = 2;</code>
        */
@@ -23370,7 +23370,7 @@ public final class Transport {
       public static Mode forNumber(int value) {
         switch (value) {
           case 0: return STARTED;
-          case 1: return CHANGED;
+          case 1: return CHANGE;
           case 2: return PERIODIC;
           case 3: return STOPPED;
           default: return null;
@@ -26531,22 +26531,22 @@ public final class Transport {
       "jRibInEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132" +
       "\035.StatisticsReportPacket.Gauge:\0028\001\032R\n\021Pe" +
       "rAfiLocRibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 " +
-      "\001(\0132\035.StatisticsReportPacket.Gauge:\0028\001\"\204" +
+      "\001(\0132\035.StatisticsReportPacket.Gauge:\0028\001\"\203" +
       "\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.M" +
-      "ode\022\033\n\007routers\030\002 \003(\0132\n.IpAddress\";\n\004Mode" +
-      "\022\013\n\007STARTED\020\000\022\013\n\007CHANGED\020\001\022\014\n\010PERIODIC\020\002" +
-      "\022\013\n\007STOPPED\020\003\"\365\002\n\007Message\022\017\n\007version\030\001 \001" +
-      "(\r\022\'\n\ninitiation\030\005 \001(\0132\021.InitiationPacke" +
-      "tH\000\022)\n\013termination\030\006 \001(\0132\022.TerminationPa" +
-      "cketH\000\022 \n\007peer_up\030\007 \001(\0132\r.PeerUpPacketH\000" +
-      "\022$\n\tpeer_down\030\010 \001(\0132\017.PeerDownPacketH\000\0222" +
-      "\n\020route_monitoring\030\t \001(\0132\026.RouteMonitori" +
-      "ngPacketH\000\0224\n\021statistics_report\030\n \001(\0132\027." +
-      "StatisticsReportPacketH\000\022\037\n\theartbeat\030\017 " +
-      "\001(\0132\n.HeartbeatH\000B\010\n\006packetJ\004\010\002\020\003J\004\010\003\020\004J" +
-      "\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.ope" +
-      "nnms.netmgt.telemetry.protocols.bmp.tran" +
-      "sportB\tTransportP\000P\001b\006proto3"
+      "ode\022\033\n\007routers\030\002 \003(\0132\n.IpAddress\":\n\004Mode" +
+      "\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022" +
+      "\013\n\007STOPPED\020\003\"\365\002\n\007Message\022\017\n\007version\030\001 \001(" +
+      "\r\022\'\n\ninitiation\030\005 \001(\0132\021.InitiationPacket" +
+      "H\000\022)\n\013termination\030\006 \001(\0132\022.TerminationPac" +
+      "ketH\000\022 \n\007peer_up\030\007 \001(\0132\r.PeerUpPacketH\000\022" +
+      "$\n\tpeer_down\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n" +
+      "\020route_monitoring\030\t \001(\0132\026.RouteMonitorin" +
+      "gPacketH\000\0224\n\021statistics_report\030\n \001(\0132\027.S" +
+      "tatisticsReportPacketH\000\022\037\n\theartbeat\030\017 \001" +
+      "(\0132\n.HeartbeatH\000B\010\n\006packetJ\004\010\002\020\003J\004\010\003\020\004J\004" +
+      "\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.open" +
+      "nms.netmgt.telemetry.protocols.bmp.trans" +
+      "portB\tTransportP\000P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

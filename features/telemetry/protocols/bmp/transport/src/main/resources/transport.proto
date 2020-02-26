@@ -197,7 +197,7 @@ message StatisticsReportPacket {
 message Heartbeat {
     enum Mode {
         STARTED = 0;
-        CHANGED = 1;
+        CHANGE = 1;
         PERIODIC = 2;
         STOPPED = 3;
     }

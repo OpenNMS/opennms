@@ -95,7 +95,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             case PERIODIC:
                 collector.action = Collector.Action.HEARTBEAT;
                 break;
-            case CHANGED:
+            case CHANGE:
                 collector.action = Collector.Action.CHANGE;
                 break;
         }
@@ -181,7 +181,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                                 bgpPeer.getDistinguisher(),
                                 context.routerHashId);
         peer.routerHash = context.routerHashId;
-        peer.remoteBgpId = InetAddressUtils.str(address(peerUp.getRecvMsg().getId())); // FIXME; This is weird
+        peer.remoteBgpId = address(peerUp.getRecvMsg().getId());
         peer.routerIp = context.sourceAddress;
         peer.timestamp = context.timestamp;
         peer.remoteAsn = (long) peerUp.getRecvMsg().getAs();

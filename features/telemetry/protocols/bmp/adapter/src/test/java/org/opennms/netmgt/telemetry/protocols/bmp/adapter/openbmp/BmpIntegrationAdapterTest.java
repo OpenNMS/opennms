@@ -29,7 +29,9 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,6 +53,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 
@@ -75,12 +78,36 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     }
 
     @Test
+    public void canGenerateColelctorMessages() {
+        final Transport.Heartbeat.Builder heartbeat = Transport.Heartbeat.newBuilder()
+                                                                         .setMode(Transport.Heartbeat.Mode.CHANGE);
+        heartbeat.addRoutersBuilder().setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("1.2.3.4")));
+        heartbeat.addRoutersBuilder().setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("5.6.7.8")));
+        heartbeat.addRoutersBuilder().setV6(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("2001:0db8:85a3::8a2e:0370:7334")));
+
+        Transport.Message message = Transport.Message.newBuilder()
+                                                     .setVersion(3)
+                                                     .setHeartbeat(heartbeat)
+                                                     .build();
+
+        send(message.toByteString());
+
+        List<Collector> collectorMessages = getHandledRecordsOfType(Type.COLLECTOR);
+        assertThat(collectorMessages, hasSize(1));
+        assertThat(collectorMessages.get(0).adminId, is("0xDEADBEEF"));
+        assertThat(collectorMessages.get(0).action, is(Collector.Action.CHANGE));
+        assertThat(collectorMessages.get(0).routers, contains(InetAddressUtils.addr("1.2.3.4"),
+                                                              InetAddressUtils.addr("5.6.7.8"),
+                                                              InetAddressUtils.addr("2001:0db8:85a3::8a2e:0370:7334")));
+    }
+
+    @Test
     public void canGenerateRouterMessages() {
         // Send an initiation packet
         Transport.InitiationPacket.Builder initiationPacket = Transport.InitiationPacket.newBuilder()
                 .setSysName("router1");
         Transport.Message message = Transport.Message.newBuilder()
-                .setVersion(1)
+                .setVersion(3)
                 .setInitiation(initiationPacket)
                 .build();
         send(message.toByteString());
@@ -112,7 +139,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
                                         .setType(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET)
                                         .addPaths(64514))));
         Transport.Message message = Transport.Message.newBuilder()
-                .setVersion(1)
+                .setVersion(3)
                 .setRouteMonitoring(updatePacket)
                 .build();
         send(message.toByteString());

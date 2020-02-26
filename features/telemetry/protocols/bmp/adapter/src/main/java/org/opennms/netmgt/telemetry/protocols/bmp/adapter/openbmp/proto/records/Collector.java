@@ -54,7 +54,7 @@ public class Collector extends Record {
     @Override
     protected String[] fields() {
         return new String[]{
-                this.action != null ? this.action.value : null,
+                this.action.value,
                 nullSafeStr(this.sequence),
                 this.adminId,
                 this.hash,

@@ -189,20 +189,20 @@ public class BmpParser implements TcpParser {
             @Override
             public void active() {
                 BmpParser.this.connections.add(remoteAddress.getAddress());
-                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGED);
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
             }
 
             @Override
             public void inactive() {
                 BmpParser.this.connections.remove(remoteAddress.getAddress());
-                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGED);
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
             }
         };
     }
 
     private enum HeartbeatMode {
         STARTED,
-        CHANGED,
+        CHANGE,
         PERIODIC,
         STOPPED;
 
@@ -219,7 +219,7 @@ public class BmpParser implements TcpParser {
                    case STARTED: return Transport.Heartbeat.Mode.STARTED;
                    case STOPPED: return Transport.Heartbeat.Mode.STOPPED;
                    case PERIODIC: return Transport.Heartbeat.Mode.PERIODIC;
-                   case CHANGED: return Transport.Heartbeat.Mode.CHANGED;
+                   case CHANGE: return Transport.Heartbeat.Mode.CHANGE;
                    default: throw new IllegalStateException();
                }}))
                .addAllRouters(Iterables.transform(this.connections, BmpParser::address));

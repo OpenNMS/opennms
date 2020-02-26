@@ -40,7 +40,7 @@ public class Peer extends Record {
     public String hash; // Hash of fields [ remote/peer ip, peer RD, router hash ]
     public String routerHash;
     public String name;
-    public String remoteBgpId;
+    public InetAddress remoteBgpId;
     public InetAddress routerIp;
     public Instant timestamp;
     public Long remoteAsn;
@@ -79,7 +79,7 @@ public class Peer extends Record {
                 this.hash,
                 this.routerHash,
                 this.name,
-                this.remoteBgpId,
+                nullSafeStr(this.remoteBgpId),
                 nullSafeStr(this.routerIp),
                 formatTimestamp(this.timestamp),
                 nullSafeStr(this.remoteAsn),
