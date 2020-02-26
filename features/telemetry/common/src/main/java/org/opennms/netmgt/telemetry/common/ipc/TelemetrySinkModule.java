@@ -123,7 +123,7 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
                 if (telemetryMessage.getSource() != null) {
                     return telemetryMessage.getSource();
                 } else {
-                    return this;
+                    return telemetryMessage;
                 }
             }
 

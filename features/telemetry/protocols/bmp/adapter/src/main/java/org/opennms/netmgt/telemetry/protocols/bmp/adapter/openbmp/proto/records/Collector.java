@@ -28,20 +28,23 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records;
 
+import java.net.InetAddress;
 import java.time.Instant;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 
 public class Collector extends Record {
     public Action action;
     public Long sequence;
     public String adminId;
     public String hash;
-    public List<String> routers;
+    public List<InetAddress> routers;
     public Instant timestamp;
 
     public Collector() {
@@ -55,7 +58,7 @@ public class Collector extends Record {
                 nullSafeStr(this.sequence),
                 this.adminId,
                 this.hash,
-                this.routers != null ? Joiner.on(',').join(this.routers) : "",
+                this.routers != null ? Joiner.on(',').join(Iterables.transform(this.routers, InetAddressUtils::str)) : "",
                 this.routers != null ? Integer.toString(this.routers.size()) : "0",
                 Record.formatTimestamp(this.timestamp)
         };
