@@ -159,6 +159,7 @@ message RouteMonitoringPacket {
             LocalPref local_pref = 9;
             AtomicAggregate atomic_aggregate = 10;
             Aggregator aggregator = 11;
+            uint32 community = 12;
         }
     }
 

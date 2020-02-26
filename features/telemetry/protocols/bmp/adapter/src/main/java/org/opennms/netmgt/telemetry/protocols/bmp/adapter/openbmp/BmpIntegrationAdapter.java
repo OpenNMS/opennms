@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributesOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.isV4;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
@@ -480,13 +482,19 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 .ifPresent(agg -> {
                     baseAttr.aggregator = String.format("%d %s", agg.getAs(), BmpAdapterTools.addressAsStr(agg.getAddress()));
                 });
+        baseAttr.communityList = getPathAttributesOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.COMMUNITY)
+                .map(Transport.RouteMonitoringPacket.PathAttribute::getCommunity)
+                .map(community -> {
+                    int as = (community >> 16) & 0xFFFF;
+                    int attr = (community >> 0) & 0xFFFF;
+                    return String.format("%d:%d", as, attr);
+                })
+                .collect(Collectors.joining(" "));
 
-        // FIXME: Missing ATTR_TYPE_COMMUNITIES
         // FIXME: Missing ATTR_TYPE_EXT_COMMUNITY
         // FIXME: Missing ATTR_TYPE_CLUSTER_LIST
         // FIXME: Missing ATTR_TYPE_LARGE_COMMUNITY
         // FIXME: Missing ATTR_TYPE_ORIGINATOR_ID
-        // FIXME: Missing ATTR_TYPE_LABELS
 
         // Set the atomic flag is the atomic aggregate path attribute is present
         // FIXME: Should this have a value? The OpenBMP code only sets it if it is 1
@@ -505,7 +513,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.routerHash = context.getRouterHash();
         unicastPrefix.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), unicastPrefix.routerHash);
         unicastPrefix.peerIp = address(peer.getAddress());
-        unicastPrefix.peerAsn = (long)peer.getAs(); // FIXME: long vs int
+        unicastPrefix.peerAsn = uint32(peer.getAs());
         unicastPrefix.timestamp = context.timestamp;
         unicastPrefix.prefix = address(route.getPrefix());
         unicastPrefix.length = route.getLength();

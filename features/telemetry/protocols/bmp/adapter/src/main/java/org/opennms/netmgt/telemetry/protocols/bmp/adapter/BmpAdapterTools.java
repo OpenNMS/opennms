@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
@@ -65,6 +66,12 @@ public interface BmpAdapterTools {
         return routeMonitoring.getAttributesList().stream()
                 .filter(p -> Objects.equals(pathAttrValueType, p.getValueCase()))
                 .findFirst();
+    }
+
+    static Stream<Transport.RouteMonitoringPacket.PathAttribute> getPathAttributesOfType(Transport.RouteMonitoringPacket routeMonitoring,
+                                                                                        Transport.RouteMonitoringPacket.PathAttribute.ValueCase pathAttrValueType) {
+        return routeMonitoring.getAttributesList().stream()
+                .filter(p -> Objects.equals(pathAttrValueType, p.getValueCase()));
     }
 
     static boolean isV4(Transport.IpAddress ipAddress) {

@@ -10951,6 +10951,12 @@ public final class Transport {
        */
       org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.AggregatorOrBuilder getAggregatorOrBuilder();
 
+      /**
+       * <code>uint32 community = 12;</code>
+       * @return The community.
+       */
+      int getCommunity();
+
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ValueCase getValueCase();
     }
     /**
@@ -11106,6 +11112,11 @@ public final class Transport {
                   value_ = subBuilder.buildPartial();
                 }
                 valueCase_ = 11;
+                break;
+              }
+              case 96: {
+                valueCase_ = 12;
+                value_ = input.readUInt32();
                 break;
               }
               default: {
@@ -15567,6 +15578,7 @@ public final class Transport {
         LOCAL_PREF(9),
         ATOMIC_AGGREGATE(10),
         AGGREGATOR(11),
+        COMMUNITY(12),
         VALUE_NOT_SET(0);
         private final int value;
         private ValueCase(int value) {
@@ -15591,6 +15603,7 @@ public final class Transport {
             case 9: return LOCAL_PREF;
             case 10: return ATOMIC_AGGREGATE;
             case 11: return AGGREGATOR;
+            case 12: return COMMUNITY;
             case 0: return VALUE_NOT_SET;
             default: return null;
           }
@@ -15839,6 +15852,18 @@ public final class Transport {
         return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.Aggregator.getDefaultInstance();
       }
 
+      public static final int COMMUNITY_FIELD_NUMBER = 12;
+      /**
+       * <code>uint32 community = 12;</code>
+       * @return The community.
+       */
+      public int getCommunity() {
+        if (valueCase_ == 12) {
+          return (java.lang.Integer) value_;
+        }
+        return 0;
+      }
+
       private byte memoizedIsInitialized = -1;
       @java.lang.Override
       public final boolean isInitialized() {
@@ -15885,6 +15910,10 @@ public final class Transport {
         }
         if (valueCase_ == 11) {
           output.writeMessage(11, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.Aggregator) value_);
+        }
+        if (valueCase_ == 12) {
+          output.writeUInt32(
+              12, (int)((java.lang.Integer) value_));
         }
         unknownFields.writeTo(output);
       }
@@ -15939,6 +15968,11 @@ public final class Transport {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(11, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.Aggregator) value_);
         }
+        if (valueCase_ == 12) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(
+                12, (int)((java.lang.Integer) value_));
+        }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
         return size;
@@ -15991,6 +16025,10 @@ public final class Transport {
           case 11:
             if (!getAggregator()
                 .equals(other.getAggregator())) return false;
+            break;
+          case 12:
+            if (getCommunity()
+                != other.getCommunity()) return false;
             break;
           case 0:
           default:
@@ -16046,6 +16084,10 @@ public final class Transport {
           case 11:
             hash = (37 * hash) + AGGREGATOR_FIELD_NUMBER;
             hash = (53 * hash) + getAggregator().hashCode();
+            break;
+          case 12:
+            hash = (37 * hash) + COMMUNITY_FIELD_NUMBER;
+            hash = (53 * hash) + getCommunity();
             break;
           case 0:
           default:
@@ -16268,6 +16310,9 @@ public final class Transport {
               result.value_ = aggregatorBuilder_.build();
             }
           }
+          if (valueCase_ == 12) {
+            result.value_ = value_;
+          }
           result.valueCase_ = valueCase_;
           onBuilt();
           return result;
@@ -16356,6 +16401,10 @@ public final class Transport {
             }
             case AGGREGATOR: {
               mergeAggregator(other.getAggregator());
+              break;
+            }
+            case COMMUNITY: {
+              setCommunity(other.getCommunity());
               break;
             }
             case VALUE_NOT_SET: {
@@ -17413,6 +17462,40 @@ public final class Transport {
           valueCase_ = 11;
           onChanged();;
           return aggregatorBuilder_;
+        }
+
+        /**
+         * <code>uint32 community = 12;</code>
+         * @return The community.
+         */
+        public int getCommunity() {
+          if (valueCase_ == 12) {
+            return (java.lang.Integer) value_;
+          }
+          return 0;
+        }
+        /**
+         * <code>uint32 community = 12;</code>
+         * @param value The community to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCommunity(int value) {
+          valueCase_ = 12;
+          value_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint32 community = 12;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCommunity() {
+          if (valueCase_ == 12) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+          return this;
         }
         @java.lang.Override
         public final Builder setUnknownFields(
@@ -27256,13 +27339,13 @@ public final class Transport {
       "e_no_notification\030\005 \001(\0132\026.google.protobu" +
       "f.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.prot" +
       "obuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007su" +
-      "bcode\030\002 \001(\rB\010\n\006reason\"\222\n\n\025RouteMonitorin" +
+      "bcode\030\002 \001(\rB\010\n\006reason\"\247\n\n\025RouteMonitorin" +
       "gPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdraw" +
       "s\030\002 \003(\0132\034.RouteMonitoringPacket.Route\0220\n" +
       "\nreachables\030\003 \003(\0132\034.RouteMonitoringPacke" +
       "t.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMonit" +
       "oringPacket.PathAttribute\0323\n\005Route\022\032\n\006pr" +
-      "efix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\032\221" +
+      "efix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\032\246" +
       "\010\n\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntr" +
       "ansitive\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010exten" +
       "ded\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitor" +
@@ -27277,66 +27360,66 @@ public final class Transport {
       "c_aggregate\030\n \001(\01324.RouteMonitoringPacke" +
       "t.PathAttribute.AtomicAggregateH\000\022E\n\nagg" +
       "regator\030\013 \001(\0132/.RouteMonitoringPacket.Pa" +
-      "thAttribute.AggregatorH\000\032\327\001\n\006AsPath\022E\n\010s" +
-      "egments\030\001 \003(\01323.RouteMonitoringPacket.Pa" +
-      "thAttribute.AsPath.Segment\032\205\001\n\007Segment\022F" +
-      "\n\004type\030\001 \001(\01628.RouteMonitoringPacket.Pat" +
-      "hAttribute.AsPath.Segment.Type\022\r\n\005paths\030" +
-      "\002 \003(\007\"#\n\004Type\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE" +
-      "\020\001\032&\n\007NextHop\022\033\n\007address\030\001 \001(\0132\n.IpAddre" +
-      "ss\032&\n\rMultiExitDisc\022\025\n\rdiscriminator\030\001 \001" +
-      "(\r\032\037\n\tLocalPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017A" +
-      "tomicAggregate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007" +
-      "\022\033\n\007address\030\002 \001(\0132\n.IpAddress\"*\n\006Origin\022" +
-      "\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005val" +
-      "ue\"\210\n\n\026StatisticsReportPacket\022\023\n\004peer\030\001 " +
-      "\001(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.Statistic" +
-      "sReportPacket.Counter\0229\n\020duplicate_prefi" +
-      "x\030e \001(\0132\037.StatisticsReportPacket.Counter" +
-      "\022;\n\022duplicate_withdraw\030f \001(\0132\037.Statistic" +
-      "sReportPacket.Counter\022M\n$invalid_update_" +
-      "due_to_as_confed_loop\030g \001(\0132\037.Statistics" +
-      "ReportPacket.Counter\022K\n\"invalid_update_d" +
-      "ue_to_as_path_loop\030h \001(\0132\037.StatisticsRep" +
-      "ortPacket.Counter\022P\n\'invalid_update_due_" +
-      "to_cluster_list_loop\030i \001(\0132\037.StatisticsR" +
-      "eportPacket.Counter\022L\n#invalid_update_du" +
-      "e_to_originator_id\030j \001(\0132\037.StatisticsRep" +
-      "ortPacket.Counter\0221\n\nadj_rib_in\030k \001(\0132\035." +
-      "StatisticsReportPacket.Gauge\0222\n\013adj_rib_" +
-      "out\030l \001(\0132\035.StatisticsReportPacket.Gauge" +
-      "\022G\n\022per_afi_adj_rib_in\030m \003(\0132+.Statistic" +
-      "sReportPacket.PerAfiAdjRibInEntry\022B\n\017per" +
-      "_afi_loc_rib\030n \003(\0132).StatisticsReportPac" +
-      "ket.PerAfiLocRibEntry\022A\n\030update_treat_as" +
-      "_withdraw\030o \001(\0132\037.StatisticsReportPacket" +
-      ".Counter\022A\n\030prefix_treat_as_withdraw\030p \001" +
-      "(\0132\037.StatisticsReportPacket.Counter\0229\n\020d" +
-      "uplicate_update\030q \001(\0132\037.StatisticsReport" +
-      "Packet.Counter\022.\n\007loc_rib\030r \001(\0132\035.Statis" +
-      "ticsReportPacket.Gauge\0221\n\nexport_rib\030s \001" +
-      "(\0132\035.StatisticsReportPacket.Gauge\032\026\n\005Gau" +
-      "ge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 " +
-      "\001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022" +
-      ",\n\005value\030\002 \001(\0132\035.StatisticsReportPacket." +
-      "Gauge:\0028\001\032R\n\021PerAfiLocRibEntry\022\013\n\003key\030\001 " +
-      "\001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportPac" +
-      "ket.Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(" +
-      "\0162\017.Heartbeat.Mode\022\033\n\007routers\030\002 \003(\0132\n.Ip" +
-      "Address\":\n\004Mode\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001" +
-      "\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\365\002\n\007Message\022" +
-      "\017\n\007version\030\001 \001(\r\022\'\n\ninitiation\030\005 \001(\0132\021.I" +
-      "nitiationPacketH\000\022)\n\013termination\030\006 \001(\0132\022" +
-      ".TerminationPacketH\000\022 \n\007peer_up\030\007 \001(\0132\r." +
-      "PeerUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.Peer" +
-      "DownPacketH\000\0222\n\020route_monitoring\030\t \001(\0132\026" +
-      ".RouteMonitoringPacketH\000\0224\n\021statistics_r" +
-      "eport\030\n \001(\0132\027.StatisticsReportPacketH\000\022\037" +
-      "\n\theartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006packe" +
-      "tJ\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010" +
-      "\016\020\017BA\n4org.opennms.netmgt.telemetry.prot" +
-      "ocols.bmp.transportB\tTransportP\000P\001b\006prot" +
-      "o3"
+      "thAttribute.AggregatorH\000\022\023\n\tcommunity\030\014 " +
+      "\001(\rH\000\032\327\001\n\006AsPath\022E\n\010segments\030\001 \003(\01323.Rou" +
+      "teMonitoringPacket.PathAttribute.AsPath." +
+      "Segment\032\205\001\n\007Segment\022F\n\004type\030\001 \001(\01628.Rout" +
+      "eMonitoringPacket.PathAttribute.AsPath.S" +
+      "egment.Type\022\r\n\005paths\030\002 \003(\007\"#\n\004Type\022\n\n\006AS" +
+      "_SET\020\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007NextHop\022\033\n\007ad" +
+      "dress\030\001 \001(\0132\n.IpAddress\032&\n\rMultiExitDisc" +
+      "\022\025\n\rdiscriminator\030\001 \001(\r\032\037\n\tLocalPref\022\022\n\n" +
+      "preference\030\001 \001(\r\032\021\n\017AtomicAggregate\0325\n\nA" +
+      "ggregator\022\n\n\002as\030\001 \001(\007\022\033\n\007address\030\002 \001(\0132\n" +
+      ".IpAddress\"*\n\006Origin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016" +
+      "\n\nINCOMPLETE\020\002B\007\n\005value\"\210\n\n\026StatisticsRe" +
+      "portPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\0221\n\010rejec" +
+      "ted\030d \001(\0132\037.StatisticsReportPacket.Count" +
+      "er\0229\n\020duplicate_prefix\030e \001(\0132\037.Statistic" +
+      "sReportPacket.Counter\022;\n\022duplicate_withd" +
+      "raw\030f \001(\0132\037.StatisticsReportPacket.Count" +
+      "er\022M\n$invalid_update_due_to_as_confed_lo" +
+      "op\030g \001(\0132\037.StatisticsReportPacket.Counte" +
+      "r\022K\n\"invalid_update_due_to_as_path_loop\030" +
+      "h \001(\0132\037.StatisticsReportPacket.Counter\022P" +
+      "\n\'invalid_update_due_to_cluster_list_loo" +
+      "p\030i \001(\0132\037.StatisticsReportPacket.Counter" +
+      "\022L\n#invalid_update_due_to_originator_id\030" +
+      "j \001(\0132\037.StatisticsReportPacket.Counter\0221" +
+      "\n\nadj_rib_in\030k \001(\0132\035.StatisticsReportPac" +
+      "ket.Gauge\0222\n\013adj_rib_out\030l \001(\0132\035.Statist" +
+      "icsReportPacket.Gauge\022G\n\022per_afi_adj_rib" +
+      "_in\030m \003(\0132+.StatisticsReportPacket.PerAf" +
+      "iAdjRibInEntry\022B\n\017per_afi_loc_rib\030n \003(\0132" +
+      ").StatisticsReportPacket.PerAfiLocRibEnt" +
+      "ry\022A\n\030update_treat_as_withdraw\030o \001(\0132\037.S" +
+      "tatisticsReportPacket.Counter\022A\n\030prefix_" +
+      "treat_as_withdraw\030p \001(\0132\037.StatisticsRepo" +
+      "rtPacket.Counter\0229\n\020duplicate_update\030q \001" +
+      "(\0132\037.StatisticsReportPacket.Counter\022.\n\007l" +
+      "oc_rib\030r \001(\0132\035.StatisticsReportPacket.Ga" +
+      "uge\0221\n\nexport_rib\030s \001(\0132\035.StatisticsRepo" +
+      "rtPacket.Gauge\032\026\n\005Gauge\022\r\n\005value\030\001 \001(\004\032\030" +
+      "\n\007Counter\022\r\n\005count\030\001 \001(\r\032T\n\023PerAfiAdjRib" +
+      "InEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.St" +
+      "atisticsReportPacket.Gauge:\0028\001\032R\n\021PerAfi" +
+      "LocRibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132" +
+      "\035.StatisticsReportPacket.Gauge:\0028\001\"\203\001\n\tH" +
+      "eartbeat\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.Mode\022" +
+      "\033\n\007routers\030\002 \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007" +
+      "STARTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007S" +
+      "TOPPED\020\003\"\365\002\n\007Message\022\017\n\007version\030\001 \001(\r\022\'\n" +
+      "\ninitiation\030\005 \001(\0132\021.InitiationPacketH\000\022)" +
+      "\n\013termination\030\006 \001(\0132\022.TerminationPacketH" +
+      "\000\022 \n\007peer_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n\tp" +
+      "eer_down\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020rou" +
+      "te_monitoring\030\t \001(\0132\026.RouteMonitoringPac" +
+      "ketH\000\0224\n\021statistics_report\030\n \001(\0132\027.Stati" +
+      "sticsReportPacketH\000\022\037\n\theartbeat\030\017 \001(\0132\n" +
+      ".HeartbeatH\000B\010\n\006packetJ\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005" +
+      "J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.opennms." +
+      "netmgt.telemetry.protocols.bmp.transport" +
+      "B\tTransportP\000P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -27415,7 +27498,7 @@ public final class Transport {
     internal_static_RouteMonitoringPacket_PathAttribute_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_descriptor,
-        new java.lang.String[] { "Optional", "Transitive", "Partial", "Extended", "Origin", "AsPath", "NextHop", "MultiExitDisc", "LocalPref", "AtomicAggregate", "Aggregator", "Value", });
+        new java.lang.String[] { "Optional", "Transitive", "Partial", "Extended", "Origin", "AsPath", "NextHop", "MultiExitDisc", "LocalPref", "AtomicAggregate", "Aggregator", "Community", "Value", });
     internal_static_RouteMonitoringPacket_PathAttribute_AsPath_descriptor =
       internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(0);
     internal_static_RouteMonitoringPacket_PathAttribute_AsPath_fieldAccessorTable = new

@@ -46,6 +46,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPath;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AtomicAggregate;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Attribute;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
@@ -176,7 +177,36 @@ public class UpdatePacket implements Packet {
                     return new Aggregator(buffer, flags);
                 }
             },
-
+            COMMUNITY {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    return new Community(buffer, flags);
+                }
+            },
+            ORIGINATOR_ID {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    throw new UnsupportedOperationException();
+                }
+            },
+            CLUSTER_LIST {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    throw new UnsupportedOperationException();
+                }
+            },
+            EXTENDED_COMMUNITIES {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    throw new UnsupportedOperationException();
+                }
+            },
+            LARGE_COMMUNITY {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    throw new UnsupportedOperationException();
+                }
+            },
             UNKNOWN {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
@@ -195,6 +225,11 @@ public class UpdatePacket implements Packet {
                     case 5: return LOCAL_PREF;
                     case 6: return ATOMIC_AGGREGATE;
                     case 7: return AGGREGATOR;
+                    case 8: return COMMUNITY;
+                    case 9: return ORIGINATOR_ID;
+                    case 10: return CLUSTER_LIST;
+                    case 16: return EXTENDED_COMMUNITIES;
+                    case 32: return LARGE_COMMUNITY;
                     default:
                         BmpParser.LOG.warn("Unknown Update Packet Type: {}", type);
                         return UNKNOWN;

@@ -215,7 +215,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(peer.remoteIp, is(InetAddressUtils.addr("192.168.0.5")));
         assertThat(peer.peerRd, is("0"));
         assertThat(peer.remotePort, is(117799));
-        assertThat(peer.localAsn, is(4200000032L));
+        assertThat(peer.localAsn, is(4200000023L));
         assertThat(peer.localIp, is(InetAddressUtils.addr("192.168.0.4")));
         assertThat(peer.localPort, is(179));
         assertThat(peer.localBgpId, is(InetAddressUtils.addr("1.1.1.1")));
@@ -322,7 +322,11 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
                                         .addPaths(64513))
                                 .addSegments(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.newBuilder()
                                         .setType(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET)
-                                        .addPaths(64514))));
+                                        .addPaths(64514))))
+                .addAttributes(Transport.RouteMonitoringPacket.PathAttribute.newBuilder()
+                        .setCommunity(0x02B202B3))
+                .addAttributes(Transport.RouteMonitoringPacket.PathAttribute.newBuilder()
+                        .setCommunity(0x02B2FFFF));
         Transport.Message message = Transport.Message.newBuilder()
                 .setVersion(3)
                 .setRouteMonitoring(updatePacket)
@@ -338,6 +342,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(baseAttribute.sequence, equalTo(0L));
         assertThat(baseAttribute.asPath, equalTo("64512 64513 {64514 }"));
         assertThat(baseAttribute.asPathCount, equalTo(3));
+        assertThat(baseAttribute.communityList, equalTo("690:691 690:65535"));
     }
 
     private <T> List<T> getHandledRecordsOfType(Type type) {
