@@ -34,12 +34,16 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -91,6 +95,42 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(router.name, equalTo("router1"));
     }
 
+    /**
+     *  FIXME: Remove plurality from attributes in protobuf
+     */
+    @Test
+    public void canGenerateBaseAttributeMessages() {
+        // Send a route monitoring packet
+        Transport.RouteMonitoringPacket.Builder updatePacket = Transport.RouteMonitoringPacket.newBuilder()
+                .addReachable(Transport.RouteMonitoringPacket.Route.newBuilder()
+                        .setPrefix(address(InetAddressUtils.addr("10.1.1.0")))
+                        .setLength(28))
+                .addAttributes(Transport.RouteMonitoringPacket.PathAttribute.newBuilder()
+                        .setAsPath(Transport.RouteMonitoringPacket.PathAttribute.AsPath.newBuilder()
+                                .addSegments(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.newBuilder()
+                                        .setType(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SEQUENCE)
+                                        .addPath(64512)
+                                        .addPath(64513))
+                                .addSegments(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.newBuilder()
+                                        .setType(Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET)
+                                        .addPath(64514))));
+        Transport.Message message = Transport.Message.newBuilder()
+                .setVersion(1)
+                .setRouteMonitoring(updatePacket)
+                .build();
+        send(message.toByteString());
+
+        // Grab the generated "base_attribute" messages
+        List<BaseAttribute> baseAttributeMsgs = getHandledRecordsOfType(Type.BASE_ATTRIBUTE);
+        assertThat(baseAttributeMsgs, hasSize(1));
+
+        // Verify
+        BaseAttribute baseAttribute = baseAttributeMsgs.get(0);
+        assertThat(baseAttribute.sequence, equalTo(0L));
+        assertThat(baseAttribute.asPath, equalTo("64512 64513 {64514 }"));
+        assertThat(baseAttribute.asPathCount, equalTo(3));
+    }
+
     private <T> List<T> getHandledRecordsOfType(Type type) {
         return messagesHandled.stream()
                 .filter(m -> type.equals(m.getType()))
@@ -121,5 +161,19 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     @Override
     public void close() {
         // pass
+    }
+
+    // FIXME: Dedup
+    private static Transport.IpAddress address(final InetAddress address) {
+        final Transport.IpAddress.Builder builder = Transport.IpAddress.newBuilder();
+        if (address instanceof Inet4Address) {
+            builder.setV4(ByteString.copyFrom(address.getAddress()));
+        } else if (address instanceof Inet6Address) {
+            builder.setV6(ByteString.copyFrom(address.getAddress()));
+        } else {
+            throw new IllegalStateException();
+        }
+
+        return builder.build();
     }
 }
