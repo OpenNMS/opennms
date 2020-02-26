@@ -226,6 +226,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
         router.name = initiation.getSysName();
+//        router.name = InetAddressUtils.str(address(??.getAddress())); // TODO: resolve Ip via DNS?
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = initiation.getSysDesc();
@@ -246,6 +247,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.action = Router.Action.TERM;
         router.sequence = sequence.getAndIncrement();
         router.name = null;
+//        router.name = InetAddressUtils.str(address(??.getAddress())); // TODO: resolve Ip via DNS?
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = null;
@@ -287,7 +289,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = peerUp.getSysName();
+        peer.name = InetAddressUtils.str(address(bgpPeer.getAddress())); // TODO: resolve Ip via DNS?
         peer.hash = Record.hash(bgpPeer.getAddress(),
                                 bgpPeer.getDistinguisher(),
                                 context.routerHashId);
@@ -337,7 +339,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.routerHash = context.routerHashId;
         peer.remoteBgpId = address(bgpPeer.getId());
         peer.routerIp = context.sourceAddress;
-        peer.timestamp = context.timestamp;
+        peer.timestamp = timestamp(bgpPeer.getTimestamp());
         peer.remoteAsn = uint32(bgpPeer.getAs());
         peer.remoteIp = address(bgpPeer.getAddress());
         peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
@@ -367,7 +369,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 peer.bgpErrorSubcode = null;
         }
 
-        peer.errorText = Error.from(peer.bgpErrorCode, peer.bgpErrorSubcode).getErrorText();
+        if (peer.bgpErrorCode != null && peer.bgpErrorSubcode != null) {
+            peer.errorText = Error.from(peer.bgpErrorCode, peer.bgpErrorSubcode).getErrorText();
+        }
+
         peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
         peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());

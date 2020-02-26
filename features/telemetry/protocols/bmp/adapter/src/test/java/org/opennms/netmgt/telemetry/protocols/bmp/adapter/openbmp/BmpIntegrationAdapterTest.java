@@ -149,7 +149,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     }
 
     @Test
-    public void canGeneratePeerMessages() {
+    public void canGeneratePeerUpMessages() {
         final Transport.PeerUpPacket.Builder peerUpPacket = Transport.PeerUpPacket.newBuilder();
         peerUpPacket.getPeerBuilder()
                     .setType(Transport.Peer.Type.GLOBAL_INSTANCE)
@@ -177,14 +177,14 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
                     .setRemotePort(117799);
         peerUpPacket.getSendMsgBuilder()
                     .setVersion(4)
-                    .setAs(UnsignedInteger.valueOf(4200000000L).intValue())
+                    .setAs(UnsignedInteger.valueOf(4200000023L).intValue())
                     .setHoldTime(200)
                     .setId(Transport.IpAddress.newBuilder()
                                               .setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("1.1.1.1")))
                                               .build());
         peerUpPacket.getRecvMsgBuilder()
                     .setVersion(4)
-                    .setAs(UnsignedInteger.valueOf(4200000023L).intValue())
+                    .setAs(UnsignedInteger.valueOf(4200000000L).intValue())
                     .setHoldTime(100)
                     .setId(Transport.IpAddress.newBuilder()
                                               .setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("9.9.9.9")))
@@ -193,28 +193,29 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
                     .setSysDesc("My little router")
                     .setMessage("No router - no cry!");
 
-        Transport.Message message = Transport.Message.newBuilder()
+        Transport.Message peerUpMessage = Transport.Message.newBuilder()
                                                      .setVersion(3)
                                                      .setPeerUp(peerUpPacket)
                                                      .build();
-        send(message.toByteString());
+        send(peerUpMessage.toByteString());
 
         List<Peer> peerMessages = getHandledRecordsOfType(Type.PEER);
         assertThat(peerMessages, hasSize(1));
 
         // Verify
         Peer peer = peerMessages.get(0);
+        assertThat(peer.action, equalTo(Peer.Action.UP));
         assertThat(peer.sequence, equalTo(0L));
-        assertThat(peer.name, equalTo("router1"));
+        assertThat(peer.name, equalTo("192.168.0.5"));
 
         assertThat(peer.remoteBgpId, is(InetAddressUtils.addr("9.9.9.9")));
         assertThat(peer.routerIp, is(InetAddressUtils.addr("10.10.10.10")));
         assertThat(peer.timestamp, is(Instant.ofEpochSecond(1234567890L, 987654321)));
-        assertThat(peer.remoteAsn, is(4200000023L));
+        assertThat(peer.remoteAsn, is(4200000000L));
         assertThat(peer.remoteIp, is(InetAddressUtils.addr("192.168.0.5")));
         assertThat(peer.peerRd, is("0"));
         assertThat(peer.remotePort, is(117799));
-        assertThat(peer.localAsn, is(4200000000L));
+        assertThat(peer.localAsn, is(4200000032L));
         assertThat(peer.localIp, is(InetAddressUtils.addr("192.168.0.4")));
         assertThat(peer.localPort, is(179));
         assertThat(peer.localBgpId, is(InetAddressUtils.addr("1.1.1.1")));
@@ -227,6 +228,75 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(peer.bgpErrorCode, is(nullValue()));
         assertThat(peer.bgpErrorSubcode, is(nullValue()));
         assertThat(peer.errorText, is(nullValue()));
+        assertThat(peer.l3vpn, is(false));
+        assertThat(peer.prePolicy, is(true));
+        assertThat(peer.ipv4, is(true));
+//        assertThat(peer.locRib, is(""));
+//        assertThat(peer.locRibFiltered, is(""));
+//        assertThat(peer.tableName, is(""));
+    }
+
+    @Test
+    public void canGeneratePeerDownMessages() {
+        final Transport.PeerDownPacket.Builder peerDownPacket = Transport.PeerDownPacket.newBuilder();
+        peerDownPacket.getPeerBuilder()
+                    .setType(Transport.Peer.Type.GLOBAL_INSTANCE)
+                    .setFlags(Transport.Peer.Flags.newBuilder()
+                                                  .setIpVersion(Transport.Peer.Flags.IpVersion.IP_V4)
+                                                  .setLegacyAsPath(false)
+                                                  .setPolicy(Transport.Peer.Flags.Policy.PRE_POLICY)
+                                                  .build())
+                    .setDistinguisher(0)
+                    .setAddress(Transport.IpAddress.newBuilder()
+                                                   .setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("192.168.0.5")))
+                                                   .build())
+                    .setAs(UnsignedInteger.valueOf(4200000000L).intValue())
+                    .setId(Transport.IpAddress.newBuilder()
+                                              .setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("9.9.9.9")))
+                                              .build())
+                    .setTimestamp(Timestamp.newBuilder()
+                                           .setSeconds(1234567890L)
+                                           .setNanos(987654321)
+                                           .build());
+        peerDownPacket.getRemoteBgpNotificationBuilder()
+                      .setCode(1)
+                      .setSubcode(2);
+
+        Transport.Message peerDownMessage = Transport.Message.newBuilder()
+                                                           .setVersion(3)
+                                                           .setPeerDown(peerDownPacket)
+                                                           .build();
+        send(peerDownMessage.toByteString());
+
+        List<Peer> peerMessages = getHandledRecordsOfType(Type.PEER);
+        assertThat(peerMessages, hasSize(1));
+
+        // Verify
+        Peer peer = peerMessages.get(0);
+        assertThat(peer.action, equalTo(Peer.Action.DOWN));
+        assertThat(peer.sequence, equalTo(0L));
+        assertThat(peer.name, equalTo("192.168.0.5"));
+
+        assertThat(peer.remoteBgpId, is(InetAddressUtils.addr("9.9.9.9")));
+        assertThat(peer.routerIp, is(InetAddressUtils.addr("10.10.10.10")));
+        assertThat(peer.timestamp, is(Instant.ofEpochSecond(1234567890L, 987654321)));
+        assertThat(peer.remoteAsn, is(4200000000L));
+        assertThat(peer.remoteIp, is(InetAddressUtils.addr("192.168.0.5")));
+        assertThat(peer.peerRd, is("0"));
+        assertThat(peer.remotePort, is(nullValue()));
+        assertThat(peer.localAsn, is(nullValue()));
+        assertThat(peer.localIp, is(nullValue()));
+        assertThat(peer.localPort, is(nullValue()));
+        assertThat(peer.localBgpId, is(nullValue()));
+        assertThat(peer.infoData, is(nullValue()));
+        assertThat(peer.advertisedCapabilities, is(nullValue()));
+        assertThat(peer.receivedCapabilities, is(nullValue()));
+        assertThat(peer.remoteHolddown, is(nullValue()));
+        assertThat(peer.advertisedHolddown, is(nullValue()));
+        assertThat(peer.bmpReason, is(3));
+        assertThat(peer.bgpErrorCode, is(1));
+        assertThat(peer.bgpErrorSubcode, is(2));
+        assertThat(peer.errorText, is("Bad message header length"));
         assertThat(peer.l3vpn, is(false));
         assertThat(peer.prePolicy, is(true));
         assertThat(peer.ipv4, is(true));
