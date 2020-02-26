@@ -85,6 +85,10 @@ public class Message {
         return this.type;
     }
 
+    public List<Record> getRecords() {
+        return records;
+    }
+
     public int count() {
         return this.records.size();
     }

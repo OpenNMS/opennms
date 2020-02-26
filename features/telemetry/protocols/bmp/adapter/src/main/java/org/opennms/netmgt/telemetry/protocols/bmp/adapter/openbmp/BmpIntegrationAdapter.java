@@ -32,17 +32,11 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 
 import java.net.InetAddress;
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -59,32 +53,25 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
     private final static AtomicLong SEQUENCE = new AtomicLong();
-    private final KafkaProducer<String, String> producer;
+    private final BmpMessageHandler handler;
 
     public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
                                  final MetricRegistry metricRegistry) {
         super(adapterConfig, metricRegistry);
-        this.producer = buildProducer(adapterConfig);
+        this.handler = new BmpKafkaProducer(adapterConfig);
     }
 
-    private static KafkaProducer<String, String> buildProducer(final AdapterDefinition adapterConfig) {
-        final Map<String, Object> kafkaConfig = Maps.newHashMap();
-        for (final Map.Entry<String, String> entry : adapterConfig.getParameterMap().entrySet()) {
-            StringUtils.truncatePrefix(entry.getKey(), "kafka.").ifPresent(key -> {
-                kafkaConfig.put(key, entry.getValue());
-            });
-        }
-
-        // TODO fooker: Apply defaults (steal from https://github.com/SNAS/openbmp/blob/1a615a3c75a0143cc87ec70458471f0af67d3929/Server/src/kafka/MsgBusImpl_kafka.cpp#L162)
-
-        return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
+    public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
+                                 final MetricRegistry metricRegistry,
+                                 final BmpMessageHandler handler) {
+        super(adapterConfig, metricRegistry);
+        this.handler = Objects.requireNonNull(handler);
     }
 
     private Optional<Message> handleInitiationMessage(final Transport.Message message,
@@ -277,29 +264,13 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             case PACKET_NOT_SET:
                 break;
         }
-        messageToSend.ifPresent(this::send);
+        messageToSend.ifPresent(handler::handle);
     }
 
     @Override
     public void destroy() {
-        this.producer.close();
+        this.handler.close();
         super.destroy();
-    }
-
-    private void send(final Message message) {
-        final StringBuffer buffer = new StringBuffer();
-        message.serialize(buffer);
-
-        final String topic = message.getType().getTopic();
-        final ProducerRecord<String, String> record = new ProducerRecord<>(topic, message.getCollectorHashId(), buffer.toString());
-
-        this.producer.send(record, (meta, err) -> {
-            if (err != null) {
-                LOG.warn("Failed to send OpenBMP message", err);
-            } else {
-                LOG.trace("Send OpenBMP message: {} = {}@{}", meta.topic(), meta.offset(), meta.partition());
-            }
-        });
     }
 
     private static class Context {
