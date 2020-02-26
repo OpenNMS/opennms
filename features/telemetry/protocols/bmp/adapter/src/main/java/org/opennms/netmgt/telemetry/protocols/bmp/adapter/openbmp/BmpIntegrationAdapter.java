@@ -395,6 +395,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.pathId = 0;
         // FIXME: Where to derive labels from?
         unicastPrefix.labels = null;
+        unicastPrefix.prePolicy = Transport.Peer.Flags.Policy.PRE_POLICY.equals(peer.getFlags().getPolicy());
         // Augment with base attributes if present
         if (baseAttr != null) {
             unicastPrefix.origin = baseAttr.origin;
@@ -413,7 +414,6 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             unicastPrefix.originatorId = baseAttr.originatorId;
             unicastPrefix.largeCommunityList = baseAttr.largeCommunityList;
         }
-        // FIXME: isPrePolicy?
         // FIXME: isAdjIn?
 
         //  Hash of fields [ prefix, prefix length, peer hash, path_id, 1 if has label(s) ]
