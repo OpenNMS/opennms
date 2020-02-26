@@ -29,9 +29,14 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.addressAsStr;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.isV4;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,12 +54,14 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -64,6 +71,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
 
     private final AtomicLong sequence = new AtomicLong();
+    private final AtomicLong baseAttrSequence = new AtomicLong();
+    private final AtomicLong unicastPrefixSequence = new AtomicLong();
 
     private final BmpMessageHandler handler;
 
@@ -203,7 +212,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.errorText = null;
         peer.l3vpn = false; // TODO: Extract from document
         peer.prePolicy = false; // TODO?
-        peer.ipv4 = Transport.IpAddress.AddressCase.V4.equals(bgpPeer.getAddress().getAddressCase());
+        peer.ipv4 = isV4(bgpPeer.getAddress());
         peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
@@ -245,7 +254,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.errorText = null; // TODO: Extract from document
         peer.l3vpn = false; // TODO: Extract from document
         peer.prePolicy = false; // TODO?
-        peer.ipv4 = Transport.IpAddress.AddressCase.V4.equals(bgpPeer.getAddress().getAddressCase());
+        peer.ipv4 = isV4(bgpPeer.getAddress());
         peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
@@ -279,13 +288,26 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         this.handler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
     }
 
-    private void handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
+    private BaseAttribute toBaseAttributeRecord(Transport.RouteMonitoringPacket routeMonitoring, Context context) {
+        final Transport.Peer peer = routeMonitoring.getPeer();
         final BaseAttribute baseAttr = new BaseAttribute();
+        // Action is always ADD - attributes are never withdrawn
         baseAttr.action = BaseAttribute.Action.ADD;
-        baseAttr.sequence = sequence.getAndIncrement();
-        baseAttr.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
-        // See UpdateMsg::parseAttr_AsPath
+        // This increments for each attribute record by peer and restarts on collector restart or number wrap.
+        baseAttr.sequence = baseAttrSequence.getAndIncrement();
+        baseAttr.routerHash = context.getRouterHash();
+        baseAttr.routerIp = context.sourceAddress;
+        baseAttr.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), baseAttr.routerHash);
+        baseAttr.peerIp = address(peer.getAddress());
+        baseAttr.peerAsn = (long)peer.getAs(); // FIXME: long vs int
+        baseAttr.timestamp = context.timestamp;
+        // Derive the origin of the prefix from the path attributes - default to an empty string if not set
+        baseAttr.origin = getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.ORIGIN)
+                .map(attr -> attr.getOrigin().name().toLowerCase()).orElse("");
+        // Build the AS path from the path attributes - default to an empty string if not set
+        // See UpdateMsg::parseAttr_AsPath in the OpenBMP collector for the corresponding logic
         baseAttr.asPathCount = 0;
+        AtomicLong lastAsInPath = new AtomicLong(0);
         StringBuilder asPath = new StringBuilder();
         routeMonitoring.getAttributesList().stream()
                 .filter(Transport.RouteMonitoringPacket.PathAttribute::hasAsPath)
@@ -299,6 +321,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                             asPath.append(segmentPath);
                             asPath.append(" ");
                             baseAttr.asPathCount++;
+                            lastAsInPath.set((long)segmentPath); // FIXME: long vs int
                         });
                         if (Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET.equals(segment.getType())) {
                             asPath.append("}");
@@ -306,10 +329,133 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                     });
                 });
         baseAttr.asPath = asPath.toString();
+        // Originating ASN (right most in the path)
+        baseAttr.originAs = lastAsInPath.get();
+        // Derive the next hop from the path attributes
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.NEXT_HOP)
+                .map(attr -> attr.getNextHop().getAddress())
+                .ifPresent(nextHop -> {
+                    baseAttr.nextHop = address(nextHop);
+                    baseAttr.nextHopIpv4 = isV4(nextHop);
+                });
+        // Derive the Multi Exit Discriminator (MED) from the path attributes (lower values are preferred)
+        // FIXME: MED is optional, should it be serialized as an empty string if not set?
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.MULTI_EXIT_DISC)
+                .map(attr -> attr.getMultiExitDisc().getDiscriminator())
+                .ifPresent(med -> {
+                    baseAttr.med = (long)med; // FIXME: long vs int
+                });
+        // Derive the local preference from the path attributes
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.LOCAL_PREF)
+                .map(attr -> attr.getLocalPref().getPreference())
+                .ifPresent(localPref -> {
+                    baseAttr.localPref = (long)localPref; // FIXME: long vs int
+                });
+        // Derive the aggregator from the path attributes
+        // See UpdateMsg::parseAttr_Aggegator in the OpenBMP collector for the corresponding logic
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.AGGREGATOR)
+                .map(Transport.RouteMonitoringPacket.PathAttribute::getAggregator)
+                .ifPresent(agg -> {
+                    baseAttr.aggregator = String.format("%d %s", agg.getAs(), BmpAdapterTools.addressAsStr(agg.getAddress()));
+                });
 
-        // TODO: Finish base_attribute message and also generate unicast_prefix messages
+        // FIXME: Missing ATTR_TYPE_COMMUNITIES
+        // FIXME: Missing ATTR_TYPE_EXT_COMMUNITY
+        // FIXME: Missing ATTR_TYPE_CLUSTER_LIST
+        // FIXME: Missing ATTR_TYPE_LARGE_COMMUNITY
+        // FIXME: Missing ATTR_TYPE_ORIGINATOR_ID
+        // FIXME: Missing ATTR_TYPE_LABELS
 
-        this.handler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+        // Set the atomic flag is the atomic aggregate path attribute is present
+        // FIXME: Should this have a value? The OpenBMP code only sets it if it is 1
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.ATOMIC_AGGREGATE)
+                .ifPresent(isAtomic -> baseAttr.atomicAgg = true);
+
+        // FIXME: Compute hash
+
+        return baseAttr;
+    }
+
+    private UnicastPrefix toUnicastPrefixRecord(Transport.RouteMonitoringPacket routeMonitoring, Transport.RouteMonitoringPacket.Route route, BaseAttribute baseAttr, Context context) {
+        final Transport.Peer peer = routeMonitoring.getPeer();
+        final UnicastPrefix unicastPrefix = new UnicastPrefix();
+        unicastPrefix.sequence = unicastPrefixSequence.incrementAndGet();
+        unicastPrefix.routerHash = context.getRouterHash();
+        unicastPrefix.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), unicastPrefix.routerHash);
+        unicastPrefix.peerIp = address(peer.getAddress());
+        unicastPrefix.peerAsn = (long)peer.getAs(); // FIXME: long vs int
+        unicastPrefix.timestamp = context.timestamp;
+        unicastPrefix.prefix = address(route.getPrefix());
+        unicastPrefix.length = route.getLength();
+        unicastPrefix.ipv4 = isV4(route.getPrefix());
+        // FIXME: Where to derive path id from?
+        unicastPrefix.pathId = 0;
+        // FIXME: Where to derive labels from?
+        unicastPrefix.labels = null;
+        // Augment with base attributes if present
+        if (baseAttr != null) {
+            unicastPrefix.origin = baseAttr.origin;
+            unicastPrefix.asPath = baseAttr.asPath;
+            unicastPrefix.asPathCount = baseAttr.asPathCount;
+            unicastPrefix.originAs = baseAttr.originAs;
+            unicastPrefix.nextHop = baseAttr.nextHop;
+            unicastPrefix.med = baseAttr.med;
+            unicastPrefix.localPref = baseAttr.localPref;
+            unicastPrefix.aggregator = baseAttr.aggregator;
+            unicastPrefix.communityList = baseAttr.communityList;
+            unicastPrefix.extCommunityList = baseAttr.extCommunityList;
+            unicastPrefix.clusterList = baseAttr.clusterList;
+            unicastPrefix.atomicAgg = baseAttr.atomicAgg;
+            unicastPrefix.nextHopIpv4 = baseAttr.nextHopIpv4;
+            unicastPrefix.originatorId = baseAttr.originatorId;
+            unicastPrefix.largeCommunityList = baseAttr.largeCommunityList;
+        }
+        // FIXME: isPrePolicy?
+        // FIXME: isAdjIn?
+
+        //  Hash of fields [ prefix, prefix length, peer hash, path_id, 1 if has label(s) ]
+        unicastPrefix.hash = Record.hash(InetAddressUtils.str(unicastPrefix.prefix),
+                Integer.toString(unicastPrefix.length),
+                unicastPrefix.peerHash,
+                Integer.toString(unicastPrefix.pathId),
+                Strings.isNullOrEmpty(unicastPrefix.labels) ? "0" : "1");
+        return unicastPrefix;
+    }
+
+    private void handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
+        final List<Record> unicastPrefixRecords = new ArrayList<>(routeMonitoring.getWithdrawsCount() + routeMonitoring.getReachablesCount());
+
+        // Handle withdraws
+        for (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : routeMonitoring.getWithdrawsList()) {
+            final UnicastPrefix unicastPrefix = toUnicastPrefixRecord(routeMonitoring, route, null, context);
+            unicastPrefix.action = UnicastPrefix.Action.DELETE;
+
+            unicastPrefixRecords.add(unicastPrefix);
+        }
+
+        final BaseAttribute baseAttr;
+        if (routeMonitoring.getReachablesCount() > 0) {
+            // Generate base attribute record - the same attributes apply to all reachables in the packet
+            baseAttr = toBaseAttributeRecord(routeMonitoring, context);
+
+            // Handle reachables
+            for (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : routeMonitoring.getReachablesList()) {
+                final UnicastPrefix unicastPrefix = toUnicastPrefixRecord(routeMonitoring, route, baseAttr, context);
+                unicastPrefix.action = UnicastPrefix.Action.ADD;
+                // Augment with base attributes
+                unicastPrefix.baseAttrHash = baseAttr.hash;
+                // FIXME: Compute hash
+                unicastPrefixRecords.add(unicastPrefix);
+            }
+        } else {
+            baseAttr = null;
+        }
+
+        // Forward the messages to the handler
+        if (baseAttr != null) {
+            handler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+        }
+        handler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords));
     }
 
     @Override
@@ -389,6 +535,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             this.timestamp = Objects.requireNonNull(timestamp);
             this.sourceAddress = Objects.requireNonNull(sourceAddress);
             this.sourcePort = sourcePort;
+        }
+
+        public String getRouterHash() {
+            return Record.hash(sourceAddress.getHostAddress(), Integer.toString(sourcePort), collectorHashId);
         }
     }
 }

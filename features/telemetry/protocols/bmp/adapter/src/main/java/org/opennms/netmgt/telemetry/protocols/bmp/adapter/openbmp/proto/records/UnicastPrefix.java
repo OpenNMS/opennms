@@ -51,18 +51,18 @@ public class UnicastPrefix extends Record {
     public boolean ipv4;
     public String origin;
     public String asPath;
-    public String asPathCount;
-    public String originAs;
+    public Integer asPathCount;
+    public Long originAs;
     public InetAddress nextHop;
-    public Integer med;
-    public Integer localPref;
+    public Long med;
+    public Long localPref;
     public String aggregator;
     public String communityList;
     public String extCommunityList;
     public String clusterList;
     public boolean atomicAgg;
     public boolean nextHopIpv4;
-    public InetAddress originatorId;
+    public String originatorId;
     public Integer pathId;
     public String labels;
     public boolean prePolicy;
@@ -91,8 +91,8 @@ public class UnicastPrefix extends Record {
                 Boolean.toString(this.ipv4),
                 this.origin,
                 this.asPath,
-                this.asPathCount,
-                this.originAs,
+                nullSafeStr(this.asPathCount),
+                nullSafeStr(this.originAs),
                 nullSafeStr(this.nextHop),
                 nullSafeStr(this.med),
                 nullSafeStr(this.localPref),
@@ -102,7 +102,7 @@ public class UnicastPrefix extends Record {
                 this.clusterList,
                 Boolean.toString(this.atomicAgg),
                 Boolean.toString(this.nextHopIpv4),
-                nullSafeStr(this.originatorId),
+                this.originatorId,
                 nullSafeStr(this.pathId),
                 this.labels,
                 Boolean.toString(this.prePolicy),

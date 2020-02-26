@@ -49,8 +49,8 @@ public class BaseAttribute extends Record {
     public Integer asPathCount;
     public Long originAs;
     public InetAddress nextHop;
-    public Integer med;
-    public Integer localPref;
+    public Long med;
+    public Long localPref;
     public String aggregator;
     public String communityList;
     public String extCommunityList;

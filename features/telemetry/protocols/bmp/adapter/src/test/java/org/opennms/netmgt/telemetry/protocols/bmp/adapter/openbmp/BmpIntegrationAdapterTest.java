@@ -147,6 +147,8 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     public void canGenerateBaseAttributeMessages() {
         // Send a route monitoring packet
         Transport.RouteMonitoringPacket.Builder updatePacket = Transport.RouteMonitoringPacket.newBuilder()
+                .setPeer(Transport.Peer.newBuilder()
+                    .setAddress(address(InetAddressUtils.addr("172.23.1.1"))))
                 .addReachables(Transport.RouteMonitoringPacket.Route.newBuilder()
                         .setPrefix(address(InetAddressUtils.addr("10.1.1.0")))
                         .setLength(28))
