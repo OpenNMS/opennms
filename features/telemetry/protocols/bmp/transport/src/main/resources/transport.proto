@@ -51,10 +51,13 @@ message InitiationPacket {
     string sys_name = 1;
     string sys_desc = 2;
     string message = 3;
+    IpAddress bgpId = 4;
 }
 
 message TerminationPacket {
-    repeated string information = 1;
+    string message = 1;
+    uint32 reason = 2;
+    google.protobuf.Empty unknown = 3;
 }
 
 message PeerUpPacket {

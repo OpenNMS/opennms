@@ -46,6 +46,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
@@ -98,7 +99,6 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
@@ -295,13 +295,33 @@ public class BmpParser implements TcpParser {
                                                  .collect(Collectors.joining("\n")));
             message.setMessage(packet.information.all(InformationElement.Type.STRING)
                                                  .collect(Collectors.joining("\n")));
+            packet.information.first(InformationElement.Type.BGP_ID)
+                    .map(addr -> address(InetAddressUtils.addr(addr)))
+                    .ifPresent(message::setBgpId);
         }
 
         @Override
         public void visit(final TerminationPacket packet) {
             final Transport.TerminationPacket.Builder message = this.message.getTerminationBuilder();
-            message.addAllInformation(packet.information.stream()
-                                                        .map(e -> e.value).collect(Collectors.toList()));
+
+            for (final TerminationPacket.Element information : packet.information) {
+                information.value.accept(new TerminationPacket.Information.Visitor() {
+                    @Override
+                    public void visit(TerminationPacket.StringInformation string) {
+                        message.setMessage(string.string);
+                    }
+
+                    @Override
+                    public void visit(TerminationPacket.ReasonInformation reason) {
+                        message.setReason(reason.reason);
+                    }
+
+                    @Override
+                    public void visit(TerminationPacket.UnknownInformation unknown) {
+                        message.getUnknownBuilder();
+                    }
+                });
+            }
         }
 
         @Override

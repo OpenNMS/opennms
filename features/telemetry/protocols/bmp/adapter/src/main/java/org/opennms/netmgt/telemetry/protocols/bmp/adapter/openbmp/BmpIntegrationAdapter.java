@@ -124,7 +124,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.initData = initiation.getMessage();
         router.termData = null;
         router.timestamp = context.timestamp;
-        router.bgpId = null; // TODO: Where is this at?
+        router.bgpId = BmpAdapterTools.address(initiation.getBgpId());
 
         handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
@@ -139,10 +139,30 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = null;
-        router.termCode = null; // TODO fooker: Extract from document
-        router.termReason = null; // TODO fooker: Extract from document
+        router.termCode = termination.getReason();
+
+        switch (router.termCode) {
+            case 0:
+                router.termReason = "Session administratively closed.  The session might be re-initiated";
+                break;
+            case 1:
+                router.termReason = "Unspecified reason";
+                break;
+            case 2:
+                router.termReason = "Out of resources.  The router has exhausted resources available for the BMP session";
+                break;
+            case 3:
+                router.termReason = "Redundant connection.  The router has determined that this connection is redundant with another one";
+                break;
+            case 4:
+                router.termReason = "Session permanently administratively closed, will not be re-initiated";
+                break;
+            default:
+                router.termReason = "Unknown reason";
+        }
+
         router.initData = null;
-        router.termData = null;
+        router.termData = termination.getMessage();
         router.timestamp = context.timestamp;
         router.bgpId = null;
 

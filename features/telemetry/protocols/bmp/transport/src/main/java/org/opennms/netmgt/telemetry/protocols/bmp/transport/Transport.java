@@ -3088,6 +3088,21 @@ public final class Transport {
      */
     com.google.protobuf.ByteString
         getMessageBytes();
+
+    /**
+     * <code>.IpAddress bgpId = 4;</code>
+     * @return Whether the bgpId field is set.
+     */
+    boolean hasBgpId();
+    /**
+     * <code>.IpAddress bgpId = 4;</code>
+     * @return The bgpId.
+     */
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId();
+    /**
+     * <code>.IpAddress bgpId = 4;</code>
+     */
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder();
   }
   /**
    * Protobuf type {@code InitiationPacket}
@@ -3153,6 +3168,19 @@ public final class Transport {
               java.lang.String s = input.readStringRequireUtf8();
 
               message_ = s;
+              break;
+            }
+            case 34: {
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder subBuilder = null;
+              if (bgpId_ != null) {
+                subBuilder = bgpId_.toBuilder();
+              }
+              bgpId_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(bgpId_);
+                bgpId_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -3295,6 +3323,29 @@ public final class Transport {
       }
     }
 
+    public static final int BGPID_FIELD_NUMBER = 4;
+    private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress bgpId_;
+    /**
+     * <code>.IpAddress bgpId = 4;</code>
+     * @return Whether the bgpId field is set.
+     */
+    public boolean hasBgpId() {
+      return bgpId_ != null;
+    }
+    /**
+     * <code>.IpAddress bgpId = 4;</code>
+     * @return The bgpId.
+     */
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId() {
+      return bgpId_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
+    }
+    /**
+     * <code>.IpAddress bgpId = 4;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder() {
+      return getBgpId();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -3318,6 +3369,9 @@ public final class Transport {
       if (!getMessageBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, message_);
       }
+      if (bgpId_ != null) {
+        output.writeMessage(4, getBgpId());
+      }
       unknownFields.writeTo(output);
     }
 
@@ -3335,6 +3389,10 @@ public final class Transport {
       }
       if (!getMessageBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, message_);
+      }
+      if (bgpId_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, getBgpId());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3357,6 +3415,11 @@ public final class Transport {
           .equals(other.getSysDesc())) return false;
       if (!getMessage()
           .equals(other.getMessage())) return false;
+      if (hasBgpId() != other.hasBgpId()) return false;
+      if (hasBgpId()) {
+        if (!getBgpId()
+            .equals(other.getBgpId())) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -3374,6 +3437,10 @@ public final class Transport {
       hash = (53 * hash) + getSysDesc().hashCode();
       hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
       hash = (53 * hash) + getMessage().hashCode();
+      if (hasBgpId()) {
+        hash = (37 * hash) + BGPID_FIELD_NUMBER;
+        hash = (53 * hash) + getBgpId().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -3513,6 +3580,12 @@ public final class Transport {
 
         message_ = "";
 
+        if (bgpIdBuilder_ == null) {
+          bgpId_ = null;
+        } else {
+          bgpId_ = null;
+          bgpIdBuilder_ = null;
+        }
         return this;
       }
 
@@ -3542,6 +3615,11 @@ public final class Transport {
         result.sysName_ = sysName_;
         result.sysDesc_ = sysDesc_;
         result.message_ = message_;
+        if (bgpIdBuilder_ == null) {
+          result.bgpId_ = bgpId_;
+        } else {
+          result.bgpId_ = bgpIdBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -3601,6 +3679,9 @@ public final class Transport {
         if (!other.getMessage().isEmpty()) {
           message_ = other.message_;
           onChanged();
+        }
+        if (other.hasBgpId()) {
+          mergeBgpId(other.getBgpId());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3858,6 +3939,125 @@ public final class Transport {
         onChanged();
         return this;
       }
+
+      private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress bgpId_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> bgpIdBuilder_;
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       * @return Whether the bgpId field is set.
+       */
+      public boolean hasBgpId() {
+        return bgpIdBuilder_ != null || bgpId_ != null;
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       * @return The bgpId.
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId() {
+        if (bgpIdBuilder_ == null) {
+          return bgpId_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
+        } else {
+          return bgpIdBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      public Builder setBgpId(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
+        if (bgpIdBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bgpId_ = value;
+          onChanged();
+        } else {
+          bgpIdBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      public Builder setBgpId(
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder builderForValue) {
+        if (bgpIdBuilder_ == null) {
+          bgpId_ = builderForValue.build();
+          onChanged();
+        } else {
+          bgpIdBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      public Builder mergeBgpId(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
+        if (bgpIdBuilder_ == null) {
+          if (bgpId_ != null) {
+            bgpId_ =
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.newBuilder(bgpId_).mergeFrom(value).buildPartial();
+          } else {
+            bgpId_ = value;
+          }
+          onChanged();
+        } else {
+          bgpIdBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      public Builder clearBgpId() {
+        if (bgpIdBuilder_ == null) {
+          bgpId_ = null;
+          onChanged();
+        } else {
+          bgpId_ = null;
+          bgpIdBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder getBgpIdBuilder() {
+        
+        onChanged();
+        return getBgpIdFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder() {
+        if (bgpIdBuilder_ != null) {
+          return bgpIdBuilder_.getMessageOrBuilder();
+        } else {
+          return bgpId_ == null ?
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
+        }
+      }
+      /**
+       * <code>.IpAddress bgpId = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> 
+          getBgpIdFieldBuilder() {
+        if (bgpIdBuilder_ == null) {
+          bgpIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder>(
+                  getBgpId(),
+                  getParentForChildren(),
+                  isClean());
+          bgpId_ = null;
+        }
+        return bgpIdBuilder_;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -3916,29 +4116,37 @@ public final class Transport {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated string information = 1;</code>
-     * @return A list containing the information.
+     * <code>string message = 1;</code>
+     * @return The message.
      */
-    java.util.List<java.lang.String>
-        getInformationList();
+    java.lang.String getMessage();
     /**
-     * <code>repeated string information = 1;</code>
-     * @return The count of information.
-     */
-    int getInformationCount();
-    /**
-     * <code>repeated string information = 1;</code>
-     * @param index The index of the element to return.
-     * @return The information at the given index.
-     */
-    java.lang.String getInformation(int index);
-    /**
-     * <code>repeated string information = 1;</code>
-     * @param index The index of the value to return.
-     * @return The bytes of the information at the given index.
+     * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     com.google.protobuf.ByteString
-        getInformationBytes(int index);
+        getMessageBytes();
+
+    /**
+     * <code>uint32 reason = 2;</code>
+     * @return The reason.
+     */
+    int getReason();
+
+    /**
+     * <code>.google.protobuf.Empty unknown = 3;</code>
+     * @return Whether the unknown field is set.
+     */
+    boolean hasUnknown();
+    /**
+     * <code>.google.protobuf.Empty unknown = 3;</code>
+     * @return The unknown.
+     */
+    com.google.protobuf.Empty getUnknown();
+    /**
+     * <code>.google.protobuf.Empty unknown = 3;</code>
+     */
+    com.google.protobuf.EmptyOrBuilder getUnknownOrBuilder();
   }
   /**
    * Protobuf type {@code TerminationPacket}
@@ -3953,7 +4161,7 @@ public final class Transport {
       super(builder);
     }
     private TerminationPacket() {
-      information_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      message_ = "";
     }
 
     @java.lang.Override
@@ -3976,7 +4184,6 @@ public final class Transport {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -3989,11 +4196,26 @@ public final class Transport {
               break;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                information_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
+
+              message_ = s;
+              break;
+            }
+            case 16: {
+
+              reason_ = input.readUInt32();
+              break;
+            }
+            case 26: {
+              com.google.protobuf.Empty.Builder subBuilder = null;
+              if (unknown_ != null) {
+                subBuilder = unknown_.toBuilder();
               }
-              information_.add(s);
+              unknown_ = input.readMessage(com.google.protobuf.Empty.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(unknown_);
+                unknown_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -4011,9 +4233,6 @@ public final class Transport {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          information_ = information_.getUnmodifiableView();
-        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -4031,39 +4250,73 @@ public final class Transport {
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket.Builder.class);
     }
 
-    public static final int INFORMATION_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList information_;
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private volatile java.lang.Object message_;
     /**
-     * <code>repeated string information = 1;</code>
-     * @return A list containing the information.
+     * <code>string message = 1;</code>
+     * @return The message.
      */
-    public com.google.protobuf.ProtocolStringList
-        getInformationList() {
-      return information_;
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        message_ = s;
+        return s;
+      }
     }
     /**
-     * <code>repeated string information = 1;</code>
-     * @return The count of information.
-     */
-    public int getInformationCount() {
-      return information_.size();
-    }
-    /**
-     * <code>repeated string information = 1;</code>
-     * @param index The index of the element to return.
-     * @return The information at the given index.
-     */
-    public java.lang.String getInformation(int index) {
-      return information_.get(index);
-    }
-    /**
-     * <code>repeated string information = 1;</code>
-     * @param index The index of the value to return.
-     * @return The bytes of the information at the given index.
+     * <code>string message = 1;</code>
+     * @return The bytes for message.
      */
     public com.google.protobuf.ByteString
-        getInformationBytes(int index) {
-      return information_.getByteString(index);
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int REASON_FIELD_NUMBER = 2;
+    private int reason_;
+    /**
+     * <code>uint32 reason = 2;</code>
+     * @return The reason.
+     */
+    public int getReason() {
+      return reason_;
+    }
+
+    public static final int UNKNOWN_FIELD_NUMBER = 3;
+    private com.google.protobuf.Empty unknown_;
+    /**
+     * <code>.google.protobuf.Empty unknown = 3;</code>
+     * @return Whether the unknown field is set.
+     */
+    public boolean hasUnknown() {
+      return unknown_ != null;
+    }
+    /**
+     * <code>.google.protobuf.Empty unknown = 3;</code>
+     * @return The unknown.
+     */
+    public com.google.protobuf.Empty getUnknown() {
+      return unknown_ == null ? com.google.protobuf.Empty.getDefaultInstance() : unknown_;
+    }
+    /**
+     * <code>.google.protobuf.Empty unknown = 3;</code>
+     */
+    public com.google.protobuf.EmptyOrBuilder getUnknownOrBuilder() {
+      return getUnknown();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -4080,8 +4333,14 @@ public final class Transport {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < information_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, information_.getRaw(i));
+      if (!getMessageBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
+      }
+      if (reason_ != 0) {
+        output.writeUInt32(2, reason_);
+      }
+      if (unknown_ != null) {
+        output.writeMessage(3, getUnknown());
       }
       unknownFields.writeTo(output);
     }
@@ -4092,13 +4351,16 @@ public final class Transport {
       if (size != -1) return size;
 
       size = 0;
-      {
-        int dataSize = 0;
-        for (int i = 0; i < information_.size(); i++) {
-          dataSize += computeStringSizeNoTag(information_.getRaw(i));
-        }
-        size += dataSize;
-        size += 1 * getInformationList().size();
+      if (!getMessageBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
+      }
+      if (reason_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, reason_);
+      }
+      if (unknown_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getUnknown());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4115,8 +4377,15 @@ public final class Transport {
       }
       org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket) obj;
 
-      if (!getInformationList()
-          .equals(other.getInformationList())) return false;
+      if (!getMessage()
+          .equals(other.getMessage())) return false;
+      if (getReason()
+          != other.getReason()) return false;
+      if (hasUnknown() != other.hasUnknown()) return false;
+      if (hasUnknown()) {
+        if (!getUnknown()
+            .equals(other.getUnknown())) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -4128,9 +4397,13 @@ public final class Transport {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getInformationCount() > 0) {
-        hash = (37 * hash) + INFORMATION_FIELD_NUMBER;
-        hash = (53 * hash) + getInformationList().hashCode();
+      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getMessage().hashCode();
+      hash = (37 * hash) + REASON_FIELD_NUMBER;
+      hash = (53 * hash) + getReason();
+      if (hasUnknown()) {
+        hash = (37 * hash) + UNKNOWN_FIELD_NUMBER;
+        hash = (53 * hash) + getUnknown().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -4265,8 +4538,16 @@ public final class Transport {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        information_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = "";
+
+        reason_ = 0;
+
+        if (unknownBuilder_ == null) {
+          unknown_ = null;
+        } else {
+          unknown_ = null;
+          unknownBuilder_ = null;
+        }
         return this;
       }
 
@@ -4293,12 +4574,13 @@ public final class Transport {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket buildPartial() {
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          information_ = information_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
+        result.message_ = message_;
+        result.reason_ = reason_;
+        if (unknownBuilder_ == null) {
+          result.unknown_ = unknown_;
+        } else {
+          result.unknown_ = unknownBuilder_.build();
         }
-        result.information_ = information_;
         onBuilt();
         return result;
       }
@@ -4347,15 +4629,15 @@ public final class Transport {
 
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket other) {
         if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket.getDefaultInstance()) return this;
-        if (!other.information_.isEmpty()) {
-          if (information_.isEmpty()) {
-            information_ = other.information_;
-            bitField0_ = (bitField0_ & ~0x00000001);
-          } else {
-            ensureInformationIsMutable();
-            information_.addAll(other.information_);
-          }
+        if (!other.getMessage().isEmpty()) {
+          message_ = other.message_;
           onChanged();
+        }
+        if (other.getReason() != 0) {
+          setReason(other.getReason());
+        }
+        if (other.hasUnknown()) {
+          mergeUnknown(other.getUnknown());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -4385,116 +4667,230 @@ public final class Transport {
         }
         return this;
       }
-      private int bitField0_;
 
-      private com.google.protobuf.LazyStringList information_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureInformationIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          information_ = new com.google.protobuf.LazyStringArrayList(information_);
-          bitField0_ |= 0x00000001;
-         }
-      }
+      private java.lang.Object message_ = "";
       /**
-       * <code>repeated string information = 1;</code>
-       * @return A list containing the information.
+       * <code>string message = 1;</code>
+       * @return The message.
        */
-      public com.google.protobuf.ProtocolStringList
-          getInformationList() {
-        return information_.getUnmodifiableView();
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>repeated string information = 1;</code>
-       * @return The count of information.
-       */
-      public int getInformationCount() {
-        return information_.size();
-      }
-      /**
-       * <code>repeated string information = 1;</code>
-       * @param index The index of the element to return.
-       * @return The information at the given index.
-       */
-      public java.lang.String getInformation(int index) {
-        return information_.get(index);
-      }
-      /**
-       * <code>repeated string information = 1;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the information at the given index.
+       * <code>string message = 1;</code>
+       * @return The bytes for message.
        */
       public com.google.protobuf.ByteString
-          getInformationBytes(int index) {
-        return information_.getByteString(index);
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
-       * <code>repeated string information = 1;</code>
-       * @param index The index to set the value at.
-       * @param value The information to set.
+       * <code>string message = 1;</code>
+       * @param value The message to set.
        * @return This builder for chaining.
        */
-      public Builder setInformation(
-          int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureInformationIsMutable();
-        information_.set(index, value);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string information = 1;</code>
-       * @param value The information to add.
-       * @return This builder for chaining.
-       */
-      public Builder addInformation(
+      public Builder setMessage(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureInformationIsMutable();
-        information_.add(value);
+  
+        message_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string information = 1;</code>
-       * @param values The information to add.
+       * <code>string message = 1;</code>
        * @return This builder for chaining.
        */
-      public Builder addAllInformation(
-          java.lang.Iterable<java.lang.String> values) {
-        ensureInformationIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, information_);
+      public Builder clearMessage() {
+        
+        message_ = getDefaultInstance().getMessage();
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string information = 1;</code>
+       * <code>string message = 1;</code>
+       * @param value The bytes for message to set.
        * @return This builder for chaining.
        */
-      public Builder clearInformation() {
-        information_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string information = 1;</code>
-       * @param value The bytes of the information to add.
-       * @return This builder for chaining.
-       */
-      public Builder addInformationBytes(
+      public Builder setMessageBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        ensureInformationIsMutable();
-        information_.add(value);
+        
+        message_ = value;
         onChanged();
         return this;
+      }
+
+      private int reason_ ;
+      /**
+       * <code>uint32 reason = 2;</code>
+       * @return The reason.
+       */
+      public int getReason() {
+        return reason_;
+      }
+      /**
+       * <code>uint32 reason = 2;</code>
+       * @param value The reason to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReason(int value) {
+        
+        reason_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 reason = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearReason() {
+        
+        reason_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.Empty unknown_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> unknownBuilder_;
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       * @return Whether the unknown field is set.
+       */
+      public boolean hasUnknown() {
+        return unknownBuilder_ != null || unknown_ != null;
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       * @return The unknown.
+       */
+      public com.google.protobuf.Empty getUnknown() {
+        if (unknownBuilder_ == null) {
+          return unknown_ == null ? com.google.protobuf.Empty.getDefaultInstance() : unknown_;
+        } else {
+          return unknownBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      public Builder setUnknown(com.google.protobuf.Empty value) {
+        if (unknownBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          unknown_ = value;
+          onChanged();
+        } else {
+          unknownBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      public Builder setUnknown(
+          com.google.protobuf.Empty.Builder builderForValue) {
+        if (unknownBuilder_ == null) {
+          unknown_ = builderForValue.build();
+          onChanged();
+        } else {
+          unknownBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      public Builder mergeUnknown(com.google.protobuf.Empty value) {
+        if (unknownBuilder_ == null) {
+          if (unknown_ != null) {
+            unknown_ =
+              com.google.protobuf.Empty.newBuilder(unknown_).mergeFrom(value).buildPartial();
+          } else {
+            unknown_ = value;
+          }
+          onChanged();
+        } else {
+          unknownBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      public Builder clearUnknown() {
+        if (unknownBuilder_ == null) {
+          unknown_ = null;
+          onChanged();
+        } else {
+          unknown_ = null;
+          unknownBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      public com.google.protobuf.Empty.Builder getUnknownBuilder() {
+        
+        onChanged();
+        return getUnknownFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      public com.google.protobuf.EmptyOrBuilder getUnknownOrBuilder() {
+        if (unknownBuilder_ != null) {
+          return unknownBuilder_.getMessageOrBuilder();
+        } else {
+          return unknown_ == null ?
+              com.google.protobuf.Empty.getDefaultInstance() : unknown_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.Empty unknown = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder> 
+          getUnknownFieldBuilder() {
+        if (unknownBuilder_ == null) {
+          unknownBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Empty, com.google.protobuf.Empty.Builder, com.google.protobuf.EmptyOrBuilder>(
+                  getUnknown(),
+                  getParentForChildren(),
+                  isClean());
+          unknown_ = null;
+        }
+        return unknownBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -26051,10 +26447,12 @@ public final class Transport {
       "ion\022\t\n\005IP_V4\020\000\022\t\n\005IP_V6\020\001\")\n\006Policy\022\016\n\nP" +
       "RE_POLICY\020\000\022\017\n\013POST_POLICY\020\001\"@\n\004Type\022\023\n\017" +
       "GLOBAL_INSTANCE\020\000\022\017\n\013RD_INSTANCE\020\001\022\022\n\016LO" +
-      "CAL_INSTANCE\020\002\"G\n\020InitiationPacket\022\020\n\010sy" +
+      "CAL_INSTANCE\020\002\"b\n\020InitiationPacket\022\020\n\010sy" +
       "s_name\030\001 \001(\t\022\020\n\010sys_desc\030\002 \001(\t\022\017\n\007messag" +
-      "e\030\003 \001(\t\"(\n\021TerminationPacket\022\023\n\013informat" +
-      "ion\030\001 \003(\t\"\325\002\n\014PeerUpPacket\022\023\n\004peer\030\001 \001(\013" +
+      "e\030\003 \001(\t\022\031\n\005bgpId\030\004 \001(\0132\n.IpAddress\"]\n\021Te" +
+      "rminationPacket\022\017\n\007message\030\001 \001(\t\022\016\n\006reas" +
+      "on\030\002 \001(\r\022\'\n\007unknown\030\003 \001(\0132\026.google.proto" +
+      "buf.Empty\"\325\002\n\014PeerUpPacket\022\023\n\004peer\030\001 \001(\013" +
       "2\005.Peer\022!\n\rlocal_address\030\002 \001(\0132\n.IpAddre" +
       "ss\022\022\n\nlocal_port\030\003 \001(\r\022\023\n\013remote_port\030\004 " +
       "\001(\r\022+\n\010send_msg\030\005 \001(\0132\031.PeerUpPacket.Ope" +
@@ -26179,13 +26577,13 @@ public final class Transport {
     internal_static_InitiationPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_InitiationPacket_descriptor,
-        new java.lang.String[] { "SysName", "SysDesc", "Message", });
+        new java.lang.String[] { "SysName", "SysDesc", "Message", "BgpId", });
     internal_static_TerminationPacket_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_TerminationPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TerminationPacket_descriptor,
-        new java.lang.String[] { "Information", });
+        new java.lang.String[] { "Message", "Reason", "Unknown", });
     internal_static_PeerUpPacket_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_PeerUpPacket_fieldAccessorTable = new
