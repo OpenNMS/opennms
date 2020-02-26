@@ -80,9 +80,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         this.handler = Objects.requireNonNull(handler);
     }
 
-    private Optional<Message> handleHeartbeatMessage(final Transport.Message message,
-                                                     final Transport.Heartbeat heartbeat,
-                                                     final Context context) {
+    private void handleHeartbeatMessage(final Transport.Message message,
+                                        final Transport.Heartbeat heartbeat,
+                                        final Context context) {
         final Collector collector = new Collector();
 
         switch (heartbeat.getMode()) {
@@ -106,7 +106,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
         collector.timestamp = context.timestamp;
 
-        return Optional.of(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
+        this.handler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
     }
 
     private void handleInitiationMessage(final Transport.Message message,
@@ -126,7 +126,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = BmpAdapterTools.address(initiation.getBgpId());
 
-        handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
     private void handleTerminationMessage(final Transport.Message message,
@@ -166,7 +166,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
     private void handlePeerUpNotification(final Transport.Message message,
@@ -208,7 +208,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
 
-        handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
     private void handlePeerDownNotification(final Transport.Message message,
@@ -250,7 +250,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
 
-        handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
     private void handleStatisticReport(final Transport.Message message,
@@ -275,7 +275,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.invalidAsConfed = statisticsReport.getInvalidUpdateDueToAsConfedLoop().getCount();
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocRib().getValue();
-        handler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
+
+        this.handler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
     }
 
     private void handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
@@ -308,7 +309,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
         // TODO: Finish base_attribute message and also generate unicast_prefix messages
 
-        handler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+        this.handler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
     }
 
     @Override

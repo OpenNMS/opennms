@@ -78,7 +78,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     }
 
     @Test
-    public void canGenerateColelctorMessages() {
+    public void canGenerateCollectorMessages() {
         final Transport.Heartbeat.Builder heartbeat = Transport.Heartbeat.newBuilder()
                                                                          .setMode(Transport.Heartbeat.Mode.CHANGE);
         heartbeat.addRoutersBuilder().setV4(ByteString.copyFrom(InetAddressUtils.toIpAddrBytes("1.2.3.4")));
