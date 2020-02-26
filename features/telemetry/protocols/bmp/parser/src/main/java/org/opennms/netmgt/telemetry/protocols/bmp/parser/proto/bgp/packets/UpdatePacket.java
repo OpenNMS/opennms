@@ -186,25 +186,29 @@ public class UpdatePacket implements Packet {
             ORIGINATOR_ID {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    throw new UnsupportedOperationException();
+                    // FIXME: TODO: Implement
+                    return new Unknown(buffer, flags);
                 }
             },
             CLUSTER_LIST {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    throw new UnsupportedOperationException();
+                    // FIXME: TODO: Implement
+                    return new Unknown(buffer, flags);
                 }
             },
             EXTENDED_COMMUNITIES {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    throw new UnsupportedOperationException();
+                    // FIXME: TODO: Implement
+                    return new Unknown(buffer, flags);
                 }
             },
             LARGE_COMMUNITY {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    throw new UnsupportedOperationException();
+                    // FIXME: TODO: Implement
+                    return new Unknown(buffer, flags);
                 }
             },
             UNKNOWN {
