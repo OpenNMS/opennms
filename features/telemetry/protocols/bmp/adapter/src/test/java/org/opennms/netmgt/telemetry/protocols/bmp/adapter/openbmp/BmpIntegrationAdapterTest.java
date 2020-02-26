@@ -50,7 +50,6 @@ import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
@@ -104,22 +103,44 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     @Test
     public void canGenerateRouterMessages() {
         // Send an initiation packet
-        Transport.InitiationPacket.Builder initiationPacket = Transport.InitiationPacket.newBuilder()
-                .setSysName("router1");
-        Transport.Message message = Transport.Message.newBuilder()
+        final Transport.InitiationPacket.Builder initiationPacket = Transport.InitiationPacket.newBuilder()
+                .setSysName("router1")
+                .setSysDesc("description1")
+                .setBgpId(address(InetAddressUtils.addr("10.1.1.1")));
+
+        final Transport.Message initiationMessage = Transport.Message.newBuilder()
                 .setVersion(3)
                 .setInitiation(initiationPacket)
                 .build();
-        send(message.toByteString());
+        send(initiationMessage.toByteString());
+
+        // Send an termination packet
+        final Transport.TerminationPacket.Builder terminationPacket = Transport.TerminationPacket.newBuilder()
+                .setReason(2)
+                .setMessage("message");
+
+        final Transport.Message terminationMessage = Transport.Message.newBuilder()
+                .setVersion(3)
+                .setTermination(terminationPacket)
+                .build();
+        send(terminationMessage.toByteString());
 
         // Grab the generated "router" messages
-        List<Router> routerMsgs = getHandledRecordsOfType(Type.ROUTER);
-        assertThat(routerMsgs, hasSize(1));
+        final List<Router> routerMsgs = getHandledRecordsOfType(Type.ROUTER);
+        assertThat(routerMsgs, hasSize(2));
 
-        // Verify
-        Router router = routerMsgs.get(0);
-        assertThat(router.sequence, equalTo(0L));
-        assertThat(router.name, equalTo("router1"));
+        // Verify initiation message
+        final Router router1 = routerMsgs.get(0);
+        assertThat(router1.sequence, equalTo(0L));
+        assertThat(router1.name, equalTo("router1"));
+        assertThat(router1.description, equalTo("description1"));
+        assertThat(router1.bgpId, equalTo(InetAddressUtils.addr("10.1.1.1")));
+
+        // Verify termination message
+        final Router router2 = routerMsgs.get(1);
+        assertThat(router2.sequence, equalTo(1L));
+        assertThat(router2.termCode, equalTo(2));
+        assertThat(router2.termReason, equalTo("Out of resources.  The router has exhausted resources available for the BMP session"));
     }
 
     @Test
