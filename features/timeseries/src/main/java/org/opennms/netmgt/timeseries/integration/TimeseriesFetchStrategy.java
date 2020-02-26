@@ -126,7 +126,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
     @Autowired
-    private TimeseriesStorageManager storage;
+    private TimeseriesStorageManager storageManager;
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
@@ -270,7 +270,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     // Use the datasource as the metric name if set, otherwise use the name of the attribute
                     final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
                     final Aggregation aggregation = toAggregation(source.getAggregation());
-                    final boolean shouldAggregateNatively = storage.get().supportsAggregation(aggregation);
+                    final boolean shouldAggregateNatively = storageManager.get().supportsAggregation(aggregation);
 
                     final ImmutableMetric metric = ImmutableMetric.builder()
                             .tag(CommonTagNames.resourceId, resourceId)
@@ -292,7 +292,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                             .build();
 
                     LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
-                    List<Sample> samples = storage.get().getTimeseries(request);
+                    List<Sample> samples = storageManager.get().getTimeseries(request);
 
                     // aggregate if timeseries implementation didn't do it natively)
                     if (!shouldAggregateNatively) {
@@ -455,7 +455,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
     @VisibleForTesting
     protected void setTimeseriesStorageManager(final TimeseriesStorageManager timeseriesStorage) {
-        this.storage = timeseriesStorage;
+        this.storageManager = timeseriesStorage;
     }
 
     private OnmsNode getNode(final OnmsResource resource, final Source source) {

@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
@@ -54,9 +53,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 public class TimeseriesSearcher {
 
@@ -67,15 +63,6 @@ public class TimeseriesSearcher {
 
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
-
-    private LoadingCache<String, Set<ResourcePath>> allResources = CacheBuilder.newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
-            .build(
-                    new CacheLoader<String, Set<ResourcePath>>() {
-                        public Set<ResourcePath> load(String key) throws StorageException {
-                            return getAllResources();
-                        }
-                    });
 
     private Set<ResourcePath> getAllResources() throws StorageException {
 
@@ -89,8 +76,7 @@ public class TimeseriesSearcher {
         return  resources;
     }
     public void addIncludingParent(Set<ResourcePath> allPaths, ResourcePath newPath) {
-        ResourcePath currentPath = newPath;
-        allPaths.add(currentPath);
+        allPaths.add(newPath);
     }
 
     public Map<String, String> getResourceAttributes(ResourcePath path) {
