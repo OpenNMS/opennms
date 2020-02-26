@@ -95,9 +95,6 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(router.name, equalTo("router1"));
     }
 
-    /**
-     *  FIXME: Remove plurality from attributes in protobuf
-     */
     @Test
     public void canGenerateBaseAttributeMessages() {
         // Send a route monitoring packet

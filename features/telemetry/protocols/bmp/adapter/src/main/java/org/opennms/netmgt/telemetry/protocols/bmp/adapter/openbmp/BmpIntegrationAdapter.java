@@ -36,7 +36,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
@@ -45,8 +44,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
@@ -58,7 +57,6 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpIntegrationAdapter extends AbstractAdapter {
@@ -111,7 +109,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return Optional.of(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
     }
 
-    private Optional<Message> handleInitiationMessage(final Transport.Message message,
+    private void handleInitiationMessage(final Transport.Message message,
                                                       final Transport.InitiationPacket initiation,
                                                       final Context context) {
         final Router router = new Router();
@@ -128,10 +126,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null; // TODO: Where is this at?
 
-        return Optional.of(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
-    private Optional<Message> handleTerminationMessage(final Transport.Message message,
+    private void handleTerminationMessage(final Transport.Message message,
                                                        final Transport.TerminationPacket termination,
                                                        final Context context) {
         final Router router = new Router();
@@ -148,10 +146,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        return Optional.of(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
-    private Optional<Message> handlePeerUpNotification(final Transport.Message message,
+    private void handlePeerUpNotification(final Transport.Message message,
                                                        final Transport.PeerUpPacket peerUp,
                                                        final Context context) {
         final Transport.Peer bgpPeer = peerUp.getPeer();
@@ -190,10 +188,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
 
-        return Optional.of(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
-    private Optional<Message> handlePeerDownNotification(final Transport.Message message,
+    private void handlePeerDownNotification(final Transport.Message message,
                                                          final Transport.PeerDownPacket peerDown,
                                                          final Context context) {
         final Transport.Peer bgpPeer = peerDown.getPeer();
@@ -232,10 +230,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
 
-        return Optional.of(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
-    private Optional<Message> handleStatisticReport(final Transport.Message message,
+    private void handleStatisticReport(final Transport.Message message,
                                                     final Transport.StatisticsReportPacket statisticsReport,
                                                     final Context context) {
         final Transport.Peer peer = statisticsReport.getPeer();
@@ -257,10 +255,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.invalidAsConfed = statisticsReport.getInvalidUpdateDueToAsConfedLoop().getCount();
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocRib().getValue();
-        return Optional.of(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
+        handler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
     }
 
-    private Optional<Message> handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
+    private void handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
         final BaseAttribute baseAttr = new BaseAttribute();
         baseAttr.action = BaseAttribute.Action.ADD;
         baseAttr.sequence = sequence.getAndIncrement();
@@ -288,7 +286,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 });
         baseAttr.asPath = asPath.toString();
 
-        return Optional.of(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+        // TODO: Finish base_attribute message and also generate unicast_prefix messages
+
+        handler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
     }
 
     @Override
@@ -312,33 +312,31 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                                             InetAddressUtils.addr(messageLog.getSourceAddress()),
                                             messageLog.getSourcePort());
 
-        Optional<Message> messageToSend = Optional.empty();
         switch(message.getPacketCase()) {
             case HEARTBEAT:
-                messageToSend = this.handleHeartbeatMessage(message, message.getHeartbeat(), context);
+                handleHeartbeatMessage(message, message.getHeartbeat(), context);
                 break;
             case INITIATION:
-                messageToSend = this.handleInitiationMessage(message, message.getInitiation(), context);
+                handleInitiationMessage(message, message.getInitiation(), context);
                 break;
             case TERMINATION:
-                messageToSend =  this.handleTerminationMessage(message, message.getTermination(), context);
+                handleTerminationMessage(message, message.getTermination(), context);
                 break;
             case PEER_UP:
-                messageToSend = this.handlePeerUpNotification(message, message.getPeerUp(), context);
+                handlePeerUpNotification(message, message.getPeerUp(), context);
                 break;
             case PEER_DOWN:
-                messageToSend = this.handlePeerDownNotification(message, message.getPeerDown(), context);
+                handlePeerDownNotification(message, message.getPeerDown(), context);
                 break;
             case STATISTICS_REPORT:
-                messageToSend = this.handleStatisticReport(message, message.getStatisticsReport(), context);
+                handleStatisticReport(message, message.getStatisticsReport(), context);
                 break;
             case ROUTE_MONITORING:
-                messageToSend = this.handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context);
+                handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context);
                 break;
             case PACKET_NOT_SET:
                 break;
         }
-        messageToSend.ifPresent(handler::handle);
     }
 
     @Override
