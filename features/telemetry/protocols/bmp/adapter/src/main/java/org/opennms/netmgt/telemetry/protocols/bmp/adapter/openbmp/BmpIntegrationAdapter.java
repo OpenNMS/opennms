@@ -32,16 +32,12 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 
 import java.net.InetAddress;
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -50,6 +46,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
@@ -68,27 +65,21 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
 
-    private final KafkaProducer<String, String> producer;
-
     private final AtomicLong sequence = new AtomicLong();
+
+    private final BmpMessageHandler handler;
 
     public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
                                  final MetricRegistry metricRegistry) {
         super(adapterConfig, metricRegistry);
-        this.producer = buildProducer(adapterConfig);
+        this.handler = new BmpKafkaProducer(adapterConfig);
     }
 
-    private static KafkaProducer<String, String> buildProducer(final AdapterDefinition adapterConfig) {
-        final Map<String, Object> kafkaConfig = Maps.newHashMap();
-        for (final Map.Entry<String, String> entry : adapterConfig.getParameterMap().entrySet()) {
-            StringUtils.truncatePrefix(entry.getKey(), "kafka.").ifPresent(key -> {
-                kafkaConfig.put(key, entry.getValue());
-            });
-        }
-
-        // TODO fooker: Apply defaults (steal from https://github.com/SNAS/openbmp/blob/1a615a3c75a0143cc87ec70458471f0af67d3929/Server/src/kafka/MsgBusImpl_kafka.cpp#L162)
-
-        return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
+    public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
+                                 final MetricRegistry metricRegistry,
+                                 final BmpMessageHandler handler) {
+        super(adapterConfig, metricRegistry);
+        this.handler = Objects.requireNonNull(handler);
     }
 
     private Optional<Message> handleHeartbeatMessage(final Transport.Message message,
@@ -269,6 +260,37 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         return Optional.of(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
     }
 
+    private Optional<Message> handleRouteMonitoringMessage(Transport.Message message, Transport.RouteMonitoringPacket routeMonitoring, Context context) {
+        final BaseAttribute baseAttr = new BaseAttribute();
+        baseAttr.action = BaseAttribute.Action.ADD;
+        baseAttr.sequence = sequence.getAndIncrement();
+        baseAttr.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
+        // See UpdateMsg::parseAttr_AsPath
+        baseAttr.asPathCount = 0;
+        StringBuilder asPath = new StringBuilder();
+        routeMonitoring.getAttributesList().stream()
+                .filter(Transport.RouteMonitoringPacket.PathAttribute::hasAsPath)
+                .findFirst()
+                .ifPresent(asPathAttr -> {
+                    asPathAttr.getAsPath().getSegmentsList().forEach(segment -> {
+                        if (Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET.equals(segment.getType())) {
+                            asPath.append("{");
+                        }
+                        segment.getPathList().forEach(segmentPath -> {
+                            asPath.append(segmentPath);
+                            asPath.append(" ");
+                            baseAttr.asPathCount++;
+                        });
+                        if (Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET.equals(segment.getType())) {
+                            asPath.append("}");
+                        }
+                    });
+                });
+        baseAttr.asPath = asPath.toString();
+
+        return Optional.of(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+    }
+
     @Override
     public void handleMessage(final TelemetryMessageLogEntry messageLogEntry,
                               final TelemetryMessageLog messageLog) {
@@ -311,32 +333,18 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 messageToSend = this.handleStatisticReport(message, message.getStatisticsReport(), context);
                 break;
             case ROUTEMONITORING:
+                messageToSend = this.handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context);
+                break;
             case PACKET_NOT_SET:
                 break;
         }
-        messageToSend.ifPresent(this::send);
+        messageToSend.ifPresent(handler::handle);
     }
 
     @Override
     public void destroy() {
-        this.producer.close();
+        this.handler.close();
         super.destroy();
-    }
-
-    private void send(final Message message) {
-        final StringBuffer buffer = new StringBuffer();
-        message.serialize(buffer);
-
-        final String topic = message.getType().getTopic();
-        final ProducerRecord<String, String> record = new ProducerRecord<>(topic, message.getCollectorHashId(), buffer.toString());
-
-        this.producer.send(record, (meta, err) -> {
-            if (err != null) {
-                LOG.warn("Failed to send OpenBMP message", err);
-            } else {
-                LOG.trace("Send OpenBMP message: {} = {}@{}", meta.topic(), meta.offset(), meta.partition());
-            }
-        });
     }
 
     private static class Context {
