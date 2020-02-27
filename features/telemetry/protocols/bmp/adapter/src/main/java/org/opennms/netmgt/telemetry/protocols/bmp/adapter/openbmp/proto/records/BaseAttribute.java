@@ -87,8 +87,8 @@ public class BaseAttribute extends Record {
                 this.communityList,
                 this.extCommunityList,
                 this.clusterList,
-                Boolean.toString(this.atomicAgg),
-                Boolean.toString(this.nextHopIpv4),
+                boolAsInt(this.atomicAgg),
+                boolAsInt(this.nextHopIpv4),
                 this.originatorId,
                 this.largeCommunityList
         };

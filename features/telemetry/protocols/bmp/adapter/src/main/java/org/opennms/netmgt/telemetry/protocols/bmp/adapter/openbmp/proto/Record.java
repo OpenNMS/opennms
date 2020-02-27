@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.nio.charset.StandardCharsets;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 
 import com.google.common.hash.Hasher;
@@ -46,7 +47,7 @@ import com.google.common.hash.Hashing;
 
 public abstract class Record {
     private final static DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
-            .ofPattern("uuuu-MM-dd hh:mm:ss.SSSSSS")
+            .ofPattern("uuuu-MM-dd HH:mm:ss.SSSSSS")
             .withZone(ZoneOffset.UTC);
 
     private final Type type;
@@ -65,13 +66,13 @@ public abstract class Record {
     public static String hash(final String... values) {
         final Hasher hasher = Hashing.md5().newHasher();
         for (final String value : values) {
-            hasher.putString(value, StandardCharsets.UTF_8);
+            hasher.putString(value != null ? value : "", StandardCharsets.UTF_8);
         }
         return hasher.hash().toString();
     }
 
     public static String hash(Transport.IpAddress address, long distinguisher, String routerHashId) {
-        return "TODO";
+        return hash(BmpAdapterTools.addressAsStr(address), Long.toString(distinguisher), routerHashId);
     }
 
     protected abstract String[] fields();
@@ -83,7 +84,7 @@ public abstract class Record {
     public final void serialize(final StringBuffer buffer) {
         final Iterator<String> fields = Arrays.stream(this.fields())
                                               .map(field -> field != null ? field.replace('\t', ' ')
-                                                                 .replace('\n', '\r') : null).iterator();
+                                                                 .replace('\n', '\r') : "").iterator();
 
         if (fields.hasNext()) {
             buffer.append(fields.next());
@@ -96,9 +97,16 @@ public abstract class Record {
         buffer.append('\n');
     }
 
+    public static String boolAsInt(Boolean truthyFalsy) {
+        if (truthyFalsy == null || !truthyFalsy) {
+            return "0";
+        }
+        return "1";
+    }
+
     public static String nullSafeStr(Long val) {
         if (val == null) {
-            return null;
+            return "";
         } else {
             return Long.toString(val);
         }
@@ -106,7 +114,7 @@ public abstract class Record {
 
     public static String nullSafeStr(Integer val) {
         if (val == null) {
-            return null;
+            return "";
         } else {
             return Integer.toString(val);
         }
@@ -114,11 +122,10 @@ public abstract class Record {
 
     public static String nullSafeStr(InetAddress addr) {
         if (addr == null) {
-            return null;
+            return "";
         } else {
             return InetAddressUtils.str(addr);
         }
     }
-
 
 }

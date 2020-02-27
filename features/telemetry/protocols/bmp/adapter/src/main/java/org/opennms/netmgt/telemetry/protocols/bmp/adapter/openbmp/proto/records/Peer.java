@@ -99,11 +99,11 @@ public class Peer extends Record {
                 nullSafeStr(this.bgpErrorCode),
                 nullSafeStr(this.bgpErrorSubcode),
                 this.errorText,
-                Boolean.toString(this.l3vpn),
-                Boolean.toString(this.prePolicy),
-                Boolean.toString(this.ipv4),
-                Boolean.toString(this.locRib),
-                Boolean.toString(this.locRibFiltered),
+                boolAsInt(this.l3vpn),
+                boolAsInt(this.prePolicy),
+                boolAsInt(this.ipv4),
+                boolAsInt(this.locRib),
+                boolAsInt(this.locRibFiltered),
                 this.tableName,
         };
     }

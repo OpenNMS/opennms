@@ -40,13 +40,14 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 
 import com.google.common.collect.ImmutableList;
 
 public class MessageTest {
 
     @Test
-    public void canSerializeMessageWithHeader() {
+    public void canCollectorSerializeMessageWithHeader() {
         final Collector collector = new Collector();
         collector.action = Collector.Action.CHANGE;
         collector.sequence = 8L;
@@ -68,5 +69,34 @@ public class MessageTest {
                 "R: 1\n" +
                 "\n" +
                 "change\t8\tcollector\t91e3a7ff9f5676ed6ae6fcd8a6b455ec\t10.10.10.10\t1\t2020-02-23 11:08:43.795452\n"));
+    }
+
+    @Test
+    public void canSerializePeerMessageWithHeader() {
+        final Peer peer = new Peer();
+        peer.action = Peer.Action.UP;
+        peer.sequence = 8L;
+        peer.hash = "93cd8f2759d4cf2e033c7a0584d0bfe7";
+        peer.routerHash = "93cd8f2759d4cf2e033c7a0584d0bfe8";
+        peer.name = "ie1-fd1";
+        peer.remoteBgpId = InetAddressUtils.addr("10.10.10.10");
+        peer.routerIp = InetAddressUtils.addr("10.10.10.1");
+        long timeMicros = 1_582_466_123_795_452L;
+        peer.timestamp = Instant.EPOCH.plus(timeMicros, ChronoUnit.MICROS);
+        peer.peerRd = "0:0";
+        peer.remotePort = 179;
+        peer.localAsn = 651337L;
+
+        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
+
+        final StringBuffer buffer = new StringBuffer();
+        msg.serialize(buffer);
+        assertThat(buffer.toString(), equalTo("V: 1.7\n" +
+                "C_HASH_ID: 91e3a7ff9f5676ed6ae6fcd8a6b455ec\n" +
+                "T: peer\n" +
+                "L: 169\n" +
+                "R: 1\n" +
+                "\n" +
+                "up\t8\t93cd8f2759d4cf2e033c7a0584d0bfe7\t93cd8f2759d4cf2e033c7a0584d0bfe8\tie1-fd1\t10.10.10.10\t10.10.10.1\t2020-02-23 13:55:23.795452\t\t\t0:0\t179\t651337\t\t\t\t\t\t\t\t\t\t\t\t\t0\t0\t0\t0\t0\t\n"));
     }
 }

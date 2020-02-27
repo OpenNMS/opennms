@@ -88,7 +88,7 @@ public class UnicastPrefix extends Record {
                 formatTimestamp(this.timestamp),
                 nullSafeStr(this.prefix),
                 nullSafeStr(this.length),
-                Boolean.toString(this.ipv4),
+                boolAsInt(this.ipv4),
                 this.origin,
                 this.asPath,
                 nullSafeStr(this.asPathCount),
@@ -100,13 +100,13 @@ public class UnicastPrefix extends Record {
                 this.communityList,
                 this.extCommunityList,
                 this.clusterList,
-                Boolean.toString(this.atomicAgg),
-                Boolean.toString(this.nextHopIpv4),
+                boolAsInt(this.atomicAgg),
+                boolAsInt(this.nextHopIpv4),
                 this.originatorId,
                 nullSafeStr(this.pathId),
                 this.labels,
-                Boolean.toString(this.prePolicy),
-                Boolean.toString(this.adjIn),
+                boolAsInt(this.prePolicy),
+                boolAsInt(this.adjIn),
                 this.largeCommunityList
         };
     }

@@ -501,7 +501,11 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.ATOMIC_AGGREGATE)
                 .ifPresent(isAtomic -> baseAttr.atomicAgg = true);
 
-        // FIXME: Compute hash
+        // Compute hash - fields [ as path, next hop, aggregator, origin, med, local pref, community list, ext community list, peer hash ]
+        baseAttr.hash = Record.hash(baseAttr.asPath, Record.nullSafeStr(baseAttr.nextHop),
+                baseAttr.aggregator, baseAttr.origin, Record.nullSafeStr(baseAttr.med),
+                Record.nullSafeStr(baseAttr.localPref), baseAttr.communityList,
+                baseAttr.extCommunityList, baseAttr.peerHash);
 
         return baseAttr;
     }
@@ -511,6 +515,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final UnicastPrefix unicastPrefix = new UnicastPrefix();
         unicastPrefix.sequence = unicastPrefixSequence.incrementAndGet();
         unicastPrefix.routerHash = context.getRouterHash();
+        unicastPrefix.routerIp = context.sourceAddress;
         unicastPrefix.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), unicastPrefix.routerHash);
         unicastPrefix.peerIp = address(peer.getAddress());
         unicastPrefix.peerAsn = uint32(peer.getAs());
@@ -525,6 +530,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.prePolicy = Transport.Peer.Flags.Policy.PRE_POLICY.equals(peer.getFlags().getPolicy());
         // Augment with base attributes if present
         if (baseAttr != null) {
+            unicastPrefix.baseAttrHash = baseAttr.hash;
             unicastPrefix.origin = baseAttr.origin;
             unicastPrefix.asPath = baseAttr.asPath;
             unicastPrefix.asPathCount = baseAttr.asPathCount;
@@ -572,9 +578,6 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             for (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : routeMonitoring.getReachablesList()) {
                 final UnicastPrefix unicastPrefix = toUnicastPrefixRecord(routeMonitoring, route, baseAttr, context);
                 unicastPrefix.action = UnicastPrefix.Action.ADD;
-                // Augment with base attributes
-                unicastPrefix.baseAttrHash = baseAttr.hash;
-                // FIXME: Compute hash
                 unicastPrefixRecords.add(unicastPrefix);
             }
         } else {
