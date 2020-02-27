@@ -106,7 +106,7 @@ public abstract class Record {
 
     public static String nullSafeStr(Long val) {
         if (val == null) {
-            return "";
+            return "0";
         } else {
             return Long.toString(val);
         }
@@ -114,7 +114,7 @@ public abstract class Record {
 
     public static String nullSafeStr(Integer val) {
         if (val == null) {
-            return "";
+            return "0";
         } else {
             return Integer.toString(val);
         }
