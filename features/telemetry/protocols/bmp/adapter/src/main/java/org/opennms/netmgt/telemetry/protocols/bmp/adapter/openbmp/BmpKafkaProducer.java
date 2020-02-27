@@ -70,7 +70,7 @@ public class BmpKafkaProducer implements BmpMessageHandler {
 
         final String topic = message.getType().getTopic();
         // FIXME: Make prefix configurable
-        final ProducerRecord<String, String> record = new ProducerRecord<>("opennms." + topic, message.getCollectorHashId(), buffer.toString());
+        final ProducerRecord<String, String> record = new ProducerRecord<>(topic, message.getCollectorHashId(), buffer.toString());
 
         this.producer.send(record, (meta, err) -> {
             if (err != null) {
