@@ -221,6 +221,10 @@ public class UpdatePacket implements Packet {
             public abstract Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
 
             private static Type from(final int type) {
+                // FIXME: TODO: Implement
+                /// Unknown Update Packet Type: 21
+                //  Unknown Update Packet Type: 20
+                //  Unknown Update Packet Type: 128
                 switch (type) {
                     case 1: return ORIGIN;
                     case 2: return AS_PATH;
