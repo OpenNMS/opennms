@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,25 +28,30 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-public interface Attribute {
-    void accept(final Visitor visitor);
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
-    interface Visitor {
-        void visit(final Aggregator aggregator);
-        void visit(final AsPath asPath);
-        void visit(final AtomicAggregate atomicAggregate);
-        void visit(final LocalPref localPref);
-        void visit(final MultiExistDisc multiExistDisc);
-        void visit(final NextHop nextHop);
-        void visit(final Origin origin);
-        void visit(final Community community);
-        void visit(final OriginatorId originatorId);
-        void visit(final ClusterList clusterList);
-        void visit(final ExtendedCommunities extendedCommunities);
-        void visit(final Connector connector);
-        void visit(final AsPathLimit asPathLimit);
-        void visit(final LargeCommunity largeCommunity);
-        void visit(final AttrSet attrSet);
-        void visit(final Unknown unknown);
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+
+import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
+
+public class OriginatorId implements Attribute {
+    public final long originatorId; // uint32
+
+    public OriginatorId(final ByteBuf buffer, final PeerFlags flags) {
+        this.originatorId = uint32(buffer);
+    }
+
+    @Override
+    public void accept(final Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("originatorId", this.originatorId)
+                .toString();
     }
 }

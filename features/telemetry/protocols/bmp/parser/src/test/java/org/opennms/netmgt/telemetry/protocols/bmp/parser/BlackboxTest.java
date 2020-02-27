@@ -52,13 +52,20 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Aggregator;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPath;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPathLimit;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AtomicAggregate;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AttrSet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Attribute;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ClusterList;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunity;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
@@ -141,6 +148,41 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(Community community) {
             fail("Wrong Attribute Community");
+        }
+
+        @Override
+        public void visit(OriginatorId originatorId) {
+            fail("Wrong Attribute OriginatorId");
+        }
+
+        @Override
+        public void visit(ClusterList clusterList) {
+            fail("Wrong Attribute ClusterList");
+        }
+
+        @Override
+        public void visit(ExtendedCommunities extendedCommunities) {
+            fail("Wrong Attribute ExtendedCommunities");
+        }
+
+        @Override
+        public void visit(Connector connector) {
+            fail("Wrong Attribute Connector");
+        }
+
+        @Override
+        public void visit(AsPathLimit asPathLimit) {
+            fail("Wrong Attribute AsPathLimit");
+        }
+
+        @Override
+        public void visit(LargeCommunity largeCommunity) {
+            fail("Wrong Attribute LargeCommunity");
+        }
+
+        @Override
+        public void visit(AttrSet attrSet) {
+            fail("Wrong Attribute AttrSet");
         }
 
         @Override

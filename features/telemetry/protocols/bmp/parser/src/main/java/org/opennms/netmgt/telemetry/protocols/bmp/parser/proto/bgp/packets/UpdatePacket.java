@@ -44,13 +44,20 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Aggregator;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPath;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPathLimit;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AtomicAggregate;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AttrSet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Attribute;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ClusterList;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunity;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
@@ -186,29 +193,43 @@ public class UpdatePacket implements Packet {
             ORIGINATOR_ID {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    // FIXME: TODO: Implement
-                    return new Unknown(buffer, flags);
+                    return new OriginatorId(buffer, flags);
                 }
             },
             CLUSTER_LIST {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    // FIXME: TODO: Implement
-                    return new Unknown(buffer, flags);
+                    return new ClusterList(buffer, flags);
                 }
             },
             EXTENDED_COMMUNITIES {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    // FIXME: TODO: Implement
-                    return new Unknown(buffer, flags);
+                    return new ExtendedCommunities(buffer, flags);
+                }
+            },
+            CONNECTOR_ATTRIBUTE {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    return new Connector(buffer, flags);
+                }
+            },
+            AS_PATH_LIMIT {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    return new AsPathLimit(buffer, flags);
                 }
             },
             LARGE_COMMUNITY {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    // FIXME: TODO: Implement
-                    return new Unknown(buffer, flags);
+                    return new LargeCommunity(buffer, flags);
+                }
+            },
+            ATTR_SET {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+                    return new AttrSet(buffer, flags);
                 }
             },
             UNKNOWN {
@@ -221,10 +242,7 @@ public class UpdatePacket implements Packet {
             public abstract Attribute parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
 
             private static Type from(final int type) {
-                // FIXME: TODO: Implement
-                /// Unknown Update Packet Type: 21
-                //  Unknown Update Packet Type: 20
-                //  Unknown Update Packet Type: 128
+                // See https://www.iana.org/assignments/bgp-parameters/bgp-parameters.xhtml for type mappings
                 switch (type) {
                     case 1: return ORIGIN;
                     case 2: return AS_PATH;
@@ -233,11 +251,14 @@ public class UpdatePacket implements Packet {
                     case 5: return LOCAL_PREF;
                     case 6: return ATOMIC_AGGREGATE;
                     case 7: return AGGREGATOR;
-                    case 8: return COMMUNITY;
-                    case 9: return ORIGINATOR_ID;
-                    case 10: return CLUSTER_LIST;
-                    case 16: return EXTENDED_COMMUNITIES;
-                    case 32: return LARGE_COMMUNITY;
+                    case 8: return COMMUNITY; // See RFC1997
+                    case 9: return ORIGINATOR_ID; // See RFC4456
+                    case 10: return CLUSTER_LIST; // See RFC4456
+                    case 16: return EXTENDED_COMMUNITIES; // See RFC4360
+                    case 20: return CONNECTOR_ATTRIBUTE; // See RFC6037
+                    case 21: return AS_PATH_LIMIT; // See [draft-ietf-idr-as-pathlimit]
+                    case 32: return LARGE_COMMUNITY; // See RFC8092
+                    case 128: return ATTR_SET; // See RFC6368
                     default:
                         BmpParser.LOG.warn("Unknown Update Packet Type: {}", type);
                         return UNKNOWN;

@@ -146,6 +146,31 @@ message RouteMonitoringPacket {
             IpAddress address = 2;
         }
 
+        message ClusterList {
+            repeated IpAddress cluster_id = 1;
+        }
+
+        message ExtendedCommunities {
+            fixed32 type = 1;
+            bytes value = 2;
+        }
+
+        message AsPathLimit {
+            fixed32 upper_bound = 1;
+            uint32 as = 2;
+        }
+
+        message LargeCommunity {
+            uint32 global_administrator = 1;
+            uint32 local_data_part_1 = 2;
+            uint32 local_data_part_2 = 3;
+        }
+
+        message AttrSet {
+            uint32 origin_as = 1;
+            repeated PathAttribute path_attributes = 2;
+        }
+
         bool optional = 1;
         bool transitive = 2;
         bool partial = 3;
@@ -160,6 +185,13 @@ message RouteMonitoringPacket {
             AtomicAggregate atomic_aggregate = 10;
             Aggregator aggregator = 11;
             uint32 community = 12;
+            uint32 originator_id = 13;
+            ClusterList cluster_list = 14;
+            ExtendedCommunities extended_communities = 15;
+            fixed32 connector = 16;
+            AsPathLimit as_path_limit = 17;
+            LargeCommunity large_community = 18;
+            AttrSet attr_set = 19;
         }
     }
 
