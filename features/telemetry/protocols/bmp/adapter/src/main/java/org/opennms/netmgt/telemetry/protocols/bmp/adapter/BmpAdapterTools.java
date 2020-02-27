@@ -81,4 +81,10 @@ public interface BmpAdapterTools {
     static long uint32(int i) {
         return UnsignedInts.toLong(i);
     }
+
+    static String asAttr(final int val) {
+        int as = (val >> 16) & 0xFFFF;
+        int attr = (val >> 0) & 0xFFFF;
+        return String.format("%d:%d", as, attr);
+    }
 }

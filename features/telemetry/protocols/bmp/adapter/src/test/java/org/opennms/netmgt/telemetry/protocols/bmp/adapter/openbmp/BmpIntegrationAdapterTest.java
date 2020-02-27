@@ -213,7 +213,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(peer.timestamp, is(Instant.ofEpochSecond(1234567890L, 987654321)));
         assertThat(peer.remoteAsn, is(4200000000L));
         assertThat(peer.remoteIp, is(InetAddressUtils.addr("192.168.0.5")));
-        assertThat(peer.peerRd, is("0"));
+        assertThat(peer.peerRd, is("0:0"));
         assertThat(peer.remotePort, is(117799));
         assertThat(peer.localAsn, is(4200000023L));
         assertThat(peer.localIp, is(InetAddressUtils.addr("192.168.0.4")));
@@ -282,7 +282,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         assertThat(peer.timestamp, is(Instant.ofEpochSecond(1234567890L, 987654321)));
         assertThat(peer.remoteAsn, is(4200000000L));
         assertThat(peer.remoteIp, is(InetAddressUtils.addr("192.168.0.5")));
-        assertThat(peer.peerRd, is("0"));
+        assertThat(peer.peerRd, is("0:0"));
         assertThat(peer.remotePort, is(nullValue()));
         assertThat(peer.localAsn, is(nullValue()));
         assertThat(peer.localIp, is(nullValue()));

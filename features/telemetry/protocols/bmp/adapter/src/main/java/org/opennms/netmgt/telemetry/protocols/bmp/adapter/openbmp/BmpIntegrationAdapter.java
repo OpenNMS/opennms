@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.asAttr;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributesOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.isV4;
@@ -301,7 +302,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.timestamp = timestamp(bgpPeer.getTimestamp());
         peer.remoteAsn = uint32(peerUp.getRecvMsg().getAs());
         peer.remoteIp = address(bgpPeer.getAddress());
-        peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
+        peer.peerRd = asAttr((int) bgpPeer.getDistinguisher());
         peer.remotePort = peerUp.getRemotePort();
         peer.localAsn = uint32(peerUp.getSendMsg().getAs());
         peer.localIp = address(peerUp.getLocalAddress());
@@ -344,7 +345,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.timestamp = timestamp(bgpPeer.getTimestamp());
         peer.remoteAsn = uint32(bgpPeer.getAs());
         peer.remoteIp = address(bgpPeer.getAddress());
-        peer.peerRd = Long.toString(bgpPeer.getDistinguisher());
+        peer.peerRd = asAttr((int) bgpPeer.getDistinguisher());
         peer.remotePort = null;
         peer.localAsn = null;
         peer.localIp = null;
@@ -484,11 +485,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 });
         baseAttr.communityList = getPathAttributesOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.COMMUNITY)
                 .map(Transport.RouteMonitoringPacket.PathAttribute::getCommunity)
-                .map(community -> {
-                    int as = (community >> 16) & 0xFFFF;
-                    int attr = (community >> 0) & 0xFFFF;
-                    return String.format("%d:%d", as, attr);
-                })
+                .map(BmpAdapterTools::asAttr)
                 .collect(Collectors.joining(" "));
 
         // FIXME: Missing ATTR_TYPE_EXT_COMMUNITY
