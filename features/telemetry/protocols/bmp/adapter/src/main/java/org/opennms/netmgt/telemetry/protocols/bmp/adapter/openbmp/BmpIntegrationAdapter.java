@@ -424,7 +424,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         baseAttr.routerIp = context.sourceAddress;
         baseAttr.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), baseAttr.routerHash);
         baseAttr.peerIp = address(peer.getAddress());
-        baseAttr.peerAsn = (long)peer.getAs(); // FIXME: long vs int
+        baseAttr.peerAsn = uint32(peer.getAs());
         baseAttr.timestamp = context.timestamp;
         // Derive the origin of the prefix from the path attributes - default to an empty string if not set
         baseAttr.origin = getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.ORIGIN)
@@ -446,7 +446,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                             asPath.append(segmentPath);
                             asPath.append(" ");
                             baseAttr.asPathCount++;
-                            lastAsInPath.set((long)segmentPath); // FIXME: long vs int
+                            lastAsInPath.set(uint32(segmentPath));
                         });
                         if (Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET.equals(segment.getType())) {
                             asPath.append("}");
@@ -468,13 +468,13 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.MULTI_EXIT_DISC)
                 .map(attr -> attr.getMultiExitDisc().getDiscriminator())
                 .ifPresent(med -> {
-                    baseAttr.med = (long)med; // FIXME: long vs int
+                    baseAttr.med = uint32(med);
                 });
         // Derive the local preference from the path attributes
         getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.LOCAL_PREF)
                 .map(attr -> attr.getLocalPref().getPreference())
                 .ifPresent(localPref -> {
-                    baseAttr.localPref = (long)localPref; // FIXME: long vs int
+                    baseAttr.localPref = uint32(localPref);
                 });
         // Derive the aggregator from the path attributes
         // See UpdateMsg::parseAttr_Aggegator in the OpenBMP collector for the corresponding logic
