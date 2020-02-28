@@ -55,10 +55,7 @@ public class LargeCommunities implements Attribute {
     public final List<LargeCommunity> largeCommunities;
 
     public LargeCommunities(final ByteBuf buffer, final PeerFlags flags) {
-        largeCommunities = Collections.unmodifiableList((BufferUtils.repeatRemaining(buffer,
-                segmentBuffer -> new LargeCommunity(uint32(segmentBuffer), // globalAdministrator (uint32)
-                        uint32(segmentBuffer), // localDataPart1 (uint32)
-                        uint32(segmentBuffer))))); // localDataPart2 (uint32)
+        this.largeCommunities = BufferUtils.repeatRemaining(buffer, LargeCommunity::new);
     }
 
     @Override
@@ -78,10 +75,10 @@ public class LargeCommunities implements Attribute {
         public final long localDataPart1; // uint32
         public final long localDataPart2; // uint32
 
-        public LargeCommunity(long globalAdministrator, long localDataPart1, long localDataPart2) {
-            this.globalAdministrator = globalAdministrator;
-            this.localDataPart1 = localDataPart1;
-            this.localDataPart2 = localDataPart2;
+        public LargeCommunity(final ByteBuf buffer) {
+            this.globalAdministrator = uint32(buffer);
+            this.localDataPart1 = uint32(buffer);
+            this.localDataPart2 = uint32(buffer);
         }
 
         @Override

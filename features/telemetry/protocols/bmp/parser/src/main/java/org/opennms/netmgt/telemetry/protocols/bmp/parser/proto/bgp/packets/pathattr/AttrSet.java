@@ -65,7 +65,7 @@ public class AttrSet implements Attribute {
 
     public AttrSet(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
         this.originAs = uint32(buffer);
-        this.pathAttributes = Collections.unmodifiableList(repeatRemaining(buffer, pathAttributeBuffer -> new UpdatePacket.PathAttribute(pathAttributeBuffer, flags)));
+        this.pathAttributes = repeatRemaining(buffer, pathAttributeBuffer -> new UpdatePacket.PathAttribute(pathAttributeBuffer, flags));
     }
 
     @Override

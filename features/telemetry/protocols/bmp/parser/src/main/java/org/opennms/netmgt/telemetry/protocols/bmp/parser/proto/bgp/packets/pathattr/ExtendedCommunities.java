@@ -55,9 +55,7 @@ public class ExtendedCommunities implements Attribute {
     public final List<ExtendedCommunity> extendedCommunities;
 
     public ExtendedCommunities(final ByteBuf buffer, final PeerFlags flags)  {
-        extendedCommunities = Collections.unmodifiableList((BufferUtils.repeatRemaining(buffer,
-                segmentBuffer -> new ExtendedCommunity(uint16(segmentBuffer), // type (uint16)
-                        bytes(segmentBuffer, 6))))); // value (6 bytes)
+        this.extendedCommunities = BufferUtils.repeatRemaining(buffer, ExtendedCommunity::new);
     }
 
     @Override
@@ -76,9 +74,9 @@ public class ExtendedCommunities implements Attribute {
         public final int type; // uint16
         public final byte[] value; //6 bytes, 48 bits
 
-        public ExtendedCommunity(int type, byte[] value) {
-            this.type = type;
-            this.value = value;
+        public ExtendedCommunity(final ByteBuf buffer) {
+            this.type = uint16(buffer);
+            this.value = bytes(buffer, 6);
         }
 
         @Override

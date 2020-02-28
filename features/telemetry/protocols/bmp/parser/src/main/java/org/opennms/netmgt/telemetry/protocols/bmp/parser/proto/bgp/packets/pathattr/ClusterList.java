@@ -46,8 +46,7 @@ public class ClusterList implements Attribute {
     public final List<InetAddress> clusterIds; // list of uint32
 
     public ClusterList(final ByteBuf buffer, final PeerFlags flags)  {
-        clusterIds = Collections.unmodifiableList((BufferUtils.repeatRemaining(buffer,
-                segmentBuffer -> InetAddressUtils.getInetAddress(bytes(segmentBuffer, 4)))));
+        clusterIds = BufferUtils.repeatRemaining(buffer, segmentBuffer -> InetAddressUtils.getInetAddress(bytes(segmentBuffer, 4)));
     }
 
     @Override
