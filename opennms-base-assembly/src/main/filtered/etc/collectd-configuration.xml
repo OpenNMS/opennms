@@ -136,7 +136,7 @@
          <parameter key="friendly-name" value="jmx-kafka"/>
       </service>
       <service name="JMX-Java8-JVM" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="18980"/>
+         <parameter key="port" value="${requisition:jmxport|18980}"/>
          <parameter key="retry" value="2"/>
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-base-name" value="java"/>
