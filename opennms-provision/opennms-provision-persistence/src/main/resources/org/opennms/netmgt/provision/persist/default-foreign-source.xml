@@ -61,7 +61,7 @@
 			<parameter key="object" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
 		</detector>
 		<detector name="JMX-Java8-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
-			<parameter key="port" value="18980"/>
+			<parameter key="port" value="${requisition:jmxport|18980}"/>
 			<parameter key="factory" value="PASSWORD-CLEAR"/>
 			<parameter key="username" value="admin"/>
 			<parameter key="password" value="admin"/>
