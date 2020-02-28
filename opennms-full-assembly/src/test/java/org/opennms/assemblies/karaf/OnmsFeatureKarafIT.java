@@ -542,6 +542,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsSnmp() {
+		installFeature("opennms-core"); // System classpath
 		installFeature("opennms-snmp");
 		System.out.println(executeCommand("feature:list -i"));
 	}
