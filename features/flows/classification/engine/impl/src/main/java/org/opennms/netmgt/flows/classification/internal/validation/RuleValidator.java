@@ -212,7 +212,7 @@ public class RuleValidator {
     // Verify input is an actual valid cidr expression
     private static void verifyCidrExpression(String errorContext, String input) {
         try {
-            new IpValue.IpV6CidrExpressionMatcher(input);
+            IpValue.parseCIDR(input);
         } catch (IllegalArgumentException ex) {
             throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID_CIDR_EXPRESSION, input, ex.getMessage());
         }
