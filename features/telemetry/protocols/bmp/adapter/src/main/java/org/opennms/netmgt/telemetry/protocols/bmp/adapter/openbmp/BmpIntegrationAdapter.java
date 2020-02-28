@@ -566,12 +566,11 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.prefix = address(route.getPrefix());
         unicastPrefix.length = route.getLength();
         unicastPrefix.ipv4 = isV4(route.getPrefix());
-        // FIXME: Where to derive path id from?
+        // TODO: Populate path id and labels attributes - see NMS-12560
         unicastPrefix.pathId = 0;
-        // FIXME: Where to derive labels from?
         unicastPrefix.labels = null;
         unicastPrefix.prePolicy = Transport.Peer.Flags.Policy.PRE_POLICY.equals(peer.getFlags().getPolicy());
-        
+
         // Augment with base attributes if present
         if (baseAttr != null) {
             unicastPrefix.baseAttrHash = baseAttr.hash;
