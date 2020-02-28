@@ -32,7 +32,10 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
@@ -49,12 +52,12 @@ import io.netty.buffer.ByteBuf;
  *       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 public class ExtendedCommunities implements Attribute {
-    public final int type;
-    public final byte[] value;
+    public final List<ExtendedCommunity> extendedCommunities;
 
     public ExtendedCommunities(final ByteBuf buffer, final PeerFlags flags)  {
-        this.type = uint16(buffer);
-        this.value = bytes(buffer, 6);
+        extendedCommunities = Collections.unmodifiableList((BufferUtils.repeatRemaining(buffer,
+                segmentBuffer -> new ExtendedCommunity(uint16(segmentBuffer), // type (uint16)
+                        bytes(segmentBuffer, 6))))); // value (6 bytes)
     }
 
     @Override
@@ -65,8 +68,25 @@ public class ExtendedCommunities implements Attribute {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("type", this.type)
-                .add("value", Arrays.toString(value))
+                .add("extendedCommunities", this.extendedCommunities)
                 .toString();
+    }
+
+    public static class ExtendedCommunity {
+        public final int type; // uint16
+        public final byte[] value; //6 bytes, 48 bits
+
+        public ExtendedCommunity(int type, byte[] value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("type", this.type)
+                    .add("value", Arrays.toString(value))
+                    .toString();
+        }
     }
 }

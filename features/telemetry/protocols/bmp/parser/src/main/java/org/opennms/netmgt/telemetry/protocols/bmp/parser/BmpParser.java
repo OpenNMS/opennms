@@ -60,7 +60,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunity;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
@@ -626,9 +626,13 @@ public class BmpParser implements TcpParser {
 
             @Override
             public void visit(ExtendedCommunities extendedCommunities) {
-                attributesBuilder.setExtendedCommunities(Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.newBuilder()
-                        .setType(extendedCommunities.type)
-                        .setValue(ByteString.copyFrom(extendedCommunities.value)));
+                Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.Builder extendedCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.newBuilder();
+                for (ExtendedCommunities.ExtendedCommunity extendedCommunity : extendedCommunities.extendedCommunities) {
+                    extendedCommunitiesBuilder.addExtendedCommunitiesBuilder()
+                            .setType(extendedCommunity.type)
+                            .setValue(ByteString.copyFrom(extendedCommunity.value));
+                }
+                attributesBuilder.setExtendedCommunities(extendedCommunitiesBuilder);
             }
 
             @Override
@@ -645,12 +649,15 @@ public class BmpParser implements TcpParser {
             }
 
             @Override
-            public void visit(LargeCommunity largeCommunity) {
-                attributesBuilder.setLargeCommunity(Transport.RouteMonitoringPacket.PathAttribute.LargeCommunity.newBuilder()
-                        .setGlobalAdministrator((int)largeCommunity.globalAdministrator)
-                        .setLocalDataPart1((int)largeCommunity.localDataPart1)
-                        .setLocalDataPart2((int)largeCommunity.localDataPart2)
-                        .build());
+            public void visit(LargeCommunities largeCommunities) {
+                Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.Builder largeCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.newBuilder();
+                for (LargeCommunities.LargeCommunity largeCommunity : largeCommunities.largeCommunities) {
+                    largeCommunitiesBuilder.addLargeCommunitiesBuilder()
+                            .setGlobalAdministrator((int)largeCommunity.globalAdministrator)
+                            .setLocalDataPart1((int)largeCommunity.localDataPart1)
+                            .setLocalDataPart2((int)largeCommunity.localDataPart2);
+                }
+                attributesBuilder.setLargeCommunities(largeCommunitiesBuilder);
             }
 
             @Override

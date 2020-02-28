@@ -33,8 +33,8 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributesOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.isV4;
-import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 
 import java.net.InetAddress;
 import java.time.Instant;
@@ -465,7 +465,6 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 });
 
         // Derive the Multi Exit Discriminator (MED) from the path attributes (lower values are preferred)
-        // FIXME: MED is optional, should it be serialized as an empty string if not set?
         getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.MULTI_EXIT_DISC)
                 .map(attr -> attr.getMultiExitDisc().getDiscriminator())
                 .ifPresent(med -> {
@@ -487,15 +486,50 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                     baseAttr.aggregator = String.format("%d %s", agg.getAs(), BmpAdapterTools.addressAsStr(agg.getAddress()));
                 });
 
+        // Derive the community list from the path attributes
         baseAttr.communityList = getPathAttributesOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.COMMUNITY)
                 .map(Transport.RouteMonitoringPacket.PathAttribute::getCommunity)
                 .map(BmpAdapterTools::asAttr)
                 .collect(Collectors.joining(" "));
 
-        // FIXME: Missing ATTR_TYPE_EXT_COMMUNITY
-        // FIXME: Missing ATTR_TYPE_CLUSTER_LIST
-        // FIXME: Missing ATTR_TYPE_LARGE_COMMUNITY
-        // FIXME: Missing ATTR_TYPE_ORIGINATOR_ID
+        // Derive the extended community list from the path attributes
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.EXTENDED_COMMUNITIES)
+                .map(Transport.RouteMonitoringPacket.PathAttribute::getExtendedCommunities)
+                .ifPresent(extendedCommunities -> {
+                    baseAttr.extCommunityList = extendedCommunities.getExtendedCommunitiesList().stream()
+                            .map(extendedCommunity -> String.format("%d:%s",
+                                    uint32(extendedCommunity.getType()),
+                                    extendedCommunity.getValue()))
+                            .collect(Collectors.joining(" "));
+                });
+
+        // Derive the cluster list from the path attributes
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.CLUSTER_LIST)
+                .map(Transport.RouteMonitoringPacket.PathAttribute::getClusterList)
+                .ifPresent(clusterList -> {
+                    baseAttr.clusterList = clusterList.getClusterIdList().stream()
+                            .map(BmpAdapterTools::addressAsStr)
+                            .collect(Collectors.joining(" "));
+                });
+
+        // Derive the large community list from the path attributes
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.LARGE_COMMUNITIES)
+                .map(Transport.RouteMonitoringPacket.PathAttribute::getLargeCommunities)
+                .ifPresent(largeCommunities -> {
+                    baseAttr.largeCommunityList = largeCommunities.getLargeCommunitiesList().stream()
+                            .map(largeCommunity -> String.format("%d:%d:%d",
+                                    uint32(largeCommunity.getGlobalAdministrator()),
+                                    uint32(largeCommunity.getLocalDataPart1()),
+                                    uint32(largeCommunity.getLocalDataPart2())))
+                            .collect(Collectors.joining(" "));
+                });
+
+        // Derive the originator id from the path attributes
+        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.ORIGINATOR_ID)
+                .map(Transport.RouteMonitoringPacket.PathAttribute::getOriginatorId)
+                .ifPresent(originatorId -> {
+                    baseAttr.originatorId = Long.toString(uint32(originatorId));
+                });
 
         // Set the atomic flag is the atomic aggregate path attribute is present
         baseAttr.atomicAgg = getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.ATOMIC_AGGREGATE)

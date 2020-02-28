@@ -151,6 +151,10 @@ message RouteMonitoringPacket {
         }
 
         message ExtendedCommunities {
+            repeated ExtendedCommunity extended_communities = 1;
+        }
+
+        message ExtendedCommunity {
             fixed32 type = 1;
             bytes value = 2;
         }
@@ -158,6 +162,10 @@ message RouteMonitoringPacket {
         message AsPathLimit {
             fixed32 upper_bound = 1;
             uint32 as = 2;
+        }
+
+        message LargeCommunities {
+            repeated LargeCommunity large_communities = 1;
         }
 
         message LargeCommunity {
@@ -190,7 +198,7 @@ message RouteMonitoringPacket {
             ExtendedCommunities extended_communities = 15;
             fixed32 connector = 16;
             AsPathLimit as_path_limit = 17;
-            LargeCommunity large_community = 18;
+            LargeCommunities large_communities = 18;
             AttrSet attr_set = 19;
         }
     }

@@ -45,7 +45,7 @@ public interface Attribute {
         void visit(final ExtendedCommunities extendedCommunities);
         void visit(final Connector connector);
         void visit(final AsPathLimit asPathLimit);
-        void visit(final LargeCommunity largeCommunity);
+        void visit(final LargeCommunities largeCommunity);
         void visit(final AttrSet attrSet);
         void visit(final Unknown unknown);
     }

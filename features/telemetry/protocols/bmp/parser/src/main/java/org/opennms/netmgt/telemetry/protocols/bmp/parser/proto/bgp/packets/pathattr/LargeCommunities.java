@@ -30,6 +30,10 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.path
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
 import com.google.common.base.MoreObjects;
@@ -47,15 +51,14 @@ import io.netty.buffer.ByteBuf;
  *    |                       Local Data Part 2                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-public class LargeCommunity implements Attribute {
-    public final long globalAdministrator; // uint32
-    public final long localDataPart1; // uint32
-    public final long localDataPart2; // uint32
+public class LargeCommunities implements Attribute {
+    public final List<LargeCommunity> largeCommunities;
 
-    public LargeCommunity(final ByteBuf buffer, final PeerFlags flags) {
-        this.globalAdministrator = uint32(buffer);
-        this.localDataPart1 = uint32(buffer);
-        this.localDataPart2 = uint32(buffer);
+    public LargeCommunities(final ByteBuf buffer, final PeerFlags flags) {
+        largeCommunities = Collections.unmodifiableList((BufferUtils.repeatRemaining(buffer,
+                segmentBuffer -> new LargeCommunity(uint32(segmentBuffer), // globalAdministrator (uint32)
+                        uint32(segmentBuffer), // localDataPart1 (uint32)
+                        uint32(segmentBuffer))))); // localDataPart2 (uint32)
     }
 
     @Override
@@ -66,9 +69,28 @@ public class LargeCommunity implements Attribute {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("globalAdministrator", this.globalAdministrator)
-                .add("localDataPart1", this.localDataPart1)
-                .add("localDataPart2", this.localDataPart2)
+                .add("largeCommunities", this.largeCommunities)
                 .toString();
+    }
+
+    public static class LargeCommunity {
+        public final long globalAdministrator; // uint32
+        public final long localDataPart1; // uint32
+        public final long localDataPart2; // uint32
+
+        public LargeCommunity(long globalAdministrator, long localDataPart1, long localDataPart2) {
+            this.globalAdministrator = globalAdministrator;
+            this.localDataPart1 = localDataPart1;
+            this.localDataPart2 = localDataPart2;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("globalAdministrator", this.globalAdministrator)
+                    .add("localDataPart1", this.localDataPart1)
+                    .add("localDataPart2", this.localDataPart2)
+                    .toString();
+        }
     }
 }
