@@ -37,11 +37,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import org.joda.time.Duration;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
@@ -61,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implements AsyncDispatcher<S> {
@@ -72,6 +76,8 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     
     private final DispatchQueue<S> dispatchQueue;
     private final Map<String, CompletableFuture<DispatchStatus>> futureMap = new ConcurrentHashMap<>();
+    private final AtomicResultQueue atomicResultQueue = new AtomicResultQueue();
+    private final AtomicLong missedFutures = new AtomicLong(0);
     private final AtomicInteger activeDispatchers = new AtomicInteger(0);
     
     private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
@@ -116,7 +122,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         while (true) {
             try {
                 LOG.trace("Asking dispatch queue for the next entry...");
-                Map.Entry<String, S> messageEntry = dispatchQueue.dequeue();
+                Map.Entry<String, S> messageEntry = atomicResultQueue.dequeue();
                 LOG.trace("Received message entry from dispatch queue {}", messageEntry);
                 activeDispatchers.incrementAndGet();
                 LOG.trace("Sending message {} via sync dispatcher", messageEntry);
@@ -132,6 +138,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                         LOG.trace("Completed future for message {}", messageEntry);
                     } else {
                         RATE_LIMITED_LOGGER.warn("No future found for message {}", messageEntry);
+                        missedFutures.incrementAndGet();
                     }
                 } else {
                     LOG.trace("Dequeued an entry with a null key");
@@ -164,20 +171,48 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
         try {
             String newId = UUID.randomUUID().toString();
-            DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, newId);
-            
-            LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
+            atomicResultQueue.enqueue(message, newId, result -> {
+                LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
 
-            if (result == DispatchQueue.EnqueueResult.DEFERRED) {
-                sendFuture.complete(DispatchStatus.QUEUED);
-            } else {
-                futureMap.put(newId, sendFuture);
-            }
+                if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                    sendFuture.complete(DispatchStatus.QUEUED);
+                } else {
+                    futureMap.put(newId, sendFuture);
+                }
+            });
         } catch (WriteFailedException e) {
             sendFuture.completeExceptionally(e);
         }
 
         return sendFuture;
+    }
+
+    @VisibleForTesting
+    public long getMissedFutures() {
+        return missedFutures.get();
+    }
+
+    /**
+     * This class serves to ensure operations of enqueueing a message and acting on the result of that enqueue are done
+     * atomically from the point of view of any thread calling dequeue.
+     */
+    private final class AtomicResultQueue {
+        private final Map<String, CountDownLatch> resultRecordedMap = new ConcurrentHashMap<>();
+
+        void enqueue(S message, String key, Consumer<DispatchQueue.EnqueueResult> onEnqueue) throws WriteFailedException {
+            CountDownLatch resultRecorded = new CountDownLatch(1);
+            resultRecordedMap.put(key, resultRecorded);
+            DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, key);
+            onEnqueue.accept(result);
+            resultRecorded.countDown();
+        }
+
+        Map.Entry<String, S> dequeue() throws InterruptedException {
+            Map.Entry<String, S> messageEntry = dispatchQueue.dequeue();
+            CountDownLatch latch = resultRecordedMap.remove(messageEntry.getKey());
+            latch.await();
+            return messageEntry;
+        }
     }
     
     @Override
