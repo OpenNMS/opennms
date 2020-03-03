@@ -85,6 +85,23 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.16]
+
+==== Release Meridian-2018.1.16
+
+Release 2018.1.16 is a small update to 2018.1.15 that fixes an HQL injection bug,
+as well as a few other issues.  Hat tip to Johannes Moritz for the security report.
+
+The codename for 2018.1.16 is _Hurricane_.
+
+===== Bug
+
+* The Karaf poller:test command is not location aware (Issue http://issues.opennms.org/browse/NMS-12460[NMS-12460])
+* NPE while compiling a MIB (Issue http://issues.opennms.org/browse/NMS-12472[NMS-12472])
+* Cannot process SNMPv3 Informs due to random Engine ID associated with users (Issue http://issues.opennms.org/browse/NMS-12473[NMS-12473])
+* Backport date/time format fixes to Meridian 2018 (Issue http://issues.opennms.org/browse/NMS-12514[NMS-12514])
+* HQL Injection (Issue http://issues.opennms.org/browse/NMS-12572[NMS-12572])
+
 [releasenotes-changelog-Meridian-2018.1.15]
 
 ==== Release Meridian-2018.1.15
