@@ -179,7 +179,7 @@ This reduces the complexity of the UI code and will make it easier for developer
 ==== Release Meridian-2017.1.21
 
 Release 2017.1.21 is a small update to 2017.1.20 that fixes an HQL injection issue that affects
-most current OpenNMS releases.
+most current OpenNMS releases.  Hat tip to Johannes Moritz for reporting this.
 
 The codename for 2017.1.21 is _Capitol meridian_.
 
