@@ -232,7 +232,7 @@ public class BmpParser implements TcpParser {
                }}))
                .addAllRouters(Iterables.transform(this.connections, BmpParser::address));
 
-        this.dispatcher.send(new TelemetryMessage(null, ByteBuffer.wrap(message.build().toByteArray())));
+        this.dispatcher.send(new TelemetryMessage(InetSocketAddress.createUnresolved("0.0.0.0", 0), ByteBuffer.wrap(message.build().toByteArray())));
         BmpParser.this.recordsDispatched.mark();
     }
 
