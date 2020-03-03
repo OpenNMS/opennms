@@ -10,7 +10,7 @@ To view the meta-data currently assigned to nodes, interfaces and services, ther
 These pages show the meta-data as it is currently assigned in the database.
 
 The meta-data can be used to dynamically configure service monitoring, performance data collection, and service detection.
-They all use a link:#ga-meta-data-dls[simple DSL] which allows to access the meta-data associated to the elements they are working on.
+They all use a link:#ga-meta-data-dsl[simple DSL] which allows to access the meta-data associated to the elements they are working on.
 
 === Special contexts
 In relation to nodes, interfaces and services, there are special contexts available which expose details about those objects.
