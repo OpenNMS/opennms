@@ -2,6 +2,31 @@
 
 === Changelog
 
+[releasenotes-changelog-25.2.1]
+
+==== Release 25.2.1
+
+Release 25.2.0 is the fifth release in the Horizon 25 series.
+
+It contains a number of small improvements as well as a few bug fixes and a security
+fix for an HQL injection bug.  Hat tip to Johannes Moritz for the security report.
+
+The codename for 25.2.1 is _link:$$https://en.wikipedia.org/wiki/Jiaozi#Gy%C5%8Dza$$[Gyōza]_.
+
+===== Bug
+
+* Cannot process SNMPv3 Informs due to random Engine ID associated with users (Issue http://issues.opennms.org/browse/NMS-12473[NMS-12473])
+* api/v2/ifservices endpoint does not expose ID and IpInterface in JSON results (Issue http://issues.opennms.org/browse/NMS-12505[NMS-12505])
+* Downtime model change was not updated in the docs (Issue http://issues.opennms.org/browse/NMS-12520[NMS-12520])
+* Topology Map does not show Geocoordinates anymore (Issue http://issues.opennms.org/browse/NMS-12531[NMS-12531])
+* HQL Injection (Issue http://issues.opennms.org/browse/NMS-12572[NMS-12572])
+
+===== Enhancement
+
+* Cleanup Interfaces Tagged for Flows (Issue http://issues.opennms.org/browse/NMS-12279[NMS-12279])
+* Allow multiple IP rules for discontinuous IP ranges for flow classification (Issue http://issues.opennms.org/browse/NMS-12422[NMS-12422])
+* Support signing code in CircleCI (Issue http://issues.opennms.org/browse/NMS-12557[NMS-12557])
+
 [releasenotes-changelog-25.2.0]
 
 ==== Release 25.2.0
