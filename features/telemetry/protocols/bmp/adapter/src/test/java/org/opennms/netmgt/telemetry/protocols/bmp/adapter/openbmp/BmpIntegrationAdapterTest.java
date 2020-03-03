@@ -110,7 +110,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         // Send an initiation packet
         final Transport.InitiationPacket.Builder initiationPacket = Transport.InitiationPacket.newBuilder()
                 .setSysName("router1")
-                .setSysDesc("description1")
+                .addSysDesc("description1")
                 .setBgpId(address(InetAddressUtils.addr("10.1.1.1")));
 
         final Transport.Message initiationMessage = Transport.Message.newBuilder()
@@ -122,7 +122,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
         // Send an termination packet
         final Transport.TerminationPacket.Builder terminationPacket = Transport.TerminationPacket.newBuilder()
                 .setReason(2)
-                .setMessage("message");
+                .addMessage("message");
 
         final Transport.Message terminationMessage = Transport.Message.newBuilder()
                 .setVersion(3)

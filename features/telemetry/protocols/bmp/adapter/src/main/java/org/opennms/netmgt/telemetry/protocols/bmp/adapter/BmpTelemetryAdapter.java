@@ -133,14 +133,17 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         Optional.ofNullable(stats.getAdjRibIn()).ifPresent(addGauge.apply("adj_rib_in"));
         Optional.ofNullable(stats.getAdjRibOut()).ifPresent(addGauge.apply("adj_rib_out"));
 
-        // TODO fooker: Add per AFI counters (perAfiAdjRibIn and perAfiLocRib)
+        // TODO fooker: Add per AFI counters (perAfiAdjRibIn and perAfiLocalRib)
         // See https://issues.opennms.org/browse/NMS-12553
 
         Optional.ofNullable(stats.getUpdateTreatAsWithdraw()).ifPresent(addCounter.apply("update_withdraw"));
         Optional.ofNullable(stats.getPrefixTreatAsWithdraw()).ifPresent(addCounter.apply("prefix_withdraw"));
         Optional.ofNullable(stats.getDuplicateUpdate()).ifPresent(addCounter.apply("duplicate_update"));
-        Optional.ofNullable(stats.getLocRib()).ifPresent(addGauge.apply("loc_rib"));
+        Optional.ofNullable(stats.getLocalRib()).ifPresent(addGauge.apply("local_rib"));
         Optional.ofNullable(stats.getExportRib()).ifPresent(addGauge.apply("export_rib"));
+
+        // TODO fooker: Add per AFI counters (perAfiAdjRibOut and perAfiExportRib)
+        // See https://issues.opennms.org/browse/NMS-12553
 
         return Stream.of(new CollectionSetWithAgent(agent, builder.build()));
     }

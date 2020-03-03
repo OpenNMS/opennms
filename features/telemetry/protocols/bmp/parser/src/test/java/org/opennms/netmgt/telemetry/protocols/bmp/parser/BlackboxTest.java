@@ -94,9 +94,11 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToClusterListLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToOriginatorId;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibIn;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibOut;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiExportRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
@@ -243,8 +245,8 @@ public class BlackboxTest implements Packet.Visitor {
         }
 
         @Override
-        public void visit(PerAfiLocRib perAfiLocRib) {
-            fail("Wrong Metric PerAfiLocRib");
+        public void visit(PerAfiLocalRib perAfiLocalRib) {
+            fail("Wrong Metric PerAfiLocalRib");
         }
 
         @Override
@@ -258,8 +260,8 @@ public class BlackboxTest implements Packet.Visitor {
         }
 
         @Override
-        public void visit(LocRib locRib) {
-            fail("Wrong Metric LocRib");
+        public void visit(LocalRib localRib) {
+            fail("Wrong Metric LocalRib");
         }
 
         @Override
@@ -270,6 +272,16 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(Rejected rejected) {
             fail("Wrong Metric Rejected");
+        }
+
+        @Override
+        public void visit(PerAfiAdjRibOut perAfiAdjRibOut) {
+            fail("Wrong Metric PerAfiAdjRibOut");
+        }
+
+        @Override
+        public void visit(PerAfiExportRib perAfiExportRib) {
+            fail("Wrong Metric PerAfiExportRib");
         }
 
         @Override
@@ -493,11 +505,11 @@ public class BlackboxTest implements Packet.Visitor {
             }
         });
         assertThat(packet.statistics.get(1).length, is(8));
-        assertThat(packet.statistics.get(1).type, is(StatisticsReportPacket.Element.Type.LOC_RIB));
+        assertThat(packet.statistics.get(1).type, is(StatisticsReportPacket.Element.Type.LOCAL_RIB));
         packet.statistics.get(1).value.accept(new MetricVisitorAdapter() {
             @Override
-            public void visit(LocRib locRib) {
-                assertThat(locRib.gauge, is(UnsignedLong.ONE));
+            public void visit(LocalRib localRib) {
+                assertThat(localRib.gauge, is(UnsignedLong.ONE));
             }
         });
         assertThat(packet.statistics.get(2).length, is(4));

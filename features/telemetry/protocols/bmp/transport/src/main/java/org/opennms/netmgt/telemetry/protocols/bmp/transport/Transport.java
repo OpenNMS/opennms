@@ -1080,6 +1080,12 @@ public final class Transport {
        * @return The legacyAsPath.
        */
       boolean getLegacyAsPath();
+
+      /**
+       * <code>bool adjIn = 4;</code>
+       * @return The adjIn.
+       */
+      boolean getAdjIn();
     }
     /**
      * Protobuf type {@code Peer.Flags}
@@ -1143,6 +1149,11 @@ public final class Transport {
               case 24: {
 
                 legacyAsPath_ = input.readBool();
+                break;
+              }
+              case 32: {
+
+                adjIn_ = input.readBool();
                 break;
               }
               default: {
@@ -1433,6 +1444,16 @@ public final class Transport {
         return legacyAsPath_;
       }
 
+      public static final int ADJIN_FIELD_NUMBER = 4;
+      private boolean adjIn_;
+      /**
+       * <code>bool adjIn = 4;</code>
+       * @return The adjIn.
+       */
+      public boolean getAdjIn() {
+        return adjIn_;
+      }
+
       private byte memoizedIsInitialized = -1;
       @java.lang.Override
       public final boolean isInitialized() {
@@ -1456,6 +1477,9 @@ public final class Transport {
         if (legacyAsPath_ != false) {
           output.writeBool(3, legacyAsPath_);
         }
+        if (adjIn_ != false) {
+          output.writeBool(4, adjIn_);
+        }
         unknownFields.writeTo(output);
       }
 
@@ -1477,6 +1501,10 @@ public final class Transport {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(3, legacyAsPath_);
         }
+        if (adjIn_ != false) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(4, adjIn_);
+        }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
         return size;
@@ -1496,6 +1524,8 @@ public final class Transport {
         if (policy_ != other.policy_) return false;
         if (getLegacyAsPath()
             != other.getLegacyAsPath()) return false;
+        if (getAdjIn()
+            != other.getAdjIn()) return false;
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
       }
@@ -1514,6 +1544,9 @@ public final class Transport {
         hash = (37 * hash) + LEGACY_AS_PATH_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
             getLegacyAsPath());
+        hash = (37 * hash) + ADJIN_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getAdjIn());
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
         return hash;
@@ -1653,6 +1686,8 @@ public final class Transport {
 
           legacyAsPath_ = false;
 
+          adjIn_ = false;
+
           return this;
         }
 
@@ -1682,6 +1717,7 @@ public final class Transport {
           result.ipVersion_ = ipVersion_;
           result.policy_ = policy_;
           result.legacyAsPath_ = legacyAsPath_;
+          result.adjIn_ = adjIn_;
           onBuilt();
           return result;
         }
@@ -1738,6 +1774,9 @@ public final class Transport {
           }
           if (other.getLegacyAsPath() != false) {
             setLegacyAsPath(other.getLegacyAsPath());
+          }
+          if (other.getAdjIn() != false) {
+            setAdjIn(other.getAdjIn());
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -1898,6 +1937,36 @@ public final class Transport {
         public Builder clearLegacyAsPath() {
           
           legacyAsPath_ = false;
+          onChanged();
+          return this;
+        }
+
+        private boolean adjIn_ ;
+        /**
+         * <code>bool adjIn = 4;</code>
+         * @return The adjIn.
+         */
+        public boolean getAdjIn() {
+          return adjIn_;
+        }
+        /**
+         * <code>bool adjIn = 4;</code>
+         * @param value The adjIn to set.
+         * @return This builder for chaining.
+         */
+        public Builder setAdjIn(boolean value) {
+          
+          adjIn_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bool adjIn = 4;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearAdjIn() {
+          
+          adjIn_ = false;
           onChanged();
           return this;
         }
@@ -3198,41 +3267,92 @@ public final class Transport {
         getSysNameBytes();
 
     /**
-     * <code>string sys_desc = 2;</code>
-     * @return The sysDesc.
+     * <code>repeated string sys_desc = 2;</code>
+     * @return A list containing the sysDesc.
      */
-    java.lang.String getSysDesc();
+    java.util.List<java.lang.String>
+        getSysDescList();
     /**
-     * <code>string sys_desc = 2;</code>
-     * @return The bytes for sysDesc.
+     * <code>repeated string sys_desc = 2;</code>
+     * @return The count of sysDesc.
+     */
+    int getSysDescCount();
+    /**
+     * <code>repeated string sys_desc = 2;</code>
+     * @param index The index of the element to return.
+     * @return The sysDesc at the given index.
+     */
+    java.lang.String getSysDesc(int index);
+    /**
+     * <code>repeated string sys_desc = 2;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the sysDesc at the given index.
      */
     com.google.protobuf.ByteString
-        getSysDescBytes();
+        getSysDescBytes(int index);
 
     /**
-     * <code>string message = 3;</code>
-     * @return The message.
+     * <code>repeated string message = 3;</code>
+     * @return A list containing the message.
      */
-    java.lang.String getMessage();
+    java.util.List<java.lang.String>
+        getMessageList();
     /**
-     * <code>string message = 3;</code>
-     * @return The bytes for message.
+     * <code>repeated string message = 3;</code>
+     * @return The count of message.
+     */
+    int getMessageCount();
+    /**
+     * <code>repeated string message = 3;</code>
+     * @param index The index of the element to return.
+     * @return The message at the given index.
+     */
+    java.lang.String getMessage(int index);
+    /**
+     * <code>repeated string message = 3;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the message at the given index.
      */
     com.google.protobuf.ByteString
-        getMessageBytes();
+        getMessageBytes(int index);
 
     /**
-     * <code>.IpAddress bgpId = 4;</code>
+     * <code>repeated string admin_label = 4;</code>
+     * @return A list containing the adminLabel.
+     */
+    java.util.List<java.lang.String>
+        getAdminLabelList();
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @return The count of adminLabel.
+     */
+    int getAdminLabelCount();
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @param index The index of the element to return.
+     * @return The adminLabel at the given index.
+     */
+    java.lang.String getAdminLabel(int index);
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the adminLabel at the given index.
+     */
+    com.google.protobuf.ByteString
+        getAdminLabelBytes(int index);
+
+    /**
+     * <code>.IpAddress bgpId = 65531;</code>
      * @return Whether the bgpId field is set.
      */
     boolean hasBgpId();
     /**
-     * <code>.IpAddress bgpId = 4;</code>
+     * <code>.IpAddress bgpId = 65531;</code>
      * @return The bgpId.
      */
     org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId();
     /**
-     * <code>.IpAddress bgpId = 4;</code>
+     * <code>.IpAddress bgpId = 65531;</code>
      */
     org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder();
   }
@@ -3250,8 +3370,9 @@ public final class Transport {
     }
     private InitiationPacket() {
       sysName_ = "";
-      sysDesc_ = "";
-      message_ = "";
+      sysDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      adminLabel_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -3274,6 +3395,7 @@ public final class Transport {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -3292,17 +3414,32 @@ public final class Transport {
             }
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
-
-              sysDesc_ = s;
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                sysDesc_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              sysDesc_.add(s);
               break;
             }
             case 26: {
               java.lang.String s = input.readStringRequireUtf8();
-
-              message_ = s;
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                message_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              message_.add(s);
               break;
             }
             case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                adminLabel_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              adminLabel_.add(s);
+              break;
+            }
+            case 524250: {
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder subBuilder = null;
               if (bgpId_ != null) {
                 subBuilder = bgpId_.toBuilder();
@@ -3330,6 +3467,15 @@ public final class Transport {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          sysDesc_ = sysDesc_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          message_ = message_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+          adminLabel_ = adminLabel_.getUnmodifiableView();
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -3384,95 +3530,128 @@ public final class Transport {
     }
 
     public static final int SYS_DESC_FIELD_NUMBER = 2;
-    private volatile java.lang.Object sysDesc_;
+    private com.google.protobuf.LazyStringList sysDesc_;
     /**
-     * <code>string sys_desc = 2;</code>
-     * @return The sysDesc.
+     * <code>repeated string sys_desc = 2;</code>
+     * @return A list containing the sysDesc.
      */
-    public java.lang.String getSysDesc() {
-      java.lang.Object ref = sysDesc_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        sysDesc_ = s;
-        return s;
-      }
+    public com.google.protobuf.ProtocolStringList
+        getSysDescList() {
+      return sysDesc_;
     }
     /**
-     * <code>string sys_desc = 2;</code>
-     * @return The bytes for sysDesc.
+     * <code>repeated string sys_desc = 2;</code>
+     * @return The count of sysDesc.
+     */
+    public int getSysDescCount() {
+      return sysDesc_.size();
+    }
+    /**
+     * <code>repeated string sys_desc = 2;</code>
+     * @param index The index of the element to return.
+     * @return The sysDesc at the given index.
+     */
+    public java.lang.String getSysDesc(int index) {
+      return sysDesc_.get(index);
+    }
+    /**
+     * <code>repeated string sys_desc = 2;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the sysDesc at the given index.
      */
     public com.google.protobuf.ByteString
-        getSysDescBytes() {
-      java.lang.Object ref = sysDesc_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        sysDesc_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+        getSysDescBytes(int index) {
+      return sysDesc_.getByteString(index);
     }
 
     public static final int MESSAGE_FIELD_NUMBER = 3;
-    private volatile java.lang.Object message_;
+    private com.google.protobuf.LazyStringList message_;
     /**
-     * <code>string message = 3;</code>
-     * @return The message.
+     * <code>repeated string message = 3;</code>
+     * @return A list containing the message.
      */
-    public java.lang.String getMessage() {
-      java.lang.Object ref = message_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        message_ = s;
-        return s;
-      }
+    public com.google.protobuf.ProtocolStringList
+        getMessageList() {
+      return message_;
     }
     /**
-     * <code>string message = 3;</code>
-     * @return The bytes for message.
+     * <code>repeated string message = 3;</code>
+     * @return The count of message.
+     */
+    public int getMessageCount() {
+      return message_.size();
+    }
+    /**
+     * <code>repeated string message = 3;</code>
+     * @param index The index of the element to return.
+     * @return The message at the given index.
+     */
+    public java.lang.String getMessage(int index) {
+      return message_.get(index);
+    }
+    /**
+     * <code>repeated string message = 3;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the message at the given index.
      */
     public com.google.protobuf.ByteString
-        getMessageBytes() {
-      java.lang.Object ref = message_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        message_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+        getMessageBytes(int index) {
+      return message_.getByteString(index);
     }
 
-    public static final int BGPID_FIELD_NUMBER = 4;
+    public static final int ADMIN_LABEL_FIELD_NUMBER = 4;
+    private com.google.protobuf.LazyStringList adminLabel_;
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @return A list containing the adminLabel.
+     */
+    public com.google.protobuf.ProtocolStringList
+        getAdminLabelList() {
+      return adminLabel_;
+    }
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @return The count of adminLabel.
+     */
+    public int getAdminLabelCount() {
+      return adminLabel_.size();
+    }
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @param index The index of the element to return.
+     * @return The adminLabel at the given index.
+     */
+    public java.lang.String getAdminLabel(int index) {
+      return adminLabel_.get(index);
+    }
+    /**
+     * <code>repeated string admin_label = 4;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the adminLabel at the given index.
+     */
+    public com.google.protobuf.ByteString
+        getAdminLabelBytes(int index) {
+      return adminLabel_.getByteString(index);
+    }
+
+    public static final int BGPID_FIELD_NUMBER = 65531;
     private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress bgpId_;
     /**
-     * <code>.IpAddress bgpId = 4;</code>
+     * <code>.IpAddress bgpId = 65531;</code>
      * @return Whether the bgpId field is set.
      */
     public boolean hasBgpId() {
       return bgpId_ != null;
     }
     /**
-     * <code>.IpAddress bgpId = 4;</code>
+     * <code>.IpAddress bgpId = 65531;</code>
      * @return The bgpId.
      */
     public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId() {
       return bgpId_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
     }
     /**
-     * <code>.IpAddress bgpId = 4;</code>
+     * <code>.IpAddress bgpId = 65531;</code>
      */
     public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder() {
       return getBgpId();
@@ -3495,14 +3674,17 @@ public final class Transport {
       if (!getSysNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, sysName_);
       }
-      if (!getSysDescBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, sysDesc_);
+      for (int i = 0; i < sysDesc_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, sysDesc_.getRaw(i));
       }
-      if (!getMessageBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, message_);
+      for (int i = 0; i < message_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, message_.getRaw(i));
+      }
+      for (int i = 0; i < adminLabel_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, adminLabel_.getRaw(i));
       }
       if (bgpId_ != null) {
-        output.writeMessage(4, getBgpId());
+        output.writeMessage(65531, getBgpId());
       }
       unknownFields.writeTo(output);
     }
@@ -3516,15 +3698,33 @@ public final class Transport {
       if (!getSysNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, sysName_);
       }
-      if (!getSysDescBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, sysDesc_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < sysDesc_.size(); i++) {
+          dataSize += computeStringSizeNoTag(sysDesc_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getSysDescList().size();
       }
-      if (!getMessageBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, message_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < message_.size(); i++) {
+          dataSize += computeStringSizeNoTag(message_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getMessageList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < adminLabel_.size(); i++) {
+          dataSize += computeStringSizeNoTag(adminLabel_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getAdminLabelList().size();
       }
       if (bgpId_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getBgpId());
+          .computeMessageSize(65531, getBgpId());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3543,10 +3743,12 @@ public final class Transport {
 
       if (!getSysName()
           .equals(other.getSysName())) return false;
-      if (!getSysDesc()
-          .equals(other.getSysDesc())) return false;
-      if (!getMessage()
-          .equals(other.getMessage())) return false;
+      if (!getSysDescList()
+          .equals(other.getSysDescList())) return false;
+      if (!getMessageList()
+          .equals(other.getMessageList())) return false;
+      if (!getAdminLabelList()
+          .equals(other.getAdminLabelList())) return false;
       if (hasBgpId() != other.hasBgpId()) return false;
       if (hasBgpId()) {
         if (!getBgpId()
@@ -3565,10 +3767,18 @@ public final class Transport {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + SYS_NAME_FIELD_NUMBER;
       hash = (53 * hash) + getSysName().hashCode();
-      hash = (37 * hash) + SYS_DESC_FIELD_NUMBER;
-      hash = (53 * hash) + getSysDesc().hashCode();
-      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-      hash = (53 * hash) + getMessage().hashCode();
+      if (getSysDescCount() > 0) {
+        hash = (37 * hash) + SYS_DESC_FIELD_NUMBER;
+        hash = (53 * hash) + getSysDescList().hashCode();
+      }
+      if (getMessageCount() > 0) {
+        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getMessageList().hashCode();
+      }
+      if (getAdminLabelCount() > 0) {
+        hash = (37 * hash) + ADMIN_LABEL_FIELD_NUMBER;
+        hash = (53 * hash) + getAdminLabelList().hashCode();
+      }
       if (hasBgpId()) {
         hash = (37 * hash) + BGPID_FIELD_NUMBER;
         hash = (53 * hash) + getBgpId().hashCode();
@@ -3708,10 +3918,12 @@ public final class Transport {
         super.clear();
         sysName_ = "";
 
-        sysDesc_ = "";
-
-        message_ = "";
-
+        sysDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        adminLabel_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (bgpIdBuilder_ == null) {
           bgpId_ = null;
         } else {
@@ -3744,9 +3956,23 @@ public final class Transport {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.InitiationPacket buildPartial() {
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.InitiationPacket result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.InitiationPacket(this);
+        int from_bitField0_ = bitField0_;
         result.sysName_ = sysName_;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          sysDesc_ = sysDesc_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
         result.sysDesc_ = sysDesc_;
+        if (((bitField0_ & 0x00000002) != 0)) {
+          message_ = message_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        }
         result.message_ = message_;
+        if (((bitField0_ & 0x00000004) != 0)) {
+          adminLabel_ = adminLabel_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.adminLabel_ = adminLabel_;
         if (bgpIdBuilder_ == null) {
           result.bgpId_ = bgpId_;
         } else {
@@ -3804,12 +4030,34 @@ public final class Transport {
           sysName_ = other.sysName_;
           onChanged();
         }
-        if (!other.getSysDesc().isEmpty()) {
-          sysDesc_ = other.sysDesc_;
+        if (!other.sysDesc_.isEmpty()) {
+          if (sysDesc_.isEmpty()) {
+            sysDesc_ = other.sysDesc_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureSysDescIsMutable();
+            sysDesc_.addAll(other.sysDesc_);
+          }
           onChanged();
         }
-        if (!other.getMessage().isEmpty()) {
-          message_ = other.message_;
+        if (!other.message_.isEmpty()) {
+          if (message_.isEmpty()) {
+            message_ = other.message_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureMessageIsMutable();
+            message_.addAll(other.message_);
+          }
+          onChanged();
+        }
+        if (!other.adminLabel_.isEmpty()) {
+          if (adminLabel_.isEmpty()) {
+            adminLabel_ = other.adminLabel_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureAdminLabelIsMutable();
+            adminLabel_.addAll(other.adminLabel_);
+          }
           onChanged();
         }
         if (other.hasBgpId()) {
@@ -3843,6 +4091,7 @@ public final class Transport {
         }
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object sysName_ = "";
       /**
@@ -3920,154 +4169,332 @@ public final class Transport {
         return this;
       }
 
-      private java.lang.Object sysDesc_ = "";
-      /**
-       * <code>string sys_desc = 2;</code>
-       * @return The sysDesc.
-       */
-      public java.lang.String getSysDesc() {
-        java.lang.Object ref = sysDesc_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          sysDesc_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      private com.google.protobuf.LazyStringList sysDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureSysDescIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          sysDesc_ = new com.google.protobuf.LazyStringArrayList(sysDesc_);
+          bitField0_ |= 0x00000001;
+         }
       }
       /**
-       * <code>string sys_desc = 2;</code>
-       * @return The bytes for sysDesc.
+       * <code>repeated string sys_desc = 2;</code>
+       * @return A list containing the sysDesc.
+       */
+      public com.google.protobuf.ProtocolStringList
+          getSysDescList() {
+        return sysDesc_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string sys_desc = 2;</code>
+       * @return The count of sysDesc.
+       */
+      public int getSysDescCount() {
+        return sysDesc_.size();
+      }
+      /**
+       * <code>repeated string sys_desc = 2;</code>
+       * @param index The index of the element to return.
+       * @return The sysDesc at the given index.
+       */
+      public java.lang.String getSysDesc(int index) {
+        return sysDesc_.get(index);
+      }
+      /**
+       * <code>repeated string sys_desc = 2;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the sysDesc at the given index.
        */
       public com.google.protobuf.ByteString
-          getSysDescBytes() {
-        java.lang.Object ref = sysDesc_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          sysDesc_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+          getSysDescBytes(int index) {
+        return sysDesc_.getByteString(index);
       }
       /**
-       * <code>string sys_desc = 2;</code>
+       * <code>repeated string sys_desc = 2;</code>
+       * @param index The index to set the value at.
        * @param value The sysDesc to set.
        * @return This builder for chaining.
        */
       public Builder setSysDesc(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureSysDescIsMutable();
+        sysDesc_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string sys_desc = 2;</code>
+       * @param value The sysDesc to add.
+       * @return This builder for chaining.
+       */
+      public Builder addSysDesc(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
-        sysDesc_ = value;
+  ensureSysDescIsMutable();
+        sysDesc_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>string sys_desc = 2;</code>
+       * <code>repeated string sys_desc = 2;</code>
+       * @param values The sysDesc to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllSysDesc(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureSysDescIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sysDesc_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string sys_desc = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearSysDesc() {
-        
-        sysDesc_ = getDefaultInstance().getSysDesc();
+        sysDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string sys_desc = 2;</code>
-       * @param value The bytes for sysDesc to set.
+       * <code>repeated string sys_desc = 2;</code>
+       * @param value The bytes of the sysDesc to add.
        * @return This builder for chaining.
        */
-      public Builder setSysDescBytes(
+      public Builder addSysDescBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
-        sysDesc_ = value;
+        ensureSysDescIsMutable();
+        sysDesc_.add(value);
         onChanged();
         return this;
       }
 
-      private java.lang.Object message_ = "";
-      /**
-       * <code>string message = 3;</code>
-       * @return The message.
-       */
-      public java.lang.String getMessage() {
-        java.lang.Object ref = message_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          message_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      private com.google.protobuf.LazyStringList message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureMessageIsMutable() {
+        if (!((bitField0_ & 0x00000002) != 0)) {
+          message_ = new com.google.protobuf.LazyStringArrayList(message_);
+          bitField0_ |= 0x00000002;
+         }
       }
       /**
-       * <code>string message = 3;</code>
-       * @return The bytes for message.
+       * <code>repeated string message = 3;</code>
+       * @return A list containing the message.
+       */
+      public com.google.protobuf.ProtocolStringList
+          getMessageList() {
+        return message_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string message = 3;</code>
+       * @return The count of message.
+       */
+      public int getMessageCount() {
+        return message_.size();
+      }
+      /**
+       * <code>repeated string message = 3;</code>
+       * @param index The index of the element to return.
+       * @return The message at the given index.
+       */
+      public java.lang.String getMessage(int index) {
+        return message_.get(index);
+      }
+      /**
+       * <code>repeated string message = 3;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the message at the given index.
        */
       public com.google.protobuf.ByteString
-          getMessageBytes() {
-        java.lang.Object ref = message_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          message_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+          getMessageBytes(int index) {
+        return message_.getByteString(index);
       }
       /**
-       * <code>string message = 3;</code>
+       * <code>repeated string message = 3;</code>
+       * @param index The index to set the value at.
        * @param value The message to set.
        * @return This builder for chaining.
        */
       public Builder setMessage(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureMessageIsMutable();
+        message_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string message = 3;</code>
+       * @param value The message to add.
+       * @return This builder for chaining.
+       */
+      public Builder addMessage(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
-        message_ = value;
+  ensureMessageIsMutable();
+        message_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>string message = 3;</code>
+       * <code>repeated string message = 3;</code>
+       * @param values The message to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllMessage(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureMessageIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, message_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string message = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearMessage() {
-        
-        message_ = getDefaultInstance().getMessage();
+        message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>string message = 3;</code>
-       * @param value The bytes for message to set.
+       * <code>repeated string message = 3;</code>
+       * @param value The bytes of the message to add.
        * @return This builder for chaining.
        */
-      public Builder setMessageBytes(
+      public Builder addMessageBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
-        message_ = value;
+        ensureMessageIsMutable();
+        message_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList adminLabel_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureAdminLabelIsMutable() {
+        if (!((bitField0_ & 0x00000004) != 0)) {
+          adminLabel_ = new com.google.protobuf.LazyStringArrayList(adminLabel_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @return A list containing the adminLabel.
+       */
+      public com.google.protobuf.ProtocolStringList
+          getAdminLabelList() {
+        return adminLabel_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @return The count of adminLabel.
+       */
+      public int getAdminLabelCount() {
+        return adminLabel_.size();
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @param index The index of the element to return.
+       * @return The adminLabel at the given index.
+       */
+      public java.lang.String getAdminLabel(int index) {
+        return adminLabel_.get(index);
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the adminLabel at the given index.
+       */
+      public com.google.protobuf.ByteString
+          getAdminLabelBytes(int index) {
+        return adminLabel_.getByteString(index);
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @param index The index to set the value at.
+       * @param value The adminLabel to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAdminLabel(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureAdminLabelIsMutable();
+        adminLabel_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @param value The adminLabel to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAdminLabel(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureAdminLabelIsMutable();
+        adminLabel_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @param values The adminLabel to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllAdminLabel(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureAdminLabelIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, adminLabel_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAdminLabel() {
+        adminLabel_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string admin_label = 4;</code>
+       * @param value The bytes of the adminLabel to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAdminLabelBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureAdminLabelIsMutable();
+        adminLabel_.add(value);
         onChanged();
         return this;
       }
@@ -4076,14 +4503,14 @@ public final class Transport {
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> bgpIdBuilder_;
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        * @return Whether the bgpId field is set.
        */
       public boolean hasBgpId() {
         return bgpIdBuilder_ != null || bgpId_ != null;
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        * @return The bgpId.
        */
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId() {
@@ -4094,7 +4521,7 @@ public final class Transport {
         }
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       public Builder setBgpId(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
         if (bgpIdBuilder_ == null) {
@@ -4110,7 +4537,7 @@ public final class Transport {
         return this;
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       public Builder setBgpId(
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder builderForValue) {
@@ -4124,7 +4551,7 @@ public final class Transport {
         return this;
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       public Builder mergeBgpId(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
         if (bgpIdBuilder_ == null) {
@@ -4142,7 +4569,7 @@ public final class Transport {
         return this;
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       public Builder clearBgpId() {
         if (bgpIdBuilder_ == null) {
@@ -4156,7 +4583,7 @@ public final class Transport {
         return this;
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder getBgpIdBuilder() {
         
@@ -4164,7 +4591,7 @@ public final class Transport {
         return getBgpIdFieldBuilder().getBuilder();
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder() {
         if (bgpIdBuilder_ != null) {
@@ -4175,7 +4602,7 @@ public final class Transport {
         }
       }
       /**
-       * <code>.IpAddress bgpId = 4;</code>
+       * <code>.IpAddress bgpId = 65531;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> 
@@ -4248,16 +4675,29 @@ public final class Transport {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string message = 1;</code>
-     * @return The message.
+     * <code>repeated string message = 1;</code>
+     * @return A list containing the message.
      */
-    java.lang.String getMessage();
+    java.util.List<java.lang.String>
+        getMessageList();
     /**
-     * <code>string message = 1;</code>
-     * @return The bytes for message.
+     * <code>repeated string message = 1;</code>
+     * @return The count of message.
+     */
+    int getMessageCount();
+    /**
+     * <code>repeated string message = 1;</code>
+     * @param index The index of the element to return.
+     * @return The message at the given index.
+     */
+    java.lang.String getMessage(int index);
+    /**
+     * <code>repeated string message = 1;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the message at the given index.
      */
     com.google.protobuf.ByteString
-        getMessageBytes();
+        getMessageBytes(int index);
 
     /**
      * <code>uint32 reason = 2;</code>
@@ -4293,7 +4733,7 @@ public final class Transport {
       super(builder);
     }
     private TerminationPacket() {
-      message_ = "";
+      message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
@@ -4316,6 +4756,7 @@ public final class Transport {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -4328,8 +4769,11 @@ public final class Transport {
               break;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
-
-              message_ = s;
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                message_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              message_.add(s);
               break;
             }
             case 16: {
@@ -4365,6 +4809,9 @@ public final class Transport {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          message_ = message_.getUnmodifiableView();
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -4383,39 +4830,38 @@ public final class Transport {
     }
 
     public static final int MESSAGE_FIELD_NUMBER = 1;
-    private volatile java.lang.Object message_;
+    private com.google.protobuf.LazyStringList message_;
     /**
-     * <code>string message = 1;</code>
-     * @return The message.
+     * <code>repeated string message = 1;</code>
+     * @return A list containing the message.
      */
-    public java.lang.String getMessage() {
-      java.lang.Object ref = message_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        message_ = s;
-        return s;
-      }
+    public com.google.protobuf.ProtocolStringList
+        getMessageList() {
+      return message_;
     }
     /**
-     * <code>string message = 1;</code>
-     * @return The bytes for message.
+     * <code>repeated string message = 1;</code>
+     * @return The count of message.
+     */
+    public int getMessageCount() {
+      return message_.size();
+    }
+    /**
+     * <code>repeated string message = 1;</code>
+     * @param index The index of the element to return.
+     * @return The message at the given index.
+     */
+    public java.lang.String getMessage(int index) {
+      return message_.get(index);
+    }
+    /**
+     * <code>repeated string message = 1;</code>
+     * @param index The index of the value to return.
+     * @return The bytes of the message at the given index.
      */
     public com.google.protobuf.ByteString
-        getMessageBytes() {
-      java.lang.Object ref = message_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        message_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+        getMessageBytes(int index) {
+      return message_.getByteString(index);
     }
 
     public static final int REASON_FIELD_NUMBER = 2;
@@ -4465,8 +4911,8 @@ public final class Transport {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getMessageBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
+      for (int i = 0; i < message_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_.getRaw(i));
       }
       if (reason_ != 0) {
         output.writeUInt32(2, reason_);
@@ -4483,8 +4929,13 @@ public final class Transport {
       if (size != -1) return size;
 
       size = 0;
-      if (!getMessageBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
+      {
+        int dataSize = 0;
+        for (int i = 0; i < message_.size(); i++) {
+          dataSize += computeStringSizeNoTag(message_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getMessageList().size();
       }
       if (reason_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -4509,8 +4960,8 @@ public final class Transport {
       }
       org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket) obj;
 
-      if (!getMessage()
-          .equals(other.getMessage())) return false;
+      if (!getMessageList()
+          .equals(other.getMessageList())) return false;
       if (getReason()
           != other.getReason()) return false;
       if (hasUnknown() != other.hasUnknown()) return false;
@@ -4529,8 +4980,10 @@ public final class Transport {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-      hash = (53 * hash) + getMessage().hashCode();
+      if (getMessageCount() > 0) {
+        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getMessageList().hashCode();
+      }
       hash = (37 * hash) + REASON_FIELD_NUMBER;
       hash = (53 * hash) + getReason();
       if (hasUnknown()) {
@@ -4670,8 +5123,8 @@ public final class Transport {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        message_ = "";
-
+        message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         reason_ = 0;
 
         if (unknownBuilder_ == null) {
@@ -4706,6 +5159,11 @@ public final class Transport {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket buildPartial() {
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          message_ = message_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
         result.message_ = message_;
         result.reason_ = reason_;
         if (unknownBuilder_ == null) {
@@ -4761,8 +5219,14 @@ public final class Transport {
 
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket other) {
         if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.TerminationPacket.getDefaultInstance()) return this;
-        if (!other.getMessage().isEmpty()) {
-          message_ = other.message_;
+        if (!other.message_.isEmpty()) {
+          if (message_.isEmpty()) {
+            message_ = other.message_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureMessageIsMutable();
+            message_.addAll(other.message_);
+          }
           onChanged();
         }
         if (other.getReason() != 0) {
@@ -4799,79 +5263,114 @@ public final class Transport {
         }
         return this;
       }
+      private int bitField0_;
 
-      private java.lang.Object message_ = "";
-      /**
-       * <code>string message = 1;</code>
-       * @return The message.
-       */
-      public java.lang.String getMessage() {
-        java.lang.Object ref = message_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          message_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      private com.google.protobuf.LazyStringList message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureMessageIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          message_ = new com.google.protobuf.LazyStringArrayList(message_);
+          bitField0_ |= 0x00000001;
+         }
       }
       /**
-       * <code>string message = 1;</code>
-       * @return The bytes for message.
+       * <code>repeated string message = 1;</code>
+       * @return A list containing the message.
+       */
+      public com.google.protobuf.ProtocolStringList
+          getMessageList() {
+        return message_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string message = 1;</code>
+       * @return The count of message.
+       */
+      public int getMessageCount() {
+        return message_.size();
+      }
+      /**
+       * <code>repeated string message = 1;</code>
+       * @param index The index of the element to return.
+       * @return The message at the given index.
+       */
+      public java.lang.String getMessage(int index) {
+        return message_.get(index);
+      }
+      /**
+       * <code>repeated string message = 1;</code>
+       * @param index The index of the value to return.
+       * @return The bytes of the message at the given index.
        */
       public com.google.protobuf.ByteString
-          getMessageBytes() {
-        java.lang.Object ref = message_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          message_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+          getMessageBytes(int index) {
+        return message_.getByteString(index);
       }
       /**
-       * <code>string message = 1;</code>
+       * <code>repeated string message = 1;</code>
+       * @param index The index to set the value at.
        * @param value The message to set.
        * @return This builder for chaining.
        */
       public Builder setMessage(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureMessageIsMutable();
+        message_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string message = 1;</code>
+       * @param value The message to add.
+       * @return This builder for chaining.
+       */
+      public Builder addMessage(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
-        message_ = value;
+  ensureMessageIsMutable();
+        message_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>string message = 1;</code>
+       * <code>repeated string message = 1;</code>
+       * @param values The message to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllMessage(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureMessageIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, message_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string message = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearMessage() {
-        
-        message_ = getDefaultInstance().getMessage();
+        message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string message = 1;</code>
-       * @param value The bytes for message to set.
+       * <code>repeated string message = 1;</code>
+       * @param value The bytes of the message to add.
        * @return This builder for chaining.
        */
-      public Builder setMessageBytes(
+      public Builder addMessageBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
-        message_ = value;
+        ensureMessageIsMutable();
+        message_.add(value);
         onChanged();
         return this;
       }
@@ -25475,37 +25974,37 @@ public final class Transport {
         java.lang.String key);
 
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
-    int getPerAfiLocRibCount();
+    int getPerAfiLocalRibCount();
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
-    boolean containsPerAfiLocRib(
+    boolean containsPerAfiLocalRib(
         java.lang.String key);
     /**
-     * Use {@link #getPerAfiLocRibMap()} instead.
+     * Use {@link #getPerAfiLocalRibMap()} instead.
      */
     @java.lang.Deprecated
     java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-    getPerAfiLocRib();
+    getPerAfiLocalRib();
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
     java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-    getPerAfiLocRibMap();
+    getPerAfiLocalRibMap();
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
 
-    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocRibOrDefault(
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocalRibOrDefault(
         java.lang.String key,
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue);
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
 
-    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocRibOrThrow(
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocalRibOrThrow(
         java.lang.String key);
 
     /**
@@ -25554,19 +26053,19 @@ public final class Transport {
     org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.CounterOrBuilder getDuplicateUpdateOrBuilder();
 
     /**
-     * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
-     * @return Whether the locRib field is set.
+     * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
+     * @return Whether the localRib field is set.
      */
-    boolean hasLocRib();
+    boolean hasLocalRib();
     /**
-     * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
-     * @return The locRib.
+     * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
+     * @return The localRib.
      */
-    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getLocRib();
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getLocalRib();
     /**
-     * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+     * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
      */
-    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getLocRibOrBuilder();
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getLocalRibOrBuilder();
 
     /**
      * <code>.StatisticsReportPacket.Gauge export_rib = 115;</code>
@@ -25582,6 +26081,74 @@ public final class Transport {
      * <code>.StatisticsReportPacket.Gauge export_rib = 115;</code>
      */
     org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getExportRibOrBuilder();
+
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+    int getPerAfiAdjRibOutCount();
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+    boolean containsPerAfiAdjRibOut(
+        java.lang.String key);
+    /**
+     * Use {@link #getPerAfiAdjRibOutMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+    getPerAfiAdjRibOut();
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+    java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+    getPerAfiAdjRibOutMap();
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiAdjRibOutOrDefault(
+        java.lang.String key,
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue);
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiAdjRibOutOrThrow(
+        java.lang.String key);
+
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+    int getPerAfiExportRibCount();
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+    boolean containsPerAfiExportRib(
+        java.lang.String key);
+    /**
+     * Use {@link #getPerAfiExportRibMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+    getPerAfiExportRib();
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+    java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+    getPerAfiExportRibMap();
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiExportRibOrDefault(
+        java.lang.String key,
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue);
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiExportRibOrThrow(
+        java.lang.String key);
   }
   /**
    * Protobuf type {@code StatisticsReportPacket}
@@ -25774,15 +26341,15 @@ public final class Transport {
             }
             case 882: {
               if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                perAfiLocRib_ = com.google.protobuf.MapField.newMapField(
-                    PerAfiLocRibDefaultEntryHolder.defaultEntry);
+                perAfiLocalRib_ = com.google.protobuf.MapField.newMapField(
+                    PerAfiLocalRibDefaultEntryHolder.defaultEntry);
                 mutable_bitField0_ |= 0x00000002;
               }
               com.google.protobuf.MapEntry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-              perAfiLocRib__ = input.readMessage(
-                  PerAfiLocRibDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              perAfiLocRib_.getMutableMap().put(
-                  perAfiLocRib__.getKey(), perAfiLocRib__.getValue());
+              perAfiLocalRib__ = input.readMessage(
+                  PerAfiLocalRibDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              perAfiLocalRib_.getMutableMap().put(
+                  perAfiLocalRib__.getKey(), perAfiLocalRib__.getValue());
               break;
             }
             case 890: {
@@ -25826,13 +26393,13 @@ public final class Transport {
             }
             case 914: {
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder subBuilder = null;
-              if (locRib_ != null) {
-                subBuilder = locRib_.toBuilder();
+              if (localRib_ != null) {
+                subBuilder = localRib_.toBuilder();
               }
-              locRib_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.parser(), extensionRegistry);
+              localRib_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(locRib_);
-                locRib_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(localRib_);
+                localRib_ = subBuilder.buildPartial();
               }
 
               break;
@@ -25848,6 +26415,32 @@ public final class Transport {
                 exportRib_ = subBuilder.buildPartial();
               }
 
+              break;
+            }
+            case 930: {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                perAfiAdjRibOut_ = com.google.protobuf.MapField.newMapField(
+                    PerAfiAdjRibOutDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000004;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+              perAfiAdjRibOut__ = input.readMessage(
+                  PerAfiAdjRibOutDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              perAfiAdjRibOut_.getMutableMap().put(
+                  perAfiAdjRibOut__.getKey(), perAfiAdjRibOut__.getValue());
+              break;
+            }
+            case 938: {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
+                perAfiExportRib_ = com.google.protobuf.MapField.newMapField(
+                    PerAfiExportRibDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000008;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+              perAfiExportRib__ = input.readMessage(
+                  PerAfiExportRibDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              perAfiExportRib_.getMutableMap().put(
+                  perAfiExportRib__.getKey(), perAfiExportRib__.getValue());
               break;
             }
             default: {
@@ -25882,7 +26475,11 @@ public final class Transport {
         case 109:
           return internalGetPerAfiAdjRibIn();
         case 110:
-          return internalGetPerAfiLocRib();
+          return internalGetPerAfiLocalRib();
+        case 116:
+          return internalGetPerAfiAdjRibOut();
+        case 117:
+          return internalGetPerAfiExportRib();
         default:
           throw new RuntimeException(
               "Invalid map field number: " + number);
@@ -27175,76 +27772,76 @@ public final class Transport {
       return map.get(key);
     }
 
-    public static final int PER_AFI_LOC_RIB_FIELD_NUMBER = 110;
-    private static final class PerAfiLocRibDefaultEntryHolder {
+    public static final int PER_AFI_LOCAL_RIB_FIELD_NUMBER = 110;
+    private static final class PerAfiLocalRibDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
           java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> defaultEntry =
               com.google.protobuf.MapEntry
               .<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>newDefaultInstance(
-                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_StatisticsReportPacket_PerAfiLocRibEntry_descriptor, 
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_StatisticsReportPacket_PerAfiLocalRibEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
                   org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance());
     }
     private com.google.protobuf.MapField<
-        java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiLocRib_;
+        java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiLocalRib_;
     private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-    internalGetPerAfiLocRib() {
-      if (perAfiLocRib_ == null) {
+    internalGetPerAfiLocalRib() {
+      if (perAfiLocalRib_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
-            PerAfiLocRibDefaultEntryHolder.defaultEntry);
+            PerAfiLocalRibDefaultEntryHolder.defaultEntry);
       }
-      return perAfiLocRib_;
+      return perAfiLocalRib_;
     }
 
-    public int getPerAfiLocRibCount() {
-      return internalGetPerAfiLocRib().getMap().size();
+    public int getPerAfiLocalRibCount() {
+      return internalGetPerAfiLocalRib().getMap().size();
     }
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
 
-    public boolean containsPerAfiLocRib(
+    public boolean containsPerAfiLocalRib(
         java.lang.String key) {
       if (key == null) { throw new java.lang.NullPointerException(); }
-      return internalGetPerAfiLocRib().getMap().containsKey(key);
+      return internalGetPerAfiLocalRib().getMap().containsKey(key);
     }
     /**
-     * Use {@link #getPerAfiLocRibMap()} instead.
+     * Use {@link #getPerAfiLocalRibMap()} instead.
      */
     @java.lang.Deprecated
-    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocRib() {
-      return getPerAfiLocRibMap();
+    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocalRib() {
+      return getPerAfiLocalRibMap();
     }
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
 
-    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocRibMap() {
-      return internalGetPerAfiLocRib().getMap();
+    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocalRibMap() {
+      return internalGetPerAfiLocalRib().getMap();
     }
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
 
-    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocRibOrDefault(
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocalRibOrDefault(
         java.lang.String key,
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue) {
       if (key == null) { throw new java.lang.NullPointerException(); }
       java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
-          internalGetPerAfiLocRib().getMap();
+          internalGetPerAfiLocalRib().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
      */
 
-    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocRibOrThrow(
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocalRibOrThrow(
         java.lang.String key) {
       if (key == null) { throw new java.lang.NullPointerException(); }
       java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
-          internalGetPerAfiLocRib().getMap();
+          internalGetPerAfiLocalRib().getMap();
       if (!map.containsKey(key)) {
         throw new java.lang.IllegalArgumentException();
       }
@@ -27320,27 +27917,27 @@ public final class Transport {
       return getDuplicateUpdate();
     }
 
-    public static final int LOC_RIB_FIELD_NUMBER = 114;
-    private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge locRib_;
+    public static final int LOCAL_RIB_FIELD_NUMBER = 114;
+    private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge localRib_;
     /**
-     * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
-     * @return Whether the locRib field is set.
+     * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
+     * @return Whether the localRib field is set.
      */
-    public boolean hasLocRib() {
-      return locRib_ != null;
+    public boolean hasLocalRib() {
+      return localRib_ != null;
     }
     /**
-     * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
-     * @return The locRib.
+     * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
+     * @return The localRib.
      */
-    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getLocRib() {
-      return locRib_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance() : locRib_;
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getLocalRib() {
+      return localRib_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance() : localRib_;
     }
     /**
-     * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+     * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
      */
-    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getLocRibOrBuilder() {
-      return getLocRib();
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getLocalRibOrBuilder() {
+      return getLocalRib();
     }
 
     public static final int EXPORT_RIB_FIELD_NUMBER = 115;
@@ -27364,6 +27961,158 @@ public final class Transport {
      */
     public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getExportRibOrBuilder() {
       return getExportRib();
+    }
+
+    public static final int PER_AFI_ADJ_RIB_OUT_FIELD_NUMBER = 116;
+    private static final class PerAfiAdjRibOutDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>newDefaultInstance(
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_StatisticsReportPacket_PerAfiAdjRibOutEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance());
+    }
+    private com.google.protobuf.MapField<
+        java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiAdjRibOut_;
+    private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+    internalGetPerAfiAdjRibOut() {
+      if (perAfiAdjRibOut_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            PerAfiAdjRibOutDefaultEntryHolder.defaultEntry);
+      }
+      return perAfiAdjRibOut_;
+    }
+
+    public int getPerAfiAdjRibOutCount() {
+      return internalGetPerAfiAdjRibOut().getMap().size();
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+
+    public boolean containsPerAfiAdjRibOut(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      return internalGetPerAfiAdjRibOut().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getPerAfiAdjRibOutMap()} instead.
+     */
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiAdjRibOut() {
+      return getPerAfiAdjRibOutMap();
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+
+    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiAdjRibOutMap() {
+      return internalGetPerAfiAdjRibOut().getMap();
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiAdjRibOutOrDefault(
+        java.lang.String key,
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+          internalGetPerAfiAdjRibOut().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+     */
+
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiAdjRibOutOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+          internalGetPerAfiAdjRibOut().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    public static final int PER_AFI_EXPORT_RIB_FIELD_NUMBER = 117;
+    private static final class PerAfiExportRibDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>newDefaultInstance(
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_StatisticsReportPacket_PerAfiExportRibEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance());
+    }
+    private com.google.protobuf.MapField<
+        java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiExportRib_;
+    private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+    internalGetPerAfiExportRib() {
+      if (perAfiExportRib_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            PerAfiExportRibDefaultEntryHolder.defaultEntry);
+      }
+      return perAfiExportRib_;
+    }
+
+    public int getPerAfiExportRibCount() {
+      return internalGetPerAfiExportRib().getMap().size();
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+
+    public boolean containsPerAfiExportRib(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      return internalGetPerAfiExportRib().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getPerAfiExportRibMap()} instead.
+     */
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiExportRib() {
+      return getPerAfiExportRibMap();
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+
+    public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiExportRibMap() {
+      return internalGetPerAfiExportRib().getMap();
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiExportRibOrDefault(
+        java.lang.String key,
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+          internalGetPerAfiExportRib().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+     */
+
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiExportRibOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+          internalGetPerAfiExportRib().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -27419,8 +28168,8 @@ public final class Transport {
       com.google.protobuf.GeneratedMessageV3
         .serializeStringMapTo(
           output,
-          internalGetPerAfiLocRib(),
-          PerAfiLocRibDefaultEntryHolder.defaultEntry,
+          internalGetPerAfiLocalRib(),
+          PerAfiLocalRibDefaultEntryHolder.defaultEntry,
           110);
       if (updateTreatAsWithdraw_ != null) {
         output.writeMessage(111, getUpdateTreatAsWithdraw());
@@ -27431,12 +28180,24 @@ public final class Transport {
       if (duplicateUpdate_ != null) {
         output.writeMessage(113, getDuplicateUpdate());
       }
-      if (locRib_ != null) {
-        output.writeMessage(114, getLocRib());
+      if (localRib_ != null) {
+        output.writeMessage(114, getLocalRib());
       }
       if (exportRib_ != null) {
         output.writeMessage(115, getExportRib());
       }
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetPerAfiAdjRibOut(),
+          PerAfiAdjRibOutDefaultEntryHolder.defaultEntry,
+          116);
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetPerAfiExportRib(),
+          PerAfiExportRibDefaultEntryHolder.defaultEntry,
+          117);
       unknownFields.writeTo(output);
     }
 
@@ -27497,14 +28258,14 @@ public final class Transport {
             .computeMessageSize(109, perAfiAdjRibIn__);
       }
       for (java.util.Map.Entry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> entry
-           : internalGetPerAfiLocRib().getMap().entrySet()) {
+           : internalGetPerAfiLocalRib().getMap().entrySet()) {
         com.google.protobuf.MapEntry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-        perAfiLocRib__ = PerAfiLocRibDefaultEntryHolder.defaultEntry.newBuilderForType()
+        perAfiLocalRib__ = PerAfiLocalRibDefaultEntryHolder.defaultEntry.newBuilderForType()
             .setKey(entry.getKey())
             .setValue(entry.getValue())
             .build();
         size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(110, perAfiLocRib__);
+            .computeMessageSize(110, perAfiLocalRib__);
       }
       if (updateTreatAsWithdraw_ != null) {
         size += com.google.protobuf.CodedOutputStream
@@ -27518,13 +28279,33 @@ public final class Transport {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(113, getDuplicateUpdate());
       }
-      if (locRib_ != null) {
+      if (localRib_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(114, getLocRib());
+          .computeMessageSize(114, getLocalRib());
       }
       if (exportRib_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(115, getExportRib());
+      }
+      for (java.util.Map.Entry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> entry
+           : internalGetPerAfiAdjRibOut().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+        perAfiAdjRibOut__ = PerAfiAdjRibOutDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(116, perAfiAdjRibOut__);
+      }
+      for (java.util.Map.Entry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> entry
+           : internalGetPerAfiExportRib().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+        perAfiExportRib__ = PerAfiExportRibDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(117, perAfiExportRib__);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -27593,8 +28374,8 @@ public final class Transport {
       }
       if (!internalGetPerAfiAdjRibIn().equals(
           other.internalGetPerAfiAdjRibIn())) return false;
-      if (!internalGetPerAfiLocRib().equals(
-          other.internalGetPerAfiLocRib())) return false;
+      if (!internalGetPerAfiLocalRib().equals(
+          other.internalGetPerAfiLocalRib())) return false;
       if (hasUpdateTreatAsWithdraw() != other.hasUpdateTreatAsWithdraw()) return false;
       if (hasUpdateTreatAsWithdraw()) {
         if (!getUpdateTreatAsWithdraw()
@@ -27610,16 +28391,20 @@ public final class Transport {
         if (!getDuplicateUpdate()
             .equals(other.getDuplicateUpdate())) return false;
       }
-      if (hasLocRib() != other.hasLocRib()) return false;
-      if (hasLocRib()) {
-        if (!getLocRib()
-            .equals(other.getLocRib())) return false;
+      if (hasLocalRib() != other.hasLocalRib()) return false;
+      if (hasLocalRib()) {
+        if (!getLocalRib()
+            .equals(other.getLocalRib())) return false;
       }
       if (hasExportRib() != other.hasExportRib()) return false;
       if (hasExportRib()) {
         if (!getExportRib()
             .equals(other.getExportRib())) return false;
       }
+      if (!internalGetPerAfiAdjRibOut().equals(
+          other.internalGetPerAfiAdjRibOut())) return false;
+      if (!internalGetPerAfiExportRib().equals(
+          other.internalGetPerAfiExportRib())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -27675,9 +28460,9 @@ public final class Transport {
         hash = (37 * hash) + PER_AFI_ADJ_RIB_IN_FIELD_NUMBER;
         hash = (53 * hash) + internalGetPerAfiAdjRibIn().hashCode();
       }
-      if (!internalGetPerAfiLocRib().getMap().isEmpty()) {
-        hash = (37 * hash) + PER_AFI_LOC_RIB_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetPerAfiLocRib().hashCode();
+      if (!internalGetPerAfiLocalRib().getMap().isEmpty()) {
+        hash = (37 * hash) + PER_AFI_LOCAL_RIB_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetPerAfiLocalRib().hashCode();
       }
       if (hasUpdateTreatAsWithdraw()) {
         hash = (37 * hash) + UPDATE_TREAT_AS_WITHDRAW_FIELD_NUMBER;
@@ -27691,13 +28476,21 @@ public final class Transport {
         hash = (37 * hash) + DUPLICATE_UPDATE_FIELD_NUMBER;
         hash = (53 * hash) + getDuplicateUpdate().hashCode();
       }
-      if (hasLocRib()) {
-        hash = (37 * hash) + LOC_RIB_FIELD_NUMBER;
-        hash = (53 * hash) + getLocRib().hashCode();
+      if (hasLocalRib()) {
+        hash = (37 * hash) + LOCAL_RIB_FIELD_NUMBER;
+        hash = (53 * hash) + getLocalRib().hashCode();
       }
       if (hasExportRib()) {
         hash = (37 * hash) + EXPORT_RIB_FIELD_NUMBER;
         hash = (53 * hash) + getExportRib().hashCode();
+      }
+      if (!internalGetPerAfiAdjRibOut().getMap().isEmpty()) {
+        hash = (37 * hash) + PER_AFI_ADJ_RIB_OUT_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetPerAfiAdjRibOut().hashCode();
+      }
+      if (!internalGetPerAfiExportRib().getMap().isEmpty()) {
+        hash = (37 * hash) + PER_AFI_EXPORT_RIB_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetPerAfiExportRib().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -27813,7 +28606,11 @@ public final class Transport {
           case 109:
             return internalGetPerAfiAdjRibIn();
           case 110:
-            return internalGetPerAfiLocRib();
+            return internalGetPerAfiLocalRib();
+          case 116:
+            return internalGetPerAfiAdjRibOut();
+          case 117:
+            return internalGetPerAfiExportRib();
           default:
             throw new RuntimeException(
                 "Invalid map field number: " + number);
@@ -27826,7 +28623,11 @@ public final class Transport {
           case 109:
             return internalGetMutablePerAfiAdjRibIn();
           case 110:
-            return internalGetMutablePerAfiLocRib();
+            return internalGetMutablePerAfiLocalRib();
+          case 116:
+            return internalGetMutablePerAfiAdjRibOut();
+          case 117:
+            return internalGetMutablePerAfiExportRib();
           default:
             throw new RuntimeException(
                 "Invalid map field number: " + number);
@@ -27919,7 +28720,7 @@ public final class Transport {
           adjRibOutBuilder_ = null;
         }
         internalGetMutablePerAfiAdjRibIn().clear();
-        internalGetMutablePerAfiLocRib().clear();
+        internalGetMutablePerAfiLocalRib().clear();
         if (updateTreatAsWithdrawBuilder_ == null) {
           updateTreatAsWithdraw_ = null;
         } else {
@@ -27938,11 +28739,11 @@ public final class Transport {
           duplicateUpdate_ = null;
           duplicateUpdateBuilder_ = null;
         }
-        if (locRibBuilder_ == null) {
-          locRib_ = null;
+        if (localRibBuilder_ == null) {
+          localRib_ = null;
         } else {
-          locRib_ = null;
-          locRibBuilder_ = null;
+          localRib_ = null;
+          localRibBuilder_ = null;
         }
         if (exportRibBuilder_ == null) {
           exportRib_ = null;
@@ -27950,6 +28751,8 @@ public final class Transport {
           exportRib_ = null;
           exportRibBuilder_ = null;
         }
+        internalGetMutablePerAfiAdjRibOut().clear();
+        internalGetMutablePerAfiExportRib().clear();
         return this;
       }
 
@@ -28029,8 +28832,8 @@ public final class Transport {
         }
         result.perAfiAdjRibIn_ = internalGetPerAfiAdjRibIn();
         result.perAfiAdjRibIn_.makeImmutable();
-        result.perAfiLocRib_ = internalGetPerAfiLocRib();
-        result.perAfiLocRib_.makeImmutable();
+        result.perAfiLocalRib_ = internalGetPerAfiLocalRib();
+        result.perAfiLocalRib_.makeImmutable();
         if (updateTreatAsWithdrawBuilder_ == null) {
           result.updateTreatAsWithdraw_ = updateTreatAsWithdraw_;
         } else {
@@ -28046,16 +28849,20 @@ public final class Transport {
         } else {
           result.duplicateUpdate_ = duplicateUpdateBuilder_.build();
         }
-        if (locRibBuilder_ == null) {
-          result.locRib_ = locRib_;
+        if (localRibBuilder_ == null) {
+          result.localRib_ = localRib_;
         } else {
-          result.locRib_ = locRibBuilder_.build();
+          result.localRib_ = localRibBuilder_.build();
         }
         if (exportRibBuilder_ == null) {
           result.exportRib_ = exportRib_;
         } else {
           result.exportRib_ = exportRibBuilder_.build();
         }
+        result.perAfiAdjRibOut_ = internalGetPerAfiAdjRibOut();
+        result.perAfiAdjRibOut_.makeImmutable();
+        result.perAfiExportRib_ = internalGetPerAfiExportRib();
+        result.perAfiExportRib_.makeImmutable();
         onBuilt();
         return result;
       }
@@ -28136,8 +28943,8 @@ public final class Transport {
         }
         internalGetMutablePerAfiAdjRibIn().mergeFrom(
             other.internalGetPerAfiAdjRibIn());
-        internalGetMutablePerAfiLocRib().mergeFrom(
-            other.internalGetPerAfiLocRib());
+        internalGetMutablePerAfiLocalRib().mergeFrom(
+            other.internalGetPerAfiLocalRib());
         if (other.hasUpdateTreatAsWithdraw()) {
           mergeUpdateTreatAsWithdraw(other.getUpdateTreatAsWithdraw());
         }
@@ -28147,12 +28954,16 @@ public final class Transport {
         if (other.hasDuplicateUpdate()) {
           mergeDuplicateUpdate(other.getDuplicateUpdate());
         }
-        if (other.hasLocRib()) {
-          mergeLocRib(other.getLocRib());
+        if (other.hasLocalRib()) {
+          mergeLocalRib(other.getLocalRib());
         }
         if (other.hasExportRib()) {
           mergeExportRib(other.getExportRib());
         }
+        internalGetMutablePerAfiAdjRibOut().mergeFrom(
+            other.internalGetPerAfiAdjRibOut());
+        internalGetMutablePerAfiExportRib().mergeFrom(
+            other.internalGetPerAfiExportRib());
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -29497,94 +30308,94 @@ public final class Transport {
       }
 
       private com.google.protobuf.MapField<
-          java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiLocRib_;
+          java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiLocalRib_;
       private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-      internalGetPerAfiLocRib() {
-        if (perAfiLocRib_ == null) {
+      internalGetPerAfiLocalRib() {
+        if (perAfiLocalRib_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
-              PerAfiLocRibDefaultEntryHolder.defaultEntry);
+              PerAfiLocalRibDefaultEntryHolder.defaultEntry);
         }
-        return perAfiLocRib_;
+        return perAfiLocalRib_;
       }
       private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-      internalGetMutablePerAfiLocRib() {
+      internalGetMutablePerAfiLocalRib() {
         onChanged();;
-        if (perAfiLocRib_ == null) {
-          perAfiLocRib_ = com.google.protobuf.MapField.newMapField(
-              PerAfiLocRibDefaultEntryHolder.defaultEntry);
+        if (perAfiLocalRib_ == null) {
+          perAfiLocalRib_ = com.google.protobuf.MapField.newMapField(
+              PerAfiLocalRibDefaultEntryHolder.defaultEntry);
         }
-        if (!perAfiLocRib_.isMutable()) {
-          perAfiLocRib_ = perAfiLocRib_.copy();
+        if (!perAfiLocalRib_.isMutable()) {
+          perAfiLocalRib_ = perAfiLocalRib_.copy();
         }
-        return perAfiLocRib_;
+        return perAfiLocalRib_;
       }
 
-      public int getPerAfiLocRibCount() {
-        return internalGetPerAfiLocRib().getMap().size();
+      public int getPerAfiLocalRibCount() {
+        return internalGetPerAfiLocalRib().getMap().size();
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
 
-      public boolean containsPerAfiLocRib(
+      public boolean containsPerAfiLocalRib(
           java.lang.String key) {
         if (key == null) { throw new java.lang.NullPointerException(); }
-        return internalGetPerAfiLocRib().getMap().containsKey(key);
+        return internalGetPerAfiLocalRib().getMap().containsKey(key);
       }
       /**
-       * Use {@link #getPerAfiLocRibMap()} instead.
+       * Use {@link #getPerAfiLocalRibMap()} instead.
        */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocRib() {
-        return getPerAfiLocRibMap();
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocalRib() {
+        return getPerAfiLocalRibMap();
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
 
-      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocRibMap() {
-        return internalGetPerAfiLocRib().getMap();
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiLocalRibMap() {
+        return internalGetPerAfiLocalRib().getMap();
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
 
-      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocRibOrDefault(
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocalRibOrDefault(
           java.lang.String key,
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue) {
         if (key == null) { throw new java.lang.NullPointerException(); }
         java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
-            internalGetPerAfiLocRib().getMap();
+            internalGetPerAfiLocalRib().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
 
-      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocRibOrThrow(
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiLocalRibOrThrow(
           java.lang.String key) {
         if (key == null) { throw new java.lang.NullPointerException(); }
         java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
-            internalGetPerAfiLocRib().getMap();
+            internalGetPerAfiLocalRib().getMap();
         if (!map.containsKey(key)) {
           throw new java.lang.IllegalArgumentException();
         }
         return map.get(key);
       }
 
-      public Builder clearPerAfiLocRib() {
-        internalGetMutablePerAfiLocRib().getMutableMap()
+      public Builder clearPerAfiLocalRib() {
+        internalGetMutablePerAfiLocalRib().getMutableMap()
             .clear();
         return this;
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
 
-      public Builder removePerAfiLocRib(
+      public Builder removePerAfiLocalRib(
           java.lang.String key) {
         if (key == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutablePerAfiLocRib().getMutableMap()
+        internalGetMutablePerAfiLocalRib().getMutableMap()
             .remove(key);
         return this;
       }
@@ -29593,28 +30404,28 @@ public final class Transport {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
-      getMutablePerAfiLocRib() {
-        return internalGetMutablePerAfiLocRib().getMutableMap();
+      getMutablePerAfiLocalRib() {
+        return internalGetMutablePerAfiLocalRib().getMutableMap();
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
-      public Builder putPerAfiLocRib(
+      public Builder putPerAfiLocalRib(
           java.lang.String key,
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
         if (key == null) { throw new java.lang.NullPointerException(); }
         if (value == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutablePerAfiLocRib().getMutableMap()
+        internalGetMutablePerAfiLocalRib().getMutableMap()
             .put(key, value);
         return this;
       }
       /**
-       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_loc_rib = 110;</code>
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_local_rib = 110;</code>
        */
 
-      public Builder putAllPerAfiLocRib(
+      public Builder putAllPerAfiLocalRib(
           java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> values) {
-        internalGetMutablePerAfiLocRib().getMutableMap()
+        internalGetMutablePerAfiLocalRib().getMutableMap()
             .putAll(values);
         return this;
       }
@@ -29976,123 +30787,123 @@ public final class Transport {
         return duplicateUpdateBuilder_;
       }
 
-      private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge locRib_;
+      private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge localRib_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder> locRibBuilder_;
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder> localRibBuilder_;
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
-       * @return Whether the locRib field is set.
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
+       * @return Whether the localRib field is set.
        */
-      public boolean hasLocRib() {
-        return locRibBuilder_ != null || locRib_ != null;
+      public boolean hasLocalRib() {
+        return localRibBuilder_ != null || localRib_ != null;
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
-       * @return The locRib.
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
+       * @return The localRib.
        */
-      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getLocRib() {
-        if (locRibBuilder_ == null) {
-          return locRib_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance() : locRib_;
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getLocalRib() {
+        if (localRibBuilder_ == null) {
+          return localRib_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance() : localRib_;
         } else {
-          return locRibBuilder_.getMessage();
+          return localRibBuilder_.getMessage();
         }
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
-      public Builder setLocRib(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
-        if (locRibBuilder_ == null) {
+      public Builder setLocalRib(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
+        if (localRibBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          locRib_ = value;
+          localRib_ = value;
           onChanged();
         } else {
-          locRibBuilder_.setMessage(value);
+          localRibBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
-      public Builder setLocRib(
+      public Builder setLocalRib(
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder builderForValue) {
-        if (locRibBuilder_ == null) {
-          locRib_ = builderForValue.build();
+        if (localRibBuilder_ == null) {
+          localRib_ = builderForValue.build();
           onChanged();
         } else {
-          locRibBuilder_.setMessage(builderForValue.build());
+          localRibBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
-      public Builder mergeLocRib(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
-        if (locRibBuilder_ == null) {
-          if (locRib_ != null) {
-            locRib_ =
-              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.newBuilder(locRib_).mergeFrom(value).buildPartial();
+      public Builder mergeLocalRib(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
+        if (localRibBuilder_ == null) {
+          if (localRib_ != null) {
+            localRib_ =
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.newBuilder(localRib_).mergeFrom(value).buildPartial();
           } else {
-            locRib_ = value;
+            localRib_ = value;
           }
           onChanged();
         } else {
-          locRibBuilder_.mergeFrom(value);
+          localRibBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
-      public Builder clearLocRib() {
-        if (locRibBuilder_ == null) {
-          locRib_ = null;
+      public Builder clearLocalRib() {
+        if (localRibBuilder_ == null) {
+          localRib_ = null;
           onChanged();
         } else {
-          locRib_ = null;
-          locRibBuilder_ = null;
+          localRib_ = null;
+          localRibBuilder_ = null;
         }
 
         return this;
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
-      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder getLocRibBuilder() {
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder getLocalRibBuilder() {
         
         onChanged();
-        return getLocRibFieldBuilder().getBuilder();
+        return getLocalRibFieldBuilder().getBuilder();
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
-      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getLocRibOrBuilder() {
-        if (locRibBuilder_ != null) {
-          return locRibBuilder_.getMessageOrBuilder();
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder getLocalRibOrBuilder() {
+        if (localRibBuilder_ != null) {
+          return localRibBuilder_.getMessageOrBuilder();
         } else {
-          return locRib_ == null ?
-              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance() : locRib_;
+          return localRib_ == null ?
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.getDefaultInstance() : localRib_;
         }
       }
       /**
-       * <code>.StatisticsReportPacket.Gauge loc_rib = 114;</code>
+       * <code>.StatisticsReportPacket.Gauge local_rib = 114;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder> 
-          getLocRibFieldBuilder() {
-        if (locRibBuilder_ == null) {
-          locRibBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getLocalRibFieldBuilder() {
+        if (localRibBuilder_ == null) {
+          localRibBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.GaugeOrBuilder>(
-                  getLocRib(),
+                  getLocalRib(),
                   getParentForChildren(),
                   isClean());
-          locRib_ = null;
+          localRib_ = null;
         }
-        return locRibBuilder_;
+        return localRibBuilder_;
       }
 
       private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge exportRib_;
@@ -30212,6 +31023,252 @@ public final class Transport {
           exportRib_ = null;
         }
         return exportRibBuilder_;
+      }
+
+      private com.google.protobuf.MapField<
+          java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiAdjRibOut_;
+      private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+      internalGetPerAfiAdjRibOut() {
+        if (perAfiAdjRibOut_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              PerAfiAdjRibOutDefaultEntryHolder.defaultEntry);
+        }
+        return perAfiAdjRibOut_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+      internalGetMutablePerAfiAdjRibOut() {
+        onChanged();;
+        if (perAfiAdjRibOut_ == null) {
+          perAfiAdjRibOut_ = com.google.protobuf.MapField.newMapField(
+              PerAfiAdjRibOutDefaultEntryHolder.defaultEntry);
+        }
+        if (!perAfiAdjRibOut_.isMutable()) {
+          perAfiAdjRibOut_ = perAfiAdjRibOut_.copy();
+        }
+        return perAfiAdjRibOut_;
+      }
+
+      public int getPerAfiAdjRibOutCount() {
+        return internalGetPerAfiAdjRibOut().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+
+      public boolean containsPerAfiAdjRibOut(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetPerAfiAdjRibOut().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getPerAfiAdjRibOutMap()} instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiAdjRibOut() {
+        return getPerAfiAdjRibOutMap();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiAdjRibOutMap() {
+        return internalGetPerAfiAdjRibOut().getMap();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiAdjRibOutOrDefault(
+          java.lang.String key,
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+            internalGetPerAfiAdjRibOut().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiAdjRibOutOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+            internalGetPerAfiAdjRibOut().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearPerAfiAdjRibOut() {
+        internalGetMutablePerAfiAdjRibOut().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+
+      public Builder removePerAfiAdjRibOut(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutablePerAfiAdjRibOut().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+      getMutablePerAfiAdjRibOut() {
+        return internalGetMutablePerAfiAdjRibOut().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+      public Builder putPerAfiAdjRibOut(
+          java.lang.String key,
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (value == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutablePerAfiAdjRibOut().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_adj_rib_out = 116;</code>
+       */
+
+      public Builder putAllPerAfiAdjRibOut(
+          java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> values) {
+        internalGetMutablePerAfiAdjRibOut().getMutableMap()
+            .putAll(values);
+        return this;
+      }
+
+      private com.google.protobuf.MapField<
+          java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> perAfiExportRib_;
+      private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+      internalGetPerAfiExportRib() {
+        if (perAfiExportRib_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              PerAfiExportRibDefaultEntryHolder.defaultEntry);
+        }
+        return perAfiExportRib_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+      internalGetMutablePerAfiExportRib() {
+        onChanged();;
+        if (perAfiExportRib_ == null) {
+          perAfiExportRib_ = com.google.protobuf.MapField.newMapField(
+              PerAfiExportRibDefaultEntryHolder.defaultEntry);
+        }
+        if (!perAfiExportRib_.isMutable()) {
+          perAfiExportRib_ = perAfiExportRib_.copy();
+        }
+        return perAfiExportRib_;
+      }
+
+      public int getPerAfiExportRibCount() {
+        return internalGetPerAfiExportRib().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+
+      public boolean containsPerAfiExportRib(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetPerAfiExportRib().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getPerAfiExportRibMap()} instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiExportRib() {
+        return getPerAfiExportRibMap();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> getPerAfiExportRibMap() {
+        return internalGetPerAfiExportRib().getMap();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiExportRibOrDefault(
+          java.lang.String key,
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+            internalGetPerAfiExportRib().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge getPerAfiExportRibOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> map =
+            internalGetPerAfiExportRib().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearPerAfiExportRib() {
+        internalGetMutablePerAfiExportRib().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+
+      public Builder removePerAfiExportRib(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutablePerAfiExportRib().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge>
+      getMutablePerAfiExportRib() {
+        return internalGetMutablePerAfiExportRib().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+      public Builder putPerAfiExportRib(
+          java.lang.String key,
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (value == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutablePerAfiExportRib().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, .StatisticsReportPacket.Gauge&gt; per_afi_export_rib = 117;</code>
+       */
+
+      public Builder putAllPerAfiExportRib(
+          java.util.Map<java.lang.String, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.StatisticsReportPacket.Gauge> values) {
+        internalGetMutablePerAfiExportRib().getMutableMap()
+            .putAll(values);
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -33550,10 +34607,20 @@ public final class Transport {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_StatisticsReportPacket_PerAfiAdjRibInEntry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_StatisticsReportPacket_PerAfiLocRibEntry_descriptor;
+    internal_static_StatisticsReportPacket_PerAfiLocalRibEntry_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_StatisticsReportPacket_PerAfiLocRibEntry_fieldAccessorTable;
+      internal_static_StatisticsReportPacket_PerAfiLocalRibEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_StatisticsReportPacket_PerAfiAdjRibOutEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_StatisticsReportPacket_PerAfiAdjRibOutEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_StatisticsReportPacket_PerAfiExportRibEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_StatisticsReportPacket_PerAfiExportRibEntry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Heartbeat_descriptor;
   private static final 
@@ -33576,145 +34643,154 @@ public final class Transport {
       "\n\017transport.proto\032\033google/protobuf/empty" +
       ".proto\032\037google/protobuf/timestamp.proto\"" +
       "2\n\tIpAddress\022\014\n\002v4\030\001 \001(\014H\000\022\014\n\002v6\030\002 \001(\014H\000" +
-      "B\t\n\007address\"\304\003\n\004Peer\022\030\n\004type\030\001 \001(\0162\n.Pee" +
+      "B\t\n\007address\"\323\003\n\004Peer\022\030\n\004type\030\001 \001(\0162\n.Pee" +
       "r.Type\022\032\n\005flags\030\002 \001(\0132\013.Peer.Flags\022\025\n\rdi" +
       "stinguisher\030\003 \001(\006\022\033\n\007address\030\004 \001(\0132\n.IpA" +
       "ddress\022\n\n\002as\030\005 \001(\007\022\026\n\002id\030\006 \001(\0132\n.IpAddre" +
       "ss\022-\n\ttimestamp\030\007 \001(\0132\032.google.protobuf." +
-      "Timestamp\032\274\001\n\005Flags\022)\n\nip_version\030\001 \001(\0162" +
+      "Timestamp\032\313\001\n\005Flags\022)\n\nip_version\030\001 \001(\0162" +
       "\025.Peer.Flags.IpVersion\022\"\n\006policy\030\002 \001(\0162\022" +
       ".Peer.Flags.Policy\022\026\n\016legacy_as_path\030\003 \001" +
-      "(\010\"!\n\tIpVersion\022\t\n\005IP_V4\020\000\022\t\n\005IP_V6\020\001\")\n" +
-      "\006Policy\022\016\n\nPRE_POLICY\020\000\022\017\n\013POST_POLICY\020\001" +
-      "\"@\n\004Type\022\023\n\017GLOBAL_INSTANCE\020\000\022\017\n\013RD_INST" +
-      "ANCE\020\001\022\022\n\016LOCAL_INSTANCE\020\002\"b\n\020Initiation" +
-      "Packet\022\020\n\010sys_name\030\001 \001(\t\022\020\n\010sys_desc\030\002 \001" +
-      "(\t\022\017\n\007message\030\003 \001(\t\022\031\n\005bgpId\030\004 \001(\0132\n.IpA" +
-      "ddress\"]\n\021TerminationPacket\022\017\n\007message\030\001" +
-      " \001(\t\022\016\n\006reason\030\002 \001(\r\022\'\n\007unknown\030\003 \001(\0132\026." +
-      "google.protobuf.Empty\"\325\002\n\014PeerUpPacket\022\023" +
-      "\n\004peer\030\001 \001(\0132\005.Peer\022!\n\rlocal_address\030\002 \001" +
-      "(\0132\n.IpAddress\022\022\n\nlocal_port\030\003 \001(\r\022\023\n\013re" +
-      "mote_port\030\004 \001(\r\022+\n\010send_msg\030\005 \001(\0132\031.Peer" +
-      "UpPacket.OpenMessage\022+\n\010recv_msg\030\006 \001(\0132\031" +
-      ".PeerUpPacket.OpenMessage\022\020\n\010sys_name\030\007 " +
-      "\001(\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t \001(\t\032U" +
-      "\n\013OpenMessage\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002 \001" +
-      "(\007\022\021\n\thold_time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.IpAd" +
-      "dress\"\315\002\n\016PeerDownPacket\022\023\n\004peer\030\001 \001(\0132\005" +
-      ".Peer\0226\n\026local_bgp_notification\030\002 \001(\0132\024." +
-      "PeerDownPacket.CodeH\000\022\037\n\025local_no_notifi" +
-      "cation\030\003 \001(\rH\000\0227\n\027remote_bgp_notificatio" +
-      "n\030\004 \001(\0132\024.PeerDownPacket.CodeH\000\0228\n\026remot" +
-      "e_no_notification\030\005 \001(\0132\026.google.protobu" +
-      "f.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.prot" +
-      "obuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007su" +
-      "bcode\030\002 \001(\rB\010\n\006reason\"\377\021\n\025RouteMonitorin" +
-      "gPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdraw" +
-      "s\030\002 \003(\0132\034.RouteMonitoringPacket.Route\0220\n" +
-      "\nreachables\030\003 \003(\0132\034.RouteMonitoringPacke" +
-      "t.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMonit" +
-      "oringPacket.PathAttribute\0323\n\005Route\022\032\n\006pr" +
-      "efix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\032\376" +
-      "\017\n\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntr" +
-      "ansitive\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010exten" +
-      "ded\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitor" +
-      "ingPacket.PathAttribute.OriginH\000\022>\n\007as_p" +
-      "ath\030\006 \001(\0132+.RouteMonitoringPacket.PathAt" +
-      "tribute.AsPathH\000\022@\n\010next_hop\030\007 \001(\0132,.Rou" +
-      "teMonitoringPacket.PathAttribute.NextHop" +
-      "H\000\022M\n\017multi_exit_disc\030\010 \001(\01322.RouteMonit" +
-      "oringPacket.PathAttribute.MultiExitDiscH" +
-      "\000\022D\n\nlocal_pref\030\t \001(\0132..RouteMonitoringP" +
-      "acket.PathAttribute.LocalPrefH\000\022P\n\020atomi" +
-      "c_aggregate\030\n \001(\01324.RouteMonitoringPacke" +
-      "t.PathAttribute.AtomicAggregateH\000\022E\n\nagg" +
-      "regator\030\013 \001(\0132/.RouteMonitoringPacket.Pa" +
-      "thAttribute.AggregatorH\000\022\023\n\tcommunity\030\014 " +
-      "\001(\rH\000\022\027\n\roriginator_id\030\r \001(\rH\000\022H\n\014cluste" +
-      "r_list\030\016 \001(\01320.RouteMonitoringPacket.Pat" +
-      "hAttribute.ClusterListH\000\022X\n\024extended_com" +
-      "munities\030\017 \001(\01328.RouteMonitoringPacket.P" +
-      "athAttribute.ExtendedCommunitiesH\000\022\023\n\tco" +
-      "nnector\030\020 \001(\007H\000\022I\n\ras_path_limit\030\021 \001(\01320" +
-      ".RouteMonitoringPacket.PathAttribute.AsP" +
-      "athLimitH\000\022R\n\021large_communities\030\022 \001(\01325." +
-      "RouteMonitoringPacket.PathAttribute.Larg" +
-      "eCommunitiesH\000\022@\n\010attr_set\030\023 \001(\0132,.Route" +
-      "MonitoringPacket.PathAttribute.AttrSetH\000" +
-      "\032\327\001\n\006AsPath\022E\n\010segments\030\001 \003(\01323.RouteMon" +
-      "itoringPacket.PathAttribute.AsPath.Segme" +
-      "nt\032\205\001\n\007Segment\022F\n\004type\030\001 \001(\01628.RouteMoni" +
-      "toringPacket.PathAttribute.AsPath.Segmen" +
-      "t.Type\022\r\n\005paths\030\002 \003(\007\"#\n\004Type\022\n\n\006AS_SET\020" +
-      "\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007NextHop\022\033\n\007address" +
-      "\030\001 \001(\0132\n.IpAddress\032&\n\rMultiExitDisc\022\025\n\rd" +
-      "iscriminator\030\001 \001(\r\032\037\n\tLocalPref\022\022\n\nprefe" +
-      "rence\030\001 \001(\r\032\021\n\017AtomicAggregate\0325\n\nAggreg" +
-      "ator\022\n\n\002as\030\001 \001(\007\022\033\n\007address\030\002 \001(\0132\n.IpAd" +
-      "dress\032-\n\013ClusterList\022\036\n\ncluster_id\030\001 \003(\013" +
-      "2\n.IpAddress\032k\n\023ExtendedCommunities\022T\n\024e" +
-      "xtended_communities\030\001 \003(\01326.RouteMonitor" +
-      "ingPacket.PathAttribute.ExtendedCommunit" +
-      "y\0320\n\021ExtendedCommunity\022\014\n\004type\030\001 \001(\007\022\r\n\005" +
-      "value\030\002 \001(\014\032.\n\013AsPathLimit\022\023\n\013upper_boun" +
-      "d\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020LargeCommunities\022" +
-      "N\n\021large_communities\030\001 \003(\01323.RouteMonito" +
-      "ringPacket.PathAttribute.LargeCommunity\032" +
-      "d\n\016LargeCommunity\022\034\n\024global_administrato" +
-      "r\030\001 \001(\r\022\031\n\021local_data_part_1\030\002 \001(\r\022\031\n\021lo" +
-      "cal_data_part_2\030\003 \001(\r\032[\n\007AttrSet\022\021\n\torig" +
-      "in_as\030\001 \001(\r\022=\n\017path_attributes\030\002 \003(\0132$.R" +
-      "outeMonitoringPacket.PathAttribute\"*\n\006Or" +
-      "igin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007" +
-      "\n\005value\"\210\n\n\026StatisticsReportPacket\022\023\n\004pe" +
-      "er\030\001 \001(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.Stat" +
-      "isticsReportPacket.Counter\0229\n\020duplicate_" +
-      "prefix\030e \001(\0132\037.StatisticsReportPacket.Co" +
-      "unter\022;\n\022duplicate_withdraw\030f \001(\0132\037.Stat" +
-      "isticsReportPacket.Counter\022M\n$invalid_up" +
-      "date_due_to_as_confed_loop\030g \001(\0132\037.Stati" +
-      "sticsReportPacket.Counter\022K\n\"invalid_upd" +
-      "ate_due_to_as_path_loop\030h \001(\0132\037.Statisti" +
-      "csReportPacket.Counter\022P\n\'invalid_update" +
-      "_due_to_cluster_list_loop\030i \001(\0132\037.Statis" +
-      "ticsReportPacket.Counter\022L\n#invalid_upda" +
-      "te_due_to_originator_id\030j \001(\0132\037.Statisti" +
-      "csReportPacket.Counter\0221\n\nadj_rib_in\030k \001" +
-      "(\0132\035.StatisticsReportPacket.Gauge\0222\n\013adj" +
-      "_rib_out\030l \001(\0132\035.StatisticsReportPacket." +
-      "Gauge\022G\n\022per_afi_adj_rib_in\030m \003(\0132+.Stat" +
-      "isticsReportPacket.PerAfiAdjRibInEntry\022B" +
-      "\n\017per_afi_loc_rib\030n \003(\0132).StatisticsRepo" +
-      "rtPacket.PerAfiLocRibEntry\022A\n\030update_tre" +
-      "at_as_withdraw\030o \001(\0132\037.StatisticsReportP" +
-      "acket.Counter\022A\n\030prefix_treat_as_withdra" +
-      "w\030p \001(\0132\037.StatisticsReportPacket.Counter" +
-      "\0229\n\020duplicate_update\030q \001(\0132\037.StatisticsR" +
-      "eportPacket.Counter\022.\n\007loc_rib\030r \001(\0132\035.S" +
-      "tatisticsReportPacket.Gauge\0221\n\nexport_ri" +
-      "b\030s \001(\0132\035.StatisticsReportPacket.Gauge\032\026" +
-      "\n\005Gauge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005cou" +
-      "nt\030\001 \001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001" +
-      " \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportPa" +
-      "cket.Gauge:\0028\001\032R\n\021PerAfiLocRibEntry\022\013\n\003k" +
-      "ey\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsRepo" +
-      "rtPacket.Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n\004mode" +
-      "\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007routers\030\002 \003(\013" +
-      "2\n.IpAddress\":\n\004Mode\022\013\n\007STARTED\020\000\022\n\n\006CHA" +
-      "NGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\365\002\n\007Mes" +
-      "sage\022\017\n\007version\030\001 \001(\r\022\'\n\ninitiation\030\005 \001(" +
-      "\0132\021.InitiationPacketH\000\022)\n\013termination\030\006 " +
-      "\001(\0132\022.TerminationPacketH\000\022 \n\007peer_up\030\007 \001" +
-      "(\0132\r.PeerUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017" +
-      ".PeerDownPacketH\000\0222\n\020route_monitoring\030\t " +
-      "\001(\0132\026.RouteMonitoringPacketH\000\0224\n\021statist" +
-      "ics_report\030\n \001(\0132\027.StatisticsReportPacke" +
-      "tH\000\022\037\n\theartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006" +
-      "packetJ\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r" +
-      "\020\016J\004\010\016\020\017BA\n4org.opennms.netmgt.telemetry" +
-      ".protocols.bmp.transportB\tTransportP\000P\001b" +
-      "\006proto3"
+      "(\010\022\r\n\005adjIn\030\004 \001(\010\"!\n\tIpVersion\022\t\n\005IP_V4\020" +
+      "\000\022\t\n\005IP_V6\020\001\")\n\006Policy\022\016\n\nPRE_POLICY\020\000\022\017" +
+      "\n\013POST_POLICY\020\001\"@\n\004Type\022\023\n\017GLOBAL_INSTAN" +
+      "CE\020\000\022\017\n\013RD_INSTANCE\020\001\022\022\n\016LOCAL_INSTANCE\020" +
+      "\002\"y\n\020InitiationPacket\022\020\n\010sys_name\030\001 \001(\t\022" +
+      "\020\n\010sys_desc\030\002 \003(\t\022\017\n\007message\030\003 \003(\t\022\023\n\013ad" +
+      "min_label\030\004 \003(\t\022\033\n\005bgpId\030\373\377\003 \001(\0132\n.IpAdd" +
+      "ress\"]\n\021TerminationPacket\022\017\n\007message\030\001 \003" +
+      "(\t\022\016\n\006reason\030\002 \001(\r\022\'\n\007unknown\030\003 \001(\0132\026.go" +
+      "ogle.protobuf.Empty\"\325\002\n\014PeerUpPacket\022\023\n\004" +
+      "peer\030\001 \001(\0132\005.Peer\022!\n\rlocal_address\030\002 \001(\013" +
+      "2\n.IpAddress\022\022\n\nlocal_port\030\003 \001(\r\022\023\n\013remo" +
+      "te_port\030\004 \001(\r\022+\n\010send_msg\030\005 \001(\0132\031.PeerUp" +
+      "Packet.OpenMessage\022+\n\010recv_msg\030\006 \001(\0132\031.P" +
+      "eerUpPacket.OpenMessage\022\020\n\010sys_name\030\007 \001(" +
+      "\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t \001(\t\032U\n\013" +
+      "OpenMessage\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002 \001(\007" +
+      "\022\021\n\thold_time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.IpAddr" +
+      "ess\"\315\002\n\016PeerDownPacket\022\023\n\004peer\030\001 \001(\0132\005.P" +
+      "eer\0226\n\026local_bgp_notification\030\002 \001(\0132\024.Pe" +
+      "erDownPacket.CodeH\000\022\037\n\025local_no_notifica" +
+      "tion\030\003 \001(\rH\000\0227\n\027remote_bgp_notification\030" +
+      "\004 \001(\0132\024.PeerDownPacket.CodeH\000\0228\n\026remote_" +
+      "no_notification\030\005 \001(\0132\026.google.protobuf." +
+      "EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.protob" +
+      "uf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007subc" +
+      "ode\030\002 \001(\rB\010\n\006reason\"\377\021\n\025RouteMonitoringP" +
+      "acket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdraws\030" +
+      "\002 \003(\0132\034.RouteMonitoringPacket.Route\0220\n\nr" +
+      "eachables\030\003 \003(\0132\034.RouteMonitoringPacket." +
+      "Route\0228\n\nattributes\030\004 \003(\0132$.RouteMonitor" +
+      "ingPacket.PathAttribute\0323\n\005Route\022\032\n\006pref" +
+      "ix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\032\376\017\n" +
+      "\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntran" +
+      "sitive\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010extende" +
+      "d\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitorin" +
+      "gPacket.PathAttribute.OriginH\000\022>\n\007as_pat" +
+      "h\030\006 \001(\0132+.RouteMonitoringPacket.PathAttr" +
+      "ibute.AsPathH\000\022@\n\010next_hop\030\007 \001(\0132,.Route" +
+      "MonitoringPacket.PathAttribute.NextHopH\000" +
+      "\022M\n\017multi_exit_disc\030\010 \001(\01322.RouteMonitor" +
+      "ingPacket.PathAttribute.MultiExitDiscH\000\022" +
+      "D\n\nlocal_pref\030\t \001(\0132..RouteMonitoringPac" +
+      "ket.PathAttribute.LocalPrefH\000\022P\n\020atomic_" +
+      "aggregate\030\n \001(\01324.RouteMonitoringPacket." +
+      "PathAttribute.AtomicAggregateH\000\022E\n\naggre" +
+      "gator\030\013 \001(\0132/.RouteMonitoringPacket.Path" +
+      "Attribute.AggregatorH\000\022\023\n\tcommunity\030\014 \001(" +
+      "\rH\000\022\027\n\roriginator_id\030\r \001(\rH\000\022H\n\014cluster_" +
+      "list\030\016 \001(\01320.RouteMonitoringPacket.PathA" +
+      "ttribute.ClusterListH\000\022X\n\024extended_commu" +
+      "nities\030\017 \001(\01328.RouteMonitoringPacket.Pat" +
+      "hAttribute.ExtendedCommunitiesH\000\022\023\n\tconn" +
+      "ector\030\020 \001(\007H\000\022I\n\ras_path_limit\030\021 \001(\01320.R" +
+      "outeMonitoringPacket.PathAttribute.AsPat" +
+      "hLimitH\000\022R\n\021large_communities\030\022 \001(\01325.Ro" +
+      "uteMonitoringPacket.PathAttribute.LargeC" +
+      "ommunitiesH\000\022@\n\010attr_set\030\023 \001(\0132,.RouteMo" +
+      "nitoringPacket.PathAttribute.AttrSetH\000\032\327" +
+      "\001\n\006AsPath\022E\n\010segments\030\001 \003(\01323.RouteMonit" +
+      "oringPacket.PathAttribute.AsPath.Segment" +
+      "\032\205\001\n\007Segment\022F\n\004type\030\001 \001(\01628.RouteMonito" +
+      "ringPacket.PathAttribute.AsPath.Segment." +
+      "Type\022\r\n\005paths\030\002 \003(\007\"#\n\004Type\022\n\n\006AS_SET\020\000\022" +
+      "\017\n\013AS_SEQUENCE\020\001\032&\n\007NextHop\022\033\n\007address\030\001" +
+      " \001(\0132\n.IpAddress\032&\n\rMultiExitDisc\022\025\n\rdis" +
+      "criminator\030\001 \001(\r\032\037\n\tLocalPref\022\022\n\nprefere" +
+      "nce\030\001 \001(\r\032\021\n\017AtomicAggregate\0325\n\nAggregat" +
+      "or\022\n\n\002as\030\001 \001(\007\022\033\n\007address\030\002 \001(\0132\n.IpAddr" +
+      "ess\032-\n\013ClusterList\022\036\n\ncluster_id\030\001 \003(\0132\n" +
+      ".IpAddress\032k\n\023ExtendedCommunities\022T\n\024ext" +
+      "ended_communities\030\001 \003(\01326.RouteMonitorin" +
+      "gPacket.PathAttribute.ExtendedCommunity\032" +
+      "0\n\021ExtendedCommunity\022\014\n\004type\030\001 \001(\007\022\r\n\005va" +
+      "lue\030\002 \001(\014\032.\n\013AsPathLimit\022\023\n\013upper_bound\030" +
+      "\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020LargeCommunities\022N\n" +
+      "\021large_communities\030\001 \003(\01323.RouteMonitori" +
+      "ngPacket.PathAttribute.LargeCommunity\032d\n" +
+      "\016LargeCommunity\022\034\n\024global_administrator\030" +
+      "\001 \001(\r\022\031\n\021local_data_part_1\030\002 \001(\r\022\031\n\021loca" +
+      "l_data_part_2\030\003 \001(\r\032[\n\007AttrSet\022\021\n\torigin" +
+      "_as\030\001 \001(\r\022=\n\017path_attributes\030\002 \003(\0132$.Rou" +
+      "teMonitoringPacket.PathAttribute\"*\n\006Orig" +
+      "in\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005" +
+      "value\"\323\014\n\026StatisticsReportPacket\022\023\n\004peer" +
+      "\030\001 \001(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.Statis" +
+      "ticsReportPacket.Counter\0229\n\020duplicate_pr" +
+      "efix\030e \001(\0132\037.StatisticsReportPacket.Coun" +
+      "ter\022;\n\022duplicate_withdraw\030f \001(\0132\037.Statis" +
+      "ticsReportPacket.Counter\022M\n$invalid_upda" +
+      "te_due_to_as_confed_loop\030g \001(\0132\037.Statist" +
+      "icsReportPacket.Counter\022K\n\"invalid_updat" +
+      "e_due_to_as_path_loop\030h \001(\0132\037.Statistics" +
+      "ReportPacket.Counter\022P\n\'invalid_update_d" +
+      "ue_to_cluster_list_loop\030i \001(\0132\037.Statisti" +
+      "csReportPacket.Counter\022L\n#invalid_update" +
+      "_due_to_originator_id\030j \001(\0132\037.Statistics" +
+      "ReportPacket.Counter\0221\n\nadj_rib_in\030k \001(\013" +
+      "2\035.StatisticsReportPacket.Gauge\0222\n\013adj_r" +
+      "ib_out\030l \001(\0132\035.StatisticsReportPacket.Ga" +
+      "uge\022G\n\022per_afi_adj_rib_in\030m \003(\0132+.Statis" +
+      "ticsReportPacket.PerAfiAdjRibInEntry\022F\n\021" +
+      "per_afi_local_rib\030n \003(\0132+.StatisticsRepo" +
+      "rtPacket.PerAfiLocalRibEntry\022A\n\030update_t" +
+      "reat_as_withdraw\030o \001(\0132\037.StatisticsRepor" +
+      "tPacket.Counter\022A\n\030prefix_treat_as_withd" +
+      "raw\030p \001(\0132\037.StatisticsReportPacket.Count" +
+      "er\0229\n\020duplicate_update\030q \001(\0132\037.Statistic" +
+      "sReportPacket.Counter\0220\n\tlocal_rib\030r \001(\013" +
+      "2\035.StatisticsReportPacket.Gauge\0221\n\nexpor" +
+      "t_rib\030s \001(\0132\035.StatisticsReportPacket.Gau" +
+      "ge\022I\n\023per_afi_adj_rib_out\030t \003(\0132,.Statis" +
+      "ticsReportPacket.PerAfiAdjRibOutEntry\022H\n" +
+      "\022per_afi_export_rib\030u \003(\0132,.StatisticsRe" +
+      "portPacket.PerAfiExportRibEntry\032\026\n\005Gauge" +
+      "\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 \001(" +
+      "\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022,\n" +
+      "\005value\030\002 \001(\0132\035.StatisticsReportPacket.Ga" +
+      "uge:\0028\001\032T\n\023PerAfiLocalRibEntry\022\013\n\003key\030\001 " +
+      "\001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportPac" +
+      "ket.Gauge:\0028\001\032U\n\024PerAfiAdjRibOutEntry\022\013\n" +
+      "\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsRe" +
+      "portPacket.Gauge:\0028\001\032U\n\024PerAfiExportRibE" +
+      "ntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Stati" +
+      "sticsReportPacket.Gauge:\0028\001\"\203\001\n\tHeartbea" +
+      "t\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007rout" +
+      "ers\030\002 \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007STARTED" +
+      "\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020" +
+      "\003\"\365\002\n\007Message\022\017\n\007version\030\001 \001(\r\022\'\n\ninitia" +
+      "tion\030\005 \001(\0132\021.InitiationPacketH\000\022)\n\013termi" +
+      "nation\030\006 \001(\0132\022.TerminationPacketH\000\022 \n\007pe" +
+      "er_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n\tpeer_dow" +
+      "n\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020route_moni" +
+      "toring\030\t \001(\0132\026.RouteMonitoringPacketH\000\0224" +
+      "\n\021statistics_report\030\n \001(\0132\027.StatisticsRe" +
+      "portPacketH\000\022\037\n\theartbeat\030\017 \001(\0132\n.Heartb" +
+      "eatH\000B\010\n\006packetJ\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J" +
+      "\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.opennms.netmgt." +
+      "telemetry.protocols.bmp.transportB\tTrans" +
+      "portP\000P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -33739,13 +34815,13 @@ public final class Transport {
     internal_static_Peer_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Peer_Flags_descriptor,
-        new java.lang.String[] { "IpVersion", "Policy", "LegacyAsPath", });
+        new java.lang.String[] { "IpVersion", "Policy", "LegacyAsPath", "AdjIn", });
     internal_static_InitiationPacket_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_InitiationPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_InitiationPacket_descriptor,
-        new java.lang.String[] { "SysName", "SysDesc", "Message", "BgpId", });
+        new java.lang.String[] { "SysName", "SysDesc", "Message", "AdminLabel", "BgpId", });
     internal_static_TerminationPacket_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_TerminationPacket_fieldAccessorTable = new
@@ -33883,7 +34959,7 @@ public final class Transport {
     internal_static_StatisticsReportPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StatisticsReportPacket_descriptor,
-        new java.lang.String[] { "Peer", "Rejected", "DuplicatePrefix", "DuplicateWithdraw", "InvalidUpdateDueToAsConfedLoop", "InvalidUpdateDueToAsPathLoop", "InvalidUpdateDueToClusterListLoop", "InvalidUpdateDueToOriginatorId", "AdjRibIn", "AdjRibOut", "PerAfiAdjRibIn", "PerAfiLocRib", "UpdateTreatAsWithdraw", "PrefixTreatAsWithdraw", "DuplicateUpdate", "LocRib", "ExportRib", });
+        new java.lang.String[] { "Peer", "Rejected", "DuplicatePrefix", "DuplicateWithdraw", "InvalidUpdateDueToAsConfedLoop", "InvalidUpdateDueToAsPathLoop", "InvalidUpdateDueToClusterListLoop", "InvalidUpdateDueToOriginatorId", "AdjRibIn", "AdjRibOut", "PerAfiAdjRibIn", "PerAfiLocalRib", "UpdateTreatAsWithdraw", "PrefixTreatAsWithdraw", "DuplicateUpdate", "LocalRib", "ExportRib", "PerAfiAdjRibOut", "PerAfiExportRib", });
     internal_static_StatisticsReportPacket_Gauge_descriptor =
       internal_static_StatisticsReportPacket_descriptor.getNestedTypes().get(0);
     internal_static_StatisticsReportPacket_Gauge_fieldAccessorTable = new
@@ -33902,11 +34978,23 @@ public final class Transport {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StatisticsReportPacket_PerAfiAdjRibInEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
-    internal_static_StatisticsReportPacket_PerAfiLocRibEntry_descriptor =
+    internal_static_StatisticsReportPacket_PerAfiLocalRibEntry_descriptor =
       internal_static_StatisticsReportPacket_descriptor.getNestedTypes().get(3);
-    internal_static_StatisticsReportPacket_PerAfiLocRibEntry_fieldAccessorTable = new
+    internal_static_StatisticsReportPacket_PerAfiLocalRibEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_StatisticsReportPacket_PerAfiLocRibEntry_descriptor,
+        internal_static_StatisticsReportPacket_PerAfiLocalRibEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
+    internal_static_StatisticsReportPacket_PerAfiAdjRibOutEntry_descriptor =
+      internal_static_StatisticsReportPacket_descriptor.getNestedTypes().get(4);
+    internal_static_StatisticsReportPacket_PerAfiAdjRibOutEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_StatisticsReportPacket_PerAfiAdjRibOutEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
+    internal_static_StatisticsReportPacket_PerAfiExportRibEntry_descriptor =
+      internal_static_StatisticsReportPacket_descriptor.getNestedTypes().get(5);
+    internal_static_StatisticsReportPacket_PerAfiExportRibEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_StatisticsReportPacket_PerAfiExportRibEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_Heartbeat_descriptor =
       getDescriptor().getMessageTypes().get(8);

@@ -93,10 +93,12 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToClusterListLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToOriginatorId;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Metric;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibIn;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibOut;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiExportRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
@@ -281,6 +283,7 @@ public class BmpParser implements TcpParser {
                 }
             }));
             flags.setLegacyAsPath(peerHeader.flags.legacyASPath);
+            flags.setAdjIn(peerHeader.flags.adjIn);
 
             peer.setDistinguisher(peerHeader.distinguisher.longValue());
             peer.setAddress(address(peerHeader.address));
@@ -299,10 +302,10 @@ public class BmpParser implements TcpParser {
             final Transport.InitiationPacket.Builder message = this.message.getInitiationBuilder();
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
                                                  .orElse(""));
-            message.setSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
-                                                 .collect(Collectors.joining("\n")));
-            message.setMessage(packet.information.all(InformationElement.Type.STRING)
-                                                 .collect(Collectors.joining("\n")));
+            message.addAllSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
+                                                    .collect(Collectors.toList()));
+            message.addAllMessage(packet.information.all(InformationElement.Type.STRING)
+                                                    .collect(Collectors.toList()));
             packet.information.first(InformationElement.Type.BGP_ID)
                     .map(addr -> address(InetAddressUtils.addr(addr)))
                     .ifPresent(message::setBgpId);
@@ -316,7 +319,7 @@ public class BmpParser implements TcpParser {
                 information.value.accept(new TerminationPacket.Information.Visitor() {
                     @Override
                     public void visit(TerminationPacket.StringInformation string) {
-                        message.setMessage(string.string);
+                        message.addMessage(string.string);
                     }
 
                     @Override
@@ -459,11 +462,11 @@ public class BmpParser implements TcpParser {
                     }
 
                     @Override
-                    public void visit(final PerAfiLocRib perAfiLocRib) {
-                        final String key = String.format("%d:%d", perAfiLocRib.afi, perAfiLocRib.safi);
-                        message.putPerAfiLocRib(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
-                                                                                           .setValue(perAfiLocRib.gauge.longValue())
-                                                                                           .build());
+                    public void visit(final PerAfiLocalRib perAfiLocalRib) {
+                        final String key = String.format("%d:%d", perAfiLocalRib.afi, perAfiLocalRib.safi);
+                        message.putPerAfiLocalRib(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
+                                                                                             .setValue(perAfiLocalRib.gauge.longValue())
+                                                                                             .build());
                     }
 
                     @Override
@@ -477,8 +480,8 @@ public class BmpParser implements TcpParser {
                     }
 
                     @Override
-                    public void visit(final LocRib locRib) {
-                        message.getLocRibBuilder().setValue(locRib.gauge.longValue());
+                    public void visit(final LocalRib localRib) {
+                        message.getLocalRibBuilder().setValue(localRib.gauge.longValue());
                     }
 
                     @Override
@@ -489,6 +492,22 @@ public class BmpParser implements TcpParser {
                     @Override
                     public void visit(final Rejected rejected) {
                         message.getRejectedBuilder().setCount((int) rejected.counter);
+                    }
+
+                    @Override
+                    public void visit(final PerAfiAdjRibOut perAfiAdjRibOut) {
+                        final String key = String.format("%d:%d", perAfiAdjRibOut.afi, perAfiAdjRibOut.safi);
+                        message.putPerAfiAdjRibOut(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
+                                                                                              .setValue(perAfiAdjRibOut.gauge.longValue())
+                                                                                              .build());
+                    }
+
+                    @Override
+                    public void visit(final PerAfiExportRib perAfiExportRib) {
+                        final String key = String.format("%d:%d", perAfiExportRib.afi, perAfiExportRib.safi);
+                        message.putPerAfiExportRib(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
+                                                                                              .setValue(perAfiExportRib.gauge.longValue())
+                                                                                              .build());
                     }
 
                     @Override

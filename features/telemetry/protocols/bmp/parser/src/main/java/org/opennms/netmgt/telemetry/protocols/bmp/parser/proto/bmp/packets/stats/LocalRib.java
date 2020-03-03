@@ -30,8 +30,8 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stat
 
 import io.netty.buffer.ByteBuf;
 
-public class LocRib extends Gauge {
-    public LocRib(final ByteBuf buffer) {
+public class LocalRib extends Gauge {
+    public LocalRib(final ByteBuf buffer) {
         super(buffer);
     }
 

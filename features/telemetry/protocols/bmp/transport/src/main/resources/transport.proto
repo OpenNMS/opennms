@@ -34,6 +34,7 @@ message Peer {
         IpVersion ip_version = 1;
         Policy policy = 2;
         bool legacy_as_path = 3;
+        bool adjIn = 4;
     }
 
     Type type = 1;
@@ -49,13 +50,14 @@ message Peer {
 
 message InitiationPacket {
     string sys_name = 1;
-    string sys_desc = 2;
-    string message = 3;
-    IpAddress bgpId = 4;
+    repeated string sys_desc = 2;
+    repeated string message = 3;
+    repeated string admin_label = 4;
+    IpAddress bgpId = 65531;
 }
 
 message TerminationPacket {
-    string message = 1;
+    repeated string message = 1;
     uint32 reason = 2;
     google.protobuf.Empty unknown = 3;
 }
@@ -232,12 +234,14 @@ message StatisticsReportPacket {
     Gauge adj_rib_in = 107;
     Gauge adj_rib_out = 108;
     map<string, Gauge> per_afi_adj_rib_in = 109;
-    map<string, Gauge> per_afi_loc_rib = 110;
+    map<string, Gauge> per_afi_local_rib = 110;
     Counter update_treat_as_withdraw = 111;
     Counter prefix_treat_as_withdraw = 112;
     Counter duplicate_update = 113;
-    Gauge loc_rib = 114;
+    Gauge local_rib = 114;
     Gauge export_rib = 115;
+    map<string, Gauge> per_afi_adj_rib_out = 116;
+    map<string, Gauge> per_afi_export_rib = 117;
 }
 
 message Heartbeat {

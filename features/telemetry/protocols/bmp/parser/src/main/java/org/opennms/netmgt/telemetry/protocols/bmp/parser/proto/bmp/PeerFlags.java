@@ -61,13 +61,15 @@ public class PeerFlags {
     }
 
     public final AddressVersion addressVersion;  // uint8 x0000000
-    public final Policy policy;             // ..... 0x000000
+    public final Policy policy;                  // ..... 0x000000
     public final boolean legacyASPath;           // ..... 00x00000
+    public final boolean adjIn;                  // ..... 000x0000
 
     public PeerFlags(final int flags) {
         this.addressVersion = ((flags >> 7 & 0x01) == 1) ? AddressVersion.IP_V6 : AddressVersion.IP_V4;
         this.policy = ((flags >> 6 & 0x01) == 1) ? Policy.POST_POLICY : Policy.PRE_POLICY;
         this.legacyASPath = (flags >> 5 & 0x01) == 1;
+        this.adjIn = (flags >> 4 & 0x01) == 1;
     }
 
     @Override
@@ -76,6 +78,7 @@ public class PeerFlags {
                 .add("addressVersion", this.addressVersion)
                 .add("policy", this.policy)
                 .add("legacyASPath", this.legacyASPath)
+                .add("adjIn", this.adjIn)
                 .toString();
     }
 

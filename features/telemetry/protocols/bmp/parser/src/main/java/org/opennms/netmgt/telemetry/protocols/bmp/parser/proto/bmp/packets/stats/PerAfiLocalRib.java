@@ -37,12 +37,12 @@ import com.google.common.primitives.UnsignedLong;
 
 import io.netty.buffer.ByteBuf;
 
-public class PerAfiLocRib implements Metric {
+public class PerAfiLocalRib implements Metric {
     public final int afi;            // uint16
     public final int safi;           // uint8
     public final UnsignedLong gauge; // uint64
 
-    public PerAfiLocRib(final ByteBuf buffer) {
+    public PerAfiLocalRib(final ByteBuf buffer) {
         this.afi = uint16(buffer);
         this.safi = uint8(buffer);
         this.gauge = uint64(buffer);

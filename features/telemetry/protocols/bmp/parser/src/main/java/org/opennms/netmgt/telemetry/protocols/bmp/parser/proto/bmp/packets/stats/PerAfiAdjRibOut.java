@@ -28,28 +28,37 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
 
-public interface Metric {
-    void accept(final Visitor visitor);
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-    interface Visitor {
-        void visit(final DuplicatePrefix duplicatePrefix);
-        void visit(final DuplicateWithdraw duplicateWithdraw);
-        void visit(final AdjRibIn adjRibIn);
-        void visit(final AdjRibOut adjRibOut);
-        void visit(final ExportRib exportRib);
-        void visit(final InvalidUpdateDueToAsConfedLoop invalidUpdateDueToAsConfedLoop);
-        void visit(final InvalidUpdateDueToAsPathLoop invalidUpdateDueToAsPathLoop);
-        void visit(final InvalidUpdateDueToClusterListLoop invalidUpdateDueToClusterListLoop);
-        void visit(final InvalidUpdateDueToOriginatorId invalidUpdateDueToOriginatorId);
-        void visit(final PerAfiAdjRibIn perAfiAdjRibIn);
-        void visit(final PerAfiLocalRib perAfiLocalRib);
-        void visit(final PrefixTreatAsWithdraw prefixTreatAsWithdraw);
-        void visit(final UpdateTreatAsWithdraw updateTreatAsWithdraw);
-        void visit(final LocalRib localRib);
-        void visit(final DuplicateUpdate duplicateUpdate);
-        void visit(final Rejected rejected);
-        void visit(final PerAfiAdjRibOut perAfiAdjRibOut);
-        void visit(final PerAfiExportRib perAfiExportRib);
-        void visit(final Unknown unknown);
+import com.google.common.base.MoreObjects;
+import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
+
+public class PerAfiAdjRibOut implements Metric {
+    public final int afi;            // uint16
+    public final int safi;           // uint8
+    public final UnsignedLong gauge; // uint64
+
+    public PerAfiAdjRibOut(final ByteBuf buffer) {
+        this.afi = uint16(buffer);
+        this.safi = uint8(buffer);
+        this.gauge = uint64(buffer);
+    }
+
+    @Override
+    public void accept(final Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("afi", this.afi)
+                .add("safi", this.safi)
+                .add("gauge", this.gauge)
+                .toString();
     }
 }

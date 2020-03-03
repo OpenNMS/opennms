@@ -50,10 +50,12 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToClusterListLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToOriginatorId;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Metric;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibIn;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibOut;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiExportRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Unknown;
@@ -96,14 +98,16 @@ public class StatisticsReportPacket implements Packet {
             INVALID_UPDATE_DUE_TO_ORIGINATOR_ID(InvalidUpdateDueToOriginatorId::new),
             INVALID_UPDATE_DUE_TO_AS_CONFED_LOOP(InvalidUpdateDueToAsConfedLoop::new),
             ADJ_RIB_IN(AdjRibIn::new),
-            LOC_RIB(LocRib::new),
+            LOCAL_RIB(LocalRib::new),
             PER_AFI_ADJ_RIB_IN(PerAfiAdjRibIn::new),
-            PER_AFI_LOC_RIB(PerAfiLocRib::new),
+            PER_AFI_LOCAL_RIB(PerAfiLocalRib::new),
             UPDATE_TREAT_AS_WITHDRAW(UpdateTreatAsWithdraw::new),
             PREFIX_TREAT_AS_WITHDRAW(PrefixTreatAsWithdraw::new),
             DUPLICATE_UPDATE(DuplicateUpdate::new),
             ADJ_RIB_OUT(AdjRibOut::new),
             EXPORT_RIB(ExportRib::new),
+            PER_AFI_ADJ_RIB_OUT(PerAfiAdjRibOut::new),
+            PER_AFI_EXPORT_RIB(PerAfiExportRib::new),
             UNKNOWN(Unknown::new)
             ;
 
@@ -123,14 +127,16 @@ public class StatisticsReportPacket implements Packet {
                     case 5: return INVALID_UPDATE_DUE_TO_ORIGINATOR_ID;
                     case 6: return INVALID_UPDATE_DUE_TO_AS_CONFED_LOOP;
                     case 7: return ADJ_RIB_IN;
-                    case 8: return LOC_RIB;
+                    case 8: return LOCAL_RIB;
                     case 9: return PER_AFI_ADJ_RIB_IN;
-                    case 10: return PER_AFI_LOC_RIB;
+                    case 10: return PER_AFI_LOCAL_RIB;
                     case 11: return UPDATE_TREAT_AS_WITHDRAW;
                     case 12: return PREFIX_TREAT_AS_WITHDRAW;
                     case 13: return DUPLICATE_UPDATE;
                     case 14: return ADJ_RIB_OUT;
                     case 15: return EXPORT_RIB;
+                    case 16: return PER_AFI_ADJ_RIB_OUT;
+                    case 17: return PER_AFI_EXPORT_RIB;
                     default:
                         BmpParser.LOG.warn("Unknown Statistic Report Type: {}", type);
                         return UNKNOWN;

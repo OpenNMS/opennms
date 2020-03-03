@@ -65,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -230,10 +231,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.name = initiation.getSysName(); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569) - resolved name has precedence over sys_name
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
-        router.description = initiation.getSysDesc();
+        router.description = Joiner.on('\n').join(initiation.getSysDescList());
         router.termCode = null;
         router.termReason = null;
-        router.initData = initiation.getMessage();
+        router.initData = Joiner.on('\n').join(initiation.getMessageList());
         router.termData = null;
         router.timestamp = context.timestamp;
         router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
@@ -274,7 +275,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         }
 
         router.initData = null;
-        router.termData = termination.getMessage();
+        router.termData = Joiner.on('\n').join(termination.getMessageList());
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
@@ -405,7 +406,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.invalidOriginatorId = statisticsReport.getInvalidUpdateDueToOriginatorId().getCount();
         stat.invalidAsConfed = statisticsReport.getInvalidUpdateDueToAsConfedLoop().getCount();
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
-        stat.prefixesPostPolicy = statisticsReport.getLocRib().getValue();
+        stat.prefixesPostPolicy = statisticsReport.getLocalRib().getValue();
 
         this.handler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
     }
@@ -569,6 +570,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.pathId = 0;
         unicastPrefix.labels = null;
         unicastPrefix.prePolicy = Transport.Peer.Flags.Policy.PRE_POLICY.equals(peer.getFlags().getPolicy());
+        unicastPrefix.adjIn = peer.getFlags().getAdjIn();
 
         // Augment with base attributes if present
         if (baseAttr != null) {
@@ -589,7 +591,6 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             unicastPrefix.originatorId = baseAttr.originatorId;
             unicastPrefix.largeCommunityList = baseAttr.largeCommunityList;
         }
-        // FIXME: isAdjIn?
 
         //  Hash of fields [ prefix, prefix length, peer hash, path_id, 1 if has label(s) ]
         unicastPrefix.hash = Record.hash(InetAddressUtils.str(unicastPrefix.prefix),

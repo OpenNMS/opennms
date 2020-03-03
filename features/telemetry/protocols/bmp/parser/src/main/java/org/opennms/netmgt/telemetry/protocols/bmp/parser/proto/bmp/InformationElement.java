@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+import org.omg.CORBA.UNKNOWN;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -67,6 +68,13 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
             }
         },
 
+        ADMIN_LABEL {
+            @Override
+            public String parse(ByteBuf buffer, Void parameter) throws InvalidPacketException {
+                return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.UTF_8);
+            }
+        },
+
         BGP_ID {
             @Override
             public String parse(final ByteBuf buffer, final Void parameter) {
@@ -74,7 +82,9 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
 	    }
 	},
 
-        UNKNOWN {
+        UNKNOWN
+
+        {
             @Override
             public String parse(final ByteBuf buffer, final Void parameter) {
                 return "Unknown";
@@ -89,6 +99,8 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
                     return SYS_DESCR;
                 case 2:
                     return SYS_NAME;
+                case 4:
+                    return ADMIN_LABEL;
                 case 65531:
                     return BGP_ID;
                 default:

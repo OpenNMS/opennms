@@ -76,7 +76,7 @@ public class BmpIT {
             "duplicate_withdraw.rrd",
             "duplicate_prefix.rrd",
             "adj_rib_in.rrd",
-            "loc_rib.rrd",
+            "local_rib.rrd",
             "prefix_withdraw.rrd",
             "update_withdraw.rrd"
     );
