@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.address;
+import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.addressAsStr;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.asAttr;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributeOfType;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.getPathAttributesOfType;
@@ -226,8 +227,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
-        router.name = initiation.getSysName();
-//        router.name = InetAddressUtils.str(address(??.getAddress())); // TODO: resolve Ip via DNS?
+        router.name = initiation.getSysName(); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569) - resolved name has precedence over sys_name
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = initiation.getSysDesc();
@@ -248,7 +248,6 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.action = Router.Action.TERM;
         router.sequence = sequence.getAndIncrement();
         router.name = null;
-//        router.name = InetAddressUtils.str(address(??.getAddress())); // TODO: resolve Ip via DNS?
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = null;
@@ -290,7 +289,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = InetAddressUtils.str(address(bgpPeer.getAddress())); // TODO: resolve Ip via DNS?
+        peer.name = addressAsStr(bgpPeer.getAddress()); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569)
         peer.hash = Record.hash(bgpPeer.getAddress(),
                                 bgpPeer.getDistinguisher(),
                                 context.routerHashId);
@@ -307,8 +306,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.localPort = peerUp.getLocalPort();
         peer.localBgpId = address(peerUp.getSendMsg().getId());
         peer.infoData = peerUp.getMessage();
-        peer.advertisedCapabilities = ""; // TODO: Not parsed right now
-        peer.receivedCapabilities = ""; // TODO: Not parsed right now
+        peer.advertisedCapabilities = ""; // TODO: Not parsed right now (see https://issues.opennms.org/browse/NMS-12571)
+        peer.receivedCapabilities = ""; // TODO: Not parsed right now (see https://issues.opennms.org/browse/NMS-12571)
         peer.remoteHolddown = uint32(peerUp.getRecvMsg().getHoldTime());
         peer.advertisedHolddown = uint32(peerUp.getSendMsg().getHoldTime());
         peer.bmpReason = null;
@@ -318,9 +317,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
         peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());
-        peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
-        peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
-        peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
+        peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
+        peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
+        peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
 
         this.handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
