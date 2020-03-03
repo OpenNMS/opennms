@@ -1345,7 +1345,7 @@
     <!-- nodejs development -->
     <frontendPluginVersion>1.9.0</frontendPluginVersion>
     <nodeVersion>v10.19.0</nodeVersion>
-    <npmVersion>6.10.4</npmVersion>
+    <npmVersion>6.13.4</npmVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
