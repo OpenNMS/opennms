@@ -73,10 +73,9 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private final SyncDispatcher<S> syncDispatcher;
     private final AsyncPolicy asyncPolicy;
     private final Counter droppedCounter;
-    
-    private final DispatchQueue<S> dispatchQueue;
+
     private final Map<String, CompletableFuture<DispatchStatus>> futureMap = new ConcurrentHashMap<>();
-    private final AtomicResultQueue atomicResultQueue = new AtomicResultQueue();
+    private final AtomicResultQueue<S> atomicResultQueue;
     private final AtomicLong missedFutures = new AtomicLong(0);
     private final AtomicInteger activeDispatchers = new AtomicInteger(0);
     
@@ -97,6 +96,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         SinkModule<S, T> sinkModule = state.getModule();
         Optional<DispatchQueueFactory> factory = DispatchQueueServiceLoader.getDispatchQueueFactory();
 
+        DispatchQueue<S> dispatchQueue;
         if (factory.isPresent()) {
             LOG.debug("Using queue from factory");
             dispatchQueue = factory.get().getQueue(asyncPolicy, sinkModule.getId(),
@@ -106,6 +106,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             LOG.debug("Using default in memory queue of size {}", size);
             dispatchQueue = new DefaultQueue<>(size);
         }
+        atomicResultQueue = new AtomicResultQueue<>(dispatchQueue);
 
         state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"),
                 (Gauge<Integer>) activeDispatchers::get);
@@ -163,7 +164,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     public CompletableFuture<DispatchStatus> send(S message) {
         CompletableFuture<DispatchStatus> sendFuture = new CompletableFuture<>();
 
-        if (!asyncPolicy.isBlockWhenFull() && dispatchQueue.isFull()) {
+        if (!asyncPolicy.isBlockWhenFull() && atomicResultQueue.isFull()) {
             droppedCounter.inc();
             sendFuture.completeExceptionally(new RuntimeException("Dispatch queue full"));
             return sendFuture;
@@ -196,28 +197,53 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
      * This class serves to ensure operations of enqueueing a message and acting on the result of that enqueue are done
      * atomically from the point of view of any thread calling dequeue.
      */
-    private final class AtomicResultQueue {
+    private final static class AtomicResultQueue<T> {
         private final Map<String, CountDownLatch> resultRecordedMap = new ConcurrentHashMap<>();
+        private final DispatchQueue<T> dispatchQueue;
 
-        void enqueue(S message, String key, Consumer<DispatchQueue.EnqueueResult> onEnqueue) throws WriteFailedException {
+        public AtomicResultQueue(DispatchQueue<T> dispatchQueue) {
+            this.dispatchQueue = Objects.requireNonNull(dispatchQueue);
+        }
+
+        void enqueue(T message, String key, Consumer<DispatchQueue.EnqueueResult> onEnqueue) throws WriteFailedException {
             CountDownLatch resultRecorded = new CountDownLatch(1);
             resultRecordedMap.put(key, resultRecorded);
             DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, key);
+
+            // When the result is DEFERRED we should not track the future so remove it from the map
+            if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                resultRecordedMap.remove(key);
+            }
+
             onEnqueue.accept(result);
             resultRecorded.countDown();
         }
 
-        Map.Entry<String, S> dequeue() throws InterruptedException {
-            Map.Entry<String, S> messageEntry = dispatchQueue.dequeue();
-            CountDownLatch latch = resultRecordedMap.remove(messageEntry.getKey());
-            latch.await();
+        Map.Entry<String, T> dequeue() throws InterruptedException {
+            Map.Entry<String, T> messageEntry = dispatchQueue.dequeue();
+
+            // If the key is null, we weren't tracking it so we don't need to synchronize
+            if (messageEntry.getKey() == null) {
+                return messageEntry;
+            }
+
+            resultRecordedMap.remove(messageEntry.getKey()).await();
+
             return messageEntry;
+        }
+
+        boolean isFull() {
+            return dispatchQueue.isFull();
+        }
+
+        int getSize() {
+            return dispatchQueue.getSize();
         }
     }
     
     @Override
     public int getQueueSize() {
-        return dispatchQueue.getSize();
+        return atomicResultQueue.getSize();
     }
 
     @Override
