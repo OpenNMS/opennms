@@ -92,6 +92,27 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.4]
+
+==== Release Meridian-2019.1.4
+
+Release 2019.1.4 is the fifth release in the Meridian 2019 series.
+
+It fixes an HQL injection bug, as well as a few other issues.
+Hat tip to Johannes Moritz for the security report.
+
+The codename for 2019.1.4 is _link:$$https://en.wikipedia.org/wiki/Jupiter$$[Jupiter]_
+
+===== Bug
+
+* Cannot process SNMPv3 Informs due to random Engine ID associated with users (Issue http://issues.opennms.org/browse/NMS-12473[NMS-12473])
+* Downtime model change was not updated in the docs (Issue http://issues.opennms.org/browse/NMS-12520[NMS-12520])
+* HQL Injection (Issue http://issues.opennms.org/browse/NMS-12572[NMS-12572])
+
+===== Enhancement
+
+* Support signing code in CircleCI (Issue http://issues.opennms.org/browse/NMS-12557[NMS-12557])
+
 [releasenotes-changelog-Meridian-2019.1.3]
 
 ==== Release Meridian-2019.1.3
