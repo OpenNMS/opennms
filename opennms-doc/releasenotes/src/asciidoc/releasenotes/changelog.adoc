@@ -6,7 +6,7 @@
 
 ==== Release 25.2.1
 
-Release 25.2.0 is the fifth release in the Horizon 25 series.
+Release 25.2.0 is the sixth release in the Horizon 25 series.
 
 It contains a number of small improvements as well as a few bug fixes and a security
 fix for an HQL injection bug.  Hat tip to Johannes Moritz for the security report.
