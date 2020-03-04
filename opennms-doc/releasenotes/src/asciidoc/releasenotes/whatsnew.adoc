@@ -39,6 +39,8 @@ Given the pace of changes and the number of breaking changes between major versi
 While working on improvements to flow support we have modified the index templates and it is no longer possible to query flows stored in indices created with prior version of OpenNMS.
 We will revisit ways to migrate these in a future release.
 
+It is now possible to use CIDR ip expressions when defining Classification Rules for Flows.
+
 ==== Minion Packages Combined
 
 The Minion RPM and Debian/Ubuntu packages have been combined into a single package.
