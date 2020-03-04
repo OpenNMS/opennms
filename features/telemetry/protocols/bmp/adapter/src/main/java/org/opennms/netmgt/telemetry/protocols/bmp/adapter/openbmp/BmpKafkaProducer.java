@@ -66,7 +66,7 @@ public class BmpKafkaProducer implements BmpMessageHandler {
             });
         }
 
-        // TODO fooker: Apply defaults (steal from https://github.com/SNAS/openbmp/blob/1a615a3c75a0143cc87ec70458471f0af67d3929/Server/src/kafka/MsgBusImpl_kafka.cpp#L162)
+        // TODO fooker: Apply defaults (steal from https://github.com/SNAS/openbmp/blob/1a615a3c75a0143cc87ec70458471f0af67d3929/Server/src/kafka/MsgBusImpl_kafka.cpp#L162) (see https://issues.opennms.org/browse/NMS-12574)
 
         return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
     }
