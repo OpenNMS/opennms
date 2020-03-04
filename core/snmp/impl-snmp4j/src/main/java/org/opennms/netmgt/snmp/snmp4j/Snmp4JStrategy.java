@@ -49,6 +49,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
@@ -68,6 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageDispatcher;
+import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.SNMP4JSettings;
@@ -76,6 +78,8 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.PduHandle;
@@ -87,6 +91,7 @@ import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
@@ -128,9 +133,6 @@ public class Snmp4JStrategy implements SnmpStrategy {
         }
 
         SNMP4JSettings.setEnterpriseID(5813);
-        //USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        m_usm = new USM();
-        SecurityModels.getInstance().addSecurityModel(m_usm);
         
         // Enable extensibility in SNMP4J so that we can subclass some SMI classes to work around
         // agent bugs
@@ -542,9 +544,16 @@ public class Snmp4JStrategy implements SnmpStrategy {
         LOG.debug("Actual receive buffer size is {}", transport.getReceiveBufferSize());
 
         info.setTransportMapping(transport);
-        Snmp snmp = new Snmp(transport);
-        Snmp4JStrategy.trackSession(snmp);
-        snmp.addCommandResponder(trapNotifier);
+
+        MessageDispatcher dispatcher = new MessageDispatcherImpl();
+        // add message processing models
+        dispatcher.addMessageProcessingModel(new MPv1());
+        dispatcher.addMessageProcessingModel(new MPv2c());
+        dispatcher.addMessageProcessingModel(new MPv3(getLocalEngineID()));
+        Snmp snmp = new Snmp(dispatcher, transport);
+        m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(getLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(m_usm);
+
 
         if (snmpUsers != null) {
             for (SnmpV3User user : snmpUsers) {
@@ -573,7 +582,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 snmp.getUSM().addUser(agentConfig.getSecurityName(), usmUser);
             }
         }
-
+        Snmp4JStrategy.trackSession(snmp);
+        snmp.addCommandResponder(trapNotifier);
         info.setSession(snmp);
         
         s_registrations.put(listener, info);
@@ -727,10 +737,23 @@ public class Snmp4JStrategy implements SnmpStrategy {
         }
     }
 
-        @Override
-	public byte[] getLocalEngineID() {
-		return MPv3.createLocalEngineID();
-	}
+    public static OctetString createPersistentInstanceId() {
+        String instanceId = SystemInfoUtils.getInstanceId();
+        // Limit this instance to 23 bytes.
+        if (instanceId.length() > 24) {
+            instanceId = instanceId.substring(0, 23);
+        }
+        return new OctetString(instanceId);
+    }
+
+    public static OctetString createLocalEngineId() {
+        return new OctetString(MPv3.createLocalEngineID(createPersistentInstanceId()));
+    }
+
+    @Override
+    public byte[] getLocalEngineID() {
+        return createLocalEngineId().getValue();
+    }
 
         private static void assertTrackingInitialized() {
             if (s_sessions == null) {
@@ -862,4 +885,5 @@ public class Snmp4JStrategy implements SnmpStrategy {
                 return "SessionInfo[session=" + m_session + ", caller=" + getOutsideCaller() + ", thread=" + m_thread.getName() + ", age=" + Duration.between(m_start, LocalDateTime.now()).getSeconds() + "s]";
             }
         }
+
 }

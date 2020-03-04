@@ -1,5 +1,6 @@
 version: 2.1
 
+
 executors:
   centos-build-executor:
     docker:
@@ -15,6 +16,7 @@ executors:
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
+  sign-packages: opennms/sign-packages@2.0.0
 
 commands:
   cached-checkout:
@@ -192,6 +194,7 @@ commands:
       - run:
           name: Compile OpenNMS
           command: |
+            .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
@@ -441,12 +444,19 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - sign-packages/install-rpm-dependencies
+      - sign-packages/setup-env:
+          gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
+      - sign-packages/sign-rpms:
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/*.rpm
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -473,6 +483,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - sign-packages/install-rpm-dependencies
+      - sign-packages/setup-env:
+          gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
           command: |
@@ -480,6 +493,10 @@ jobs:
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
+      - sign-packages/sign-rpms:
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/*.rpm
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -506,6 +523,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - sign-packages/install-rpm-dependencies
+      - sign-packages/setup-env:
+          gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
           command: |
@@ -513,6 +533,10 @@ jobs:
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
+      - sign-packages/sign-rpms:
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/*.rpm
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -538,12 +562,19 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - sign-packages/install-deb-dependencies
+      - sign-packages/setup-env:
+          gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=4
             .circleci/scripts/makedeb.sh opennms
+      - sign-packages/sign-debs:
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
@@ -557,6 +588,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - sign-packages/install-deb-dependencies
+      - sign-packages/setup-env:
+          gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
           command: |
@@ -564,6 +598,10 @@ jobs:
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh minion
+      - sign-packages/sign-debs:
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
@@ -577,6 +615,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - sign-packages/install-deb-dependencies
+      - sign-packages/setup-env:
+          gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
           command: |
@@ -584,6 +625,10 @@ jobs:
             export CCI_MAXCPU=4
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh sentinel
+      - sign-packages/sign-debs:
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
