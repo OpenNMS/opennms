@@ -37,11 +37,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import org.joda.time.Duration;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
@@ -61,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implements AsyncDispatcher<S> {
@@ -69,9 +73,10 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private final SyncDispatcher<S> syncDispatcher;
     private final AsyncPolicy asyncPolicy;
     private final Counter droppedCounter;
-    
-    private final DispatchQueue<S> dispatchQueue;
+
     private final Map<String, CompletableFuture<DispatchStatus>> futureMap = new ConcurrentHashMap<>();
+    private final AtomicResultQueue<S> atomicResultQueue;
+    private final AtomicLong missedFutures = new AtomicLong(0);
     private final AtomicInteger activeDispatchers = new AtomicInteger(0);
     
     private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
@@ -91,6 +96,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         SinkModule<S, T> sinkModule = state.getModule();
         Optional<DispatchQueueFactory> factory = DispatchQueueServiceLoader.getDispatchQueueFactory();
 
+        DispatchQueue<S> dispatchQueue;
         if (factory.isPresent()) {
             LOG.debug("Using queue from factory");
             dispatchQueue = factory.get().getQueue(asyncPolicy, sinkModule.getId(),
@@ -100,6 +106,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             LOG.debug("Using default in memory queue of size {}", size);
             dispatchQueue = new DefaultQueue<>(size);
         }
+        atomicResultQueue = new AtomicResultQueue<>(dispatchQueue);
 
         state.getMetrics().register(MetricRegistry.name(state.getModule().getId(), "queue-size"),
                 (Gauge<Integer>) activeDispatchers::get);
@@ -116,7 +123,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
         while (true) {
             try {
                 LOG.trace("Asking dispatch queue for the next entry...");
-                Map.Entry<String, S> messageEntry = dispatchQueue.dequeue();
+                Map.Entry<String, S> messageEntry = atomicResultQueue.dequeue();
                 LOG.trace("Received message entry from dispatch queue {}", messageEntry);
                 activeDispatchers.incrementAndGet();
                 LOG.trace("Sending message {} via sync dispatcher", messageEntry);
@@ -132,6 +139,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
                         LOG.trace("Completed future for message {}", messageEntry);
                     } else {
                         RATE_LIMITED_LOGGER.warn("No future found for message {}", messageEntry);
+                        missedFutures.incrementAndGet();
                     }
                 } else {
                     LOG.trace("Dequeued an entry with a null key");
@@ -156,7 +164,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     public CompletableFuture<DispatchStatus> send(S message) {
         CompletableFuture<DispatchStatus> sendFuture = new CompletableFuture<>();
 
-        if (!asyncPolicy.isBlockWhenFull() && dispatchQueue.isFull()) {
+        if (!asyncPolicy.isBlockWhenFull() && atomicResultQueue.isFull()) {
             droppedCounter.inc();
             sendFuture.completeExceptionally(new RuntimeException("Dispatch queue full"));
             return sendFuture;
@@ -164,25 +172,78 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
         try {
             String newId = UUID.randomUUID().toString();
-            DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, newId);
-            
-            LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
+            atomicResultQueue.enqueue(message, newId, result -> {
+                LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
 
-            if (result == DispatchQueue.EnqueueResult.DEFERRED) {
-                sendFuture.complete(DispatchStatus.QUEUED);
-            } else {
-                futureMap.put(newId, sendFuture);
-            }
+                if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                    sendFuture.complete(DispatchStatus.QUEUED);
+                } else {
+                    futureMap.put(newId, sendFuture);
+                }
+            });
         } catch (WriteFailedException e) {
             sendFuture.completeExceptionally(e);
         }
 
         return sendFuture;
     }
+
+    @VisibleForTesting
+    public long getMissedFutures() {
+        return missedFutures.get();
+    }
+
+    /**
+     * This class serves to ensure operations of enqueueing a message and acting on the result of that enqueue are done
+     * atomically from the point of view of any thread calling dequeue.
+     */
+    private final static class AtomicResultQueue<T> {
+        private final Map<String, CountDownLatch> resultRecordedMap = new ConcurrentHashMap<>();
+        private final DispatchQueue<T> dispatchQueue;
+
+        public AtomicResultQueue(DispatchQueue<T> dispatchQueue) {
+            this.dispatchQueue = Objects.requireNonNull(dispatchQueue);
+        }
+
+        void enqueue(T message, String key, Consumer<DispatchQueue.EnqueueResult> onEnqueue) throws WriteFailedException {
+            CountDownLatch resultRecorded = new CountDownLatch(1);
+            resultRecordedMap.put(key, resultRecorded);
+            DispatchQueue.EnqueueResult result = dispatchQueue.enqueue(message, key);
+
+            // When the result is DEFERRED we should not track the future so remove it from the map
+            if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                resultRecordedMap.remove(key);
+            }
+
+            onEnqueue.accept(result);
+            resultRecorded.countDown();
+        }
+
+        Map.Entry<String, T> dequeue() throws InterruptedException {
+            Map.Entry<String, T> messageEntry = dispatchQueue.dequeue();
+
+            // If the key is null, we weren't tracking it so we don't need to synchronize
+            if (messageEntry.getKey() == null) {
+                return messageEntry;
+            }
+
+            resultRecordedMap.remove(messageEntry.getKey()).await();
+
+            return messageEntry;
+        }
+
+        boolean isFull() {
+            return dispatchQueue.isFull();
+        }
+
+        int getSize() {
+            return dispatchQueue.getSize();
+        }
+    }
     
     @Override
     public int getQueueSize() {
-        return dispatchQueue.getSize();
+        return atomicResultQueue.getSize();
     }
 
     @Override

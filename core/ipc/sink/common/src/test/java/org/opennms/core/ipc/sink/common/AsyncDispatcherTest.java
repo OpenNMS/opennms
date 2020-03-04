@@ -41,11 +41,15 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -335,6 +339,49 @@ public class AsyncDispatcherTest {
             assertThat(actuallyDispatched, hasItem(new MyMessage(Integer.toString(i))));
         }
         
+        asyncDispatcher.close();
+    }
+
+    @Test
+    public void doesNotRaceOnResultCompletingFuture() throws Exception {
+        int inMemorySize = 20000;
+        int batchSize = 100;
+        // Set up the dispatch queue
+        DispatchQueueFactory dispatchQueueFactory = new QueueFileOffHeapDispatchQueueFactory(inMemorySize, batchSize,
+                "100KB",
+                folder.newFolder().toPath().toString());
+        DispatchQueueServiceLoader.setDispatchQueue(dispatchQueueFactory);
+
+        when(module.getAsyncPolicy()).thenReturn(new AsyncPolicy() {
+            @Override
+            public int getQueueSize() {
+                return QUEUE_SIZE;
+            }
+
+            @Override
+            public int getNumThreads() {
+                return NUM_THREADS;
+            }
+
+            @Override
+            public boolean isBlockWhenFull() {
+                return true;
+            }
+        });
+
+        final AsyncDispatcher<MyMessage> asyncDispatcher = blockableDispatcherFactory.createAsyncDispatcher(module);
+        BlockableSyncDispatcher<MyMessage> blockableSyncDispatcher =
+                blockableDispatcherFactory.getBlockableSyncDispatcher();
+
+        // Release the threads!
+        blockableSyncDispatcher.unblock();
+
+        // Testing locally the race condition occured ~10% of send's so sending 10,000 times should virtually guarantee
+        // it occurs.
+        IntStream.range(0, 9999).parallel().forEach(i -> asyncDispatcher.send(new MyMessage(Integer.toString(i))));
+
+        assertThat(((AsyncDispatcherImpl) asyncDispatcher).getMissedFutures(), equalTo(0L));
+
         asyncDispatcher.close();
     }
     
