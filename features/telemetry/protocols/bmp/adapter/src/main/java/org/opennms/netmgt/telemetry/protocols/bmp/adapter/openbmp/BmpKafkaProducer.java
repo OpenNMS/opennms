@@ -44,9 +44,17 @@ import com.google.common.collect.Maps;
 public class BmpKafkaProducer implements BmpMessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(BmpKafkaProducer.class);
 
+    private final String topicPrefix;
     private final KafkaProducer<String, String> producer;
 
     public BmpKafkaProducer(final AdapterDefinition adapterConfig) {
+        final String topicPrefix = adapterConfig.getParameterMap().get("topicPrefix");
+        if (topicPrefix != null) {
+            this.topicPrefix = String.format("%s.", topicPrefix);
+        } else {
+            this.topicPrefix = "";
+        }
+
         this.producer = buildProducer(adapterConfig);
     }
 
@@ -68,8 +76,7 @@ public class BmpKafkaProducer implements BmpMessageHandler {
         final StringBuffer buffer = new StringBuffer();
         message.serialize(buffer);
 
-        final String topic = message.getType().getTopic();
-        // FIXME: Make prefix configurable
+        final String topic = this.topicPrefix + message.getType().getTopic();
         final ProducerRecord<String, String> record = new ProducerRecord<>(topic, message.getCollectorHashId(), buffer.toString());
 
         this.producer.send(record, (meta, err) -> {
