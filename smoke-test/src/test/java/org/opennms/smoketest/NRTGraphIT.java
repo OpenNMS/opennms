@@ -30,11 +30,11 @@ package org.opennms.smoketest;
 
 import org.junit.Test;
 
-public class NRTGraphIT extends OpenNMSSeleniumTestCase {
+public class NRTGraphIT extends OpenNMSSeleniumIT {
     @Test
-    public void canLoadGraph() throws Exception {
+    public void canLoadGraph() {
         // Request a known graph with an invalid resource id
-        m_driver.get(getBaseUrl() + "opennms/graph/nrtg.jsp?resourceId=node[999].nodeSnmp[]&report=mib2.tcpopen");
+        driver.get(getBaseUrlInternal() + "opennms/graph/nrtg.jsp?resourceId=node[999].nodeSnmp[]&report=mib2.tcpopen");
         // The graph should be rendered
         findElementByXpath("//div[@class='flot-datatable-tabs']");
         // It won't have any data, but this is sufficient to very that all of the required

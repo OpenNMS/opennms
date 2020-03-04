@@ -46,17 +46,25 @@ public class DaoUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DaoUtils.class);
 
     public static Callable<Integer> countMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
-        return new Callable<Integer>() {
-              public Integer call() throws Exception {
-                  Integer count = dao.countMatching(criteria);
-                  LOG.info("Count: {}", count);
-                  return count;
-              }
+        return () -> {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Counting records matching {} on {}. DAO currently has {} total records.", criteria, dao, dao.countAll());
+            }
+            Integer count = dao.countMatching(criteria);
+            LOG.info("Count: {}", count);
+            return count;
         };
     }
 
     @SuppressWarnings("unchecked")
     public static <T> Callable<T> findMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
-        return () -> (T) Iterables.getFirst(dao.findMatching(criteria), null);
+        return () -> {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Finding object matching {} on {}. DAO currently has {} total records.", criteria, dao, dao.countAll());
+            }
+            T entity =  (T) Iterables.getFirst(dao.findMatching(criteria), null);
+            LOG.debug("Found: {}", entity);
+            return entity;
+        };
     }
 }
