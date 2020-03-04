@@ -32,7 +32,7 @@ under the License.
  |  2. Global Level. This toolchains.xml file provides configuration for all Maven
  |                 users on a machine (assuming they're all using the same Maven
  |                 installation). It's normally provided in
- |                 ${maven.home}/conf/toolchains.xml.
+ |                 ${maven.conf}/toolchains.xml.
  |
  |                 NOTE: This location can be overridden with the CLI option:
  |
@@ -63,7 +63,7 @@ under the License.
    |   Look for documentation of the toolchains-aware plugin which configuration elements
    |   can be used.   
    |
-   | See also http://maven.apache.org/guides/mini/guide-using-toolchains.html
+   | See also https://maven.apache.org/guides/mini/guide-using-toolchains.html
    |
    | General example
 

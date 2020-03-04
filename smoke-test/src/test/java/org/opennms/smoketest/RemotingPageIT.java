@@ -35,7 +35,7 @@ import org.junit.Test;
  * This test is used to make sure that the opennms-remoting webapp is properly
  * initialized and that the JNLP files are installed properly.
  */
-public class RemotingPageIT extends OpenNMSSeleniumTestCase {
+public class RemotingPageIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {
         remotingPage();

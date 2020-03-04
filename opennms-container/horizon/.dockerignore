@@ -1,0 +1,10 @@
+.circleci
+.git
+.idea
+images
+.gitignore
+*.md
+*.adoc
+*.env
+*.iml
+LICENSE

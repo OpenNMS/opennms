@@ -32,18 +32,14 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 
-import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.test.system.api.TestEnvironment;
-import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -55,47 +51,20 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.smoketest.utils.DaoUtils;
-import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.RestClient;
-import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 
 public class NotifdIT {
-
-    private static TestEnvironment m_testEnvironment;
-    private static RestClient restClient;
 
     private static final String NODE_LABEL = "node1";
     private static final String IP_ADDRESS = "192.168.1.1";
 
     @ClassRule
-    public static final TestEnvironment getTestEnvironment() {
-        if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
-            return new NullTestEnvironment();
-        }
-        try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms();
-            builder.withOpenNMSEnvironment().addFile(NotifdIT.class.getResource("/notifd-configuration.xml"),
-                    "etc/notifd-configuration.xml");
-            OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-            m_testEnvironment = builder.build();
-            return m_testEnvironment;
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    @Before
-    public void checkForDocker() {
-        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
-        if (m_testEnvironment == null) {
-            return;
-        }
-        final InetSocketAddress opennmsHttp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-        restClient = new RestClient(opennmsHttp);
-    }
+    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Test
     public void testNotifdAutoAcknowledgeAlarm() {
+        RestClient restClient = stack.opennms().getRestClient();
+
         //Add a node with interface
         OnmsNode node = new OnmsNode();
         node.setLabel(NODE_LABEL);
@@ -118,9 +87,7 @@ public class NotifdIT {
         restClient.sendEvent(builder.getEvent());
 
         // Check that a notification is generated for node down
-        InetSocketAddress pgsql = m_testEnvironment.getServiceAddress(ContainerAlias.POSTGRES, 5432);
-        HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
-        NotificationDao notificationDao = daoFactory.getDao(NotificationDaoHibernate.class);
+        NotificationDao notificationDao = stack.postgres().dao(NotificationDaoHibernate.class);
         Criteria criteria = new CriteriaBuilder(OnmsNotification.class).createAlias("node", "node")
                 .eq("node.id", node.getId()).toCriteria();
         await().atMost(30, TimeUnit.SECONDS).pollInterval(10, TimeUnit.SECONDS)
