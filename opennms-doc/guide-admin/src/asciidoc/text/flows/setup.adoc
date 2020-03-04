@@ -123,6 +123,7 @@ This value used for the lookup corresponds to the following fields from the vari
 | `NetFlow v9` | `sourceId`
 | `IPFix` | `observationDomainId`
 | `SFlow` | `agent_address:sub_agent_id`
+| `BMP` | `bgpId`
 |===
 
 ==== Node cache configuration (Optional)

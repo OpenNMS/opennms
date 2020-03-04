@@ -163,6 +163,8 @@ public class BmpParser implements TcpParser {
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
         return new Handler() {
+            private InetAddress bgpId;
+
             @Override
             public Optional<CompletableFuture<?>> parse(ByteBuf buffer) throws Exception {
                 buffer.markReaderIndex();
@@ -185,8 +187,21 @@ public class BmpParser implements TcpParser {
 
                 LOG.trace("Got packet: {}", packet);
 
+                packet.accept(new Packet.Visitor.Adapter() {
+                    @Override
+                    public void visit(InitiationPacket packet) {
+                        packet.information.first(InformationElement.Type.BGP_ID)
+                                .map(InetAddressUtils::addr)
+                                .ifPresent(_bgpId -> bgpId = _bgpId);
+                    }
+                });
+
                 final Transport.Message.Builder message = Transport.Message.newBuilder()
                                                                            .setVersion(header.version);
+
+                if (bgpId != null) {
+                    message.setBgpId(address(bgpId));
+                }
 
                 packet.accept(new Serializer(message));
 

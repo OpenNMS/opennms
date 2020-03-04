@@ -32349,6 +32349,21 @@ public final class Transport {
     int getVersion();
 
     /**
+     * <code>.IpAddress bgpId = 2;</code>
+     * @return Whether the bgpId field is set.
+     */
+    boolean hasBgpId();
+    /**
+     * <code>.IpAddress bgpId = 2;</code>
+     * @return The bgpId.
+     */
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId();
+    /**
+     * <code>.IpAddress bgpId = 2;</code>
+     */
+    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder();
+
+    /**
      * <code>.InitiationPacket initiation = 5;</code>
      * @return Whether the initiation field is set.
      */
@@ -32503,6 +32518,19 @@ public final class Transport {
             case 8: {
 
               version_ = input.readUInt32();
+              break;
+            }
+            case 18: {
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder subBuilder = null;
+              if (bgpId_ != null) {
+                subBuilder = bgpId_.toBuilder();
+              }
+              bgpId_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(bgpId_);
+                bgpId_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             case 42: {
@@ -32694,6 +32722,29 @@ public final class Transport {
      */
     public int getVersion() {
       return version_;
+    }
+
+    public static final int BGPID_FIELD_NUMBER = 2;
+    private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress bgpId_;
+    /**
+     * <code>.IpAddress bgpId = 2;</code>
+     * @return Whether the bgpId field is set.
+     */
+    public boolean hasBgpId() {
+      return bgpId_ != null;
+    }
+    /**
+     * <code>.IpAddress bgpId = 2;</code>
+     * @return The bgpId.
+     */
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId() {
+      return bgpId_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
+    }
+    /**
+     * <code>.IpAddress bgpId = 2;</code>
+     */
+    public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder() {
+      return getBgpId();
     }
 
     public static final int INITIATION_FIELD_NUMBER = 5;
@@ -32909,6 +32960,9 @@ public final class Transport {
       if (version_ != 0) {
         output.writeUInt32(1, version_);
       }
+      if (bgpId_ != null) {
+        output.writeMessage(2, getBgpId());
+      }
       if (packetCase_ == 5) {
         output.writeMessage(5, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.InitiationPacket) packet_);
       }
@@ -32942,6 +32996,10 @@ public final class Transport {
       if (version_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, version_);
+      }
+      if (bgpId_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getBgpId());
       }
       if (packetCase_ == 5) {
         size += com.google.protobuf.CodedOutputStream
@@ -32988,6 +33046,11 @@ public final class Transport {
 
       if (getVersion()
           != other.getVersion()) return false;
+      if (hasBgpId() != other.hasBgpId()) return false;
+      if (hasBgpId()) {
+        if (!getBgpId()
+            .equals(other.getBgpId())) return false;
+      }
       if (!getPacketCase().equals(other.getPacketCase())) return false;
       switch (packetCase_) {
         case 5:
@@ -33034,6 +33097,10 @@ public final class Transport {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + VERSION_FIELD_NUMBER;
       hash = (53 * hash) + getVersion();
+      if (hasBgpId()) {
+        hash = (37 * hash) + BGPID_FIELD_NUMBER;
+        hash = (53 * hash) + getBgpId().hashCode();
+      }
       switch (packetCase_) {
         case 5:
           hash = (37 * hash) + INITIATION_FIELD_NUMBER;
@@ -33201,6 +33268,12 @@ public final class Transport {
         super.clear();
         version_ = 0;
 
+        if (bgpIdBuilder_ == null) {
+          bgpId_ = null;
+        } else {
+          bgpId_ = null;
+          bgpIdBuilder_ = null;
+        }
         packetCase_ = 0;
         packet_ = null;
         return this;
@@ -33230,6 +33303,11 @@ public final class Transport {
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.Message buildPartial() {
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.Message result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.Message(this);
         result.version_ = version_;
+        if (bgpIdBuilder_ == null) {
+          result.bgpId_ = bgpId_;
+        } else {
+          result.bgpId_ = bgpIdBuilder_.build();
+        }
         if (packetCase_ == 5) {
           if (initiationBuilder_ == null) {
             result.packet_ = packet_;
@@ -33330,6 +33408,9 @@ public final class Transport {
         if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.Message.getDefaultInstance()) return this;
         if (other.getVersion() != 0) {
           setVersion(other.getVersion());
+        }
+        if (other.hasBgpId()) {
+          mergeBgpId(other.getBgpId());
         }
         switch (other.getPacketCase()) {
           case INITIATION: {
@@ -33436,6 +33517,125 @@ public final class Transport {
         version_ = 0;
         onChanged();
         return this;
+      }
+
+      private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress bgpId_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> bgpIdBuilder_;
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       * @return Whether the bgpId field is set.
+       */
+      public boolean hasBgpId() {
+        return bgpIdBuilder_ != null || bgpId_ != null;
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       * @return The bgpId.
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getBgpId() {
+        if (bgpIdBuilder_ == null) {
+          return bgpId_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
+        } else {
+          return bgpIdBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      public Builder setBgpId(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
+        if (bgpIdBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bgpId_ = value;
+          onChanged();
+        } else {
+          bgpIdBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      public Builder setBgpId(
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder builderForValue) {
+        if (bgpIdBuilder_ == null) {
+          bgpId_ = builderForValue.build();
+          onChanged();
+        } else {
+          bgpIdBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      public Builder mergeBgpId(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
+        if (bgpIdBuilder_ == null) {
+          if (bgpId_ != null) {
+            bgpId_ =
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.newBuilder(bgpId_).mergeFrom(value).buildPartial();
+          } else {
+            bgpId_ = value;
+          }
+          onChanged();
+        } else {
+          bgpIdBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      public Builder clearBgpId() {
+        if (bgpIdBuilder_ == null) {
+          bgpId_ = null;
+          onChanged();
+        } else {
+          bgpId_ = null;
+          bgpIdBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder getBgpIdBuilder() {
+        
+        onChanged();
+        return getBgpIdFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder() {
+        if (bgpIdBuilder_ != null) {
+          return bgpIdBuilder_.getMessageOrBuilder();
+        } else {
+          return bgpId_ == null ?
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : bgpId_;
+        }
+      }
+      /**
+       * <code>.IpAddress bgpId = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> 
+          getBgpIdFieldBuilder() {
+        if (bgpIdBuilder_ == null) {
+          bgpIdBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder>(
+                  getBgpId(),
+                  getParentForChildren(),
+                  isClean());
+          bgpId_ = null;
+        }
+        return bgpIdBuilder_;
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -34779,18 +34979,18 @@ public final class Transport {
       "t\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007rout" +
       "ers\030\002 \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007STARTED" +
       "\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020" +
-      "\003\"\365\002\n\007Message\022\017\n\007version\030\001 \001(\r\022\'\n\ninitia" +
-      "tion\030\005 \001(\0132\021.InitiationPacketH\000\022)\n\013termi" +
-      "nation\030\006 \001(\0132\022.TerminationPacketH\000\022 \n\007pe" +
-      "er_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n\tpeer_dow" +
-      "n\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020route_moni" +
-      "toring\030\t \001(\0132\026.RouteMonitoringPacketH\000\0224" +
-      "\n\021statistics_report\030\n \001(\0132\027.StatisticsRe" +
-      "portPacketH\000\022\037\n\theartbeat\030\017 \001(\0132\n.Heartb" +
-      "eatH\000B\010\n\006packetJ\004\010\002\020\003J\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J" +
-      "\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.opennms.netmgt." +
-      "telemetry.protocols.bmp.transportB\tTrans" +
-      "portP\000P\001b\006proto3"
+      "\003\"\212\003\n\007Message\022\017\n\007version\030\001 \001(\r\022\031\n\005bgpId\030" +
+      "\002 \001(\0132\n.IpAddress\022\'\n\ninitiation\030\005 \001(\0132\021." +
+      "InitiationPacketH\000\022)\n\013termination\030\006 \001(\0132" +
+      "\022.TerminationPacketH\000\022 \n\007peer_up\030\007 \001(\0132\r" +
+      ".PeerUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.Pee" +
+      "rDownPacketH\000\0222\n\020route_monitoring\030\t \001(\0132" +
+      "\026.RouteMonitoringPacketH\000\0224\n\021statistics_" +
+      "report\030\n \001(\0132\027.StatisticsReportPacketH\000\022" +
+      "\037\n\theartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006pack" +
+      "etJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA" +
+      "\n4org.opennms.netmgt.telemetry.protocols" +
+      ".bmp.transportB\tTransportP\000P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -35007,7 +35207,7 @@ public final class Transport {
     internal_static_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Message_descriptor,
-        new java.lang.String[] { "Version", "Initiation", "Termination", "PeerUp", "PeerDown", "RouteMonitoring", "StatisticsReport", "Heartbeat", "Packet", });
+        new java.lang.String[] { "Version", "BgpId", "Initiation", "Termination", "PeerUp", "PeerDown", "RouteMonitoring", "StatisticsReport", "Heartbeat", "Packet", });
     com.google.protobuf.EmptyProto.getDescriptor();
     com.google.protobuf.TimestampProto.getDescriptor();
   }
