@@ -73,6 +73,12 @@
 
     <!-- Test -->
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.parser</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

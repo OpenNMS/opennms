@@ -36,10 +36,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser.address;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
@@ -375,19 +373,5 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     @Override
     public void close() {
         // pass
-    }
-
-    // FIXME: Dedup
-    private static Transport.IpAddress address(final InetAddress address) {
-        final Transport.IpAddress.Builder builder = Transport.IpAddress.newBuilder();
-        if (address instanceof Inet4Address) {
-            builder.setV4(ByteString.copyFrom(address.getAddress()));
-        } else if (address instanceof Inet6Address) {
-            builder.setV6(ByteString.copyFrom(address.getAddress()));
-        } else {
-            throw new IllegalStateException();
-        }
-
-        return builder.build();
     }
 }

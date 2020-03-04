@@ -696,7 +696,7 @@ public class BmpParser implements TcpParser {
         return attributesBuilder;
     }
 
-    private static Transport.IpAddress address(final InetAddress address) {
+    public static Transport.IpAddress address(final InetAddress address) {
         final Transport.IpAddress.Builder builder = Transport.IpAddress.newBuilder();
         if (address instanceof Inet4Address) {
             builder.setV4(ByteString.copyFrom(address.getAddress()));
