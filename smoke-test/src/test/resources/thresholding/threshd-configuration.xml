@@ -1,0 +1,21 @@
+<threshd-configuration xmlns="http://xmlns.opennms.org/xsd/config/thresholding" threads="5">
+    <!-- For polling -->
+    <package name="ttest-latency">
+        <filter>catincThresholdingTest</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+        <service name="SvcToThreshold" interval="5000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="ttest-latency"/>
+        </service>
+    </package>
+
+    <!-- For collection -->
+    <package name="ttest-collect">
+        <filter>catincThresholdingTest</filter>
+        <include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+        <service name="SvcToThreshold" interval="5000" user-defined="false" status="on">
+            <parameter key="thresholding-group" value="ttest-collect"/>
+        </service>
+    </package>
+</threshd-configuration>
