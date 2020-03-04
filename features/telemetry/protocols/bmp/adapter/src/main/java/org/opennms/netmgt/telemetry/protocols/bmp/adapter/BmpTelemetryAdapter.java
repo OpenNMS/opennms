@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,6 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
 
 import java.net.InetAddress;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -85,10 +84,11 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         }
 
         // This adapter only cares about statistic packets
-        final Transport.StatisticsReportPacket stats = message.getStatisticsReport();
-        if (stats == null) {
+        if (!message.hasStatisticsReport()) {
             return Stream.empty();
         }
+
+        final Transport.StatisticsReportPacket stats = message.getStatisticsReport();
 
         // Find the node for the router who has exported the stats and build a collection agent for it
         final InetAddress exporterAddress = InetAddressUtils.getInetAddress(messageLog.getSourceAddress());
@@ -111,7 +111,7 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         builder.withTimestamp(Date.from(timestamp(stats.getPeer().getTimestamp())));
         builder.withStringAttribute(peerResource, "bmp", "address", peerAddress);
         builder.withStringAttribute(peerResource, "bmp", "as", Long.toString(stats.getPeer().getAs()));
-        builder.withStringAttribute(peerResource, "bmp", "id", Long.toString(stats.getPeer().getId()));
+        builder.withStringAttribute(peerResource, "bmp", "id", BmpAdapterTools.addressAsStr(stats.getPeer().getId()));
 
         final Function<String, Consumer<Transport.StatisticsReportPacket.Counter>> addCounter = (name) -> (counter) -> {
             final String identifier = String.format("bmp_%s_%s", peerAddress, name);
@@ -133,14 +133,17 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         Optional.ofNullable(stats.getAdjRibIn()).ifPresent(addGauge.apply("adj_rib_in"));
         Optional.ofNullable(stats.getAdjRibOut()).ifPresent(addGauge.apply("adj_rib_out"));
 
-        // TODO fooker: Add per AFI counters (perAfiAdjRibIn and perAfiLocRib)
+        // TODO fooker: Add per AFI counters (perAfiAdjRibIn and perAfiLocalRib)
         // See https://issues.opennms.org/browse/NMS-12553
 
         Optional.ofNullable(stats.getUpdateTreatAsWithdraw()).ifPresent(addCounter.apply("update_withdraw"));
         Optional.ofNullable(stats.getPrefixTreatAsWithdraw()).ifPresent(addCounter.apply("prefix_withdraw"));
         Optional.ofNullable(stats.getDuplicateUpdate()).ifPresent(addCounter.apply("duplicate_update"));
-        Optional.ofNullable(stats.getLocRib()).ifPresent(addGauge.apply("loc_rib"));
+        Optional.ofNullable(stats.getLocalRib()).ifPresent(addGauge.apply("local_rib"));
         Optional.ofNullable(stats.getExportRib()).ifPresent(addGauge.apply("export_rib"));
+
+        // TODO fooker: Add per AFI counters (perAfiAdjRibOut and perAfiExportRib)
+        // See https://issues.opennms.org/browse/NMS-12553
 
         return Stream.of(new CollectionSetWithAgent(agent, builder.build()));
     }

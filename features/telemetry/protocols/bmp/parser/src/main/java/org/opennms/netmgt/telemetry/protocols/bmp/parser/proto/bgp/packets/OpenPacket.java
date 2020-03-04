@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
+import java.net.InetAddress;
 import java.util.Objects;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
@@ -48,10 +51,10 @@ import io.netty.buffer.ByteBuf;
 public class OpenPacket implements Packet {
     public final Header header;
 
-    public final int version;  // uint8
-    public final int as;       // uint16
-    public final int holdTime; // uint16
-    public final long id;      // uint32
+    public final int version;    // uint8
+    public final int as;         // uint16
+    public final int holdTime;   // uint16
+    public final InetAddress id; // uint32
 
     public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
         this.header = Objects.requireNonNull(header);
@@ -59,7 +62,7 @@ public class OpenPacket implements Packet {
         this.version = uint8(buffer);
         this.as = uint16(buffer);
         this.holdTime = uint16(buffer);
-        this.id = uint32(buffer);
+        this.id = InetAddressUtils.getInetAddress(bytes(buffer, 4));
 
         final int parametersLength = uint8(buffer);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -83,8 +83,8 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         }
 
         // This adapter only cares about peer up/down packets
-        final Transport.PeerUpPacket peerUp = message.getPeerUp();
-        final Transport.PeerDownPacket peerDown = message.getPeerDown();
+        final Transport.PeerUpPacket peerUp = message.hasPeerUp() ? message.getPeerUp() : null;
+        final Transport.PeerDownPacket peerDown = message.hasPeerDown() ? message.getPeerDown() : null;
         if (peerUp == null && peerDown == null) {
             return;
         }
@@ -115,24 +115,24 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         event.addParam("distinguisher", peer.getDistinguisher());
         event.addParam("address", InetAddressUtils.str(address(peer.getAddress())));
         event.addParam("as", Long.toString(peer.getAs()));
-        event.addParam("id", Long.toString(peer.getId()));
+        event.addParam("id", InetAddressUtils.str(address(peer.getId())));
 
         // Extract error details
         if (peerDown != null) {
             switch (peerDown.getReasonCase()) {
-                case LOCALBGPNOTIFICATION:
+                case LOCAL_BGP_NOTIFICATION:
                     event.addParam("error", "Local disconnect: " + peerDown.getLocalBgpNotification());
                     break;
 
-                case LOCALNONOTIFICATION:
+                case LOCAL_NO_NOTIFICATION:
                     event.addParam("error", "Local disconnect without notification: code = " + peerDown.getLocalNoNotification());
                     break;
 
-                case REMOTEBGPNOTIFICATION:
+                case REMOTE_BGP_NOTIFICATION:
                     event.addParam("error", "Remote disconnect: " + peerDown.getRemoteBgpNotification());
                     break;
 
-                case REMOTENONOTIFICATION:
+                case REMOTE_NO_NOTIFICATION:
                     event.addParam("error", "Remote disconnect without notification");
                     break;
             }

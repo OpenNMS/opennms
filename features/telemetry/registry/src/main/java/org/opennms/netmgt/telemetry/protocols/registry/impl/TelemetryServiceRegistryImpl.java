@@ -121,7 +121,13 @@ public class TelemetryServiceRegistryImpl<F extends TelemetryBeanFactory, BD ext
             final T service = (T) registration.getServiceFactory().createBean(beanDefinition);
 
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
-            wrapper.setPropertyValues(beanDefinition.getParameterMap());
+//            wrapper.setPropertyValues(beanDefinition.getParameterMap());
+            // TODO fooker: Workaround for unknown properties in BmpIntegrationAdapter (kafka.*) (see https://issues.opennms.org/browse/NMS-12573)
+            for (final Map.Entry<String, String> entry : beanDefinition.getParameterMap().entrySet()) {
+                if (wrapper.isWritableProperty(entry.getKey())) {
+                    wrapper.setPropertyValue(entry.getKey(), entry.getValue());
+                }
+            }
 
             if (registration.shouldAutowire()) {
                 // Autowire!

@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
@@ -117,6 +118,10 @@ public class Header {
                 default:
                     throw new InvalidPacketException(buffer, "Unknown type: %d", type);
             }
+        }
+
+        public <R> R map(final Function<Type, R> mapper) {
+            return mapper.apply(this);
         }
     }
 

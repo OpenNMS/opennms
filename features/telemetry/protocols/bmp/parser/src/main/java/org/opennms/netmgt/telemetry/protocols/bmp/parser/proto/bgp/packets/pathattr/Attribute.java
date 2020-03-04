@@ -39,6 +39,14 @@ public interface Attribute {
         void visit(final MultiExistDisc multiExistDisc);
         void visit(final NextHop nextHop);
         void visit(final Origin origin);
+        void visit(final Community community);
+        void visit(final OriginatorId originatorId);
+        void visit(final ClusterList clusterList);
+        void visit(final ExtendedCommunities extendedCommunities);
+        void visit(final Connector connector);
+        void visit(final AsPathLimit asPathLimit);
+        void visit(final LargeCommunities largeCommunity);
+        void visit(final AttrSet attrSet);
         void visit(final Unknown unknown);
     }
 }

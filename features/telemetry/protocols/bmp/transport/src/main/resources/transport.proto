@@ -31,9 +31,10 @@ message Peer {
             POST_POLICY = 1;
         }
 
-        IpVersion ipVersion = 1;
+        IpVersion ip_version = 1;
         Policy policy = 2;
-        bool legacyAsPath = 3;
+        bool legacy_as_path = 3;
+        bool adjIn = 4;
     }
 
     Type type = 1;
@@ -42,51 +43,60 @@ message Peer {
     fixed64 distinguisher = 3;
     IpAddress address = 4;
     fixed32 as = 5;
-    fixed32 id = 6;
+    IpAddress id = 6;
 
     google.protobuf.Timestamp timestamp = 7;
 }
 
 message InitiationPacket {
-    string sysName = 1;
-    string sysDesc = 2;
-    string message = 3;
+    string sys_name = 1;
+    repeated string sys_desc = 2;
+    repeated string message = 3;
+    repeated string admin_label = 4;
+    IpAddress bgpId = 65531;
 }
 
 message TerminationPacket {
-    repeated string information = 1;
+    repeated string message = 1;
+    uint32 reason = 2;
+    google.protobuf.Empty unknown = 3;
 }
 
 message PeerUpPacket {
     message OpenMessage {
         uint32 version = 1;
         fixed32 as = 2;
-        uint32 holdTime = 3;
-        fixed32 id = 4;
+        uint32 hold_time = 3;
+        IpAddress id = 4;
     }
 
     Peer peer = 1;
 
-    IpAddress localAddress = 2;
-    uint32 localPort = 3;
-    uint32 remotePort = 4;
+    IpAddress local_address = 2;
+    uint32 local_port = 3;
+    uint32 remote_port = 4;
 
-    OpenMessage sendMsg = 5;
-    OpenMessage recvMsg = 6;
+    OpenMessage send_msg = 5;
+    OpenMessage recv_msg = 6;
 
-    string sysName = 7;
-    string sysDesc = 8;
+    string sys_name = 7;
+    string sys_desc = 8;
     string message = 9;
 }
 
 message PeerDownPacket {
     Peer peer = 1;
 
+    message Code {
+        uint32 code = 1;
+        uint32 subcode = 2;
+    }
+
     oneof reason {
-        string localBgpNotification = 2;
-        uint32 localNoNotification = 3;
-        string remoteBgpNotification = 4;
-        google.protobuf.Empty remoteNoNotification = 5;
+        Code local_bgp_notification = 2;
+        uint32 local_no_notification = 3;
+        Code remote_bgp_notification = 4;
+        google.protobuf.Empty remote_no_notification = 5;
         google.protobuf.Empty unknown = 6;
     }
 }
@@ -112,7 +122,7 @@ message RouteMonitoringPacket {
                 }
 
                 Type type = 1;
-                repeated fixed32 path = 2;
+                repeated fixed32 paths = 2;
             }
 
             repeated Segment segments = 1;
@@ -138,6 +148,39 @@ message RouteMonitoringPacket {
             IpAddress address = 2;
         }
 
+        message ClusterList {
+            repeated IpAddress cluster_id = 1;
+        }
+
+        message ExtendedCommunities {
+            repeated ExtendedCommunity extended_communities = 1;
+        }
+
+        message ExtendedCommunity {
+            fixed32 type = 1;
+            bytes value = 2;
+        }
+
+        message AsPathLimit {
+            fixed32 upper_bound = 1;
+            uint32 as = 2;
+        }
+
+        message LargeCommunities {
+            repeated LargeCommunity large_communities = 1;
+        }
+
+        message LargeCommunity {
+            uint32 global_administrator = 1;
+            uint32 local_data_part_1 = 2;
+            uint32 local_data_part_2 = 3;
+        }
+
+        message AttrSet {
+            uint32 origin_as = 1;
+            repeated PathAttribute path_attributes = 2;
+        }
+
         bool optional = 1;
         bool transitive = 2;
         bool partial = 3;
@@ -145,19 +188,27 @@ message RouteMonitoringPacket {
 
         oneof value {
             Origin origin = 5;
-            AsPath asPath = 6;
-            NextHop nextHop = 7;
-            MultiExitDisc multiExitDisc = 8;
-            LocalPref localPref = 9;
-            AtomicAggregate atomicAggregate = 10;
+            AsPath as_path = 6;
+            NextHop next_hop = 7;
+            MultiExitDisc multi_exit_disc = 8;
+            LocalPref local_pref = 9;
+            AtomicAggregate atomic_aggregate = 10;
             Aggregator aggregator = 11;
+            uint32 community = 12;
+            uint32 originator_id = 13;
+            ClusterList cluster_list = 14;
+            ExtendedCommunities extended_communities = 15;
+            fixed32 connector = 16;
+            AsPathLimit as_path_limit = 17;
+            LargeCommunities large_communities = 18;
+            AttrSet attr_set = 19;
         }
     }
 
     Peer peer = 1;
 
-    repeated Route withdraw = 2;
-    repeated Route reachable = 3;
+    repeated Route withdraws = 2;
+    repeated Route reachables = 3;
 
     repeated PathAttribute attributes = 4;
 }
@@ -174,21 +225,36 @@ message StatisticsReportPacket {
     Peer peer = 1;
 
     Counter rejected = 100;
-    Counter duplicatePrefix = 101;
-    Counter duplicateWithdraw = 102;
-    Counter invalidUpdateDueToAsConfedLoop = 103;
-    Counter invalidUpdateDueToAsPathLoop = 104;
-    Counter invalidUpdateDueToClusterListLoop = 105;
-    Counter invalidUpdateDueToOriginatorId = 106;
-    Gauge adjRibIn = 107;
-    Gauge adjRibOut = 108;
-    map<string, Gauge> perAfiAdjRibIn = 109;
-    map<string, Gauge> perAfiLocRib = 110;
-    Counter updateTreatAsWithdraw = 111;
-    Counter prefixTreatAsWithdraw = 112;
+    Counter duplicate_prefix = 101;
+    Counter duplicate_withdraw = 102;
+    Counter invalid_update_due_to_as_confed_loop = 103;
+    Counter invalid_update_due_to_as_path_loop = 104;
+    Counter invalid_update_due_to_cluster_list_loop = 105;
+    Counter invalid_update_due_to_originator_id = 106;
+    Gauge adj_rib_in = 107;
+    Gauge adj_rib_out = 108;
+    map<string, Gauge> per_afi_adj_rib_in = 109;
+    map<string, Gauge> per_afi_local_rib = 110;
+    Counter update_treat_as_withdraw = 111;
+    Counter prefix_treat_as_withdraw = 112;
     Counter duplicate_update = 113;
-    Gauge locRib = 114;
-    Gauge exportRib = 115;
+    Gauge local_rib = 114;
+    Gauge export_rib = 115;
+    map<string, Gauge> per_afi_adj_rib_out = 116;
+    map<string, Gauge> per_afi_export_rib = 117;
+}
+
+message Heartbeat {
+    enum Mode {
+        STARTED = 0;
+        CHANGE = 1;
+        PERIODIC = 2;
+        STOPPED = 3;
+    }
+
+    Mode mode = 1;
+
+    repeated IpAddress routers = 2;
 }
 
 message Message {
@@ -198,11 +264,13 @@ message Message {
     oneof packet {
         InitiationPacket initiation = 5;
         TerminationPacket termination = 6;
-        PeerUpPacket peerUp = 7;
-        PeerDownPacket peerDown = 8;
-        RouteMonitoringPacket routeMonitoring = 9;
-        StatisticsReportPacket statisticsReport = 10;
+        PeerUpPacket peer_up = 7;
+        PeerDownPacket peer_down = 8;
+        RouteMonitoringPacket route_monitoring = 9;
+        StatisticsReportPacket statistics_report = 10;
+
+        Heartbeat heartbeat = 15;
     }
 
-    reserved 11, 12, 13, 14, 15;
+    reserved 11, 12, 13, 14;
 }

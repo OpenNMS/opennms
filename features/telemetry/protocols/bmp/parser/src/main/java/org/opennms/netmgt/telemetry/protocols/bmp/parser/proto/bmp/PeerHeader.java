@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
@@ -36,6 +37,7 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.function.Function;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -53,7 +55,7 @@ public class PeerHeader {
     public final InetAddress address; // 16 bytes
 
     public final long as; // uint32
-    public final long id; // uint32
+    public final InetAddress id; // uint32
 
     public final Instant timestamp; // uint32 (seconds) + uint32(microseconds)
 
@@ -67,7 +69,7 @@ public class PeerHeader {
         this.address = this.flags.parsePaddedAddress(buffer);
 
         this.as = uint32(buffer);
-        this.id = uint32(buffer);
+        this.id = InetAddressUtils.getInetAddress(bytes(buffer, 4));
 
         this.timestamp = Instant.ofEpochSecond(uint32(buffer), uint32(buffer) * 1000);
     }

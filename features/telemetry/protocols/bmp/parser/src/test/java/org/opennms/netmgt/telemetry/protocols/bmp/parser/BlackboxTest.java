@@ -49,16 +49,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.NotificationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Aggregator;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPath;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPathLimit;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AtomicAggregate;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AttrSet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Attribute;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ClusterList;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
@@ -87,9 +94,11 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToAsPathLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToClusterListLoop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.InvalidUpdateDueToOriginatorId;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.LocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibIn;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiAdjRibOut;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiExportRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PerAfiLocalRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.PrefixTreatAsWithdraw;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Rejected;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.UpdateTreatAsWithdraw;
@@ -136,6 +145,46 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(Origin origin) {
             fail("Wrong Attribute Origin");
+        }
+
+        @Override
+        public void visit(Community community) {
+            fail("Wrong Attribute Community");
+        }
+
+        @Override
+        public void visit(OriginatorId originatorId) {
+            fail("Wrong Attribute OriginatorId");
+        }
+
+        @Override
+        public void visit(ClusterList clusterList) {
+            fail("Wrong Attribute ClusterList");
+        }
+
+        @Override
+        public void visit(ExtendedCommunities extendedCommunities) {
+            fail("Wrong Attribute ExtendedCommunities");
+        }
+
+        @Override
+        public void visit(Connector connector) {
+            fail("Wrong Attribute Connector");
+        }
+
+        @Override
+        public void visit(AsPathLimit asPathLimit) {
+            fail("Wrong Attribute AsPathLimit");
+        }
+
+        @Override
+        public void visit(LargeCommunities largeCommunity) {
+            fail("Wrong Attribute LargeCommunity");
+        }
+
+        @Override
+        public void visit(AttrSet attrSet) {
+            fail("Wrong Attribute AttrSet");
         }
 
         @Override
@@ -196,8 +245,8 @@ public class BlackboxTest implements Packet.Visitor {
         }
 
         @Override
-        public void visit(PerAfiLocRib perAfiLocRib) {
-            fail("Wrong Metric PerAfiLocRib");
+        public void visit(PerAfiLocalRib perAfiLocalRib) {
+            fail("Wrong Metric PerAfiLocalRib");
         }
 
         @Override
@@ -211,8 +260,8 @@ public class BlackboxTest implements Packet.Visitor {
         }
 
         @Override
-        public void visit(LocRib locRib) {
-            fail("Wrong Metric LocRib");
+        public void visit(LocalRib localRib) {
+            fail("Wrong Metric LocalRib");
         }
 
         @Override
@@ -223,6 +272,16 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(Rejected rejected) {
             fail("Wrong Metric Rejected");
+        }
+
+        @Override
+        public void visit(PerAfiAdjRibOut perAfiAdjRibOut) {
+            fail("Wrong Metric PerAfiAdjRibOut");
+        }
+
+        @Override
+        public void visit(PerAfiExportRib perAfiExportRib) {
+            fail("Wrong Metric PerAfiExportRib");
         }
 
         @Override
@@ -292,7 +351,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257076L)));
         assertThat(packet.type, is(PeerDownPacket.Type.REMOTE_BGP_NOTIFICATION));
         packet.reason.accept(new Reason.Visitor(){
@@ -310,7 +369,6 @@ public class BlackboxTest implements Packet.Visitor {
             public void visit(RemoteBgpNotification remoteNotification) {
                 assertThat(remoteNotification.notification.header.length, is(21));
                 assertThat(remoteNotification.notification.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.NOTIFICATION));
-                assertThat(remoteNotification.notification.error, is(NotificationPacket.Error.PEER_DECONFIGURED));
             }
 
             @Override
@@ -334,7 +392,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257049L)));
         assertThat(packet.localAddress, is(InetAddressUtils.addr("10.0.255.7")));
         assertThat(packet.localPort, is(179));
@@ -343,13 +401,13 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.sendOpenMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
         assertThat(packet.sendOpenMessage.version, is(4));
         assertThat(packet.sendOpenMessage.as, is(65002));
-        assertThat(packet.sendOpenMessage.id, is(3232238087L));
+        assertThat(packet.sendOpenMessage.id, is(InetAddressUtils.addr("192.168.10.7")));
         assertThat(packet.sendOpenMessage.holdTime, is(90));
         assertThat(packet.recvOpenMessage.header.length, is(45));
         assertThat(packet.recvOpenMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
         assertThat(packet.recvOpenMessage.version, is(4));
         assertThat(packet.recvOpenMessage.as, is(64512));
-        assertThat(packet.recvOpenMessage.id, is(3232238085L));
+        assertThat(packet.recvOpenMessage.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.recvOpenMessage.holdTime, is(90));
         assertThat(packet.information.size(), is(0));
     }
@@ -363,7 +421,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, either(is(Instant.ofEpochSecond(1574257996L))).or(is(Instant.ofEpochSecond(1574257061L))));
 
         assertThat(packet.updateMessage.header.length, either(is(27)).or(is(47)));
@@ -434,7 +492,7 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.distinguisher, is(UnsignedLong.ZERO));
         assertThat(packet.peerHeader.address, is(InetAddressUtils.addr("10.0.255.5")));
         assertThat(packet.peerHeader.as, is(64512L));
-        assertThat(packet.peerHeader.id, is(3232238085L));
+        assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, is(Instant.ofEpochSecond(1574257732L)));
 
         assertThat(packet.statistics.size(), is(4));
@@ -447,11 +505,11 @@ public class BlackboxTest implements Packet.Visitor {
             }
         });
         assertThat(packet.statistics.get(1).length, is(8));
-        assertThat(packet.statistics.get(1).type, is(StatisticsReportPacket.Element.Type.LOC_RIB));
+        assertThat(packet.statistics.get(1).type, is(StatisticsReportPacket.Element.Type.LOCAL_RIB));
         packet.statistics.get(1).value.accept(new MetricVisitorAdapter() {
             @Override
-            public void visit(LocRib locRib) {
-                assertThat(locRib.gauge, is(UnsignedLong.ONE));
+            public void visit(LocalRib localRib) {
+                assertThat(localRib.gauge, is(UnsignedLong.ONE));
             }
         });
         assertThat(packet.statistics.get(2).length, is(4));

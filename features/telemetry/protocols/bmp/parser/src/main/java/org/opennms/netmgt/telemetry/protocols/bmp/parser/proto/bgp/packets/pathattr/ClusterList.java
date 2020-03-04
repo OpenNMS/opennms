@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,17 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
+package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
+
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
+
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+
+import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
 
-public class LocRib extends Gauge {
-    public LocRib(final ByteBuf buffer) {
-        super(buffer);
+public class ClusterList implements Attribute {
+    public final List<InetAddress> clusterIds; // list of uint32
+
+    public ClusterList(final ByteBuf buffer, final PeerFlags flags)  {
+        clusterIds = BufferUtils.repeatRemaining(buffer, segmentBuffer -> InetAddressUtils.getInetAddress(bytes(segmentBuffer, 4)));
     }
 
     @Override
     public void accept(final Visitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("clusterIds", this.clusterIds)
+                .toString();
     }
 }

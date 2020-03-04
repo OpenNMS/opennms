@@ -26,39 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
+import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapterFactory;
+import org.osgi.framework.BundleContext;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.primitives.UnsignedLong;
+public class BmpIntegrationAdapterFactory extends AbstractAdapterFactory {
 
-import io.netty.buffer.ByteBuf;
+    public BmpIntegrationAdapterFactory() {
+        super(null);
+    }
 
-public class PerAfiLocRib implements Metric {
-    public final int afi;            // uint16
-    public final int safi;           // uint8
-    public final UnsignedLong gauge; // uint64
-
-    public PerAfiLocRib(final ByteBuf buffer) {
-        this.afi = uint16(buffer);
-        this.safi = uint8(buffer);
-        this.gauge = uint64(buffer);
+    public BmpIntegrationAdapterFactory(final BundleContext bundleContext) {
+        super(bundleContext);
     }
 
     @Override
-    public void accept(final Visitor visitor) {
-        visitor.visit(this);
+    public Class<? extends Adapter> getBeanClass() {
+        return BmpIntegrationAdapter.class;
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("afi", this.afi)
-                .add("safi", this.safi)
-                .add("gauge", this.gauge)
-                .toString();
+    public Adapter createBean(final AdapterDefinition adapterConfig) {
+        final BmpIntegrationAdapter adapter = new BmpIntegrationAdapter(adapterConfig,
+                                                                       this.getTelemetryRegistry().getMetricRegistry());
+
+        return adapter;
     }
 }

@@ -30,10 +30,14 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
 
+import com.google.common.primitives.UnsignedInts;
 import com.google.protobuf.Timestamp;
 
 public interface BmpAdapterTools {
@@ -49,7 +53,38 @@ public interface BmpAdapterTools {
         }
     }
 
+    static String addressAsStr(final Transport.IpAddress address) {
+        return InetAddressUtils.str(address(address));
+    }
+
     static Instant timestamp(final Timestamp timestamp) {
         return Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
+    }
+
+    static Optional<Transport.RouteMonitoringPacket.PathAttribute> getPathAttributeOfType(Transport.RouteMonitoringPacket routeMonitoring,
+                                                                                                  Transport.RouteMonitoringPacket.PathAttribute.ValueCase pathAttrValueType) {
+        return routeMonitoring.getAttributesList().stream()
+                .filter(p -> Objects.equals(pathAttrValueType, p.getValueCase()))
+                .findFirst();
+    }
+
+    static Stream<Transport.RouteMonitoringPacket.PathAttribute> getPathAttributesOfType(Transport.RouteMonitoringPacket routeMonitoring,
+                                                                                        Transport.RouteMonitoringPacket.PathAttribute.ValueCase pathAttrValueType) {
+        return routeMonitoring.getAttributesList().stream()
+                .filter(p -> Objects.equals(pathAttrValueType, p.getValueCase()));
+    }
+
+    static boolean isV4(Transport.IpAddress ipAddress) {
+        return Transport.IpAddress.AddressCase.V4.equals(ipAddress.getAddressCase());
+    }
+
+    static long uint32(int i) {
+        return UnsignedInts.toLong(i);
+    }
+
+    static String asAttr(final int val) {
+        int as = (val >> 16) & 0xFFFF;
+        int attr = (val >> 0) & 0xFFFF;
+        return String.format("%d:%d", as, attr);
     }
 }
