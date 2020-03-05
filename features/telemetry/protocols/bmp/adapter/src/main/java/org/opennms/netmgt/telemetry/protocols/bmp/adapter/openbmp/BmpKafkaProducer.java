@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 import java.util.Map;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.utils.StringUtils;
@@ -59,7 +60,12 @@ public class BmpKafkaProducer implements BmpMessageHandler {
     }
 
     private static KafkaProducer<String, String> buildProducer(final Map<String, Object> kafkaConfig) {
-        // TODO fooker: Apply defaults (steal from https://github.com/SNAS/openbmp/blob/1a615a3c75a0143cc87ec70458471f0af67d3929/Server/src/kafka/MsgBusImpl_kafka.cpp#L162) (see https://issues.opennms.org/browse/NMS-12574)
+        // Apply some defaults
+        kafkaConfig.putIfAbsent(ProducerConfig.BATCH_SIZE_CONFIG, 100);
+        kafkaConfig.putIfAbsent(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+        kafkaConfig.putIfAbsent(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 1000000);
+        kafkaConfig.putIfAbsent(ProducerConfig.RETRIES_CONFIG, 2);
+        kafkaConfig.putIfAbsent(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 100);
 
         return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
     }
