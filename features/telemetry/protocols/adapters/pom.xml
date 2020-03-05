@@ -7,8 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols</groupId>
-  <artifactId>org.opennms.features.telemetry.protocols.collection</artifactId>
-  <name>OpenNMS :: Features :: Telemetry :: Protocols :: Collection</name>
+  <artifactId>org.opennms.features.telemetry.protocols.adapters</artifactId>
+  <name>OpenNMS :: Features :: Telemetry :: Protocols :: Adapters</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>

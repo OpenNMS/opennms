@@ -77,7 +77,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private final AtomicLong sequence = new AtomicLong();
 
-    private final BmpMessageHandler handler;
+    private final BmpMessageHandler messageHandler;
 
     public enum Error {
         // Message Header Error
@@ -181,16 +181,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
     }
 
     public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
-                                 final MetricRegistry metricRegistry) {
-        super(adapterConfig, metricRegistry);
-        this.handler = new BmpKafkaProducer(adapterConfig);
-    }
-
-    public BmpIntegrationAdapter(final AdapterDefinition adapterConfig,
                                  final MetricRegistry metricRegistry,
-                                 final BmpMessageHandler handler) {
+                                 final BmpMessageHandler messageHandler) {
         super(adapterConfig, metricRegistry);
-        this.handler = Objects.requireNonNull(handler);
+        this.messageHandler = Objects.requireNonNull(messageHandler);
     }
 
     private void handleHeartbeatMessage(final Transport.Message message,
@@ -219,7 +213,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
         collector.timestamp = context.timestamp;
 
-        this.handler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
     }
 
     private void handleInitiationMessage(final Transport.Message message,
@@ -239,7 +233,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
 
-        this.handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
     private void handleTerminationMessage(final Transport.Message message,
@@ -279,7 +273,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        this.handler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
     }
 
     private void handlePeerUpNotification(final Transport.Message message,
@@ -322,7 +316,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
 
-        this.handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
     private void handlePeerDownNotification(final Transport.Message message,
@@ -381,7 +375,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
         peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
 
-        this.handler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
 
     private void handleStatisticReport(final Transport.Message message,
@@ -408,7 +402,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocalRib().getValue();
 
-        this.handler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
     }
 
     private BaseAttribute toBaseAttributeRecord(final Transport.RouteMonitoringPacket routeMonitoring,
@@ -632,10 +626,10 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
         // Forward the messages to the handler
         if (baseAttr != null) {
-            this.handler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
         }
 
-        this.handler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords));
     }
 
     @Override
@@ -688,7 +682,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
     @Override
     public void destroy() {
-        this.handler.close();
+        this.messageHandler.close();
         super.destroy();
     }
 

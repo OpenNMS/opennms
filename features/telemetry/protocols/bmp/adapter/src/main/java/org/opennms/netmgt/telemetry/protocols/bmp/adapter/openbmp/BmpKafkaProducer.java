@@ -47,25 +47,18 @@ public class BmpKafkaProducer implements BmpMessageHandler {
     private final String topicPrefix;
     private final KafkaProducer<String, String> producer;
 
-    public BmpKafkaProducer(final AdapterDefinition adapterConfig) {
-        final String topicPrefix = adapterConfig.getParameterMap().get("topicPrefix");
+    public BmpKafkaProducer(final String topicPrefix,
+                            final Map<String, Object> kafkaConfig) {
         if (topicPrefix != null) {
             this.topicPrefix = String.format("%s.", topicPrefix);
         } else {
             this.topicPrefix = "";
         }
 
-        this.producer = buildProducer(adapterConfig);
+        this.producer = buildProducer(kafkaConfig);
     }
 
-    private static KafkaProducer<String, String> buildProducer(final AdapterDefinition adapterConfig) {
-        final Map<String, Object> kafkaConfig = Maps.newHashMap();
-        for (final Map.Entry<String, String> entry : adapterConfig.getParameterMap().entrySet()) {
-            StringUtils.truncatePrefix(entry.getKey(), "kafka.").ifPresent(key -> {
-                kafkaConfig.put(key, entry.getValue());
-            });
-        }
-
+    private static KafkaProducer<String, String> buildProducer(final Map<String, Object> kafkaConfig) {
         // TODO fooker: Apply defaults (steal from https://github.com/SNAS/openbmp/blob/1a615a3c75a0143cc87ec70458471f0af67d3929/Server/src/kafka/MsgBusImpl_kafka.cpp#L162) (see https://issues.opennms.org/browse/NMS-12574)
 
         return new KafkaProducer<>(kafkaConfig, new StringSerializer(), new StringSerializer());
