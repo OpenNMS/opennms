@@ -118,5 +118,5 @@ snmp:
     snmp4j:
         org.opennms.snmp.snmp4j.allowSNMPv2InV1: true
 ```
-Config specified will be written to `etc/system.properties`. Additionally, provided the
+Config specified will be written to `etc/confd.system.properties` which gets automatically appended to `etc/system.properties`. Additionally, provided the
 `jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.

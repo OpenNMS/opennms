@@ -1,0 +1,7 @@
+[template]
+src = "confd.system.properties.tmpl"
+dest = "/opt/minion/etc/confd.system.properties"
+keys = [
+    "/snmp/snmp4j",
+    "/tracing"
+]
