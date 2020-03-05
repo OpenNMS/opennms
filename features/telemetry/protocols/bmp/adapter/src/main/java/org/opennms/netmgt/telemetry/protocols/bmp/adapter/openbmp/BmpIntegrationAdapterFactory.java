@@ -28,10 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
+import java.util.Map;
+
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapterFactory;
 import org.osgi.framework.BundleContext;
+
+import com.google.common.collect.Maps;
 
 public class BmpIntegrationAdapterFactory extends AbstractAdapterFactory {
 
@@ -50,9 +55,19 @@ public class BmpIntegrationAdapterFactory extends AbstractAdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final BmpIntegrationAdapter adapter = new BmpIntegrationAdapter(adapterConfig,
-                                                                       this.getTelemetryRegistry().getMetricRegistry());
+        // Find topic prefix
+        final String topicPrefix = adapterConfig.getParameterMap().remove("topicPrefix");
 
-        return adapter;
+        // Extract kafka producer config
+        final Map<String, Object> kafkaConfig = Maps.newHashMap();
+        for (final String key : adapterConfig.getParameterMap().keySet()) {
+            StringUtils.truncatePrefix(key, "kafka.").ifPresent(k -> {
+                kafkaConfig.put(k, adapterConfig.getParameterMap().remove(key));
+            });
+        }
+
+        return new BmpIntegrationAdapter(adapterConfig,
+                                         this.getTelemetryRegistry().getMetricRegistry(),
+                                         new BmpKafkaProducer(topicPrefix, kafkaConfig));
     }
 }

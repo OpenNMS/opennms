@@ -36,8 +36,6 @@ import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class BmpParserFactory implements ParserFactory {
     private final TelemetryRegistry telemetryRegistry;
@@ -53,10 +51,7 @@ public class BmpParserFactory implements ParserFactory {
 
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
-        final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        final BmpParser parser = new BmpParser(parserDefinition.getName(), dispatcher, telemetryRegistry.getMetricRegistry());
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
-        wrapper.setPropertyValues(parserDefinition.getParameterMap());
-        return parser;
+        final AsyncDispatcher<TelemetryMessage> dispatcher = this.telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
+        return new BmpParser(parserDefinition.getName(), dispatcher, this.telemetryRegistry.getMetricRegistry());
     }
 }
