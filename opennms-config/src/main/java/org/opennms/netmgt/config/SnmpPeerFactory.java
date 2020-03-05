@@ -43,7 +43,6 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
@@ -53,6 +52,7 @@ import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
@@ -90,8 +90,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpPeerFactory.class);
 
     private static final int VERSION_UNSPECIFIED = -1;
-
-    private static final String DEFAULT_LOCATION = "Default";
 
     private static File s_configFile;
 
@@ -517,18 +515,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private boolean matchDefinition(Definition definition, InetAddress inetAddress, String location) {
-        String locationFromDefinition = definition.getLocation();
-        if(DEFAULT_LOCATION.equals(location)) {
-            location = null;
-        }
-        if(DEFAULT_LOCATION.equals(definition.getLocation())) {
-            locationFromDefinition = null;
-        }
-        boolean locationMatched = Objects.equals(location, locationFromDefinition);
-        if(locationMatched) {
-            return matchingIpAddress(inetAddress, definition);
-        }
-        return false;
+        boolean locationMatched =  LocationUtils.doesLocationsMatch(location, definition.getLocation());
+        return locationMatched && matchingIpAddress(inetAddress, definition);
     }
 
     private static boolean matchingIpAddress(InetAddress inetAddress, Definition definition) {
