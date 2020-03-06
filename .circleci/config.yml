@@ -497,16 +497,6 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Minion container image
-          command: |
-            cd opennms-container/minion
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/container.oci
-          destination: minion.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -514,7 +504,6 @@ jobs:
           root: ~/
           paths:
             - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/minion/images/
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
