@@ -938,8 +938,8 @@
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
-        <bundle dependency="true">mvn:org.lz4/lz4-java/1.4</bundle>
-        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.4</bundle>
+        <bundle dependency="true">mvn:org.lz4/lz4-java/1.6.0</bundle>
+        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.7.3</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <!-- These are only needed for  servicemix implementation of kafka streams -->
         <!--
