@@ -77,6 +77,18 @@ ipc:
 Config specified will be written to `etc/org.opennms.core.ipc.sink.kafka.cfg`. Additionally, provided the
 `bootstrap.servers` key is specified, `etc/featuresBoot.d/kafka-sink.boot` will also be updated.
 
+### Sink Off Heap
+```
+--- 
+ipc:
+    sink:
+        offheap:
+            offHeapSize: "1GB"
+            entriesAllowedOnHeap: 100000
+            offHeapFilePath: ""
+```
+Config specified will be written to `etc/org.opennms.core.ipc.sink.offheap.cfg`.
+
 ### Flows
 To configure flows on a single port, the following key can be provided.
 ```
@@ -112,11 +124,11 @@ Config specified will be written to `etc/org.opennms.netmgt.trapd.cfg`.
 ### System Properties
 ```
 --- 
-tracing:
-    jaeger-agent-host: "<host>"
-snmp:
-    snmp4j:
+system:
+    properties:
+        jaeger-agent-host: "<host>"
         org.opennms.snmp.snmp4j.allowSNMPv2InV1: true
+        # Any other keys necessary can be specified here
 ```
 Config specified will be written to `etc/confd.system.properties` which gets automatically appended to `etc/system.properties`. Additionally, provided the
 `jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.

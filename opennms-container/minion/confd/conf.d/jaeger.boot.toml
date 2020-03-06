@@ -2,6 +2,6 @@
 src = "jaeger.boot.tmpl"
 dest = "/opt/minion/etc/featuresBoot.d/jaeger.boot"
 keys = [
-    "/tracing"
+    "/system/properties/jaeger-agent-host"
 ]
 reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/featuresBoot.d/jaeger.boot"

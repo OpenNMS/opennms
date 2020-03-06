@@ -17,6 +17,7 @@ MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
 CONFD_CONFIG_DIR="/opt/minion/confd"
 CONFD_BIN="/usr/local/bin/confd"
+CONFD_CONFIG_FILE="$CONFD_CONFIG_DIR/confd.toml"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 
@@ -175,7 +176,7 @@ runConfd() {
     mkdir -p "$dirToCreate"
   done < "$CONFD_CONFIG_DIR"/directories
 
-  "$CONFD_BIN" -log-level debug -onetime -backend=file -file "$CONFD_KEY_STORE" -confdir "$CONFD_CONFIG_DIR"
+  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
 }
 
 # Order of precedence is (later overwrites former):
