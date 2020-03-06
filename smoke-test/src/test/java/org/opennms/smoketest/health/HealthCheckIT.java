@@ -96,7 +96,7 @@ public class HealthCheckIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("opennms-health:check");
+                        pipe.println("opennms:health-check");
                         pipe.println("logout");
 
                         // Wait for karaf to process the commands
@@ -119,7 +119,7 @@ public class HealthCheckIT {
                         // checks succeeded and overall status is "AWESOME". This way we avoid updating this test each time a new health check is added
                         return count >= expectedHealthCheckServices && overallStatus.contains("awesome");
                     } catch (Exception ex) {
-                        LOG.error("Error while trying to verify opennms-health:check: {}", ex.getMessage());
+                        LOG.error("Error while trying to verify opennms:health-check: {}", ex.getMessage());
                         return false;
                     }
                 });
@@ -131,7 +131,7 @@ public class HealthCheckIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("opennms-health:metrics-display");
+                        pipe.println("opennms:metrics-display");
                         pipe.println("logout");
 
                         await().atMost(15, SECONDS).until(sshClient.isShellClosedCallable());
@@ -144,7 +144,7 @@ public class HealthCheckIT {
                         LOG.info("{}", shellOutput);
                         return count;
                     } catch (Exception ex) {
-                        LOG.error("Error while trying to verify opennms-health:check: {}", ex.getMessage());
+                        LOG.error("Error while trying to verify opennms:health-check: {}", ex.getMessage());
                         return 0;
                     }
                 }, greaterThanOrEqualTo(1));

@@ -48,7 +48,7 @@ import org.opennms.netmgt.graph.shell.completer.NamespaceCompleter;
 import org.opennms.netmgt.graph.shell.completer.SuggestionCompleter;
 
 @Service
-@Command(scope = "opennms-graph", name = "search", description="Searches vertices in a given namespace (graph)")
+@Command(scope = "opennms", name = "graph-search", description="Searches vertices in a given namespace (graph)")
 public class GraphSearchCommand implements Action {
 
     @Reference

@@ -52,7 +52,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "opennms-meta", name = "test", description = "Test Meta-Data replacement")
+@Command(scope = "opennms", name = "metadata-test", description = "Test Meta-Data replacement")
 @Service
 public class MetaCommand implements Action {
 
