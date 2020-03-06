@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.timeseries.integration;
 
+import static org.opennms.netmgt.timeseries.integration.NewtsConverterUtils.samplesToNewtsRowIterator;
 import static org.opennms.netmgt.timeseries.integration.Utils.asMap;
 
 import java.io.File;
@@ -35,6 +36,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,13 +71,16 @@ import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.integration.aggregation.SampleAggregator;
+import org.opennms.netmgt.timeseries.integration.aggregation.NewtsLikeSampleAggregator;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.SampleSelectCallback;
 import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.api.query.AggregationFunction;
+import org.opennms.newts.api.query.ResultDescriptor;
+import org.opennms.newts.api.query.StandardAggregationFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +93,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import lombok.Data;
 
 /**
  * Used to retrieve measurements from {@link org.opennms.newts.api.SampleRepository}.
@@ -296,13 +303,16 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
                     // aggregate if timeseries implementation didn't do it natively)
                     if (!shouldAggregateNatively) {
-                        samples = SampleAggregator.builder()
-                                .expectedMetric(metric)
-                                .samples(samples)
-                                .aggregation(aggregation)
-                                .startTime(startInstant)
-                                .endTime(endInstant)
-                                .bucketSize(Duration.ofMillis(lag.getStep())).build().computeAggregatedSamples();
+                        final List<Source> currentSources = Collections.singletonList(source);
+                        final ResultDescriptor resultDescriptor = createResultDescriptor(currentSources, lag);
+                        samples = NewtsLikeSampleAggregator.builder()
+                                .resource(new Resource(resourceId))
+                                .start(start.or(Timestamp.fromEpochMillis(0)))
+                                .end(end.or(Timestamp.now()))
+                                .resolution(org.opennms.newts.api.Duration.millis(lag.getStep()))
+                                .resultDescriptor(resultDescriptor)
+                                .metric(metric)
+                                .build().process(samplesToNewtsRowIterator(samples, currentSources));
                     }
                     allSamples.add(samples);
                 }
@@ -336,6 +346,20 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         };
     }
 
+    private ResultDescriptor createResultDescriptor(final List<Source> listOfSources, final LateAggregationParams lag) {
+        ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
+        for (Source source : listOfSources) {
+            // Use the datasource as the metric name if set, otherwise use the name of the attribute
+            final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
+            final String name = source.getLabel();
+            final AggregationFunction fn = toAggregationFunction(source.getAggregation());
+
+            resultDescriptor.datasource(name, metricName, lag.getHeartbeat(), fn);
+            resultDescriptor.export(name);
+        }
+        return resultDescriptor;
+    }
+
     private static Aggregation toAggregation(String fn) {
         if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
             return Aggregation.AVERAGE;
@@ -348,7 +372,18 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         }
     }
 
-
+    // Newts
+    private static AggregationFunction toAggregationFunction(String fn) {
+        if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
+            return StandardAggregationFunctions.AVERAGE;
+        } else if ("max".equalsIgnoreCase(fn)) {
+            return StandardAggregationFunctions.MAX;
+        } else if ("min".equalsIgnoreCase(fn)) {
+            return StandardAggregationFunctions.MIN;
+        } else {
+            throw new IllegalArgumentException("Unsupported aggregation function: " + fn);
+        }
+    }
 
     private Callable<OnmsResource> getResourceByIdCallable(final ResourceId resourceId) {
         return new Callable<OnmsResource>() {
@@ -383,23 +418,11 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     };
 
     @VisibleForTesting
+    @Data
     protected static class LateAggregationParams {
         final long step;
         final long interval;
-
-        public LateAggregationParams(long step, long interval) {
-            this.step = step;
-            this.interval = interval;
-        }
-
-        public long getStep() {
-            return step;
-        }
-
-        public long getInterval() {
-            return interval;
-        }
-
+        final long heartbeat;
     }
 
     /**
@@ -445,7 +468,20 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             effectiveInterval = effectiveStep / INTERVAL_DIVIDER;
         }
 
-        return new LateAggregationParams(effectiveStep, effectiveInterval);
+        // Use the given heartbeat if specified, fall back to the default
+        long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
+        if (effectiveInterval < effectiveHeartbeat) {
+            if (effectiveHeartbeat % effectiveInterval != 0) {
+                effectiveHeartbeat += effectiveInterval - (effectiveHeartbeat % effectiveInterval);
+            } else {
+                // Existing heartbeat is valid
+            }
+        } else {
+            effectiveHeartbeat = effectiveInterval + 1;
+            effectiveHeartbeat += effectiveHeartbeat % effectiveInterval;
+        }
+
+        return new LateAggregationParams(effectiveStep, effectiveInterval, effectiveHeartbeat);
     }
 
     @VisibleForTesting

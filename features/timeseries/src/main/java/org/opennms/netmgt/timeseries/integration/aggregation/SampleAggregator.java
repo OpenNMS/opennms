@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.timeseries.integration.aggregation;
 
 import java.time.Duration;

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.timeseries.integration;
 
+import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -95,7 +96,8 @@ public class TimeseriesFetchStrategyTest {
     @Before
     public void setUp() {
         resourceDao = EasyMock.createNiceMock(ResourceDao.class);
-        this.timeSeriesStorage = EasyMock.createNiceMock(TimeSeriesStorage.class);
+        this.timeSeriesStorage = Mockito.mock(TimeSeriesStorage.class);
+        when(timeSeriesStorage.supportsAggregation(Aggregation.AVERAGE)).thenReturn(true);
         storageManager = Mockito.mock(TimeseriesStorageManager.class);
         when(storageManager.get()).thenReturn(this.timeSeriesStorage);
         storageManager.onBind(this.timeSeriesStorage, new HashMap<String, String>());
@@ -107,7 +109,7 @@ public class TimeseriesFetchStrategyTest {
 
     @After
     public void tearDown() {
-        EasyMock.verify(resourceDao, timeSeriesStorage);
+        EasyMock.verify(resourceDao);
     }
 
     @Test
@@ -243,13 +245,13 @@ public class TimeseriesFetchStrategyTest {
 
     public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) throws StorageException {
         OnmsResourceType nodeType = EasyMock.createMock(OnmsResourceType.class);
-        EasyMock.expect(nodeType.getName()).andReturn("nodeSource").anyTimes();
-        EasyMock.expect(nodeType.getLabel()).andReturn("nodeSourceTypeLabel").anyTimes();
+        expect(nodeType.getName()).andReturn("nodeSource").anyTimes();
+        expect(nodeType.getLabel()).andReturn("nodeSourceTypeLabel").anyTimes();
         EasyMock.replay(nodeType);
 
         OnmsResourceType type = EasyMock.createMock(OnmsResourceType.class);
-        EasyMock.expect(type.getName()).andReturn("newtsTypeName").anyTimes();
-        EasyMock.expect(type.getLabel()).andReturn("newtsTypeLabel").anyTimes();
+        expect(type.getName()).andReturn("newtsTypeName").anyTimes();
+        expect(type.getLabel()).andReturn("newtsTypeLabel").anyTimes();
         EasyMock.replay(type);
 
         final int nodeId = node.hashCode();
@@ -301,14 +303,14 @@ public class TimeseriesFetchStrategyTest {
 
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .metric(metric)
-                .aggregation(Aggregation.NONE) // we do the aggregation in the JVM
+                .aggregation(Aggregation.AVERAGE)
                 .start(Instant.ofEpochMilli(START_TIME))
                 .end(Instant.ofEpochMilli(END_TIME))
                 .step(Duration.ofMillis(STEP))
                 .build();
 
         if (expect) {
-            EasyMock.expect(timeSeriesStorage.getTimeseries(request)).andReturn(results);
+            when(timeSeriesStorage.getTimeseries(request)).thenReturn(results);
         }
 
         final Source source = new Source();
@@ -323,9 +325,9 @@ public class TimeseriesFetchStrategyTest {
 
     private void replay() {
         for (Entry<ResourceId, OnmsResource> entry : resources.entrySet()) {
-            EasyMock.expect(resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
+            expect(resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue()).anyTimes();
         }
 
-        EasyMock.replay(resourceDao, timeSeriesStorage);
+        EasyMock.replay(resourceDao);
     }
 }
