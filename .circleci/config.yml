@@ -312,7 +312,16 @@ workflows:
             - build
       - minion-rpm-build:
           requires:
-            - build
+            - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
       - sentinel-rpm-build:
           requires:
             - build
@@ -322,7 +331,7 @@ workflows:
       - smoke-test-full:
           requires:
             - horizon-rpm-build
-            - minion-rpm-build
+            - minion-deb-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -389,16 +398,7 @@ workflows:
                 - /.*smoke.*/
       - minion-deb-build:
           requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
+            - build
       - sentinel-deb-build:
           requires:
             - integration-test
