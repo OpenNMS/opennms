@@ -106,7 +106,7 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
 
         if (!exporterNodeId.isPresent()) {
-            LOG.warn("Unable to find node for exporter address: {}", exporterAddress);
+            LOG.info("Unable to find node for exporter address: {}", exporterAddress);
 
             if (message.hasBgpId()) {
                 final String bgpId = InetAddressUtils.toIpAddrString(address(message.getBgpId()));

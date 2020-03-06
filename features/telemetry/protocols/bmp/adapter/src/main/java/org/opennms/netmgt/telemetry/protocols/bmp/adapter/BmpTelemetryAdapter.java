@@ -132,7 +132,7 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
                     public ExporterInfo doInTransaction(final TransactionStatus transactionStatus) {
                         final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), InetAddressUtils.toIpAddrString(bgpId));
 
-                        if (nodes.size() > 0) {
+                        if (!nodes.isEmpty()) {
                             if (nodes.size() > 1) {
                                 LOG.warn("More that one node match bgpId: {}", bgpId);
                             }
