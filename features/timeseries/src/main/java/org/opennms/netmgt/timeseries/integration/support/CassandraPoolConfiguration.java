@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
  * Loads the Cassandra pool configuration from system properties and exposes these as named beans.
  * Uses a value of null if no system property is set (which allows the driver to use it's own defaults.)
  */
+// TODO Patrick: remove?
 @Configuration
 public class CassandraPoolConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(CassandraPoolConfiguration.class);

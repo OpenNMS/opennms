@@ -9,3 +9,10 @@ These implementations require a deep knowledge of OpenNMS. It is hard to add ano
 
 With the rise of many new time series databases we want to provide an easy way to support another timseries database with minimal effort.
 This lead to the development of the _Timeseries Integration Layer_.
+
+The  _Timeseries Integration Layer_ allows to integrate a new timeseries database vis osgi plugin.
+Examples of timeseries plugins:
+
+* https://github.com/opennms-forge/timeseries-integration-inmemory[In Memory]
+* https://github.com/opennms-forge/timeseries-integration-influxdb[InfluxDB]
+* https://github.com/opennms-forge/timeseries-integration-timescale[TimescaleDB]

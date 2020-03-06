@@ -70,8 +70,6 @@ public abstract class TimeseriesUtils {
 
     public static final String PORT_PROPERTY = "org.opennms.newts.config.port";
 
-    public static final String TTL_PROPERTY = "org.opennms.newts.config.ttl";
-
     public static final String DEFAULT_HOSTNAME = "localhost";
 
     public static final String DEFAULT_KEYSPACE = "newts";
