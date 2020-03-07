@@ -93,7 +93,7 @@ With the configuration in place, you can test it using the `collect` command ava
 
 [source]
 ----
-opennms-collection:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
+opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
 
 ===== Caveats

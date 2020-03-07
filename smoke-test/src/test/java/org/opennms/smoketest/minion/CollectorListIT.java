@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Verifies the output of "opennms-collection:list-collectors" on both OpenNMS and Minion.
+ * Verifies the output of "opennms:list-collectors" on both OpenNMS and Minion.
  */
 public class CollectorListIT {
 
@@ -101,14 +101,14 @@ public class CollectorListIT {
         try (final SshClient sshClient = new SshClient(sshAddr, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
             // List the collectors
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms-collection:list-collectors");
+            pipe.println("opennms:list-collectors");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
 
-            shellOutput = StringUtils.substringAfter(shellOutput, "opennms-collection:list-collectors");
+            shellOutput = StringUtils.substringAfter(shellOutput, "opennms:list-collectors");
             LOG.info("Collectors output: {}", shellOutput);
             Set<String> collectors = new HashSet<>();
             for (String collector : shellOutput.split("\\r?\\n")) {

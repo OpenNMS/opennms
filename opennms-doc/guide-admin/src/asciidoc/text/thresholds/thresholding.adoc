@@ -35,11 +35,11 @@ When a thresholding changes to/from trigger or cleared, and event is published w
 
 The following shell commands are made available to help debug and manage thresholding.
 
-Enumerate the persisted threshold states using `opennms-threshold-states:enumerate`:
+Enumerate the persisted threshold states using `opennms:threshold-enumerate`:
 
 [source]
 ----
-admin@opennms> opennms-threshold-states:enumerate 
+admin@opennms> opennms:threshold-enumerate 
 Index   State Key
 1       23-127.0.0.1-hrStorageIndex-hrStorageUsed / hrStorageSize * 100.0-/opt/opennms/share/rrd/snmp-RELATIVE_CHANGE
 2       23-127.0.0.1-if-ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100-/opt/opennms/share/rrd/snmp-HIGH
@@ -50,11 +50,11 @@ Index   State Key
 Each state is uniquely identified by a `state key` and aliased by the given `index`.
 Indexes are scoped to the particular shell session and provided as an alternative to specifying the complete state key in subsequent commands.
 
-Display state details using `opennms-threshold-states:details`:
+Display state details using `opennms:threshold-details`:
 
 [source]
 ----
-admin@opennms> opennms-threshold-states:details 1
+admin@opennms> opennms:threshold-details 1
 multiplier=1.333
 lastSample=64.77758166043765
 previousTriggeringSample=28.862826722171075
@@ -63,7 +63,7 @@ interpolatedExpression='hrStorageUsed / hrStorageSize * 100.0'
 
 [source]
 ----
-admin@opennms> opennms-threshold-states:details 2
+admin@opennms> opennms:threshold-details 2
 exceededCount=0
 armed=true
 interpolatedExpression='ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100'
@@ -71,17 +71,17 @@ interpolatedExpression='ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100'
 
 NOTE: Different types of thresholds will display different properties.
 
-Clear a particular persisted state using `opennms-threshold-states:clear`:
+Clear a particular persisted state using `opennms:threshold-clear`:
 
 [source]
 ----
-admin@opennms> opennms-threshold-states:clear 2
+admin@opennms> opennms:threshold-clear 2
 ----
 
-Or clear all the persisted states with `opennms-threshold-states:clear-all`:
+Or clear all the persisted states with `opennms:threshold-clear-all`:
 
 [source]
 ----
-admin@opennms> opennms-threshold-states:clear-all 
+admin@opennms> opennms:threshold-clear-all 
 Clearing all thresholding states....done
 ----

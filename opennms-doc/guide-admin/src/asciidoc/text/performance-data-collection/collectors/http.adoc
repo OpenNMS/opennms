@@ -65,5 +65,5 @@ Once added to `etc/http-datacollection-config.xml` you can test it using the `co
 
 [source]
 ----
-opennms-collection:collect org.opennms.netmgt.collectd.HttpCollector 127.0.0.1 collection=opennms-copyright port=8980
+opennms:collect org.opennms.netmgt.collectd.HttpCollector 127.0.0.1 collection=opennms-copyright port=8980
 ----

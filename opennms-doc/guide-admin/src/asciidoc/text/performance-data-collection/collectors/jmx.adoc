@@ -74,7 +74,7 @@ Here is a snippet providing a collection definition named `opennms-poller`:
 Once added to `etc/jmx-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
 
 ----
-opennms-collection:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
+opennms:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
 ----
 
 ===== Generic Resource Type

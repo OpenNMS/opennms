@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.network.IPAddressRange;
+import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.google.common.net.InetAddresses;
 
 public class IpValue {
 
@@ -67,14 +68,16 @@ public class IpValue {
                 }
                 // Ensure each range is an ip address
                 for (StringValue rangedValue : rangedValues) {
-                    verifyIpAddress(rangedValue);
+                    if (rangedValue.contains("/")) {
+                        throw new IllegalArgumentException("Ranged value may not contain a CIDR expression");
+                    }
                 }
-                // Verify the range itself
-                final IPAddressRange range = new IPAddressRange(rangedValues.get(0).getValue(), rangedValues.get(1).getValue());
-                ranges.add(range);
+                ranges.add(new IPAddressRange(rangedValues.get(0).getValue(), rangedValues.get(1).getValue()));
+            } else if (eachValue.getValue().contains("/")) {
+                // Value may be a CIDR address - build range for it
+                ranges.add(parseCIDR(eachValue.getValue()));
             } else {
-                verifyIpAddress(eachValue);
-                ranges.add(new IPAddressRange(eachValue.getValue(), eachValue.getValue()));
+                ranges.add(new IPAddressRange(eachValue.getValue()));
             }
         }
     }
@@ -83,10 +86,36 @@ public class IpValue {
         return ranges.stream().anyMatch(r -> r.contains(address));
     }
 
-    private static void verifyIpAddress(final StringValue stringValue) {
-        Objects.requireNonNull(stringValue);
-        if (!InetAddresses.isInetAddress(stringValue.getValue())) {
-            throw new IllegalArgumentException("Provided ip address '" + stringValue.getValue() + "' is invalid");
+    public static IPAddressRange parseCIDR(final String cidr) {
+        final int slashIndex = cidr.indexOf('/');
+        if (slashIndex == -1) {
+            throw new IllegalArgumentException("Value is not a CIDR expression");
         }
+
+        final byte[] address = InetAddressUtils.toIpAddrBytes(cidr.substring(0, slashIndex));
+        final int mask = Integer.parseInt(cidr.substring(slashIndex + 1));
+
+        // Mask the lower bound with all zero
+        final byte[] lower = Arrays.copyOf(address, address.length);
+        for (int i = lower.length - 1; i >= mask / 8; i--) {
+            if (i*8 >= mask) {
+                lower[i] = (byte) 0x00;
+            } else {
+                lower[i] &= 0xFF << (8 - (mask - i * 8));
+            }
+        }
+
+        // Mask the upper bound with all ones
+        final byte[] upper = Arrays.copyOf(address, address.length);
+        for (int i = upper.length - 1; i >= mask / 8; i--) {
+            if (i*8 >= mask) {
+                upper[i] = (byte) 0xFF;
+            } else {
+                upper[i] |= 0xFF >> (mask - i * 8);
+            }
+        }
+
+        return new IPAddressRange(InetAddressUtils.toIpAddrString(lower),
+                                  InetAddressUtils.toIpAddrString(upper));
     }
 }

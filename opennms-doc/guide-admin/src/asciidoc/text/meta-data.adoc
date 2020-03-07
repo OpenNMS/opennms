@@ -93,7 +93,7 @@ Some environments also provide additional scopes which are not backed by the per
 To test an expression, there is a karaf shell command which interpolates a string containing a pattern to the final result:
 [source]
 ----
-admin@opennms> opennms-meta:test -n 1 -i 192.168.0.100 -s ICMP '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
+admin@opennms> opennms:metadata-test -n 1 -i 192.168.0.100 -s ICMP '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
 ---
 Meta-Data for node (id=1)
 fruits:

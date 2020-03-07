@@ -43,7 +43,7 @@ Configure the plugin options by setting the following properties in `${OPENNMS_H
 
 NOTE: The transition names for `resolve` and `reopen` are typically found on buttons when looking at the ticket in JIRA
 
-NOTE: Either use `opennms-jira:list-issue-types` _OSGI Command_ or https://confluence.atlassian.com/display/JIRA050/Finding+the+Id+for+Issue+Types for determining the appropriate issue type id.
+NOTE: Either use `opennms:jist-list-issue-types` _OSGI Command_ or https://confluence.atlassian.com/display/JIRA050/Finding+the+Id+for+Issue+Types for determining the appropriate issue type id.
 
 Next, add `jira-troubleticketer` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
 
@@ -66,7 +66,7 @@ There are OSGI Commands to list all available projects, versions, components, gr
 
 To list all available commands simply type `help | grep jira` in the _Karaf Shell_.
 
-Afterwards you can type for example `opennms-jira:list-projects --help` to determine the usage of a command.
+Afterwards you can type for example `opennms:jira-list-projects --help` to determine the usage of a command.
 
 
 ==== Custom fields
@@ -114,7 +114,7 @@ end
 ----
 
 Fields must be referenced by their `id`.
-To identify the `id` of a field, the `opennms-jira:list-fields` command can be used.
+To identify the `id` of a field, the `opennms:jira-list-fields` command can be used.
 By default only custom fields are shown.
 The `-s` options allows to show all fields.
 This may be necessary if JIRA default values need to be set as well, e.g. the Component, the Reporter, the Asignee, etc.
@@ -183,7 +183,7 @@ The following jira (custom) fields have been tested with jira version `6.3.15`:
 NOTE: All other field types are mapped as is and therefore may not work.
 
 ===== Examples
-The following output is the result of the command `opennms-jira:list-fields -h http://localhost:8080 -u admin -p testtest -k DUM -i Bug -s` and lists all available fields for project with key `DUM` and issue type `Bug`:
+The following output is the result of the command `opennms:jira-list-fields -h http://localhost:8080 -u admin -p testtest -k DUM -i Bug -s` and lists all available fields for project with key `DUM` and issue type `Bug`:
 
 [source]
 ----
@@ -249,4 +249,4 @@ When troubleshooting, consult the following log files:
 * ${OPENNMS_HOME}/data/log/karaf.log
 * ${OPENNMS_HOME}/logs/trouble-ticketer.log
 
-You can also try the `opennms-jira:verify` _OSGI Command_ to help identifying problems in your configuration.
+You can also try the `opennms:jira-verify` _OSGI Command_ to help identifying problems in your configuration.
