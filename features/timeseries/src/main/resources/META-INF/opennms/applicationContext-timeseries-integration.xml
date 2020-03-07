@@ -116,7 +116,7 @@
 
   <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
-  <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
+  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 <!--
   <bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/>
 -->

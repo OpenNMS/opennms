@@ -51,10 +51,10 @@ public class TimeseriesPersister extends AbstractPersister {
     private final Context context;
     private TimeseriesPersistOperationBuilder builder;
 
-    protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter newtsWriter, Context context) {
+    protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter, Context context) {
         super(params, repository);
         this.repository = repository;
-        writer = newtsWriter;
+        writer = timeseriesWriter;
         this.context = context;
     }
 

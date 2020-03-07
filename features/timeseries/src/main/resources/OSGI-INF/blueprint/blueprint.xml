@@ -163,7 +163,7 @@
         <argument ref="contextConfigurations" />
     </bean>
 
-    <bean id="newtsWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" >
+    <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" >
         <argument value="[[max_batch_size]]" />
         <argument value="[[ring_buffer_size]]" />
         <argument value="[[writer_threads]]" />
@@ -176,7 +176,7 @@
         <property name="searchableCache" ref="resourceMetadataCache" />
         <property name="searcher" ref="cassandraSearcher" />
         <property name="context" ref="defaultContext" />
-        <property name="newtsWriter" ref="newtsWriter" />
+        <property name="timeseriesWriter" ref="timeseriesWriter" />
         <property name="indexer" ref="cassandraIndexer" />
         <property name="sampleRepository" ref="cassandraSampleRepository" />
     </bean>
@@ -184,7 +184,7 @@
 
     <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" >
         <argument ref="defaultContext"/>
-        <argument ref="newtsWriter" />
+        <argument ref="timeseriesWriter" />
     </bean>
 
     <service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="timeseriesPersisterFactory">

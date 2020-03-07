@@ -150,7 +150,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private void setUpWorkerPool() {
         // Executor that will be used to construct new threads for consumers
         final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("NewtsWriter-Consumer-%d").build();
+                .setNameFormat("TimeseriesWriter-Consumer-%d").build();
         final Executor executor = Executors.newCachedThreadPool(namedThreadFactory);
 
         @SuppressWarnings("unchecked")
