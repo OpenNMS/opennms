@@ -346,7 +346,7 @@ workflows:
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
-            - minion-rpm-build
+            - minion-deb-build
             - sentinel-rpm-build
           filters:
             branches:
