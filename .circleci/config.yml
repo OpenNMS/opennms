@@ -597,6 +597,9 @@ jobs:
           name: Prepare Docker build
           command: |
             cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*.tar.gz opennms-container/minion/tarball/minion.tar.gz
+            # TODO: Fix this bug, we double gzip the archive
+            gzip -d opennms-container/minion/tarball/minion.tar.gz
+            mv opennms-container/minion/tarball/minion.tar opennms-container/minion/tarball/minion.tar.gz
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
