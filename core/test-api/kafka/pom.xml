@@ -96,11 +96,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.101tec</groupId>
-      <artifactId>zkclient</artifactId>
-      <version>0.10</version>
-    </dependency>
-    <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scalaLibraryVersion}</version>
