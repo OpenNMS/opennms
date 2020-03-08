@@ -591,9 +591,18 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: 
+          name: Prepare Docker build
+          command: |
+            cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*.tar.gz opennms-container/minion/tarball/minion.tar.gz
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/tarball/minion.tar.gz
+          destination: minion.tar.gz
       - persist_to_workspace:
           root: ~/
           paths:
