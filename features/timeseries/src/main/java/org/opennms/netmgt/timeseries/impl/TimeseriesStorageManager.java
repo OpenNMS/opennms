@@ -68,7 +68,8 @@ public class TimeseriesStorageManager {
             if(storage != null) {
                 this.stackOfStorages.addIfAbsent(storage);
             } else {
-                LOG.warn("Could not find a TimeSeriesStorage implementation. The collection of metrics won't work properly. Please refer to the documentation."); // TODO: Patrick add link
+                LOG.warn("Could not find a TimeSeriesStorage implementation. The collection of metrics won't work properly." +
+                        " Please refer to the documentation: https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-opennms-operation-timeseries");
             }
         }
         return getOrNull();

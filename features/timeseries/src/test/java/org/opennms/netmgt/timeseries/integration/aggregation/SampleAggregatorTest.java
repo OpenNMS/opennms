@@ -30,7 +30,7 @@ package org.opennms.netmgt.timeseries.integration.aggregation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.timeseries.OpennmsAsserts.assertThrows;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -133,7 +133,7 @@ public class SampleAggregatorTest {
 
         sample(10, 10);
         samples.add(ImmutableSample.builder().metric(wrongMetric).time(Instant.ofEpochMilli(11)).value(11d).build());
-        assertThrows(IllegalArgumentException.class, () -> compute(Aggregation.AVERAGE, 10, 24, 5));
+        assertThrowsException(IllegalArgumentException.class, () -> compute(Aggregation.AVERAGE, 10, 24, 5));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class SampleAggregatorTest {
                 .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
                 .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
                 .tag(CommonTagNames.resourceId, "otherResource").build();
-        assertThrows(NullPointerException.class, () -> compute(null, 10, 24, 5));
+        assertThrowsException(NullPointerException.class, () -> compute(null, 10, 24, 5));
         // assertThrows(NullPointerException.class, () -> compute(Aggregation.AVERAGE, 10, 24, 5));
     }
 

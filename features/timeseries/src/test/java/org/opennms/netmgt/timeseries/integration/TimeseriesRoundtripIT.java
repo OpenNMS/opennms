@@ -85,9 +85,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.timeseries.strategy=integration",
-//        "mock.db.adminUser=admin", // TODO Patrick: remove?
-//        "mock.db.adminPassword=password" // TODO Patrick: remove?
+        "org.opennms.timeseries.strategy=integration"
 })
 @JUnitTemporaryDatabase(dirtiesContext=true)
 public class TimeseriesRoundtripIT {
