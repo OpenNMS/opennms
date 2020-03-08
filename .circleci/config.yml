@@ -600,16 +600,25 @@ jobs:
             # TODO: Fix this bug, we double gzip the archive
             gzip -d opennms-container/minion/tarball/minion.tar.gz
             mv opennms-container/minion/tarball/minion.tar opennms-container/minion/tarball/minion.tar.gz
+      - run:
+          name: Build Minion OCI
+          command: |
+            cd opennms-container/minion
+            ./build_container_image.sh
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
       - store_artifacts:
           path: ~/project/opennms-container/minion/tarball/minion.tar.gz
           destination: minion.tar.gz
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/container.oci
+          destination: minion.oci
       - persist_to_workspace:
           root: ~/
           paths:
             - project/target/debs/
+            - project/opennms-container/minion/images/
   sentinel-deb-build:
     executor: debian-build-executor
     resource_class: large
