@@ -12,13 +12,6 @@ source ../registry-config.sh
 # shellcheck source=opennms-container/version-n-tags.sh
 source ../version-tags.sh
 
-# OpenNMS Minion packages
-MINION_PACKAGES="opennms-minion"
-
-for PKG in ${MINION_PACKAGES}; do 
-  cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
-done
-
 docker build -t minion \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg VERSION="${VERSION}" \

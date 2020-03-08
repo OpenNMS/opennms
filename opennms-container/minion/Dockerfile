@@ -1,72 +1,37 @@
 ##
-# Use Java base image and setup required RPMS as cacheable image.
+# Pre-stage image to extract and manipulate Minion directory structure
+# Normally we install to /opt/minion and not /opt/minion-26.0.0-SNAPSHOT
+# To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
+# as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.5.10-b3108"
+ARG BASE_IMAGE="opennms/deploy-base"
+ARG BASE_IMAGE_VERSION="1.0.0"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as minion-base
 
-ARG REQUIRED_RPMS="wget gettext jicmp jicmp6 openssh-clients"
+ADD ./tarball/minion.tar.gz /opt/
 
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
+RUN mv /opt/minion-* /opt/minion
 
-SHELL ["/bin/bash", "-c"]
-
-# Collect generic steps in a layer for caching
-RUN rpm --import "${REPO_KEY_URL}" && \
-    dnf -y install epel-release && \
-    dnf -y install "${REPO_RPM}" && \
-    dnf -y install ${REQUIRED_RPMS} && \
-    dnf clean all && \
-    rm -rf /var/cache/yum
-
-# Allow to send ICMP messages as non-root user
-RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
-    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
-    ldconfig
-
-# Create Minion user with a specific group ID
-RUN groupadd -g 10001 minion && \
-    adduser -u 10001 -g 10001 -d /opt/minion -s /usr/bin/bash minion
-
-# Create SSH Key-Pair to use with the Karaf Shell
-RUN mkdir /opt/minion/.ssh && \
-    chmod 700 /opt/minion/.ssh && \
-    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N ""
-
-##
-# Install and setup OpenNMS Minion RPMS
-##
-FROM minion-base
-
-ARG USER="minion"
-
-# A default which installs the minimum required Minion packages
-ARG MINION_PACKAGES="opennms-minion"
-
-# Allow to install optional packages via YUM
-ARG ADD_YUM_PACKAGES
-
-COPY ./rpms /tmp/rpms
-
-SHELL ["/bin/bash", "-c"]
-
-# Install repositories, system and OpenNMS packages and do some cleanup
-RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y install /tmp/rpms/*.rpm; else dnf -y install ${MINION_PACKAGES}; fi && \
-    if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
-    rm -rf /tmp/rpms && \
-    dnf clean all && \
-    rm -rf /var/cache/yum && \
-    sed -r -i '/RUNAS/s/.*/export RUNAS=${USER}/' /etc/sysconfig/minion && \
-    echo minion=$(cat /opt/minion/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/minion/etc/keys.properties && \
-    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties && \
-    chown 10001:10001 -R /opt/minion && \
+RUN groupadd --gid 10001 minion && \
+    useradd --system --uid 10001 --gid minion minion && \
+    chown 10001 /opt/minion -R && \
     chgrp -R 0 /opt/minion && \
-    chmod -R g=u /opt/minion && \
-    chmod 600 /opt/minion/.ssh/id_rsa
+    chmod -R g=u /opt/minion
 
-COPY ./assets/* /
+##
+# Prod image with minimal image size
+##
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+
+RUN groupadd --gid 10001 minion && \
+    useradd --system --uid 10001 --gid minion minion
+
+COPY assets/* /
+
+# If you copy from /opt/minion to /opt/minion the permissions are not preserved
+# We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
+COPY --from=minion-base /opt /opt
 
 # Install confd
 ARG CONFD_VERSION="0.16.0"
@@ -101,10 +66,8 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
 
-WORKDIR /opt/minion
-
-### Containers should NOT run as root as a good practice
 USER 10001
+WORKDIR /opt/minion
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
