@@ -29,10 +29,13 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.netmgt.flows.api.EnrichedFlow;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.NodeInfo;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -318,7 +321,7 @@ public class FlowDocument {
      */
     @SerializedName("node_src")
     private NodeDocument nodeSrc;
-    
+
     public void addHost(String host) {
         Objects.requireNonNull(host);
         hosts.add(host);
@@ -724,4 +727,137 @@ public class FlowDocument {
 
         return doc;
     }
+
+    public static EnrichedFlow buildEnrichedFlow(FlowDocument flowDocument) {
+
+        EnrichedFlow enrichedFlow = new EnrichedFlow();
+        enrichedFlow.setApplication(flowDocument.getApplication());
+        enrichedFlow.setHost(flowDocument.getHost());
+        enrichedFlow.setLocation(flowDocument.getLocation());
+        enrichedFlow.setDstLocality(matchLocality(flowDocument.getDstLocality()));
+        enrichedFlow.setSrcLocality(matchLocality(flowDocument.getSrcLocality()));
+        enrichedFlow.setFlowLocality(matchLocality(flowDocument.getFlowLocality()));
+        enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
+        enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
+        enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
+        enrichedFlow.setTimeStamp(flowDocument.getTimestamp());
+        enrichedFlow.setBytes(flowDocument.getBytes());
+        enrichedFlow.setDstAddr(flowDocument.getDstAddr());
+        enrichedFlow.setDirection(matchDirection(flowDocument.getDirection()));
+        enrichedFlow.setDstAddrHostName(flowDocument.getDstAddrHostname());
+        enrichedFlow.setDstAs(flowDocument.getDstAs());
+        enrichedFlow.setDstMaskLen(flowDocument.getDstMaskLen());
+        enrichedFlow.setDstPort(flowDocument.getDstPort());
+        enrichedFlow.setEngineId(flowDocument.getEngineId());
+        enrichedFlow.setEngineType(flowDocument.getEngineType());
+        enrichedFlow.setFirstSwitched(flowDocument.getFirstSwitched());
+        enrichedFlow.setFlowRecords(flowDocument.getFlowRecords());
+        enrichedFlow.setFlowSeqNum(flowDocument.getFlowSeqNum());
+        enrichedFlow.setInputSnmp(flowDocument.getInputSnmp());
+        enrichedFlow.setIpProtocolVersion(flowDocument.getIpProtocolVersion());
+        enrichedFlow.setLastSwitched(flowDocument.getLastSwitched());
+        enrichedFlow.setNextHopAddr(flowDocument.getNextHop());
+        enrichedFlow.setNextHopHostName(flowDocument.getNextHop());
+        enrichedFlow.setOutputSnmp(flowDocument.getOutputSnmp());
+        enrichedFlow.setPackets(flowDocument.getPackets());
+        enrichedFlow.setProtocol(flowDocument.getProtocol());
+        enrichedFlow.setSamplingAlgorithm(matchSamplingAlgorithm(flowDocument.getSamplingAlgorithm()));
+        enrichedFlow.setSamplingInterval(flowDocument.getSamplingInterval());
+        enrichedFlow.setSrcAddr(flowDocument.getSrcAddr());
+        enrichedFlow.setSrcAddrHostName(flowDocument.getSrcAddrHostname());
+        enrichedFlow.setSrcAs(flowDocument.getSrcAs());
+        enrichedFlow.setSrcMaskLen(flowDocument.getSrcMaskLen());
+        enrichedFlow.setSrcPort(flowDocument.getSrcPort());
+        enrichedFlow.setTcpFlags(flowDocument.getTcpFlags());
+        enrichedFlow.setDeltaSwitched(flowDocument.getDeltaSwitched());
+        enrichedFlow.setTos(flowDocument.getTos());
+        enrichedFlow.setNetflowVersion(matchNetflowVersion(flowDocument.getNetflowVersion()));
+        enrichedFlow.setVlan(flowDocument.getVlan());
+        return enrichedFlow;
+
+    }
+
+    private static EnrichedFlow.Locality matchLocality(Locality locality) {
+        switch (locality) {
+            case PUBLIC:
+                return EnrichedFlow.Locality.PUBLIC;
+            case PRIVATE:
+                return EnrichedFlow.Locality.PRIVATE;
+        }
+        return EnrichedFlow.Locality.PUBLIC;
+    }
+
+    private static Flow.Direction matchDirection(Direction direction) {
+        switch (direction) {
+            case EGRESS:
+                return Flow.Direction.EGRESS;
+            case INGRESS:
+                return Flow.Direction.INGRESS;
+        }
+        return Flow.Direction.INGRESS;
+    }
+
+    private static Flow.NetflowVersion matchNetflowVersion(NetflowVersion netflowVersion) {
+        switch (netflowVersion) {
+            case V5:
+                return Flow.NetflowVersion.V5;
+            case V9:
+                return Flow.NetflowVersion.V9;
+            case IPFIX:
+                return Flow.NetflowVersion.IPFIX;
+            case SFLOW:
+                return Flow.NetflowVersion.SFLOW;
+        }
+        return null;
+    }
+
+    private static Flow.SamplingAlgorithm matchSamplingAlgorithm(SamplingAlgorithm samplingAlgorithm) {
+        switch (samplingAlgorithm) {
+            case Unassigned:
+                return Flow.SamplingAlgorithm.Unassigned;
+            case SystematicCountBasedSampling:
+                return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
+            case SystematicTimeBasedSampling:
+                return Flow.SamplingAlgorithm.SystematicTimeBasedSampling;
+            case RandomNoutOfNSampling:
+                return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
+            case UniformProbabilisticSampling:
+                return Flow.SamplingAlgorithm.UniformProbabilisticSampling;
+            case PropertyMatchFiltering:
+                return Flow.SamplingAlgorithm.PropertyMatchFiltering;
+            case HashBasedFiltering:
+                return Flow.SamplingAlgorithm.HashBasedFiltering;
+            case FlowStateDependentIntermediateFlowSelectionProcess:
+                return Flow.SamplingAlgorithm.FlowStateDependentIntermediateFlowSelectionProcess;
+        }
+        return Flow.SamplingAlgorithm.Unassigned;
+    }
+
+    private static NodeInfo buildNodeInfo(NodeDocument nodeDocument) {
+        if (nodeDocument == null) {
+            return null;
+        }
+        return new NodeInfo() {
+            @Override
+            public Integer getNodeId() {
+                return nodeDocument.getNodeId();
+            }
+
+            @Override
+            public String getForeignId() {
+                return nodeDocument.getForeignId();
+            }
+
+            @Override
+            public String getForeignSource() {
+                return nodeDocument.getForeignSource();
+            }
+
+            @Override
+            public List<String> getCategories() {
+                return nodeDocument.getCategories();
+            }
+        };
+    }
+
 }

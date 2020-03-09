@@ -58,6 +58,7 @@ import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
@@ -164,6 +165,10 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSettings indexSettings;
 
+    private final EnrichedFlowForwarder enrichedFlowForwarder;
+
+    private boolean enableFlowForwarding = false;
+
     /**
      * Cache for marking nodes and interfaces as having flows.
      *
@@ -174,8 +179,8 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
-                                 Identity identity, TracerRegistry tracerRegistry, IndexSettings indexSettings,
-                                 int bulkRetryCount, long maxFlowDurationMs) {
+                                 Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
+                                 IndexSettings indexSettings, int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -187,6 +192,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.indexSelector = new IndexSelector(indexSettings, INDEX_NAME, indexStrategy, maxFlowDurationMs);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
+        this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -238,8 +244,14 @@ public class ElasticFlowRepository implements FlowRepository {
         } catch (Exception e) {
             throw new FlowException("Failed to enrich one or more flows.", e);
         }
-
+        if(enableFlowForwarding) {
+            // Persist to kafka.
+            LOG.debug("Forwarding {} flow documents to Kafka", flowDocuments.size());
+            flowDocuments.stream().map(FlowDocument::buildEnrichedFlow).forEach(enrichedFlowForwarder::forward);
+        }
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
+
+
         final Tracer tracer = getTracer();
         try (final Timer.Context ctx = logPersistingTimer.time();
              Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
@@ -941,5 +953,9 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenApply(v -> futures.stream()
                         .map(CompletableFuture::join)
                         .collect(collector));
+    }
+
+    public void setEnableFlowForwarding(boolean enableFlowForwarding) {
+        this.enableFlowForwarding = enableFlowForwarding;
     }
 }
