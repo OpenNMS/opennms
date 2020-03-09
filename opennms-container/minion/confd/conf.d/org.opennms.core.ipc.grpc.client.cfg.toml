@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.core.ipc.grpc.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.core.ipc.grpc.cfg"
+keys = [
+    "/ipc/grpc"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.core.ipc.grpc.cfg"

@@ -35,6 +35,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,5 +74,25 @@ public class OverlayUtilsTest {
         assertThat(target.toPath().resolve("b").toFile().isDirectory(), equalTo(true));
         assertThat(target.toPath().resolve("b").resolve("c").toFile().isFile(), equalTo(true));
         assertThat(target.toPath().resolve("c").toFile().isFile(), equalTo(true));
+    }
+    
+    @Test
+    public void testMergingMaps() {
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("base", "basevalue");
+        
+        Map<String, Object> submap1 = new HashMap<>();
+        submap1.put("submapbase", "submapvalue");
+        
+        map1.put("submap", submap1);
+
+        Map<String, Object> newMap = new HashMap<>();
+        Map<String, Object> newSubmap = new HashMap<>();
+        newSubmap.put("newsub", "newsubvalue");
+        newMap.put("submap", newSubmap);
+        
+        OverlayUtils.mergeMaps(map1, newMap);
+        
+        System.out.println(map1);
     }
 }

@@ -1,0 +1,3 @@
+{{range gets "/ipc/grpc/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

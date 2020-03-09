@@ -1,0 +1,8 @@
+---
+telemetry:
+  flows:
+    single-port: 50000
+
+netmgt:
+  traps:
+    trapd.listen.interface: "0.0.0.0"
