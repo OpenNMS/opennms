@@ -31,7 +31,7 @@ COPY assets/* /
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
-COPY --from=minion-base /opt /opt
+COPY --chown=10001:0 --from=minion-base /opt /opt
 
 # Install confd
 ARG CONFD_VERSION="0.16.0"
