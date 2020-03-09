@@ -97,7 +97,8 @@ telemetry:
     flows:
         single-port: <port num>
 ```
-Config specified will be written to `etc/org.opennms.features.telemtry.listeners-udp-single-port.cfg`.
+Config specified will be written to `etc/org.opennms.features.telemtry.listeners-udp-single-port.cfg`. For
+configurations other than single port config, the configuration must be supplied via overlay rather than via confd.
 
 ### Syslog
 ```
