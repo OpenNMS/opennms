@@ -3,22 +3,38 @@
 :imagesdir: ../../../images
 
 [[ga-threshd-introduction]]
-_{opennms-product-name}_ has the ability to monitor the performance of a managed entity's resource(s) by using various thresholding techniques.
+
+Thresholding allows you to define triggers against any numeric data retrieved by the SNMP collector [other data collectors?], and from those triggers, generate events, notifications, and alarms. 
+_{opennms-product-name}_ uses four thresholding techniques (algorithms):
+
+* *Low* - triggers when value of the data source equals or drops below the threshold value and rearms when it equals or comes back up above the rearm value (e.g., available disk space falls under the specified value)
+* *High* - triggers when the value of the data source equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value (e.g., bandwidth use exceeds the specified amount)
+* *Absolute* - measured value changes by specified amount (e.g., on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem)
+* *Relative* - measured value changes by percent (e.g., did the available disk space change more than 5% from the last poll)
+
+These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression).
+
+[_{opennms-product-name}_ has the ability to monitor the performance of a managed entity's resource(s) by using various thresholding techniques.
 These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
-This includes, but is not limited to metrics such as: CPU Load, Bandwidth, Disk space, etc.
+This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc.]
 
-There are a few basic thresholding algorithms available within OpenNMS:
 
-* High
-* Low
-* Absolute Value
-* Relative Change
+=== Configuring a Threshold
+
+Configuring a threshold involves the following:
+
+* Enabling data collection for the metrics you need to monitor using thresholds
+* Specifying the nodes/interfaces on which you want to apply the threshold
+* Creating a service definition
+* Creating a threshold group
+* Activating the thresholds
+
 
 === Thresholding Service
 
 The Thresholding Service is the component responsible for maintaining the state of the performance metrics and for generating alarms from these when thresholds are triggered (armed) or cleared (unarmed).
 
-The thresholding services listens for and visits performance metrics _after_ they are persisted to the time series database.
+The thresholding service listens for and visits performance metrics _after_ they are persisted to the time series database.
 
 The state of the thresholds are held in memory and pushed to persistent storage only when they are changed.
 
