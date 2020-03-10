@@ -18,16 +18,40 @@ These thresholds can be *basic* (tested against a single value) or an *expressio
 These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
 This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc.]
 
-
+[[threshold-config]]
 === Configuring a Threshold
 
 Configuring a threshold involves the following:
 
-* Enabling data collection for the metrics you need to monitor using thresholds
+* <<data-enable, Enabling data collection for the metrics you need to monitor using thresholds>>
 * Specifying the nodes/interfaces on which you want to apply the threshold
 * Creating a service definition
 * Creating a threshold group
 * Activating the thresholds
+
+[[data-enable]]
+==== Enable Data Collection
+
+[[threshold-pkg]]
+==== Specify Nodes/Interfaces for Threshold
+
+[[threshold-service]]
+==== Create a Service Definition
+
+[[threshold-group]]
+==== Create a Threshold Group
+A threshold group associates a set of thresholds to a service (e.g., thresholds that apply to all Cisco devices). _{opennms-product-name}_ includes seven preconfigured threshold groups:
+
+* mib2
+* cisco
+* hrstorage
+* netsnmp
+* juniper-srx
+* netsnmp-memory-linux
+* netsnmp-memory-nonlinux
+
+
+
 
 
 === Thresholding Service
