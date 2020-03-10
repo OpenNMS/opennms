@@ -44,7 +44,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 
-@Command(scope = "opennms-kafka-producer", name = "sync-alarms", description = "Triggers a syncrhonization of the alarms topic against the database.")
+@Command(scope = "opennms", name = "kafka-sync-alarms", description = "Triggers a syncrhonization of the alarms topic against the database.")
 @Service
 public class SyncAlarms implements Action {
 

@@ -71,12 +71,12 @@ Once added to `etc/jdbc-datacollection-config.xml` you can test it using the `co
 
 [source]
 ----
-opennms-collection:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats data-source=opennms
+opennms:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats data-source=opennms
 ----
 
 To test this same collection on _Minion_ you must specify the _JDBC_ settings as service attributes, for example:
 
 [source]
 ----
-opennms-collection:collect -l MINION org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats driver=org.postgresql.Driver url=jdbc:postgresql://localhost:5432/opennms user=opennms password=opennms
+opennms:collect -l MINION org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats driver=org.postgresql.Driver url=jdbc:postgresql://localhost:5432/opennms user=opennms password=opennms
 ----

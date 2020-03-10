@@ -1,3 +1,13 @@
+opennms (25.2.1-1) stable; urgency=high
+
+  * New stable release.  It contains a number of small improvements as well as a
+    few bug fixes and a security fix for an HQL injection bug.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/25.2.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 03 Mar 2020 12:14:00 -0400
+
 opennms (25.2.0-1) stable; urgency=low
 
   * New stable release.  It contains a number of bug fixes including a performance

@@ -187,12 +187,12 @@ Note that changes to `eventd-configuration.xml` require a full restart of {openn
 
 ==== Karaf Shell
 
-The `opennms-events:show-event-config` command can be used to render the event definition for one or more event UEIs (matching a substring) to _XML_.
+The `opennms:show-event-config` command can be used to render the event definition for one or more event UEIs (matching a substring) to _XML_.
 This command is useful for displaying event definitions which may not be easily accessible on disk, or verifying that particular events were actually loaded.
 
 [source]
 ----
 $ ssh -p 8101 admin@localhost
 ...
-admin@opennms()> opennms-events:show-event-config -u uei.opennms.org/alarms
+admin@opennms()> opennms:show-event-config -u uei.opennms.org/alarms
 ----
