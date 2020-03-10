@@ -153,11 +153,11 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
     
     private void writeMinionConfigYaml(Path minionConfigYaml) throws IOException {
-        // Allow other users to read the folder
-        OverlayUtils.setOverlayPermissions(minionConfigYaml);
-
         // Copy over the default configuration from the class-path
-        FileUtils.copyFile(new File(MountableFile.forClasspathResource("minion-config.yaml").getFilesystemPath()), minionConfigYaml.toFile());
+        FileUtils.copyFile(new File(MountableFile.forClasspathResource("minion-config/minion-config.yaml").getFilesystemPath()), minionConfigYaml.toFile());
+        
+        // Allow other users to read the file
+        OverlayUtils.setOverlayPermissions(minionConfigYaml);
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             String kafkaRpc = "{\n" +
