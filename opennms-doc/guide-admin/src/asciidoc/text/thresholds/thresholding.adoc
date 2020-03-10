@@ -40,17 +40,17 @@ Configuring a threshold involves the following:
 
 [[threshold-group]]
 ==== Create a Threshold Group
-A threshold group associates a set of thresholds to a service (e.g., thresholds that apply to all Cisco devices). _{opennms-product-name}_ includes seven preconfigured threshold groups:
+A threshold group associates a set of thresholds to a service (e.g., thresholds that apply to all Cisco devices). _{opennms-product-name}_ includes seven preconfigured, editable threshold groups:
 
-* mib2
-* cisco
-* hrstorage
-* netsnmp
-* juniper-srx
-* netsnmp-memory-linux
-* netsnmp-memory-nonlinux
+* mib2 
+* cisco 
+* hrstorage 
+* netsnmp 
+* juniper-srx 
+* netsnmp-memory-linux 
+* netsnmp-memory-nonlinux 
 
-
+You can edit an existing group or create a new one. 
 
 
 
