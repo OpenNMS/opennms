@@ -33,11 +33,13 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -46,6 +48,8 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -54,8 +58,12 @@ import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapt
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
@@ -66,9 +74,28 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    private String metaDataNodeLookup;
+    private ContextKey contextKey;
+    private NodeDao nodeDao;
+    private TransactionTemplate transactionTemplate;
+
+    private static class ExporterInfo {
+        public final int nodeId;
+        public final InetAddress nodeAddress;
+
+        public ExporterInfo(int nodeId, InetAddress nodeAddress) {
+            this.nodeId = nodeId;
+            this.nodeAddress = nodeAddress;
+        }
+    }
+
     public BmpTelemetryAdapter(final AdapterDefinition adapterConfig,
-                               final MetricRegistry metricRegistry) {
+                               final MetricRegistry metricRegistry,
+                               final NodeDao nodeDao,
+                               final TransactionTemplate transactionTemplate) {
         super(adapterConfig, metricRegistry);
+        this.nodeDao = nodeDao;
+        this.transactionTemplate = transactionTemplate;
     }
 
     @Override
@@ -91,12 +118,51 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         final Transport.StatisticsReportPacket stats = message.getStatisticsReport();
 
         // Find the node for the router who has exported the stats and build a collection agent for it
-        final InetAddress exporterAddress = InetAddressUtils.getInetAddress(messageLog.getSourceAddress());
-        final Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
+        InetAddress exporterAddress = InetAddressUtils.getInetAddress(messageLog.getSourceAddress());
+        Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
+
         if (!exporterNodeId.isPresent()) {
-            LOG.warn("Unable to find node and interface for agent address: {}", exporterAddress);
-            return Stream.empty();
+            LOG.warn("Unable to find node for exporter address: {}", exporterAddress);
+
+            if (message.hasBgpId()) {
+                final InetAddress bgpId = address(message.getBgpId());
+
+                final ExporterInfo exporterInfo = transactionTemplate.execute(new TransactionCallback<ExporterInfo>() {
+                    @Override
+                    public ExporterInfo doInTransaction(final TransactionStatus transactionStatus) {
+                        final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), InetAddressUtils.toIpAddrString(bgpId));
+
+                        if (!nodes.isEmpty()) {
+                            if (nodes.size() > 1) {
+                                LOG.warn("More that one node match bgpId: {}", bgpId);
+                            }
+                            final OnmsNode firstNode = nodes.get(0);
+
+                            if (firstNode.containsInterface(bgpId)) {
+                                return new ExporterInfo(firstNode.getId(), bgpId);
+                            } else {
+                                return new ExporterInfo(firstNode.getId(), firstNode.getPrimaryInterface().getIpAddress());
+                            }
+
+                        } else {
+                            LOG.warn("Unable to find node for bgpId: {}", bgpId);
+                            return null;
+                        }
+                    }
+                });
+
+                if (exporterAddress == null) {
+                    return Stream.empty();
+                }
+
+                exporterNodeId = Optional.of(exporterInfo.nodeId);
+                exporterAddress = exporterInfo.nodeAddress;
+
+            } else {
+                return Stream.empty();
+            }
         }
+
         final CollectionAgent agent = this.collectionAgentFactory.createCollectionAgent(Integer.toString(exporterNodeId.get()), exporterAddress);
 
         // Extract peer details
@@ -154,5 +220,19 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
 
     public void setInterfaceToNodeCache(final InterfaceToNodeCache interfaceToNodeCache) {
         this.interfaceToNodeCache = interfaceToNodeCache;
+    }
+
+    public String getMetaDataNodeLookup() {
+        return metaDataNodeLookup;
+    }
+
+    public void setMetaDataNodeLookup(String metaDataNodeLookup) {
+        this.metaDataNodeLookup = metaDataNodeLookup;
+
+        if (!Strings.isNullOrEmpty(this.metaDataNodeLookup)) {
+            this.contextKey = new ContextKey(metaDataNodeLookup);
+        } else {
+            this.contextKey = null;
+        }
     }
 }

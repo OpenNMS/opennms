@@ -33,13 +33,17 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
@@ -50,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpPeerStatusAdapter extends AbstractAdapter {
@@ -60,14 +65,21 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
 
     private final EventForwarder eventForwarder;
 
+    private final NodeDao nodeDao;
+
+    private String metaDataNodeLookup;
+    private ContextKey contextKey;
+
     public BmpPeerStatusAdapter(final AdapterDefinition adapterConfig,
                                 final InterfaceToNodeCache interfaceToNodeCache,
                                 final EventForwarder eventForwarder,
-                                final MetricRegistry metricRegistry) {
+                                final MetricRegistry metricRegistry,
+                                final NodeDao nodeDao) {
         super(adapterConfig, metricRegistry);
 
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
+        this.nodeDao = nodeDao;
     }
 
     @Override
@@ -91,10 +103,28 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
 
         // Find the node for the router who has exported the peer status notification
         final InetAddress exporterAddress = InetAddressUtils.getInetAddress(messageLog.getSourceAddress());
-        final Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
+        Optional<Integer> exporterNodeId = this.interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), exporterAddress);
+
         if (!exporterNodeId.isPresent()) {
-            LOG.warn("Unable to find node for exporter: {}", exporterAddress);
-            return;
+            LOG.info("Unable to find node for exporter address: {}", exporterAddress);
+
+            if (message.hasBgpId()) {
+                final String bgpId = InetAddressUtils.toIpAddrString(address(message.getBgpId()));
+                final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), bgpId);
+
+                if (nodes.size() > 0) {
+                    if (nodes.size() > 1) {
+                        LOG.warn("More that one node match bgpId: {}", bgpId);
+                    }
+
+                    exporterNodeId = Optional.of(nodes.get(0).getId());
+                } else {
+                    LOG.warn("Unable to find node for bgpId: {}", bgpId);
+                    return;
+                }
+            } else {
+                return;
+            }
         }
 
         final String uei = peerUp != null
@@ -139,5 +169,19 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
         }
 
         this.eventForwarder.sendNow(event.getEvent());
+    }
+
+    public String getMetaDataNodeLookup() {
+        return metaDataNodeLookup;
+    }
+
+    public void setMetaDataNodeLookup(String metaDataNodeLookup) {
+        this.metaDataNodeLookup = metaDataNodeLookup;
+
+        if (!Strings.isNullOrEmpty(this.metaDataNodeLookup)) {
+            this.contextKey = new ContextKey(metaDataNodeLookup);
+        } else {
+            this.contextKey = null;
+        }
     }
 }
