@@ -21,11 +21,8 @@ This includes, but is not limited to metrics such as CPU load, bandwidth, disk s
 [[threshold-bw]]
 === Basic Walkthrough – Thresholding
 
-This section describes how to create a threshold for a single, system-wide variable: the number of logged-in users. 
+This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
 Our threshold will tell OpenNMS to create an event when the number of logged in users exceeds two, and rearm when it falls below two. 
-
-This tutorial assumes you have the following:
-* 
 
 ==== Determine That You are Collecting the Metric
 In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
@@ -41,11 +38,38 @@ TIP: If you are not collecting this metric, see xx for information.
 
 ==== Create a Threshold
 
+. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
+. Under Performance Measurement, choose Configure Thresholds.
+.. A screen with a list of pre-configured threshold groups appears.
+We will work with `netsnmp`.
+For infomation on how to create a threshold group, see <<threshold-group, Creating a threshold group>>. 
+. Click `Edit` beside the `netsnmp` group. 
+. Click Create New Threshold at the bottom of the Basic Thresholds area of the screen. 
+. Set the following information:
 
+|===
 
+| Field | Value | Description
+| Type | high | 
+| Datasource | hrSystemNumUsers| This is the name of the datasource you want to threshold against. 
+For information on how to determine the datasource, see <<datasource-determine, Determine the Datasource>>
+Where it comes from: mib2.xml - group name - there are tons of these - F5 (if you have that kind of load balancer) - data from other management protocols - outside the scope of this tutorial
 
+| Datasource label| leave blank | Optional text label. 
+Not required for this tutorial.
+| Value| 2 | The value above which we want to trigger an event. 
+| Re-arm | 2 | The value below which we want the system to re-arm. 
+| Trigger | 3 | The number of consecutive times the threshold value can occur before the system triggers an event. 
+Since our default polling period is 5 minutes, a value of 3 means OpenNMS 
+would create a threshold event if there is more than 2 users for 15 minutes. 
 
+|===
 
+[[datasource-determine]]
+=== Determine the Datasource
+What information do we need from the graph - search for the title of the graph, can discover the datasource
+
+NOTE: To determine a datasource from a different management protocol, ...
 
 Configuring a threshold involves the following:
 
