@@ -18,8 +18,34 @@ These thresholds can be *basic* (tested against a single value) or an *expressio
 These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
 This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc.]
 
-[[threshold-config]]
-=== Configuring a Threshold
+[[threshold-bw]]
+=== Basic Walkthrough – Thresholding
+
+This section describes how to create a threshold for a single, system-wide variable: the number of logged-in users. 
+Our threshold will tell OpenNMS to create an event when the number of logged in users exceeds two, and rearm when it falls below two. 
+
+This tutorial assumes you have the following:
+* 
+
+==== Determine That You are Collecting the Metric
+In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
+We are also using data collected via SNMP. 
+
+. In OpenNMS, choose `Reports>Resource Graphs`.
+. Select one of the listed resources [how do they know?]
+. Under `SNMP Node Data`, select `Node-leve Performance Data` and choose `Graph Selection`.
+. Scroll to find the *Number of Users* graph. 
+.. If you want, you can click the binoculars icon to display only this graph. 
+
+TIP: If you are not collecting this metric, see xx for information. 
+
+==== Create a Threshold
+
+
+
+
+
+
 
 Configuring a threshold involves the following:
 
