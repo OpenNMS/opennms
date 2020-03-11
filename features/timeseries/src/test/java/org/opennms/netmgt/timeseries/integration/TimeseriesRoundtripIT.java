@@ -159,18 +159,20 @@ public class TimeseriesRoundtripIT {
 
         testForNumericAttribute("snmp:1:metrics", "m1", 900d);
         testForNumericAttribute("snmp:1:metrics", "m2", 1000d);
+        testForStringAttribute("snmp/1/metrics", "idx-m2", "m2"); // Identified
         testForStringAttribute("snmp/1", "sysname", "host1");
-        testForStringAttribute("snmp/1/metrics", "m2", "m2");
 
         testForNumericAttribute("snmp:1:if-x:if-metrics", "m3", 44d);
         testForNumericAttribute("snmp:1:if-x:if-metrics", "m4", 55d);
+        testForStringAttribute("snmp/1/if-x/if-metrics", "idx-m4", "m4"); // Identified
         testForStringAttribute("snmp/1/if-x", "ifname", "eth0");
-        testForStringAttribute("snmp/1/if-x/if-metrics", "m4", "m4");
 
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m5", 66d);
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "idx-m6", "m6"); // Identified
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "m6", "m6");
+        // TODO: Discuss with Jesse if we expect to get the identifier of a StringAttribute back
+        // testForStringAttribute("snmp/1/gen-metrics", "oops", "genname"); // Identified
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
