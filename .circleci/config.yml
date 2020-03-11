@@ -458,10 +458,19 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Assemble tarballs
-          # Workaround: In run-build we set -Dbuild.skip.tarball=true which is required for assemble.pl
-          # We have to run the compile.pl to get the .tar.gz.
+          name: multiarch/qemu-user-static
+          command: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Install Docker buildx
           command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+      - run:
+          name: Assemble tarballs
+          # Install fake makensis to satisfy the assemble dependency
+          command: |
+            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             ./assemble.pl -Dopennms.home=/opt/opennms \
                           -DskipTests \
                           -DupdatePolicy=never
@@ -472,13 +481,25 @@ jobs:
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/opennms.tar.gz \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/minion.tar.gz \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/sentinel.tar.gz \;
+      - run:
+          name: Get Minion tarball in Docker build context
+          command: cp target/tarballs/minion.tar.gz opennms-container/minion/tarball
+      - run:
+          name: Build Minion OCI
+          command: |
+            cd opennms-container/minion
+            ./build_container_image.sh
       - store_artifacts:
           path: ~/project/target/tarballs
           destination: tarballs
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/container.oci
+          destination: minion.oci  
       - persist_to_workspace:
           root: ~/
           paths:
             - project/target/tarballs
+            - project/opennms-container/minion/images
 
   horizon-rpm-build:
     executor: centos-build-executor
@@ -634,34 +655,10 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: 
-          name: Prepare Docker build
-          command: |
-            cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*.tar.gz opennms-container/minion/tarball/minion.tar.gz
-            # TODO: Fix this bug, we double gzip the archive
-            gzip -d opennms-container/minion/tarball/minion.tar.gz
-            mv opennms-container/minion/tarball/minion.tar opennms-container/minion/tarball/minion.tar.gz
-      - run:
-          name: Build Minion OCI
-          command: |
-            cd opennms-container/minion
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/target/debs
-          destination: debs
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/tarball/minion.tar.gz
-          destination: minion.tar.gz
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/container.oci
-          destination: minion.oci
       - persist_to_workspace:
           root: ~/
           paths:
             - project/target/debs/
-            - project/opennms-container/minion/images/
   sentinel-deb-build:
     executor: debian-build-executor
     resource_class: large
