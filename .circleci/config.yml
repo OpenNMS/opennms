@@ -449,7 +449,7 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 8
+        default: 2
         type: integer
       vaadin-javamaxmem:
         default: 1g
