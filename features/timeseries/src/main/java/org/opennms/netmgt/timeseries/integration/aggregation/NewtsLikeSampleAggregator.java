@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.newts.aggregate.ResultProcessor;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -47,7 +48,7 @@ import org.opennms.newts.api.query.ResultDescriptor;
 
 import lombok.Builder;
 
-/** Aggregates the 'Newts' way. This class is a modified copy of org.opennms.newts.aggregate.ResultProcessor */
+/** Aggregates the 'Newts' way. */
 @Builder
 public class NewtsLikeSampleAggregator {
 
@@ -70,16 +71,10 @@ public class NewtsLikeSampleAggregator {
     public List<org.opennms.integration.api.v1.timeseries.Sample> process(Iterator<Results.Row<Sample>> samples) {
         checkNotNull(samples, "samples argument");
 
-        // Build chain of iterators to process results as a stream
-        Rate rate = new Rate(samples, resultDescriptor.getSourceNames());
-        PrimaryData primaryData = new PrimaryData(resource, start.minus(resolution), end, resultDescriptor, rate);
-        Aggregation aggregation = new Aggregation(resource, start, end, resultDescriptor, resolution, primaryData);
-        Compute compute = new Compute(resultDescriptor, aggregation);
-        Export exports = new Export(resultDescriptor.getExports(), compute);
-
+        Results<Measurement> measurements = new ResultProcessor(resource, start, end, resultDescriptor, resolution).process(samples);
         List<org.opennms.integration.api.v1.timeseries.Sample> aggregatedSamples = new ArrayList<>();
 
-        for (Results.Row<Measurement> row : exports) {
+        for (Results.Row<Measurement> row : measurements) {
             aggregatedSamples.add(toTimeseriesSample(row, metric));
         }
 

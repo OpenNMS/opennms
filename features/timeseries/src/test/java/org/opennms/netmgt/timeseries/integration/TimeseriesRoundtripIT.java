@@ -171,8 +171,6 @@ public class TimeseriesRoundtripIT {
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "idx-m6", "m6"); // Identified
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
-        // TODO: Discuss with Jesse if we expect to get the identifier of a StringAttribute back
-        // testForStringAttribute("snmp/1/gen-metrics", "oops", "genname"); // Identified
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
