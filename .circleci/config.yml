@@ -197,7 +197,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               install --builder smart --threads << parameters.number-vcpu >>
@@ -462,14 +462,6 @@ jobs:
           # Workaround: In run-build we set -Dbuild.skip.tarball=true which is required for assemble.pl
           # We have to run the compile.pl to get the .tar.gz.
           command: |
-            ./compile.pl -DskipTests=true \
-                         -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-                         -DmaxCpus=<< parameters.number-vcpu >> \
-                         install \
-                         --builder smart \
-                         --threads << parameters.number-vcpu >> \
-                         -DupdatePolicy=never \
-                         --offline
             ./assemble.pl -Dopennms.home=/opt/opennms \
                           -DskipTests \
                           -DupdatePolicy=never
