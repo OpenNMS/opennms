@@ -92,7 +92,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();
-        this.minionConfigYamlPath = writeMinionConfig();
+        this.minionConfigYamlPath = writeMinionConfig(profile);
 
         GenericContainer container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT)
                 .withCreateContainerCmdModifier(cmd -> {
@@ -104,10 +104,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                         createCmd.withUser("root");
                     }
                 })
-                .withEnv("MINION_LOCATION", profile.getLocation())
-                .withEnv("MINION_ID", profile.getId())
-                .withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616")
-                .withEnv("OPENNMS_HTTP_URL", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms")
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
@@ -142,23 +138,31 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         }
     }
     
-    private Path writeMinionConfig() {
+    private Path writeMinionConfig(MinionProfile profile) {
         try {
             final Path minionConfig = createTempDirectory(ALIAS).toAbsolutePath().resolve("minion-config.yaml");
-            writeMinionConfigYaml(minionConfig);
+            writeMinionConfigYaml(minionConfig, profile);
             return minionConfig;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
     
-    private void writeMinionConfigYaml(Path minionConfigYaml) throws IOException {
+    private void writeMinionConfigYaml(Path minionConfigYaml, MinionProfile profile) throws IOException {
         // Copy over the default configuration from the class-path
         FileUtils.copyFile(new File(MountableFile.forClasspathResource("minion-config/minion-config.yaml").getFilesystemPath()), minionConfigYaml.toFile());
         
         // Allow other users to read the file
         OverlayUtils.setOverlayPermissions(minionConfigYaml);
 
+        String config = "{\n" +
+                "\t\"location\": \"" + profile.getLocation() + "\",\n" +
+                "\t\"id\": \"" + profile.getId() + "\",\n" +
+                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\",\n" +
+                "\t\"http-url\": \"http://" + OpenNMSContainer.ALIAS + ":8980/opennms\"\n" +
+                "}";
+        OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
+        
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             String kafkaRpc = "{\n" +
                     "\t\"ipc\": {\n" +
