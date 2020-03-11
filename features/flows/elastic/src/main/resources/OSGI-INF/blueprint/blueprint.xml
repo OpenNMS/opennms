@@ -31,8 +31,8 @@
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
             <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
-            <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
-            <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
+            <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
 
             <!-- Bulk Action Retry settings -->
