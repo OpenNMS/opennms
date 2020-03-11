@@ -1,7 +1,7 @@
 ---
-telemetry:
-  flows:
-    single-port: 50000
+#telemetry:
+#  flows:
+#    single-port: 50000
 
 netmgt:
   traps:
