@@ -1,7 +1,23 @@
 ---
-#telemetry:
-#  flows:
-#    single-port: 50000
+telemetry:
+  flows:
+    single-port-listener:
+      enabled: true
+    listeners:
+      JTI-Listener:
+        class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
+        parameters:
+          port: 50001
+        parsers:
+          JTI:
+            class-name: "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser"
+      NXOS-Listener:
+        class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
+        parameters:
+          port: 50002
+        parsers:
+          NXOS:
+            class-name: "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser"
 
 netmgt:
   traps:

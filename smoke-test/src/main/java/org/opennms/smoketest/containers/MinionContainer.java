@@ -84,15 +84,11 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
     private final StackModel model;
     private final MinionProfile profile;
-    private final Path overlay;
-    private final Path minionConfigYamlPath;
 
     public MinionContainer(StackModel model, MinionProfile profile) {
         super("minion");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
-        this.overlay = writeOverlay();
-        this.minionConfigYamlPath = writeMinionConfig(profile);
 
         GenericContainer container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT)
                 .withCreateContainerCmdModifier(cmd -> {
@@ -114,10 +110,8 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withCommand("-c")
                 .waitingFor(new WaitForMinion(this));
 
-        container.addFileSystemBind(minionConfigYamlPath.toString(),
+        container.addFileSystemBind(writeMinionConfig(profile).toString(),
                 "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
-        container.addFileSystemBind(overlay.toString(),
-                "/opt/minion-etc-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
@@ -126,16 +120,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
-    }
-
-    private Path writeOverlay() {
-        try {
-            final Path home = createTempDirectory(ALIAS).toAbsolutePath();
-            writeOverlay(home);
-            return home;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
     
     private Path writeMinionConfig(MinionProfile profile) {
@@ -199,14 +183,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(grpc, Map.class));
         }
-    }
-
-    private void writeOverlay(Path etc) throws IOException {
-        // Allow other users to read the folder
-        OverlayUtils.setOverlayPermissions(etc);
-
-        // Copy over the fixed configuration from the class-path
-        FileUtils.copyDirectory(new File(MountableFile.forClasspathResource("minion-overlay").getFilesystemPath()), etc.toFile());
     }
 
     public InetSocketAddress getSyslogAddress() {

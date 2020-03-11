@@ -89,16 +89,44 @@ ipc:
 ```
 Config specified will be written to `etc/org.opennms.core.ipc.sink.offheap.cfg`.
 
-### Flows
-To configure flows on a single port, the following key can be provided.
+### Single Port Flows
+To configure flows on a single port, set the following `enabled` key to `true`. Optionally parameters can be provided
+that will be included in the generated config.
 ```
 --- 
 telemetry:
     flows:
-        single-port: <port num>
+        single-port-listner:
+            # Set to true to add single port listener config, omit or set to false to disable
+            enabled: true
+            # Parameters can be optionally provided
+            parameters:
+                # This translates to parameters.port=50000 in the generated config
+                port: 50000
 ```
-Config specified will be written to `etc/org.opennms.features.telemtry.listeners-udp-single-port.cfg`. For
-configurations other than single port config, the configuration must be supplied via overlay rather than via confd.
+Config specified will be written to `etc/org.opennms.features.telemtry.listeners-udp-single-port-flows.cfg`.
+
+### Telemetry Flow Listeners
+Individual flow listeners can be configured. See the example below for how to specify parameters and parsers. Any number
+of uniquely named listeners can be defined.
+```
+--- 
+telemetry:
+    flows:
+        listeners:
+            NXOS-Listener:
+                class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
+                parameters:
+                    # List all the parameters you wish to specifiy here
+                    port: 50002
+                parsers:
+                    # List all the parsers you wish to specify here
+                    NXOS:
+                        class-name: "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser"
+                        # Parsers can also have parameters specified
+                        #parameters:
+```
+Config specified will be written to `etc/org.opennms.features.telemtry.listeners-<Listener-Name>.cfg`.
 
 ### Syslog
 ```
