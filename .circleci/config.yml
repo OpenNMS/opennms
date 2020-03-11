@@ -442,7 +442,11 @@ jobs:
           number-vcpu: 8
 
   tarball-assembly:
-    executor: centos-build-executor
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
         default: 8
