@@ -1,0 +1,3 @@
+{{range gets "/netmgt/traps/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

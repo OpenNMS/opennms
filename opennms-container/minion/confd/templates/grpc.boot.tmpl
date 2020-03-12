@@ -1,0 +1,6 @@
+{{if exists "/ipc/grpc/host" -}}
+!opennms-core-ipc-rpc-jms
+!opennms-core-ipc-sink-camel
+!minion-jms
+opennms-core-ipc-grpc-client
+{{end -}}
