@@ -334,7 +334,7 @@ workflows:
       - smoke-test-full:
           requires:
             - horizon-rpm-build
-            - minion-deb-build
+            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
@@ -349,7 +349,7 @@ workflows:
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
-            - minion-deb-build
+            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
