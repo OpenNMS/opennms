@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
+import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -56,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 
 public class DocumentEnricher {
@@ -69,8 +71,11 @@ public class DocumentEnricher {
 
     private final ClassificationEngine classificationEngine;
 
-    // Caches NodeDocument data
+    // Caches NodeDocument data for a given node Id.
     private final Cache<Integer, Optional<NodeDocument>> nodeInfoCache;
+
+    // Caches NodeDocument data for a given node metadata.
+    private final Cache<NodeMetadataKey, Optional<NodeDocument>> nodeMetadataCache;
 
     private final Timer nodeLoadTimer;
 
@@ -90,6 +95,15 @@ public class DocumentEnricher {
                         return getNodeInfo(nodeId);
                     }
                 }).build();
+
+       this.nodeMetadataCache = new CacheBuilder()
+               .withConfig(cacheConfig)
+               .withCacheLoader(new CacheLoader<NodeMetadataKey, Optional<NodeDocument>>() {
+                   @Override
+                   public Optional<NodeDocument> load(NodeMetadataKey key) {
+                       return getNodeInfoFromMetadataContext(key.contextKey, key.value);
+                   }
+               }).build();
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
     }
 
@@ -106,12 +120,12 @@ public class DocumentEnricher {
             document.setLocation(source.getLocation());
 
             // Node data
-            getNodeInfoFromCache(source.getLocation(), source.getSourceAddress()).ifPresent(document::setNodeExporter);
+            getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setNodeExporter);
             if (document.getDstAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), document.getDstAddr()).ifPresent(document::setNodeDst);
+                getNodeInfoFromCache(source.getLocation(), document.getDstAddr(), null, null).ifPresent(document::setNodeDst);
             }
             if (document.getSrcAddr() != null) {
-                getNodeInfoFromCache(source.getLocation(), document.getSrcAddr()).ifPresent(document::setNodeSrc);
+                getNodeInfoFromCache(source.getLocation(), document.getSrcAddr(), null, null).ifPresent(document::setNodeSrc);
             }
 
             // Locality
@@ -148,7 +162,20 @@ public class DocumentEnricher {
         return inetAddress.isLoopbackAddress() || inetAddress.isLinkLocalAddress() || inetAddress.isSiteLocalAddress();
     }
 
-    private Optional<NodeDocument> getNodeInfoFromCache(final String location, final String ipAddress) {
+    private Optional<NodeDocument> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value) {
+
+        Optional<NodeDocument> nodeDocument;
+        final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
+        try {
+            nodeDocument = nodeMetadataCache.get(metadataKey);
+        } catch (ExecutionException e) {
+            LOG.error("Error while retrieving NodeDocument from NodeMetadataCache: {}.", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        if(nodeDocument.isPresent()) {
+            return nodeDocument;
+        }
+
         final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(location, InetAddressUtils.addr(ipAddress));
         if(nodeId.isPresent()) {
             try {
@@ -162,6 +189,50 @@ public class DocumentEnricher {
     }
 
 
+    // Key class, which is used to cache NodeInfo for a given node metadata.
+    private static class NodeMetadataKey {
+
+        public final ContextKey contextKey;
+
+        public final String value;
+
+        private NodeMetadataKey(final ContextKey contextKey, final String value) {
+            this.contextKey = contextKey;
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final NodeMetadataKey that = (NodeMetadataKey) o;
+            return Objects.equals(contextKey, that.contextKey) &&
+                    Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(contextKey, value);
+        }
+    }
+
+    private Optional<NodeDocument> getNodeInfoFromMetadataContext(ContextKey contextKey, String value) {
+        OnmsNode onmsNode = null;
+        if (contextKey != null && !Strings.isNullOrEmpty(value)) {
+            final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
+
+            if (!nodes.isEmpty()) {
+                onmsNode = nodes.get(0);
+            }
+        }
+
+        if (onmsNode != null) {
+            return mapOnmsNodeToNodeDocument(onmsNode);
+        }
+
+        return Optional.empty();
+    }
+
     private Optional<NodeDocument> getNodeInfo(Integer nodeId) {
         OnmsNode onmsNode = null;
         try (Timer.Context ctx = nodeLoadTimer.time()) {
@@ -169,16 +240,21 @@ public class DocumentEnricher {
         }
 
         if (onmsNode != null) {
-            final NodeDocument nodeDocument = new NodeDocument();
-            nodeDocument.setForeignSource(onmsNode.getForeignSource());
-            nodeDocument.setForeignId(onmsNode.getForeignId());
-            nodeDocument.setNodeId(onmsNode.getId());
-            nodeDocument.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
-
-            return Optional.of(nodeDocument);
+            return mapOnmsNodeToNodeDocument(onmsNode);
         }
 
         return Optional.empty();
+    }
+
+    private Optional<NodeDocument> mapOnmsNodeToNodeDocument(OnmsNode onmsNode) {
+
+        final NodeDocument nodeDocument = new NodeDocument();
+        nodeDocument.setForeignSource(onmsNode.getForeignSource());
+        nodeDocument.setForeignId(onmsNode.getForeignId());
+        nodeDocument.setNodeId(onmsNode.getId());
+        nodeDocument.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+
+        return Optional.of(nodeDocument);
     }
 
     protected static ClassificationRequest createClassificationRequest(FlowDocument document) {
