@@ -14,21 +14,6 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
-  <!-- Influx DB -->
-  <bean id="influxdb.bucket" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.bucket:opennms}" />
-  </bean>
-  <bean id="influxdb.org" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.bucket:opennms}" />
-  </bean>
-  <bean id="influxdb.token" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.token:unknown}" />
-  </bean>
-  <bean id="influxdb.url" class="java.lang.String">
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.influxdb.url:http://localhost:9999}" />
-  </bean>
-
- <!-- timeseries integration layer -->
   <bean id="timeseries.max_batch_size" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.max_batch_size:16}" />
   </bean>
@@ -39,34 +24,6 @@
   <bean id="timeseries.writer_threads" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
-
-  <bean id="cache.priming.disable" class="java.lang.Boolean">
-    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.disable:false}"/>
-  </bean>
-
-  <bean id="cache.priming.block_ms" class="java.lang.Long">
-    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.block_ms:120000}"/>
-  </bean>
-
-  <bean id="cache.priming.fetch_size" class="java.lang.Integer">
-    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.fetch_size:10000}" />
-  </bean>
-
-  <bean id="cache.priming.fetch_more_threshold" class="java.lang.Integer">
-    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.priming.fetch_more_threshold:1000}" />
-  </bean>
-
-  <!--
-     The cassandraIndexer bean fails to load with the following exception when using
-     this definition:
-        No qualifying bean of type [int] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@javax.inject.Named(value=search.cassandra.time-to-live)}
-
-     So instead, we resort to the static value bellow:
-
-    <bean id="search.cassandra.time-to-live" class="java.lang.Integer">
-          <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31536000}" />
-    </bean>
-  -->
 
   <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.TTL" />
 
@@ -81,34 +38,26 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.max_entries:8192}" />
   </bean>
 
-  <bean id="redis.hostname" class="java.lang.String">
-        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.redis_hostname:localhost}" />
-  </bean>
-
-  <bean id="redis.port" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.redis_port:6379}" />
-  </bean>
-
   <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
 
   <bean id="contextConfigurations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod" value="org.opennms.netmgt.timeseries.integration.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
-  <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? Its also used for the GuavaSearchableResourceMetadataCache-->
+  <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
   <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-      <constructor-arg ref="timeseriesMetricRegistry"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
+      <constructor-arg ref="timeseriesMetricRegistry"/>
   </bean>
 
   <bean id="timeseriesMetricRegistryDomainedJmxReporterBuilder" factory-bean="timeseriesMetricRegistryJmxReporterBuilder" factory-method="inDomain">
-      <constructor-arg value="org.opennms.newts"/><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
+      <constructor-arg value="org.opennms.newts"/>
   </bean>
 
   <bean id="timeseriesMetricRegistryJmxReporter"
         factory-bean="timeseriesMetricRegistryDomainedJmxReporterBuilder"
         factory-method="build"
         init-method="start"
-        destroy-method="stop" /><!-- TODO Patrick: discuss with Jesse: do we still need this? -->
+        destroy-method="stop" />
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
@@ -117,9 +66,6 @@
   <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
 
   <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
-<!--
-  <bean id="timeseriesStorage" class="${org.opennms.timeseries.impl:org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage}"/>
--->
 
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" />
   <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">
