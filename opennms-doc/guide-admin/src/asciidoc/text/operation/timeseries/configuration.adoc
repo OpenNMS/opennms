@@ -28,20 +28,11 @@ Additional configuration options are presented in the next section.
 
 The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can be used to configure and tune the _Timeseries Integration Layer_.
 
-TODO: Patrick finish parameters once it is clear which ones we still need.
 [[ga-opennms-operation-newts-properties-general]]
 ====== General
 [options="header, autowidth"]
 |===
 | Name                                            | Default              | Description
-
-| `org.opennms.newts.config.core-connections-per-host`   | Driver default | Core number of connections per host.
-| `org.opennms.newts.config.max-connections-per-host`    | Driver default | Maximum number of connections per host.
-| `org.opennms.newts.config.max-requests-per-connection` | Driver default | Maximum amount of requests that can be in-flight on a single connection at the same time.
-| `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for _read_ operations.
-                                                                           See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
-| `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for _write_ operations.
-                                                                           See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
 | `org.opennms.timeseries.max_batch_size`       | `16`                 | Maximum number of records to insert in a single transaction. Limited by the size of the Cassandra cluster's batch_size_fail_threshold_in_kb property.
 | `org.opennms.timeseries.ring_buffer_size`     | `8192`               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
 | `org.opennms.timeseries.config.writer_threads`       | `16`                 | Number of threads used to pull samples from the ring buffer and insert them into Newts.
@@ -51,10 +42,6 @@ TODO: Patrick finish parameters once it is clear which ones we still need.
 | `org.opennms.timeseries.query.parallelism`           | Number of cores      | Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
 | `org.opennms.timeseries.config.cache.strategy`       | See below           | Canonical name of the class used for resource level caching. See the table bellow for all of the available options.
 | `org.opennms.timeseries.config.cache.max_entries`    | `8192`               | Maximum number of records to keep in the cache when using an in-memory caching strategy.
-| `org.opennms.newts.config.cache.priming.disable`  | `false`            | Disables the cache primer, which pre-emptively loads the cache with indexed resources on start-up.
-| `org.opennms.newts.config.cache.priming.block_ms` | `120000`           | Block startup for this many milliseconds while waiting for the cache to be primed.
-                                                                           Set this value to `-1` to disable blocking.
-                                                                           Set this value to `0` to block indefinitely waiting for all of the records to be read.
 |===
 
 Available caching strategies include:
@@ -63,20 +50,6 @@ Available caching strategies include:
 |===
 | Name                        | Class                                                                   | Default
 | In-Memory Cache             | `org.opennms.netmgt.timeseries.support.GuavaSearchableResourceMetadataCache` | Y
-| Redis-based Cache           | `org.opennms.netmgt.timeseries.support.RedisResourceMetadataCache`           | N
-|===
-
-
-[[ga-opennms-operation-newts-properties-redis-cache]]
-====== Redis Cache
-
-When enabled, the following options can be used to configure the Redis-based cache.
-
-[options="header, autowidth"]
-|===
-| Name                                            | Default              | Description
-| `org.opennms.timeseries.config.cache.redis_hostname` | `localhost`          | IP address of hostname of the _Redis_ server.
-| `org.opennms.timeseries.config.cache.redis_port`     | `6379`               | TCP port used to connect to the _Redis_ server.
 |===
 
 ===== Recommendations

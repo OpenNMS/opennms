@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
@@ -46,7 +46,6 @@ import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.Term;
 import org.opennms.newts.api.search.TermQuery;
-import org.opennms.newts.cassandra.search.CassandraIndexingOptions;
 import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
@@ -58,32 +57,9 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
  */
 public abstract class TimeseriesUtils {
 
-    public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.newts.disable.indexing");
+    public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.timeseries.disable.indexing");
 
-    public static final int MAX_BATCH_SIZE = SystemProperties.getInteger("org.opennms.newts.config.max_batch_size", 16);
-
-    public static final int TTL = SystemProperties.getInteger("org.opennms.newts.config.ttl", 31536000);
-
-    public static final String HOSTNAME_PROPERTY = "org.opennms.newts.config.hostname";
-
-    public static final String KEYSPACE_PROPERTY = "org.opennms.newts.config.keyspace";
-
-    public static final String PORT_PROPERTY = "org.opennms.newts.config.port";
-
-    public static final String DEFAULT_HOSTNAME = "localhost";
-
-    public static final String DEFAULT_KEYSPACE = "newts";
-
-    public static final String DEFAULT_PORT = "9043";
-
-    public static final String DEFAULT_TTL = "" + 86400 * 365;
-
-    public static final CassandraIndexingOptions INDEXING_OPTIONS = new CassandraIndexingOptions.Builder()
-            .withHierarchicalIndexing(false)
-            .withIndexResourceTerms(false)
-            .withIndexUsingDefaultTerm(false)
-            .withMaxBatchSize(MAX_BATCH_SIZE)
-            .build();
+    public static final int TTL = SystemProperties.getInteger("org.opennms.timeseries.config.ttl", 31536000);
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
 
