@@ -39,14 +39,17 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
@@ -130,11 +133,16 @@ public class BmpParser implements TcpParser {
 
     private HashSet<InetAddress> connections = Sets.newHashSet();
 
+    private final DnsResolver dnsResolver;
+    private boolean dnsLookupsEnabled;
+
     public BmpParser(final String name,
                      final AsyncDispatcher<TelemetryMessage> dispatcher,
+                     final DnsResolver dnsResolver,
                      final MetricRegistry metricRegistry) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
+        this.dnsResolver = Objects.requireNonNull(dnsResolver);
 
         this.recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsDispatched"));
     }
@@ -187,25 +195,39 @@ public class BmpParser implements TcpParser {
 
                 LOG.trace("Got packet: {}", packet);
 
-                packet.accept(new Packet.Visitor.Adapter() {
-                    @Override
-                    public void visit(InitiationPacket packet) {
-                        packet.information.first(InformationElement.Type.BGP_ID)
-                                .map(InetAddressUtils::addr)
-                                .ifPresent(_bgpId -> bgpId = _bgpId);
-                    }
-                });
-
+                // Build the message from the received packet
                 final Transport.Message.Builder message = Transport.Message.newBuilder()
                                                                            .setVersion(header.version);
 
-                if (bgpId != null) {
-                    message.setBgpId(address(bgpId));
-                }
-
                 packet.accept(new Serializer(message));
 
-                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
+                packet.accept(new Packet.Visitor.Adapter() {
+                    @Override
+                    public void visit(final InitiationPacket packet) {
+                        packet.information.first(InformationElement.Type.BGP_ID)
+                                          .map(InetAddressUtils::addr)
+                                          .ifPresent(_bgpId -> bgpId = _bgpId);
+                    }
+                });
+
+                if (bgpId != null) {
+                    message.setBgpId(BmpParser.address(bgpId));
+                }
+
+
+                // Enrich the message with resolved hostnames
+                CompletableFuture<Transport.Message.Builder> enriched = CompletableFuture.completedFuture(message);
+                if (BmpParser.this.dnsLookupsEnabled) {
+                    enriched = enriched.thenCompose(BmpParser.this.resolvePeer(packet))
+                                       .thenCompose(BmpParser.this.resolveSysName(packet, remoteAddress.getAddress()));
+                }
+
+                // Dispatch the final message
+                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = enriched.thenCompose(msg -> {
+                    final ByteBuffer payload = ByteBuffer.wrap(msg.build().toByteArray());
+                    return BmpParser.this.dispatcher.send(new TelemetryMessage(remoteAddress, payload));
+                });
+
                 BmpParser.this.recordsDispatched.mark();
 
                 return Optional.of(dispatched);
@@ -223,6 +245,54 @@ public class BmpParser implements TcpParser {
                 BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
             }
         };
+    }
+
+    private Function<Transport.Message.Builder, CompletableFuture<Transport.Message.Builder>> resolvePeer(final Packet packet) {
+        return message -> packet.map(new Packet.Mapper.Adapter<CompletableFuture<Transport.Message.Builder>>(CompletableFuture.completedFuture(message)) {
+
+            private CompletableFuture<Transport.Message.Builder> resolvePeer(final PeerHeader peerHeader,
+                                                                             final Transport.Peer.Builder builder) {
+                return BmpParser.this.dnsResolver.reverseLookup(peerHeader.address)
+                                                 .thenApply(hostname -> {
+                                                     hostname.ifPresent(builder::setHostname);
+                                                     return message;
+                                                 });
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final PeerUpPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getPeerUpBuilder().getPeerBuilder());
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final PeerDownPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getPeerDownBuilder().getPeerBuilder());
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final StatisticsReportPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getStatisticsReportBuilder().getPeerBuilder());
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final RouteMonitoringPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getRouteMonitoringBuilder().getPeerBuilder());
+            }
+        });
+    }
+
+    private Function<Transport.Message.Builder, CompletableFuture<Transport.Message.Builder>> resolveSysName(final Packet packet, final InetAddress sourceAddress) {
+        return message -> packet.map(new Packet.Mapper.Adapter<CompletableFuture<Transport.Message.Builder>>(CompletableFuture.completedFuture(message)) {
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final InitiationPacket packet) {
+                return BmpParser.this.dnsResolver.reverseLookup(sourceAddress)
+                                                 .thenApply(hostname -> {
+                                                     hostname.ifPresent(message.getInitiationBuilder()::setHostname);
+                                                     return message;
+                                                 });
+            }
+        });
     }
 
     private enum HeartbeatMode {
@@ -251,6 +321,14 @@ public class BmpParser implements TcpParser {
 
         this.dispatcher.send(new TelemetryMessage(InetSocketAddress.createUnresolved("0.0.0.0", 0), ByteBuffer.wrap(message.build().toByteArray())));
         BmpParser.this.recordsDispatched.mark();
+    }
+
+    public boolean isDnsLookupsEnabled() {
+        return this.dnsLookupsEnabled;
+    }
+
+    public void setDnsLookupsEnabled(final boolean dnsLookupsEnabled) {
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     private static class Serializer implements Packet.Visitor {
@@ -558,157 +636,157 @@ public class BmpParser implements TcpParser {
         public void visit(final RouteMirroringPacket packet) {
             // Don't send out mirrored BGP packets.
         }
-    }
 
-    private static Transport.RouteMonitoringPacket.PathAttribute.Builder pathAttribute(UpdatePacket.PathAttribute attribute) {
-        final Transport.RouteMonitoringPacket.PathAttribute.Builder attributesBuilder = Transport.RouteMonitoringPacket.PathAttribute.newBuilder();
-        attributesBuilder.setOptional(attribute.optional)
-                .setTransitive(attribute.transitive)
-                .setPartial(attribute.partial)
-                .setExtended(attribute.extended);
+        private static Transport.RouteMonitoringPacket.PathAttribute.Builder pathAttribute(UpdatePacket.PathAttribute attribute) {
+            final Transport.RouteMonitoringPacket.PathAttribute.Builder attributesBuilder = Transport.RouteMonitoringPacket.PathAttribute.newBuilder();
+            attributesBuilder.setOptional(attribute.optional)
+                    .setTransitive(attribute.transitive)
+                    .setPartial(attribute.partial)
+                    .setExtended(attribute.extended);
 
-        attribute.attribute.accept(new Attribute.Visitor() {
-            @Override
-            public void visit(final Aggregator aggregator) {
-                attributesBuilder.getAggregatorBuilder()
-                        .setAs(aggregator.as)
-                        .setAddress(address(aggregator.address));
-            }
+            attribute.attribute.accept(new Attribute.Visitor() {
+                @Override
+                public void visit(final Aggregator aggregator) {
+                    attributesBuilder.getAggregatorBuilder()
+                            .setAs(aggregator.as)
+                            .setAddress(address(aggregator.address));
+                }
 
-            @Override
-            public void visit(final AsPath asPath) {
-                final Transport.RouteMonitoringPacket.PathAttribute.AsPath.Builder asPathBuilder = attributesBuilder.getAsPathBuilder();
-                for (final AsPath.Segment segment : asPath.segments) {
-                    final Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Builder segmentBuilder = asPathBuilder.addSegmentsBuilder();
-                    segmentBuilder.setType(segment.type.map(t -> {
-                        switch (t) {
-                            case AS_SET:
-                                return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET;
-                            case AS_SEQUENCE:
-                                return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SEQUENCE;
+                @Override
+                public void visit(final AsPath asPath) {
+                    final Transport.RouteMonitoringPacket.PathAttribute.AsPath.Builder asPathBuilder = attributesBuilder.getAsPathBuilder();
+                    for (final AsPath.Segment segment : asPath.segments) {
+                        final Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Builder segmentBuilder = asPathBuilder.addSegmentsBuilder();
+                        segmentBuilder.setType(segment.type.map(t -> {
+                            switch (t) {
+                                case AS_SET:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SET;
+                                case AS_SEQUENCE:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.AS_SEQUENCE;
+                                case UNKNOWN:
+                                    return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.UNRECOGNIZED;
+                                default:
+                                    throw new IllegalStateException();
+                            }
+                        }));
+                        for (final long as : segment.path) {
+                            segmentBuilder.addPaths((int) as);
+                        }
+                    }
+                }
+
+                @Override
+                public void visit(final AtomicAggregate atomicAggregate) {
+                    attributesBuilder.getAtomicAggregateBuilder();
+                }
+
+                @Override
+                public void visit(final LocalPref localPref) {
+                    attributesBuilder.getLocalPrefBuilder()
+                            .setPreference((int) localPref.preference);
+                }
+
+                @Override
+                public void visit(final MultiExistDisc multiExistDisc) {
+                    attributesBuilder.getMultiExitDiscBuilder()
+                            .setDiscriminator((int) multiExistDisc.discriminator);
+                }
+
+                @Override
+                public void visit(final NextHop nextHop) {
+                    attributesBuilder.getNextHopBuilder()
+                            .setAddress(address(nextHop.address));
+                }
+
+                @Override
+                public void visit(final Origin origin) {
+                    attributesBuilder.setOrigin(origin.value.map(v -> {
+                        switch (v) {
+                            case IGP:
+                                return Transport.RouteMonitoringPacket.PathAttribute.Origin.IGP;
+                            case EGP:
+                                return Transport.RouteMonitoringPacket.PathAttribute.Origin.EGP;
+                            case INCOMPLETE:
+                                return Transport.RouteMonitoringPacket.PathAttribute.Origin.INCOMPLETE;
                             case UNKNOWN:
-                                return Transport.RouteMonitoringPacket.PathAttribute.AsPath.Segment.Type.UNRECOGNIZED;
+                                return Transport.RouteMonitoringPacket.PathAttribute.Origin.UNRECOGNIZED;
                             default:
                                 throw new IllegalStateException();
                         }
                     }));
-                    for (final long as : segment.path) {
-                        segmentBuilder.addPaths((int) as);
+                }
+
+                @Override
+                public void visit(Community community) {
+                    attributesBuilder.setCommunity((int) community.community);
+                }
+
+                @Override
+                public void visit(OriginatorId originatorId) {
+                    attributesBuilder.setOriginatorId((int) originatorId.originatorId);
+                }
+
+                @Override
+                public void visit(ClusterList clusterList) {
+                    Transport.RouteMonitoringPacket.PathAttribute.ClusterList.Builder clusterListBuilder = Transport.RouteMonitoringPacket.PathAttribute.ClusterList.newBuilder();
+                    for (InetAddress clusterId : clusterList.clusterIds) {
+                        clusterListBuilder.addClusterId(address(clusterId));
                     }
+                    attributesBuilder.setClusterList(clusterListBuilder);
                 }
-            }
 
-            @Override
-            public void visit(final AtomicAggregate atomicAggregate) {
-                attributesBuilder.getAtomicAggregateBuilder();
-            }
-
-            @Override
-            public void visit(final LocalPref localPref) {
-                attributesBuilder.getLocalPrefBuilder()
-                        .setPreference((int) localPref.preference);
-            }
-
-            @Override
-            public void visit(final MultiExistDisc multiExistDisc) {
-                attributesBuilder.getMultiExitDiscBuilder()
-                        .setDiscriminator((int) multiExistDisc.discriminator);
-            }
-
-            @Override
-            public void visit(final NextHop nextHop) {
-                attributesBuilder.getNextHopBuilder()
-                        .setAddress(address(nextHop.address));
-            }
-
-            @Override
-            public void visit(final Origin origin) {
-                attributesBuilder.setOrigin(origin.value.map(v -> {
-                    switch (v) {
-                        case IGP:
-                            return Transport.RouteMonitoringPacket.PathAttribute.Origin.IGP;
-                        case EGP:
-                            return Transport.RouteMonitoringPacket.PathAttribute.Origin.EGP;
-                        case INCOMPLETE:
-                            return Transport.RouteMonitoringPacket.PathAttribute.Origin.INCOMPLETE;
-                        case UNKNOWN:
-                            return Transport.RouteMonitoringPacket.PathAttribute.Origin.UNRECOGNIZED;
-                        default:
-                            throw new IllegalStateException();
+                @Override
+                public void visit(ExtendedCommunities extendedCommunities) {
+                    Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.Builder extendedCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.newBuilder();
+                    for (ExtendedCommunities.ExtendedCommunity extendedCommunity : extendedCommunities.extendedCommunities) {
+                        extendedCommunitiesBuilder.addExtendedCommunitiesBuilder()
+                                .setType(extendedCommunity.type)
+                                .setValue(ByteString.copyFrom(extendedCommunity.value));
                     }
-                }));
-            }
-
-            @Override
-            public void visit(Community community) {
-                attributesBuilder.setCommunity((int) community.community);
-            }
-
-            @Override
-            public void visit(OriginatorId originatorId) {
-                attributesBuilder.setOriginatorId((int) originatorId.originatorId);
-            }
-
-            @Override
-            public void visit(ClusterList clusterList) {
-                Transport.RouteMonitoringPacket.PathAttribute.ClusterList.Builder clusterListBuilder = Transport.RouteMonitoringPacket.PathAttribute.ClusterList.newBuilder();
-                for (InetAddress clusterId : clusterList.clusterIds) {
-                    clusterListBuilder.addClusterId(address(clusterId));
+                    attributesBuilder.setExtendedCommunities(extendedCommunitiesBuilder);
                 }
-                attributesBuilder.setClusterList(clusterListBuilder);
-            }
 
-            @Override
-            public void visit(ExtendedCommunities extendedCommunities) {
-                Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.Builder extendedCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.newBuilder();
-                for (ExtendedCommunities.ExtendedCommunity extendedCommunity : extendedCommunities.extendedCommunities) {
-                    extendedCommunitiesBuilder.addExtendedCommunitiesBuilder()
-                            .setType(extendedCommunity.type)
-                            .setValue(ByteString.copyFrom(extendedCommunity.value));
+                @Override
+                public void visit(Connector connector) {
+                    attributesBuilder.setConnector(connector.connector);
                 }
-                attributesBuilder.setExtendedCommunities(extendedCommunitiesBuilder);
-            }
 
-            @Override
-            public void visit(Connector connector) {
-                attributesBuilder.setConnector(connector.connector);
-            }
-
-            @Override
-            public void visit(AsPathLimit asPathLimit) {
-                attributesBuilder.setAsPathLimit(Transport.RouteMonitoringPacket.PathAttribute.AsPathLimit.newBuilder()
-                        .setUpperBound(asPathLimit.upperBound)
-                        .setAs((int) asPathLimit.as)
-                        .build());
-            }
-
-            @Override
-            public void visit(LargeCommunities largeCommunities) {
-                Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.Builder largeCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.newBuilder();
-                for (LargeCommunities.LargeCommunity largeCommunity : largeCommunities.largeCommunities) {
-                    largeCommunitiesBuilder.addLargeCommunitiesBuilder()
-                            .setGlobalAdministrator((int)largeCommunity.globalAdministrator)
-                            .setLocalDataPart1((int)largeCommunity.localDataPart1)
-                            .setLocalDataPart2((int)largeCommunity.localDataPart2);
+                @Override
+                public void visit(AsPathLimit asPathLimit) {
+                    attributesBuilder.setAsPathLimit(Transport.RouteMonitoringPacket.PathAttribute.AsPathLimit.newBuilder()
+                            .setUpperBound(asPathLimit.upperBound)
+                            .setAs((int) asPathLimit.as)
+                            .build());
                 }
-                attributesBuilder.setLargeCommunities(largeCommunitiesBuilder);
-            }
 
-            @Override
-            public void visit(AttrSet attrSet) {
-                Transport.RouteMonitoringPacket.PathAttribute.AttrSet.Builder attrSetBuilder = Transport.RouteMonitoringPacket.PathAttribute.AttrSet.newBuilder()
-                        .setOriginAs((int)attrSet.originAs);
-                for (UpdatePacket.PathAttribute attribute : attrSet.pathAttributes) {
-                    attrSetBuilder.addPathAttributes(pathAttribute(attribute));
+                @Override
+                public void visit(LargeCommunities largeCommunities) {
+                    Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.Builder largeCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.newBuilder();
+                    for (LargeCommunities.LargeCommunity largeCommunity : largeCommunities.largeCommunities) {
+                        largeCommunitiesBuilder.addLargeCommunitiesBuilder()
+                                .setGlobalAdministrator((int)largeCommunity.globalAdministrator)
+                                .setLocalDataPart1((int)largeCommunity.localDataPart1)
+                                .setLocalDataPart2((int)largeCommunity.localDataPart2);
+                    }
+                    attributesBuilder.setLargeCommunities(largeCommunitiesBuilder);
                 }
-                attributesBuilder.setAttrSet(attrSetBuilder);
-            }
 
-            @Override
-            public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown unknown) {
-            }
-        });
-        return attributesBuilder;
+                @Override
+                public void visit(AttrSet attrSet) {
+                    Transport.RouteMonitoringPacket.PathAttribute.AttrSet.Builder attrSetBuilder = Transport.RouteMonitoringPacket.PathAttribute.AttrSet.newBuilder()
+                            .setOriginAs((int)attrSet.originAs);
+                    for (UpdatePacket.PathAttribute attribute : attrSet.pathAttributes) {
+                        attrSetBuilder.addPathAttributes(pathAttribute(attribute));
+                    }
+                    attributesBuilder.setAttrSet(attrSetBuilder);
+                }
+
+                @Override
+                public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown unknown) {
+                }
+            });
+            return attributesBuilder;
+        }
     }
 
     public static Transport.IpAddress address(final InetAddress address) {

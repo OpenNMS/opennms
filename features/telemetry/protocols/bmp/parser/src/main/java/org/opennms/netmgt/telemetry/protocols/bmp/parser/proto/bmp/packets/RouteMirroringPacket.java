@@ -65,6 +65,11 @@ public class RouteMirroringPacket implements Packet {
         visitor.visit(this);
     }
 
+    @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
+    }
+
     public static class Element extends TLV<Element.Type, Mirroring, PeerFlags> {
 
         public Element(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {

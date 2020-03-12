@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -40,8 +41,12 @@ import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 public class BmpParserFactory implements ParserFactory {
     private final TelemetryRegistry telemetryRegistry;
 
-    public BmpParserFactory(final TelemetryRegistry telemetryRegistry) {
+    private final DnsResolver dnsResolver;
+
+    public BmpParserFactory(final TelemetryRegistry telemetryRegistry,
+                            final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
+        this.dnsResolver = Objects.requireNonNull(dnsResolver);
     }
 
     @Override
@@ -52,6 +57,9 @@ public class BmpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = this.telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new BmpParser(parserDefinition.getName(), dispatcher, this.telemetryRegistry.getMetricRegistry());
+        return new BmpParser(parserDefinition.getName(),
+                             dispatcher,
+                             this.dnsResolver,
+                             this.telemetryRegistry.getMetricRegistry());
     }
 }

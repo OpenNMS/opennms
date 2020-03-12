@@ -83,6 +83,11 @@ public class StatisticsReportPacket implements Packet {
         visitor.visit(this);
     }
 
+    @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
+    }
+
     public static class Element extends TLV<Element.Type, Metric, Void> {
 
         public Element(final ByteBuf buffer) throws InvalidPacketException {
