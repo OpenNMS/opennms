@@ -4,10 +4,9 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base"
-ARG BASE_IMAGE_VERSION="1.0.0"
+ARG BASE_IMAGE="opennms/deploy-base:1.0.0"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as minion-base
+FROM ${BASE_IMAGE} as minion-base
 
 ADD ./tarball/minion.tar.gz /opt/
 
@@ -22,7 +21,7 @@ RUN groupadd --gid 10001 minion && \
 ##
 # Prod image with minimal image size
 ##
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+FROM ${BASE_IMAGE}
 
 RUN groupadd --gid 10001 minion && \
     useradd --system --uid 10001 --gid minion minion
@@ -47,7 +46,6 @@ ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION
 ARG SOURCE
 ARG REVISION
-ARG BUILD_JOB_ID
 ARG BUILD_NUMBER
 ARG BUILD_URL
 ARG BUILD_BRANCH
@@ -60,8 +58,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
       org.opencontainers.image.authors="OpenNMS Community" \
       org.opencontainers.image.licenses="AGPL-3.0" \
-      org.opennms.image.base="${BASE_IMAGE}:${BASE_IMAGE_VERSION}" \
-      org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.image.base="${BASE_IMAGE}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
