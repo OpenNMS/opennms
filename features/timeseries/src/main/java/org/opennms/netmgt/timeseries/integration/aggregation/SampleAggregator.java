@@ -46,9 +46,6 @@ import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 
-import lombok.Builder;
-
-@Builder
 public class SampleAggregator {
 
     final Metric expectedMetric;
@@ -70,6 +67,10 @@ public class SampleAggregator {
         this.startTime = Objects.requireNonNull(startTime);
         this.endTime = Objects.requireNonNull(endTime);
         this.bucketSize = Objects.requireNonNull(bucketSize);
+    }
+
+    public static SampleAggregatorBuilder builder() {
+        return new SampleAggregatorBuilder();
     }
 
     public List<Sample> computeAggregatedSamples() {
@@ -133,5 +134,56 @@ public class SampleAggregator {
         long offset = instant.toEpochMilli() - startTime.toEpochMilli();
         long startOfBucket = startTime.toEpochMilli() + (offset / this.bucketSize.toMillis()) * this.bucketSize.toMillis();
         return buckets.computeIfAbsent(Instant.ofEpochMilli(startOfBucket), inst -> new ArrayList<>());
+    }
+
+
+    public static class SampleAggregatorBuilder {
+        private Metric expectedMetric;
+        private List<Sample> samples;
+        private Aggregation aggregation;
+        private Instant startTime;
+        private Instant endTime;
+        private Duration bucketSize;
+
+        SampleAggregatorBuilder() {
+        }
+
+        public SampleAggregatorBuilder expectedMetric(Metric expectedMetric) {
+            this.expectedMetric = expectedMetric;
+            return this;
+        }
+
+        public SampleAggregatorBuilder samples(List<Sample> samples) {
+            this.samples = samples;
+            return this;
+        }
+
+        public SampleAggregatorBuilder aggregation(Aggregation aggregation) {
+            this.aggregation = aggregation;
+            return this;
+        }
+
+        public SampleAggregatorBuilder startTime(Instant startTime) {
+            this.startTime = startTime;
+            return this;
+        }
+
+        public SampleAggregatorBuilder endTime(Instant endTime) {
+            this.endTime = endTime;
+            return this;
+        }
+
+        public SampleAggregatorBuilder bucketSize(Duration bucketSize) {
+            this.bucketSize = bucketSize;
+            return this;
+        }
+
+        public SampleAggregator build() {
+            return new SampleAggregator(expectedMetric, samples, aggregation, startTime, endTime, bucketSize);
+        }
+
+        public String toString() {
+            return "SampleAggregator.SampleAggregatorBuilder(expectedMetric=" + this.expectedMetric + ", samples=" + this.samples + ", aggregation=" + this.aggregation + ", startTime=" + this.startTime + ", endTime=" + this.endTime + ", bucketSize=" + this.bucketSize + ")";
+        }
     }
 }

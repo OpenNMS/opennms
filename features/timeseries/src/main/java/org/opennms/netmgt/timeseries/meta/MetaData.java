@@ -29,12 +29,8 @@
 package org.opennms.netmgt.timeseries.meta;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
-import lombok.Data;
-import lombok.NonNull;
-
-@Data
-@NonNull
 public class MetaData {
     private final String resourceId;
     private final String name;
@@ -44,5 +40,41 @@ public class MetaData {
         this.resourceId = Objects.requireNonNull(resourceId);
         this.name = Objects.requireNonNull(name);
         this.value = value;
+    }
+
+    public String getResourceId() {
+        return this.resourceId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MetaData metaData = (MetaData) o;
+        return Objects.equals(resourceId, metaData.resourceId) &&
+                Objects.equals(name, metaData.name) &&
+                Objects.equals(value, metaData.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourceId, name, value);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", MetaData.class.getSimpleName() + "[", "]")
+                .add("resourceId='" + resourceId + "'")
+                .add("name='" + name + "'")
+                .add("value='" + value + "'")
+                .toString();
     }
 }

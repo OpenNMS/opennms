@@ -93,8 +93,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import lombok.Data;
-
 /**
  * Used to retrieve measurements from {@link org.opennms.newts.api.SampleRepository}.
  *
@@ -415,11 +413,28 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     };
 
     @VisibleForTesting
-    @Data
     protected static class LateAggregationParams {
         final long step;
         final long interval;
         final long heartbeat;
+
+        public LateAggregationParams(long step, long interval, long heartbeat) {
+            this.step = step;
+            this.interval = interval;
+            this.heartbeat = heartbeat;
+        }
+
+        public long getStep() {
+            return step;
+        }
+
+        public long getInterval() {
+            return interval;
+        }
+
+        public long getHeartbeat() {
+            return heartbeat;
+        }
     }
 
     /**

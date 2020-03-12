@@ -46,8 +46,8 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +55,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 /**
  * TimeSeriesMetaDataDao stores string values associated with resourceids in the database. It leverages a Guava cache.
@@ -168,12 +165,4 @@ public class TimeSeriesMetaDataDao {
 
         return metaData;
     }
-
-    @RequiredArgsConstructor
-    @Data
-    private final static class MetaDataKey {
-        private final String resourceId;
-        private final String name;
-    }
-
 }

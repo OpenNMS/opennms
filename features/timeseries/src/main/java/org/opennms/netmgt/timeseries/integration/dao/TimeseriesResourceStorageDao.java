@@ -72,8 +72,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import lombok.Setter;
-
 /**
  * Resource Storage Dao implementation for Newts that leverages the Search API for walking the resource tree.
  *
@@ -97,7 +95,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     private Context context;
 
     @Autowired
-    @Setter
     private TimeseriesSearcher searcher;
 
     @Autowired
@@ -326,4 +323,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         this.writer = writer;
     }
 
+    public void setSearcher(TimeseriesSearcher searcher) {
+        this.searcher = searcher;
+    }
 }

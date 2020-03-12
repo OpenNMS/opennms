@@ -46,10 +46,7 @@ import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.ResultDescriptor;
 
-import lombok.Builder;
-
 /** Aggregates the 'Newts' way. */
-@Builder
 public class NewtsLikeSampleAggregator {
 
     private final Resource resource;
@@ -68,6 +65,10 @@ public class NewtsLikeSampleAggregator {
         this.metric = checkNotNull(metric, "metric argument");
     }
 
+    public static NewtsLikeSampleAggregatorBuilder builder() {
+        return new NewtsLikeSampleAggregatorBuilder();
+    }
+
     public List<org.opennms.integration.api.v1.timeseries.Sample> process(Iterator<Results.Row<Sample>> samples) {
         checkNotNull(samples, "samples argument");
 
@@ -79,5 +80,55 @@ public class NewtsLikeSampleAggregator {
         }
 
         return aggregatedSamples;
+    }
+
+    public static class NewtsLikeSampleAggregatorBuilder {
+        private Resource resource;
+        private Timestamp start;
+        private Timestamp end;
+        private ResultDescriptor resultDescriptor;
+        private Duration resolution;
+        private Metric metric;
+
+        NewtsLikeSampleAggregatorBuilder() {
+        }
+
+        public NewtsLikeSampleAggregatorBuilder resource(Resource resource) {
+            this.resource = resource;
+            return this;
+        }
+
+        public NewtsLikeSampleAggregatorBuilder start(Timestamp start) {
+            this.start = start;
+            return this;
+        }
+
+        public NewtsLikeSampleAggregatorBuilder end(Timestamp end) {
+            this.end = end;
+            return this;
+        }
+
+        public NewtsLikeSampleAggregatorBuilder resultDescriptor(ResultDescriptor resultDescriptor) {
+            this.resultDescriptor = resultDescriptor;
+            return this;
+        }
+
+        public NewtsLikeSampleAggregatorBuilder resolution(Duration resolution) {
+            this.resolution = resolution;
+            return this;
+        }
+
+        public NewtsLikeSampleAggregatorBuilder metric(Metric metric) {
+            this.metric = metric;
+            return this;
+        }
+
+        public NewtsLikeSampleAggregator build() {
+            return new NewtsLikeSampleAggregator(resource, start, end, resultDescriptor, resolution, metric);
+        }
+
+        public String toString() {
+            return "NewtsLikeSampleAggregator.NewtsLikeSampleAggregatorBuilder(resource=" + this.resource + ", start=" + this.start + ", end=" + this.end + ", resultDescriptor=" + this.resultDescriptor + ", resolution=" + this.resolution + ", metric=" + this.metric + ")";
+        }
     }
 }
