@@ -29,6 +29,7 @@
 package org.opennms.smoketest.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
@@ -82,17 +83,27 @@ public class OverlayUtilsTest {
         map1.put("base", "basevalue");
         
         Map<String, Object> submap1 = new HashMap<>();
-        submap1.put("submapbase", "submapvalue");
+        String originalKey = "submapbase";
+        String originalValue = "submapvalue";
+        submap1.put(originalKey, originalValue);
         
-        map1.put("submap", submap1);
+        String submapKey = "submap";
+        map1.put(submapKey, submap1);
 
         Map<String, Object> newMap = new HashMap<>();
         Map<String, Object> newSubmap = new HashMap<>();
-        newSubmap.put("newsub", "newsubvalue");
-        newMap.put("submap", newSubmap);
+        String newKey = "newsub";
+        String newValue = "newsubvalue";
+        
+        newSubmap.put(newKey, newValue);
+        newMap.put(submapKey, newSubmap);
         
         OverlayUtils.mergeMaps(map1, newMap);
         
-        System.out.println(map1);
+        Map<String, String> expectedMap = new HashMap<>();
+        expectedMap.put(originalKey, originalValue);
+        expectedMap.put(newKey, newValue);
+        
+        assertThat(map1.get(submapKey), equalTo(expectedMap));
     }
 }
