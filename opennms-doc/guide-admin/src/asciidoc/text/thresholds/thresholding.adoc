@@ -5,76 +5,83 @@
 [[ga-threshd-introduction]]
 = Thresholding
 
-Thresholding allows you to define triggers against any numeric data retrieved by the SNMP collector [other data collectors?], and from those triggers, generate events, notifications, and alarms. 
-_{opennms-product-name}_ uses four thresholding techniques (algorithms):
+Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 
-* *Low* - triggers when value of the data source equals or drops below the threshold value and rearms when it equals or comes back up above the rearm value (e.g., available disk space falls under the specified value)
-* *High* - triggers when the value of the data source equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value (e.g., bandwidth use exceeds the specified amount)
-* *Absolute* - measured value changes by specified amount (e.g., on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem)
-* *Relative* - measured value changes by percent (e.g., did the available disk space change more than 5% from the last poll)
+_{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
 
-These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression).
+* *Low* - equals or drops below the threshold value and rearms when it equals or comes back up above the rearm value (e.g., available disk space falls under the specified value)
+* *High* - equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value (e.g., bandwidth use exceeds the specified amount)
+* *Absolute* - changes by the specified amount (e.g., on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is)
+* *Relative* - changes by percent (e.g., available disk space changes more than 5% from the last poll)
 
-[_{opennms-product-name}_ has the ability to monitor the performance of a managed entity's resource(s) by using various thresholding techniques.
-These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
-This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc.]
+These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression). 
+You can also create notifications for threshold events. 
+
+_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. [is this information too technical?]
+This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc. [do we need to list protocols?]
 
 [[threshold-bw]]
-=== Basic Walkthrough – Thresholding
+=== Basic Walk-through – Thresholding
 
 This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
 Our threshold will tell OpenNMS to create an event when the number of logged in users exceeds two, and rearm when it falls below two. 
 
+Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold. 
+
+[[metric-collect]]
 ==== Determine That You are Collecting the Metric
 In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
 We are also using data collected via SNMP. 
 
-. In OpenNMS, choose `Reports>Resource Graphs`.
+. In OpenNMS, choose *Reports>Resource Graphs*.
 . Select one of the listed resources [how do they know?]
 . Under `SNMP Node Data`, select `Node-leve Performance Data` and choose `Graph Selection`.
 . Scroll to find the *Number of Users* graph. 
 .. If you want, you can click the binoculars icon to display only this graph. 
 
-TIP: If you are not collecting this metric, see xx for information. 
+TIP: If you are not collecting this metric, see xref?? for information. 
 
 [[threshold-create]]
 ==== Create a Threshold
 
 . Select *<User_Name>>Configure OpenNMS* from the top-right menu. 
-. Under Performance Measurement, choose Configure Thresholds.
+. Under *Performance Measurement*, choose *Configure Thresholds*.
 .. A screen with a list of preconfigured threshold groups appears.
 We will work with `netsnmp`.
 For infomation on how to create a threshold group, see <<threshold-group, Creating a threshold group>>. 
 . Click `Edit` beside the `netsnmp` group. 
-. Click Create New Threshold at the bottom of the Basic Thresholds area of the screen. 
+. Click *Create New Threshold* at the bottom of the *Basic Thresholds* area of the screen. 
 . Set the following information and click *Save*:
 
 |===
 
 | *Field* | *Value* | *Description*
 
-| Type | high | triggers an event when the value of the data source equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value
+| Type | high | triggers an event when the datasource value equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value
 
 | Datasource | hrSystemNumUsers| Name of the datasource you want to threshold against. 
 For information on how to determine the datasource, see <<datasource-determine, Determine the Datasource>>
-Where it comes from: mib2.xml - group name - there are tons of these - F5 (if you have that kind of load balancer) - data from other management protocols - outside the scope of this tutorial
 
 | Datasource label| leave blank | Optional text label. 
 Not required for this tutorial.
 
 | Value| 2 | The value above which we want to trigger an event. 
+In this case, we want to trigger an event when the number of logged-in users exceeds two. 
 
 | Re-arm | 2 | The value below which we want the system to re-arm. 
+In this case, once the number of logged-in users falls below two. 
 
 | Trigger | 3 | The number of consecutive times the threshold value can occur before the system triggers an event. 
 Since our default polling period is 5 minutes, a value of 3 means OpenNMS 
-would create a threshold event if there is more than 2 users for 15 minutes.
+would create a threshold event if there are more than 2 users for 15 minutes.
 
-|Description | leave blank | optional text to describe your threshold 
+| Description | leave blank | optional text to describe your threshold 
 
-|Triggered UEI| leave blank |
+| Triggered UEI| leave blank | A custom uniform event identifier (UEI) sent into the events system when the threshold is triggered. 
+A custom UEI for each threshold makes it easier to <<threshold-notification, create notifications>>. 
+If left blank, it defaults to the standard thresholds UEIs. 
 
-|Re-armed UEI | leave blank |
+| Re-armed UEI | leave blank | A custom uniform event identifier (UEI) sent into the events system when the threshold is re-armed.
 
 |===
 
@@ -96,10 +103,7 @@ Note the name of the datasource, and enter it in the `Datasource` field when you
 
 NOTE: To determine a datasource from a different management protocol, ...
 
-* Specifying the nodes/interfaces on which you want to apply the threshold
-* Creating a service definition
-* Creating a threshold group
-* Activating the thresholds
+Add more sample thresholds to have users learn how they work. To take from Ronny's tutorials.
 
 [[data-enable]]
 ==== Enable Data Collection
@@ -124,7 +128,9 @@ A threshold group associates a set of thresholds to a service (e.g., thresholds 
 
 You can edit an existing group or create a new one. 
 
-
+[[threshold-notification]]
+==== Create a Notification on a Threshold Event
+A custom UEI for each threshold makes it easier to <<threshold-notification, create notifications>>. 
 
 === Thresholding Service
 
