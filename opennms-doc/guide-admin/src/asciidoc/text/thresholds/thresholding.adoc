@@ -24,43 +24,45 @@ This includes, but is not limited to metrics such as CPU load, bandwidth, disk s
 === Basic Walk-through – Thresholding
 
 This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
-Our threshold will tell OpenNMS to create an event when the number of logged in users exceeds two, and rearm when it falls below two. 
+Our threshold will tell OpenNMS to create an event when the number of logged-in users exceeds two, and rearm when it falls below two. 
 
 Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold. 
 
 [[metric-collect]]
-==== Determine That You are Collecting the Metric
+==== Determine You are Collecting Metric
 In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
-We are also using data collected via SNMP. 
+We are also using data collected via SNMP. (For information on other collectors, see .)
 
-. In OpenNMS, choose *Reports>Resource Graphs*.
-. Select one of the listed resources [how do they know?]
+. In OpenNMS, choose `Reports>Resource Graphs`.
+. Select one of the listed resources. [how do they know?]
 . Under `SNMP Node Data`, select `Node-leve Performance Data` and choose `Graph Selection`.
-. Scroll to find the *Number of Users* graph. 
-.. If you want, you can click the binoculars icon to display only this graph. 
+. Scroll to find the `Number of Users` graph. 
+.. You can click the binoculars icon to display only this graph. 
 
 TIP: If you are not collecting this metric, see xref?? for information. 
 
 [[threshold-create]]
 ==== Create a Threshold
 
-. Select *<User_Name>>Configure OpenNMS* from the top-right menu. 
-. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
+. Under `Performance Measurement`, choose `Configure Thresholds`.
 .. A screen with a list of preconfigured threshold groups appears.
 We will work with `netsnmp`.
 For infomation on how to create a threshold group, see <<threshold-group, Creating a threshold group>>. 
 . Click `Edit` beside the `netsnmp` group. 
-. Click *Create New Threshold* at the bottom of the *Basic Thresholds* area of the screen. 
-. Set the following information and click *Save*:
+. Click `Create New Threshold` at the bottom of the `Basic Thresholds` area of the screen. 
+. Set the following information and click `Save`:
 
 |===
 
 | *Field* | *Value* | *Description*
 
-| Type | high | triggers an event when the datasource value equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value
+| Type | high | Triggers an event when the datasource value equals or exceeds the threshold value, and rearms when it equals or drops below the rearm value
 
-| Datasource | hrSystemNumUsers| Name of the datasource you want to threshold against. 
-For information on how to determine the datasource, see <<datasource-determine, Determine the Datasource>>
+| Datasource | hrSystemNumUsers| Name of the datasource you want to threshold against.
+For this tutorial, we have provided the datasource for logged-in users.  
+
+For information on how to determine a metric's datasource, see <<datasource-determine, Determine the Datasource>>
 
 | Datasource label| leave blank | Optional text label. 
 Not required for this tutorial.
@@ -85,21 +87,43 @@ If left blank, it defaults to the standard thresholds UEIs.
 
 |===
 
+=== Testing the Threshold
+
+Explain how to test the logged-in users threshold to demonstrate how it works. 
+
+== Creating a Threshold to X
+What is another common threshold someone might want to create? One that uses an expression?
+
+== Creating a Threshold to Y
+Another more complex threshold. 
+
+== Creating a Threshold to Z
+Another more complex threshold
+
+== General Thresholding Tasks
+
 [[datasource-determine]]
-=== Determine the Datasource
+=== Determining the Datasource
 Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
 Datasource names appear in `etc/snmp-graph.properties.d/`.
 
-. To determine the name of the datasource, find the title of the graph that displays the metric on which you want to threshold. 
+. To determine the name of the datasource, navigate to the `Resource Graphs` screen.
+For example,
+.. `Reports>Resource Graphs`.
+.. Select one of the listed resources.
+.. Under `SNMP Node Data`, select `Node-leve Performance Data` and choose `Graph Selection`.
+
+. Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold. 
 For example, "Number of Processes" or "System Uptime":
 +
-image:thresholding/graphs.png[]
+image::thresholding/graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime"):
 
-[ capture image ]
++
+capture image 
 
-Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
+. Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
 
 NOTE: To determine a datasource from a different management protocol, ...
 
