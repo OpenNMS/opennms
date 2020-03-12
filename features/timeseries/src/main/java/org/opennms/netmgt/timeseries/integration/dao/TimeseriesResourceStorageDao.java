@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
-import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
 import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
@@ -164,10 +163,8 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         for (final Result result : results) {
             for(String metricName: result.getMetrics()) {
                 Metric metric = ImmutableMetric.builder()
-                        .tag(CommonTagNames.resourceId, result.getResource().getId())
-                        .tag(CommonTagNames.name, metricName)
-                        .tag(ImmutableMetric.MandatoryTag.mtype.name(), ImmutableMetric.Mtype.gauge.name()) // TODO Patrick: discuss with Jesse: where do we get the type from?
-                        .tag(ImmutableMetric.MandatoryTag.unit.name(), CommonTagValues.unknown)
+                        .intrinsicTag(CommonTagNames.resourceId, result.getResource().getId())
+                        .intrinsicTag(CommonTagNames.name, metricName)
                         .build();
                 try {
                     storageManager.get().delete(metric);

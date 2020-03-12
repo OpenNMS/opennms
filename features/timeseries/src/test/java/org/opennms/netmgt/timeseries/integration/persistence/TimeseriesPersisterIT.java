@@ -60,7 +60,6 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
-import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 import org.opennms.newts.api.Resource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,10 +123,8 @@ public class TimeseriesPersisterIT {
         Instant end = Instant.now();
 
         ImmutableMetric metric = ImmutableMetric.builder()
-                .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
-                .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.gauge.name())
-                .tag(CommonTagNames.resourceId, resource.getId())
-                .tag(CommonTagNames.name, "metric")
+                .intrinsicTag(CommonTagNames.resourceId, resource.getId())
+                .intrinsicTag(CommonTagNames.name, "metric")
                 .build();
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .start(now)

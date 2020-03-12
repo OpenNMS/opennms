@@ -245,10 +245,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private org.opennms.integration.api.v1.timeseries.Sample toApiSample(final Sample sample) {
 
         ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
-                .tag(CommonTagNames.resourceId, sample.getResource().getId())
-                .tag(CommonTagNames.name, sample.getName())
-                .tag(typeToTag(sample.getType()))
-                .tag("unit", CommonTagValues.unknown);
+                .intrinsicTag(CommonTagNames.resourceId, sample.getResource().getId())
+                .intrinsicTag(CommonTagNames.name, sample.getName())
+                .metaTag(typeToTag(sample.getType()));
 
         if(sample.getResource().getAttributes().isPresent()) {
             sample.getResource().getAttributes().get().forEach(builder::metaTag);
@@ -268,9 +267,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         } else if(type == MetricType.COUNTER) {
             mtype = ImmutableMetric.Mtype.count;
         } else {
-            throw new IllegalArgumentException("Implement me"); // no other tyes exist
+            throw new IllegalArgumentException("Implement me"); // no other types exist
         }
-        return new ImmutableTag(ImmutableMetric.MandatoryTag.mtype.name(), mtype.name());
+        return new ImmutableTag(CommonTagNames.mtype, mtype.name());
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

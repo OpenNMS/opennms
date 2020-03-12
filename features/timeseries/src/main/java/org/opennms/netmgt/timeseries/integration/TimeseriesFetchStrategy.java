@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
-import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -280,10 +279,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     final boolean shouldAggregateNatively = storageManager.get().supportsAggregation(aggregation);
 
                     final ImmutableMetric metric = ImmutableMetric.builder()
-                            .tag(CommonTagNames.resourceId, resourceId)
-                            .tag(CommonTagNames.name, metricName)
-                            .tag(Metric.MandatoryTag.mtype.name(), Metric.Mtype.gauge.name())  // TODO Patrick: discuss with Jesse: where do we get the type from?
-                            .tag(Metric.MandatoryTag.unit.name(), CommonTagValues.unknown)
+                            .intrinsicTag(CommonTagNames.resourceId, resourceId)
+                            .intrinsicTag(CommonTagNames.name, metricName)
                             .build();
 
                     Instant startInstant = Instant.ofEpochMilli(start.or(Timestamp.fromEpochMillis(0)).asMillis());

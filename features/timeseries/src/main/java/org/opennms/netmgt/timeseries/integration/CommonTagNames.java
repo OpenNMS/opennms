@@ -32,4 +32,5 @@ package org.opennms.netmgt.timeseries.integration;
 public interface CommonTagNames {
     String name = "name";
     String resourceId = "resourceId";
+    String mtype = "mtype";
 }

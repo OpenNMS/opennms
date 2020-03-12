@@ -288,10 +288,8 @@ public class TimeseriesFetchStrategyTest {
 
         String name = ds != null ? ds : attr;
         ImmutableMetric metric = ImmutableMetric.builder()
-                .tag(CommonTagNames.resourceId, newtsResourceId)
-                .tag(CommonTagNames.name, name)
-                .tag(ImmutableMetric.MandatoryTag.mtype.name(), ImmutableMetric.Mtype.gauge.name())
-                .tag(ImmutableMetric.MandatoryTag.unit.name(), CommonTagValues.unknown)
+                .intrinsicTag(CommonTagNames.resourceId, newtsResourceId)
+                .intrinsicTag(CommonTagNames.name, name)
                 .build();
         Sample sample = ImmutableSample.builder()
                 .metric(metric)

@@ -76,7 +76,7 @@ public class InMemoryStorage implements TimeSeriesStorage {
 
     private boolean containsAll(final Metric metric, final Collection<Tag> tags) {
         for(Tag tag: tags) {
-            if(!metric.getTags().contains(tag) && !metric.getMetaTags().contains(tag)){
+            if(!metric.getIntrinsicTags().contains(tag) && !metric.getMetaTags().contains(tag)){
                 return false;
             }
         }

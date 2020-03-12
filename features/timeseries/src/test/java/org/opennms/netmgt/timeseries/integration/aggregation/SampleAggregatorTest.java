@@ -40,12 +40,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
-import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
-import org.opennms.netmgt.timeseries.integration.CommonTagValues;
 
 public class SampleAggregatorTest {
 
@@ -58,8 +56,7 @@ public class SampleAggregatorTest {
     }
 
     private final ImmutableMetric metric = ImmutableMetric.builder()
-            .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
-            .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown).build();
+            .intrinsicTag(CommonTagNames.resourceId, "123").build();
 
     @Test
     public void shouldAggregateToAverage() {
@@ -127,9 +124,7 @@ public class SampleAggregatorTest {
     @Test
     public void shouldRejectWrongMetric() {
         ImmutableMetric wrongMetric = ImmutableMetric.builder()
-                .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
-                .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
-                .tag(CommonTagNames.resourceId, "otherResource").build();
+                .intrinsicTag(CommonTagNames.resourceId, "otherResource").build();
 
         sample(10, 10);
         samples.add(ImmutableSample.builder().metric(wrongMetric).time(Instant.ofEpochMilli(11)).value(11d).build());
@@ -138,12 +133,7 @@ public class SampleAggregatorTest {
 
     @Test
     public void shouldRejectNullValues() {
-        Metric wrongMetric = ImmutableMetric.builder()
-                .tag(ImmutableMetric.MandatoryTag.mtype, ImmutableMetric.Mtype.counter.name())
-                .tag(ImmutableMetric.MandatoryTag.unit, CommonTagValues.unknown)
-                .tag(CommonTagNames.resourceId, "otherResource").build();
         assertThrowsException(NullPointerException.class, () -> compute(null, 10, 24, 5));
-        // assertThrows(NullPointerException.class, () -> compute(Aggregation.AVERAGE, 10, 24, 5));
     }
 
     private void sample(long timeInMillis, double value) {
