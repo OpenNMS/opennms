@@ -68,9 +68,9 @@ build: test
 		--build-arg BUILD_DATE=$(BUILD_DATE) \
 		--build-arg SOURCE=$(SOURCE) \
 		--build-arg REVISION=$(REVISION) \
-		--build-arg BUILD_NUMBER=$(CIRCLE_BUILD_NUM) \
-		--build-arg BUILD_URL=$(CIRCLE_BUILD_URL) \
-		--build-arg BUILD_BRANCH=$(CIRCLE_BRANCH) \
+		--build-arg BUILD_NUMBER=$(BUILD_NUMBER) \
+		--build-arg BUILD_URL=$(BUILD_URL) \
+		--build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
 		--tag=$(DOCKER_TAG) \
 		$(DOCKER_FLAGS) \
 		. ;
