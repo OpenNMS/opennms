@@ -359,14 +359,6 @@ workflows:
               only:
                 - master
                 - develop
-      - minion-publish-oci:
-          requires:
-            - minion-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
@@ -465,6 +457,7 @@ jobs:
             sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
+      - dockerhub-login
       - run:
           name: Assemble tarballs
           # Install fake makensis to satisfy the assemble dependency
@@ -705,21 +698,6 @@ jobs:
           command: |
             cd opennms-container/horizon
             docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
-  minion-publish-oci:
-    executor: centos-build-executor
-    steps:
-      - attach_workspace:
-          at: ~/
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - dockerhub-login
-      - run:
-          name: Load Minion OCI image, tag it and publish to registry
-          command: |
-            cd opennms-container/minion
-            docker image load -i images/minion.oci
             ./tag.sh
             ./publish.sh
   sentinel-publish-oci:
