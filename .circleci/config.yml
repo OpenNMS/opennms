@@ -490,7 +490,7 @@ jobs:
           destination: tarballs
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/minion.oci
-          destination: minion.oci  
+          destination: minion.oci
       - persist_to_workspace:
           root: ~/
           paths:
