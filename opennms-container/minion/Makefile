@@ -63,6 +63,7 @@ build: test
 	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
 	docker-buildx use $(DOCKERX_INSTANCE);
 	docker-buildx build --platform=$(DOCKER_ARCH) \
+	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	  --build-arg VERSION=$(VERSION) \
 		--build-arg BUILD_DATE=$(BUILD_DATE) \
 		--build-arg SOURCE=$(SOURCE) \
