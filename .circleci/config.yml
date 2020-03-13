@@ -336,6 +336,7 @@ workflows:
                 - /^features.*/
                 - /^mvr.*/
                 - /.*smoke.*/
+                - jira/NMS-12483
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
