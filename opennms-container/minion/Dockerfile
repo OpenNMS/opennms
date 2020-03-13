@@ -26,7 +26,7 @@ FROM ${BASE_IMAGE}
 RUN groupadd --gid 10001 minion && \
     useradd --system --uid 10001 --gid minion minion
 
-COPY assets/* /
+COPY container-fs/* /
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
