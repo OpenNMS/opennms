@@ -121,7 +121,7 @@ commands:
           name: Load Minion OCI image
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i images/minion.oci
       - run:
           name: Load Sentinel OCI image
           command: |
@@ -719,7 +719,7 @@ jobs:
           name: Load Minion OCI image, tag it and publish to registry
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i images/minion.oci
             ./tag.sh
             ./publish.sh
   sentinel-publish-oci:
