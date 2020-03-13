@@ -13,7 +13,7 @@ ADD ./tarball/minion.tar.gz /opt/
 RUN mv /opt/minion-* /opt/minion
 
 RUN groupadd --gid 10001 minion && \
-    useradd --system --uid 10001 --gid minion minion && \
+    useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion && \
     chown 10001 /opt/minion -R && \
     chgrp -R 0 /opt/minion && \
     chmod -R g=u /opt/minion
@@ -24,7 +24,7 @@ RUN groupadd --gid 10001 minion && \
 FROM ${BASE_IMAGE}
 
 RUN groupadd --gid 10001 minion && \
-    useradd --system --uid 10001 --gid minion minion
+    useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion
 
 COPY container-fs/* /
 
@@ -32,14 +32,14 @@ COPY container-fs/* /
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
 
-# Install confd
-ARG CONFD_VERSION="0.16.0"
-ARG CONFD_ARCH="amd64"
-ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-${CONFD_ARCH}"
-ADD ${CONFD_URL} /usr/local/bin/confd
-RUN chmod +x /usr/local/bin/confd
-COPY ./confd/ /opt/minion/confd/
-RUN chmod +x /opt/minion/confd/scripts/*
+# Create SSH Key-Pair to use with the Karaf Shell
+RUN mkdir /opt/minion/.ssh && \
+    ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N "" && \
+    chmod 700 /opt/minion/.ssh && \
+    chmod 600 /opt/minion/.ssh/id_rsa && \
+    chown 10001 /opt/minion/.ssh -R && \
+    echo minion=$(cat /opt/minion/.ssh/id_rsa.pub | awk '{print $2}'),viewer > /opt/minion/etc/keys.properties && \
+    echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> /opt/minion/etc/keys.properties
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
