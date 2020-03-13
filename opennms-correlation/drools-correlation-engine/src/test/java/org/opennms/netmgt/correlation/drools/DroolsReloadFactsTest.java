@@ -73,7 +73,7 @@ public class DroolsReloadFactsTest {
         // save facts.
         droolsCorrelationEngine.saveFacts();
         // Verify that it should have atleast 4 objects from the rule
-        List<Object> factObjects = droolsCorrelationEngine.getFactObjects();
+        List<byte[]> factObjects = droolsCorrelationEngine.getFactObjects();
         assertThat(factObjects.size(), Matchers.greaterThanOrEqualTo(4));
         // Now initialize again.
         droolsCorrelationEngine.initialize();

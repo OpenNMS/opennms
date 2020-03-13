@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import static org.drools.core.util.DroolsStreamUtils.streamIn;
+import static org.drools.core.util.DroolsStreamUtils.streamOut;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -115,7 +118,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private Boolean m_persistState;
     private Resource m_configPath;
     private ApplicationContext m_configContext;
-    private List<Object> factObjects;
+    private List<byte[]> factObjects;
 
     /**
      * Holds a reference to the thread that calls {@link KieSession#fireUntilHalt()}
@@ -270,7 +273,13 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         }
 
         if (factObjects != null) {
-            factObjects.forEach(fact -> m_kieSession.insert(fact));
+            factObjects.forEach(fact -> {
+                try {
+                    m_kieSession.insert(streamIn(fact, m_kieSession.getClass().getClassLoader()));
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             factObjects.clear();
         }
 
@@ -506,7 +515,13 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             try {
                 // Capture the current set of facts
                 factObjects  = m_kieSession.getFactHandles().stream()
-                        .map(fact -> m_kieSession.getObject(fact))
+                        .map(fact -> {
+                            try {
+                                return (streamOut(m_kieSession.getObject(fact)));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
                         .collect(Collectors.toList());
             } catch (Exception e) {
                 LOG.warn("Failed to save facts", e);
@@ -514,7 +529,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         });
     }
 
-    List<Object> getFactObjects() {
+    List<byte[]> getFactObjects() {
         return factObjects;
     }
 
