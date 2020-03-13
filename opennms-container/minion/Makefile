@@ -19,7 +19,7 @@ BUILD_BRANCH            := $(shell git describe --always)
 
 help:
 	@echo ""
-	@echo "Makefile to build Minion Docker container images, tag them and push them to a registry."
+	@echo "Makefile to build Minion Docker container images and push to a registry."
 	@echo ""
 	@echo "Requirements to build images:"
 	@echo "  * Docker 18+"
@@ -90,4 +90,4 @@ clean-all:
 
 .DEFAULT_GOAL := build
 
-.PHONY: help build test install clean
+.PHONY: help test build install uninstall clean clean-all
