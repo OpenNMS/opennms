@@ -391,7 +391,7 @@ workflows:
                 - /.*smoke.*/
       - minion-deb-build:
           requires:
-            - build
+            - integration-test
           filters:
             branches:
               only:
