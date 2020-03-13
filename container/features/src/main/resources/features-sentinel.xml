@@ -199,7 +199,7 @@
         <feature>newts-cassandra-search</feature>
         <feature>fst</feature>
 
-        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/2.5.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/${concurrentTreesVersion}</bundle>
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
