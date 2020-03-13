@@ -29,14 +29,15 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -55,6 +56,31 @@ public class OpenPacket implements Packet {
     public final int as;         // uint16
     public final int holdTime;   // uint16
     public final InetAddress id; // uint32
+    public final List<Parameter> parameters;
+    public final List<Capability> capabilities;
+
+    public static class Parameter {
+        final int type, length;
+        final ByteBuf value;
+
+        private Parameter(final ByteBuf buffer) {
+            this.type = uint8(buffer);
+            this.length = uint8(buffer);
+            this.value = slice(buffer, length);
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public int getLength() {
+            return length;
+        }
+
+        public ByteBuf getValue() {
+            return value;
+        }
+    }
 
     public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
         this.header = Objects.requireNonNull(header);
@@ -66,8 +92,10 @@ public class OpenPacket implements Packet {
 
         final int parametersLength = uint8(buffer);
 
-        // Skip the parameters (see https://tools.ietf.org/html/rfc4271#section-4.2)
-        skip(buffer, parametersLength);
+        final List<Parameter> list = repeatRemaining(slice(buffer, parametersLength), Parameter::new);
+
+        parameters = list.stream().filter(p -> p.type != 2).collect(Collectors.toList());
+        capabilities = list.stream().filter(p -> p.type == 2).flatMap(p -> repeatRemaining(slice(p.value, p.length), Capability::new).stream()).collect(Collectors.toList());
     }
 
     @Override
