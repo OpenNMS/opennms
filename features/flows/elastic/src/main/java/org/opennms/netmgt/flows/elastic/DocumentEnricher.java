@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -63,6 +65,8 @@ import com.google.common.cache.CacheLoader;
 public class DocumentEnricher {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentEnricher.class);
 
+    private static final String NODE_METADATA_CACHE = "flows.node.metadata";
+
     private final NodeDao nodeDao;
 
     private final InterfaceToNodeCache interfaceToNodeCache;
@@ -78,6 +82,7 @@ public class DocumentEnricher {
     private final Cache<NodeMetadataKey, Optional<NodeDocument>> nodeMetadataCache;
 
     private final Timer nodeLoadTimer;
+
 
     public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
                             SessionUtils sessionUtils, ClassificationEngine classificationEngine,
@@ -96,8 +101,10 @@ public class DocumentEnricher {
                     }
                 }).build();
 
+       CacheConfig nodeMetadataCacheConfig = buildMetadataCacheConfig(cacheConfig);
+
        this.nodeMetadataCache = new CacheBuilder()
-               .withConfig(cacheConfig)
+               .withConfig(nodeMetadataCacheConfig)
                .withCacheLoader(new CacheLoader<NodeMetadataKey, Optional<NodeDocument>>() {
                    @Override
                    public Optional<NodeDocument> load(NodeMetadataKey key) {
@@ -164,16 +171,18 @@ public class DocumentEnricher {
 
     private Optional<NodeDocument> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value) {
 
-        Optional<NodeDocument> nodeDocument;
-        final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
-        try {
-            nodeDocument = nodeMetadataCache.get(metadataKey);
-        } catch (ExecutionException e) {
-            LOG.error("Error while retrieving NodeDocument from NodeMetadataCache: {}.", e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
-        if(nodeDocument.isPresent()) {
-            return nodeDocument;
+        Optional<NodeDocument> nodeDocument = Optional.empty();
+        if (contextKey != null && !Strings.isNullOrEmpty(value)) {
+            final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
+            try {
+                nodeDocument = nodeMetadataCache.get(metadataKey);
+            } catch (ExecutionException e) {
+                LOG.error("Error while retrieving NodeDocument from NodeMetadataCache: {}.", e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+            if(nodeDocument.isPresent()) {
+                return nodeDocument;
+            }
         }
 
         final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(location, InetAddressUtils.addr(ipAddress));
@@ -185,7 +194,7 @@ public class DocumentEnricher {
                 throw new RuntimeException(e);
             }
         }
-        return Optional.empty();
+        return nodeDocument;
     }
 
 
@@ -217,20 +226,14 @@ public class DocumentEnricher {
     }
 
     private Optional<NodeDocument> getNodeInfoFromMetadataContext(ContextKey contextKey, String value) {
-        OnmsNode onmsNode = null;
-        if (contextKey != null && !Strings.isNullOrEmpty(value)) {
-            final List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
-
-            if (!nodes.isEmpty()) {
-                onmsNode = nodes.get(0);
-            }
+        List<OnmsNode> nodes = new ArrayList<>();
+        try (Timer.Context ctx = nodeLoadTimer.time()) {
+            nodes = nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
         }
-
-        if (onmsNode != null) {
-            return mapOnmsNodeToNodeDocument(onmsNode);
+        if(nodes.isEmpty()) {
+            return Optional.empty();
         }
-
-        return Optional.empty();
+        return mapOnmsNodeToNodeDocument(nodes.get(0));
     }
 
     private Optional<NodeDocument> getNodeInfo(Integer nodeId) {
@@ -239,22 +242,22 @@ public class DocumentEnricher {
             onmsNode = nodeDao.get(nodeId);
         }
 
-        if (onmsNode != null) {
-            return mapOnmsNodeToNodeDocument(onmsNode);
-        }
+        return mapOnmsNodeToNodeDocument(onmsNode);
 
-        return Optional.empty();
     }
 
     private Optional<NodeDocument> mapOnmsNodeToNodeDocument(OnmsNode onmsNode) {
 
-        final NodeDocument nodeDocument = new NodeDocument();
-        nodeDocument.setForeignSource(onmsNode.getForeignSource());
-        nodeDocument.setForeignId(onmsNode.getForeignId());
-        nodeDocument.setNodeId(onmsNode.getId());
-        nodeDocument.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
+        if(onmsNode != null) {
+            final NodeDocument nodeDocument = new NodeDocument();
+            nodeDocument.setForeignSource(onmsNode.getForeignSource());
+            nodeDocument.setForeignId(onmsNode.getForeignId());
+            nodeDocument.setNodeId(onmsNode.getId());
+            nodeDocument.setCategories(onmsNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList()));
 
-        return Optional.of(nodeDocument);
+            return Optional.of(nodeDocument);
+        }
+        return Optional.empty();
     }
 
     protected static ClassificationRequest createClassificationRequest(FlowDocument document) {
@@ -269,5 +272,17 @@ public class DocumentEnricher {
         request.setSrcPort(document.getSrcPort());
 
         return request;
+    }
+
+    private CacheConfig buildMetadataCacheConfig(CacheConfig cacheConfig) {
+        // Use existing config for the nodes with a new name for node metadata cache.
+        CacheConfig metadataCacheConfig = new CacheConfigBuilder()
+                .withName(NODE_METADATA_CACHE)
+                .withMaximumSize(cacheConfig.getMaximumSize())
+                .withExpireAfterWrite(cacheConfig.getExpireAfterWrite())
+                .build();
+        cacheConfig.setRecordStats(true);
+        cacheConfig.setMetricRegistry(cacheConfig.getMetricRegistry());
+        return metadataCacheConfig;
     }
 }
