@@ -4,14 +4,17 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.0.0.b29"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.0.0.b31"
 
 FROM ${BASE_IMAGE} as minion-base
 
 ADD ./tarball/minion.tar.gz /opt/
 
+# Organize files based on the build home dir /opt/minion
 RUN mv /opt/minion-* /opt/minion
 
+# We set the correct permissions in this stage, so we don't have this as an addtional
+# layer in our deploy image.
 RUN groupadd --gid 10001 minion && \
     useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion && \
     chown 10001 /opt/minion -R && \
@@ -23,14 +26,24 @@ RUN groupadd --gid 10001 minion && \
 ##
 FROM ${BASE_IMAGE}
 
+# Create user to be able to run as non root with a known user and group id.
 RUN groupadd --gid 10001 minion && \
     useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion
 
-COPY container-fs/* /
+# Install entrypoint wrapper and health check script
+COPY container-fs/entrypoint.sh /
+COPY container-fs/health.sh /
+
+# Install confd configuration
+COPY ./container-fs/confd/ /opt/minion/confd/
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
+
+# Install confd.io configuration files and scripts and ensure they are executable
+COPY ./container-fs/confd/ /opt/minion/confd/
+RUN chmod +x /opt/minion/confd/scripts/*
 
 # Create SSH Key-Pair to use with the Karaf Shell
 RUN mkdir /opt/minion/.ssh && \
@@ -63,8 +76,9 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
 
-USER 10001
 WORKDIR /opt/minion
+
+USER 10001
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
@@ -86,7 +100,6 @@ ENV MINION_ID="00000000-0000-0000-0000-deadbeef0001" \
 ## EXPOSED PORTS
 ##------------------------------------------------------------------------------
 ## -- OpenNMS KARAF SSH    8201/TCP
-## -- OpenNMS JMX         18980/TCP
 ## -- SNMP Trapd           1162/UDP
 ## -- Syslog               1514/UDP
 EXPOSE 8201/tcp 1162/udp 1514/udp

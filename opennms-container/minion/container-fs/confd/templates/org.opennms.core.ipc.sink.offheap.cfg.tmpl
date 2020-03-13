@@ -1,0 +1,3 @@
+{{range gets "/ipc/sink/offheap/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

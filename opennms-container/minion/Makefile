@@ -1,8 +1,14 @@
-# Container registry and tags
+## 
+# Makefile to build Minion container image with Docker
+##
+.PHONY: help test build install uninstall clean clean-all
+
+.DEFAULT_GOAL := build
+
 VERSION                 := localbuild
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:jre-1.0.0.b29
+BASE_IMAGE              := opennms/deploy-base:jre-1.0.0.b31
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKERX_INSTANCE	      := env-minion-oci
 DOCKER_REGISTRY         := docker.io
@@ -54,14 +60,17 @@ help:
 	@echo ""
 
 test:
-	command -v docker;
-	command -v docker-buildx;
-	test -f tarball/minion.tar.gz;
+	@echo "Test Docker Buildx installation and existence of the Minion tarball ..."
+	@command -v docker;
+	@command -v docker-buildx;
+	@test -f tarball/minion.tar.gz;
 
 build: test
+	@echo "Initialize builder instance ..."
   # If we don't have a builder instance create it, otherwise use the existing one
-	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
-	docker-buildx use $(DOCKERX_INSTANCE);
+	@if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
+	@docker-buildx use $(DOCKERX_INSTANCE);
+	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker-buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	  --build-arg VERSION=$(VERSION) \
@@ -76,18 +85,19 @@ build: test
 		. ;
 
 install: images/minion.oci
-	docker image load -i images/minion.oci;
+	@echo "Load image ..."
+	@docker image load -i images/minion.oci;
 
 uninstall:
-	docker rmi $(DOCKER_TAG)
+	@echo "Remove image ..."
+	@docker rmi $(DOCKER_TAG)
 
 clean:
-	docker-buildx rm $(DOCKERX_INSTANCE);
+	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
+	@docker-buildx rm $(DOCKERX_INSTANCE);
 
 clean-all:
-	docker-buildx rm $(DOCKERX_INSTANCE);
-	rm -rf images/*.*
-
-.DEFAULT_GOAL := build
-
-.PHONY: help test build install uninstall clean clean-all
+	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
+	@docker-buildx rm $(DOCKERX_INSTANCE);
+	@echo "Delete artifacts ..."
+	@rm -rf images/*.*

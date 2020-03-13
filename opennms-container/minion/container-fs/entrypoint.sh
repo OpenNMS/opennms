@@ -1,10 +1,6 @@
 #!/bin/bash -e
 # =====================================================================
-# Build script running OpenNMS Minion in Docker environment
-#
-# Source: https://github.com/indigo423/docker-minion
-# Web: https://www.opennms.org
-#
+# Entrypoint for the Minion container image
 # =====================================================================
 
 # Cause false/positives
@@ -17,7 +13,7 @@ MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
 CONFD_CONFIG_DIR="/opt/minion/confd"
 CONFD_BIN="/usr/local/bin/confd"
-CONFD_CONFIG_FILE="$CONFD_CONFIG_DIR/confd.toml"
+CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 

@@ -1,0 +1,12 @@
+{{if exists "/location" -}}
+location = {{getv "/location"}}
+{{end -}}
+{{if exists "/id" -}}
+id = {{getv "/id"}}
+{{end -}}
+{{if exists "/broker-url" -}}
+broker-url = {{getv "/broker-url"}}
+{{end -}}
+{{if exists "/http-url" -}}
+http-url = {{getv "/http-url"}}
+{{end -}}
