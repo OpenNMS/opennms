@@ -33,7 +33,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyProvider;
 
 /**
  * Provides a reference to the {@link TimeseriesFetchStrategy}
- * when using the 'newts' time-series series strategy.
+ * when using the 'integration' time-series series strategy.
  *
  * @author jwhite
  */
