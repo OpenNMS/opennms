@@ -34,11 +34,11 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.max_entries:8192}" />
   </bean>
 
-  <bean id="timeseries.metadata.cache_size" class="java.lang.Integer"><!-- in entries -->
+  <bean id="timeseries.metadata.cache_size" class="java.lang.Long"><!-- in entries -->
     <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.metadata.cache_size:1000}" />
   </bean>
 
-  <bean id="timeseries.metadata.cache_duration" class="java.lang.Integer"><!-- in seconds -->
+  <bean id="timeseries.metadata.cache_duration" class="java.lang.Long"><!-- in seconds -->
     <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.metadata.cache_duration:300}" />
   </bean>
 
