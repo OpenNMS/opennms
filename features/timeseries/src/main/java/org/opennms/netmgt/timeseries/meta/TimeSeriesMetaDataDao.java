@@ -43,6 +43,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
@@ -59,7 +60,7 @@ import com.google.common.cache.CacheBuilder;
 /**
  * TimeSeriesMetaDataDao stores string values associated with resourceids in the database. It leverages a Guava cache.
  * Design choice: for speed and high throughput we don't keep the cache and the database 100% in sync at the time of writing.
- * Latest 5 minutes after writing they will be the same.
+ * Latest 'cache_duration' after writing they will be the same.
  */
 @Service
 public class TimeSeriesMetaDataDao {
@@ -71,11 +72,13 @@ public class TimeSeriesMetaDataDao {
     private final Map<String, Map<String, String>> cache; // resourceId, Map<name, value>
 
     @Autowired
-    public TimeSeriesMetaDataDao(final DataSource dataSource) {
+    public TimeSeriesMetaDataDao(final DataSource dataSource,
+                                 @Named("timeseries.metadata.cache_size") long cacheSize,
+                                 @Named("timeseries.metadata.cache_duration") long cacheDuration) {
         this.dataSource = dataSource;
         Cache<String, Map<String, String>> cache = CacheBuilder.newBuilder()
-                .maximumSize(10000)
-                .expireAfterWrite(5, TimeUnit.MINUTES) // to make sure cache and db are in sync
+                .maximumSize(cacheSize)
+                .expireAfterWrite(cacheDuration, TimeUnit.SECONDS) // to make sure cache and db are in sync
                 .build();
         this.cache = cache.asMap();
     }
