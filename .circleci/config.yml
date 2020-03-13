@@ -487,7 +487,7 @@ jobs:
           name: Build Minion OCI
           command: |
             cd opennms-container/minion
-            make VERSION="$(../pom2version.py ../../pom.xml)" BUILD_NUMBER="${CIRCLE_BUILD_NUM}" BUILD_URL="${CIRCLE_BUILD_URL}" BUILD_BRANCH="${CIRCLE_BRANCH}"
+            make VERSION="$(../pom2version.py ../../pom.xml).b${CIRCLE_BUILD_NUM}" BUILD_NUMBER="${CIRCLE_BUILD_NUM}" BUILD_URL="${CIRCLE_BUILD_URL}" BUILD_BRANCH="${CIRCLE_BRANCH}"
             if [[ "${CIRCLE_BRANCH}" == "jira/NMS-12483" ]]; then
               echo "Build Multi-Arch manifest for x86_64 and ARM architecture and push to registry."
               make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" DOCKER_FLAGS=--push VERSION="$(../pom2version.py ../../pom.xml)" BUILD_NUMBER="${CIRCLE_BUILD_NUM}" BUILD_URL="${CIRCLE_BUILD_URL}" BUILD_BRANCH="${CIRCLE_BRANCH}"
