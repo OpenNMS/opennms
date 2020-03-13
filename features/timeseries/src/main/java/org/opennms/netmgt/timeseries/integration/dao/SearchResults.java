@@ -37,45 +37,44 @@ import org.opennms.newts.api.Resource;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-/** Was directly copied from Newts. */
 public class SearchResults implements Iterable<SearchResults.Result> {
-    private final List<Result> m_results = Lists.newArrayList();
+    private final List<Result> results = Lists.newArrayList();
 
     public void addResult(Resource resource, Collection<String> metrics) {
-        this.m_results.add(new Result(resource, metrics));
+        this.results.add(new Result(resource, metrics));
     }
 
     public void addResult(Result result) {
-        this.m_results.add(result);
+        this.results.add(result);
     }
 
     public int size() {
-        return this.m_results.size();
+        return this.results.size();
     }
 
     public boolean isEmpty() {
-        return this.m_results.isEmpty();
+        return this.results.isEmpty();
     }
 
     public Iterator<Result> iterator() {
-        return this.m_results.iterator();
+        return this.results.iterator();
     }
 
     public static class Result {
-        private final Resource m_resource;
-        private final Collection<String> m_metrics;
+        private final Resource resource;
+        private final Collection<String> metrics;
 
         Result(Resource resource, Collection<String> metrics) {
-            this.m_resource = Preconditions.checkNotNull(resource, "resource argument");
-            this.m_metrics = Preconditions.checkNotNull(metrics, "metrics argument");
+            this.resource = Preconditions.checkNotNull(resource, "resource argument");
+            this.metrics = Preconditions.checkNotNull(metrics, "metrics argument");
         }
 
         public Resource getResource() {
-            return this.m_resource;
+            return this.resource;
         }
 
         public Collection<String> getMetrics() {
-            return this.m_metrics;
+            return this.metrics;
         }
     }
 }

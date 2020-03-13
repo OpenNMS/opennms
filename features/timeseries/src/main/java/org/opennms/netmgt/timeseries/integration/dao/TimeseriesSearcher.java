@@ -33,10 +33,8 @@ import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
@@ -45,7 +43,6 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.CommonTagNames;
-import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Resource;
 import org.slf4j.Logger;
@@ -63,21 +60,6 @@ public class TimeseriesSearcher {
 
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
-
-    private Set<ResourcePath> getAllResources() throws StorageException {
-
-        List<Metric> metrics = timeseriesStorageManager.get().getMetrics(new ArrayList<>());
-        Set<ResourcePath> resources = new HashSet<>();
-        for (Metric metric : metrics){
-            String resourceString = metric.getFirstTagByKey("resourceId").getValue();
-            ResourcePath resource = new ResourcePath(TimeseriesUtils.toResourcePath(resourceString), TimeseriesUtils.toMetricName(resourceString));
-            addIncludingParent(resources, resource);
-        }
-        return  resources;
-    }
-    public void addIncludingParent(Set<ResourcePath> allPaths, ResourcePath newPath) {
-        allPaths.add(newPath);
-    }
 
     public Map<String, String> getResourceAttributes(ResourcePath path) {
         try {

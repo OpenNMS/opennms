@@ -260,14 +260,15 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         return ImmutableSample.builder().metric(metric).time(time).value(value).build();
     }
 
-    private Tag typeToTag (MetricType type) {
+    private Tag typeToTag (final MetricType type) {
         ImmutableMetric.Mtype mtype;
         if(type == MetricType.GAUGE){
             mtype = ImmutableMetric.Mtype.gauge;
         } else if(type == MetricType.COUNTER) {
             mtype = ImmutableMetric.Mtype.count;
         } else {
-            throw new IllegalArgumentException("Implement me"); // no other types exist
+            throw new IllegalArgumentException(String.format("I can't find a matching %s for %s",
+                    ImmutableMetric.Mtype.class.getSimpleName(), type.toString()));
         }
         return new ImmutableTag(CommonTagNames.mtype, mtype.name());
     }
