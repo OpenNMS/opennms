@@ -314,16 +314,7 @@ workflows:
             - build
       - minion-rpm-build:
           requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
+            - build
       - sentinel-rpm-build:
           requires:
             - build
@@ -401,6 +392,15 @@ workflows:
       - minion-deb-build:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
       - sentinel-deb-build:
           requires:
             - integration-test
@@ -658,6 +658,9 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
       - persist_to_workspace:
           root: ~/
           paths:
