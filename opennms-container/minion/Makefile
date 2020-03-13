@@ -10,7 +10,7 @@ SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 BASE_IMAGE              := opennms/deploy-base:jre-1.0.0.b31
 DOCKER_CLI_EXPERIMENTAL := enabled
-DOCKERX_INSTANCE	      := env-minion-oci
+DOCKERX_INSTANCE        := env-minion-oci
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := no42org
 DOCKER_PROJECT          := minion
@@ -67,22 +67,22 @@ test:
 
 build: test
 	@echo "Initialize builder instance ..."
-  # If we don't have a builder instance create it, otherwise use the existing one
+	# If we don't have a builder instance create it, otherwise use the existing one
 	@if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
 	@docker-buildx use $(DOCKERX_INSTANCE);
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker-buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	  --build-arg VERSION=$(VERSION) \
-		--build-arg BUILD_DATE=$(BUILD_DATE) \
-		--build-arg SOURCE=$(SOURCE) \
-		--build-arg REVISION=$(REVISION) \
-		--build-arg BUILD_NUMBER=$(BUILD_NUMBER) \
-		--build-arg BUILD_URL=$(BUILD_URL) \
-		--build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
-		--tag=$(DOCKER_TAG) \
-		$(DOCKER_FLAGS) \
-		. ;
+	  --build-arg BUILD_DATE=$(BUILD_DATE) \
+	  --build-arg SOURCE=$(SOURCE) \
+	  --build-arg REVISION=$(REVISION) \
+	  --build-arg BUILD_NUMBER=$(BUILD_NUMBER) \
+	  --build-arg BUILD_URL=$(BUILD_URL) \
+	  --build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
+	  --tag=$(DOCKER_TAG) \
+	  $(DOCKER_FLAGS) \
+	  . ;
 
 install: images/minion.oci
 	@echo "Load image ..."
