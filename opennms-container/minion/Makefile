@@ -30,7 +30,7 @@ help:
 	@echo "Requirements to build images:"
 	@echo "  * Docker 18+"
 	@echo "  * Buildx CLI tools from https://github.com/docker/buildx/releases in search path as docker-buildx"
-	@echo "  * Minion as a tarball in tarball/minion.tar.gz"
+	@echo "  * Minion assembled with: ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests"
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:      Show this help"
@@ -63,9 +63,11 @@ test:
 	@echo "Test Docker Buildx installation and existence of the Minion tarball ..."
 	@command -v docker;
 	@command -v docker-buildx;
-	@test -f tarball/minion.tar.gz;
+	test -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
 
 build: test
+	@echo "Copy Minion tarball to Docker context ..."
+	@find ../../opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./tarball/minion.tar.gz \;
 	@echo "Initialize builder instance ..."
 	# If we don't have a builder instance create it, otherwise use the existing one
 	@if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
@@ -99,5 +101,6 @@ clean:
 clean-all:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
 	@docker-buildx rm $(DOCKERX_INSTANCE);
-	@echo "Delete artifacts ..."
+	@echo "Delete tarball and artifacts ..."
 	@rm -rf images/*.*
+	@rm -rf tarball/*.*
