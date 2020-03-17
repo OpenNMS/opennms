@@ -49,6 +49,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.Capability;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Aggregator;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.AsPath;
@@ -359,23 +360,37 @@ public class BmpParser implements TcpParser {
             message.setLocalPort(packet.localPort);
             message.setRemotePort(packet.remotePort);
 
+            Transport.PeerUpPacket.CapabilityList.Builder sendCapabilitiesBuilder = Transport.PeerUpPacket.CapabilityList.newBuilder();
+            for (final Capability capability : packet.sendOpenMessage.capabilities) {
+                sendCapabilitiesBuilder.addCapability(Transport.PeerUpPacket.Capability.newBuilder()
+                        .setCode(capability.getCode())
+                        .setLength(capability.getLength())
+                        .setValue(capability.getValue())
+                        .build());
+            }
+
             message.getSendMsgBuilder()
                    .setVersion(packet.sendOpenMessage.version)
                    .setAs(packet.sendOpenMessage.as)
                    .setHoldTime(packet.sendOpenMessage.holdTime)
                    .setId(address(packet.sendOpenMessage.id))
-                   .setCapabilities(packet.sendOpenMessage.capabilities.stream()
-                           .map(c -> c.getMessage())
-                           .collect(Collectors.joining("/")));
+                   .setCapabilities(sendCapabilitiesBuilder.build());
+
+            Transport.PeerUpPacket.CapabilityList.Builder recvCapabilitiesBuilder = Transport.PeerUpPacket.CapabilityList.newBuilder();
+            for (final Capability capability : packet.recvOpenMessage.capabilities) {
+                recvCapabilitiesBuilder.addCapability(Transport.PeerUpPacket.Capability.newBuilder()
+                        .setCode(capability.getCode())
+                        .setLength(capability.getLength())
+                        .setValue(capability.getValue())
+                        .build());
+            }
 
             message.getRecvMsgBuilder()
                    .setVersion(packet.recvOpenMessage.version)
                    .setAs(packet.recvOpenMessage.as)
                    .setHoldTime(packet.recvOpenMessage.holdTime)
                    .setId(address(packet.recvOpenMessage.id))
-                   .setCapabilities(packet.recvOpenMessage.capabilities.stream()
-                           .map(c -> c.getMessage())
-                           .collect(Collectors.joining("/")));
+                   .setCapabilities(recvCapabilitiesBuilder.build());
 
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
                                                  .orElse(""));

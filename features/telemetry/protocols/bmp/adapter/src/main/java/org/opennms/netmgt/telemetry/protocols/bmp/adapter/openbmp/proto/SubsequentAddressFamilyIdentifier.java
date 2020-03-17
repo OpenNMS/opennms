@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto;
 
 import java.util.Arrays;
 

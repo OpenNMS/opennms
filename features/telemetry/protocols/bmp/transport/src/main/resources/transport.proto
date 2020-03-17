@@ -62,13 +62,25 @@ message TerminationPacket {
     google.protobuf.Empty unknown = 3;
 }
 
+
+
 message PeerUpPacket {
+    message Capability {
+        uint32 code = 1;
+        uint32 length = 2;
+        bytes value = 3;
+    }
+
+    message CapabilityList {
+        repeated Capability capability = 1;
+    }
+
     message OpenMessage {
         uint32 version = 1;
         fixed32 as = 2;
         uint32 hold_time = 3;
         IpAddress id = 4;
-        string capabilities = 5;
+        CapabilityList capabilities = 5;
     }
 
     Peer peer = 1;

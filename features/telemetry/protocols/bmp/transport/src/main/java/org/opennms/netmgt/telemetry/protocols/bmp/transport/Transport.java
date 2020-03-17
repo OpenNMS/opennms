@@ -5848,6 +5848,1420 @@ public final class Transport {
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Builder.class);
     }
 
+    public interface CapabilityOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:PeerUpPacket.Capability)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>uint32 code = 1;</code>
+       * @return The code.
+       */
+      int getCode();
+
+      /**
+       * <code>uint32 length = 2;</code>
+       * @return The length.
+       */
+      int getLength();
+
+      /**
+       * <code>bytes value = 3;</code>
+       * @return The value.
+       */
+      com.google.protobuf.ByteString getValue();
+    }
+    /**
+     * Protobuf type {@code PeerUpPacket.Capability}
+     */
+    public  static final class Capability extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:PeerUpPacket.Capability)
+        CapabilityOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Capability.newBuilder() to construct.
+      private Capability(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Capability() {
+        value_ = com.google.protobuf.ByteString.EMPTY;
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Capability();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Capability(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+
+                code_ = input.readUInt32();
+                break;
+              }
+              case 16: {
+
+                length_ = input.readUInt32();
+                break;
+              }
+              case 26: {
+
+                value_ = input.readBytes();
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_Capability_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_Capability_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder.class);
+      }
+
+      public static final int CODE_FIELD_NUMBER = 1;
+      private int code_;
+      /**
+       * <code>uint32 code = 1;</code>
+       * @return The code.
+       */
+      public int getCode() {
+        return code_;
+      }
+
+      public static final int LENGTH_FIELD_NUMBER = 2;
+      private int length_;
+      /**
+       * <code>uint32 length = 2;</code>
+       * @return The length.
+       */
+      public int getLength() {
+        return length_;
+      }
+
+      public static final int VALUE_FIELD_NUMBER = 3;
+      private com.google.protobuf.ByteString value_;
+      /**
+       * <code>bytes value = 3;</code>
+       * @return The value.
+       */
+      public com.google.protobuf.ByteString getValue() {
+        return value_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (code_ != 0) {
+          output.writeUInt32(1, code_);
+        }
+        if (length_ != 0) {
+          output.writeUInt32(2, length_);
+        }
+        if (!value_.isEmpty()) {
+          output.writeBytes(3, value_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (code_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(1, code_);
+        }
+        if (length_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(2, length_);
+        }
+        if (!value_.isEmpty()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(3, value_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability)) {
+          return super.equals(obj);
+        }
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability) obj;
+
+        if (getCode()
+            != other.getCode()) return false;
+        if (getLength()
+            != other.getLength()) return false;
+        if (!getValue()
+            .equals(other.getValue())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (37 * hash) + CODE_FIELD_NUMBER;
+        hash = (53 * hash) + getCode();
+        hash = (37 * hash) + LENGTH_FIELD_NUMBER;
+        hash = (53 * hash) + getLength();
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValue().hashCode();
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code PeerUpPacket.Capability}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:PeerUpPacket.Capability)
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_Capability_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_Capability_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder.class);
+        }
+
+        // Construct using org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          code_ = 0;
+
+          length_ = 0;
+
+          value_ = com.google.protobuf.ByteString.EMPTY;
+
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_Capability_descriptor;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability getDefaultInstanceForType() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability build() {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability buildPartial() {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability(this);
+          result.code_ = code_;
+          result.length_ = length_;
+          result.value_ = value_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability) {
+            return mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability other) {
+          if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.getDefaultInstance()) return this;
+          if (other.getCode() != 0) {
+            setCode(other.getCode());
+          }
+          if (other.getLength() != 0) {
+            setLength(other.getLength());
+          }
+          if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
+            setValue(other.getValue());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+
+        private int code_ ;
+        /**
+         * <code>uint32 code = 1;</code>
+         * @return The code.
+         */
+        public int getCode() {
+          return code_;
+        }
+        /**
+         * <code>uint32 code = 1;</code>
+         * @param value The code to set.
+         * @return This builder for chaining.
+         */
+        public Builder setCode(int value) {
+          
+          code_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint32 code = 1;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearCode() {
+          
+          code_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int length_ ;
+        /**
+         * <code>uint32 length = 2;</code>
+         * @return The length.
+         */
+        public int getLength() {
+          return length_;
+        }
+        /**
+         * <code>uint32 length = 2;</code>
+         * @param value The length to set.
+         * @return This builder for chaining.
+         */
+        public Builder setLength(int value) {
+          
+          length_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint32 length = 2;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearLength() {
+          
+          length_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
+        /**
+         * <code>bytes value = 3;</code>
+         * @return The value.
+         */
+        public com.google.protobuf.ByteString getValue() {
+          return value_;
+        }
+        /**
+         * <code>bytes value = 3;</code>
+         * @param value The value to set.
+         * @return This builder for chaining.
+         */
+        public Builder setValue(com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          value_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bytes value = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearValue() {
+          
+          value_ = getDefaultInstance().getValue();
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:PeerUpPacket.Capability)
+      }
+
+      // @@protoc_insertion_point(class_scope:PeerUpPacket.Capability)
+      private static final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability();
+      }
+
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<Capability>
+          PARSER = new com.google.protobuf.AbstractParser<Capability>() {
+        @java.lang.Override
+        public Capability parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Capability(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Capability> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Capability> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public interface CapabilityListOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:PeerUpPacket.CapabilityList)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability> 
+          getCapabilityList();
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability getCapability(int index);
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      int getCapabilityCount();
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder> 
+          getCapabilityOrBuilderList();
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder getCapabilityOrBuilder(
+          int index);
+    }
+    /**
+     * Protobuf type {@code PeerUpPacket.CapabilityList}
+     */
+    public  static final class CapabilityList extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:PeerUpPacket.CapabilityList)
+        CapabilityListOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use CapabilityList.newBuilder() to construct.
+      private CapabilityList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private CapabilityList() {
+        capability_ = java.util.Collections.emptyList();
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new CapabilityList();
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private CapabilityList(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  capability_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability>();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                capability_.add(
+                    input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.parser(), extensionRegistry));
+                break;
+              }
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          if (((mutable_bitField0_ & 0x00000001) != 0)) {
+            capability_ = java.util.Collections.unmodifiableList(capability_);
+          }
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_CapabilityList_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_CapabilityList_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder.class);
+      }
+
+      public static final int CAPABILITY_FIELD_NUMBER = 1;
+      private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability> capability_;
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability> getCapabilityList() {
+        return capability_;
+      }
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder> 
+          getCapabilityOrBuilderList() {
+        return capability_;
+      }
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      public int getCapabilityCount() {
+        return capability_.size();
+      }
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability getCapability(int index) {
+        return capability_.get(index);
+      }
+      /**
+       * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder getCapabilityOrBuilder(
+          int index) {
+        return capability_.get(index);
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        for (int i = 0; i < capability_.size(); i++) {
+          output.writeMessage(1, capability_.get(i));
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        for (int i = 0; i < capability_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(1, capability_.get(i));
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList)) {
+          return super.equals(obj);
+        }
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList) obj;
+
+        if (!getCapabilityList()
+            .equals(other.getCapabilityList())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (getCapabilityCount() > 0) {
+          hash = (37 * hash) + CAPABILITY_FIELD_NUMBER;
+          hash = (53 * hash) + getCapabilityList().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code PeerUpPacket.CapabilityList}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:PeerUpPacket.CapabilityList)
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_CapabilityList_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_CapabilityList_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder.class);
+        }
+
+        // Construct using org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+            getCapabilityFieldBuilder();
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          if (capabilityBuilder_ == null) {
+            capability_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            capabilityBuilder_.clear();
+          }
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_PeerUpPacket_CapabilityList_descriptor;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList getDefaultInstanceForType() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList build() {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList buildPartial() {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList(this);
+          int from_bitField0_ = bitField0_;
+          if (capabilityBuilder_ == null) {
+            if (((bitField0_ & 0x00000001) != 0)) {
+              capability_ = java.util.Collections.unmodifiableList(capability_);
+              bitField0_ = (bitField0_ & ~0x00000001);
+            }
+            result.capability_ = capability_;
+          } else {
+            result.capability_ = capabilityBuilder_.build();
+          }
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList) {
+            return mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList other) {
+          if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.getDefaultInstance()) return this;
+          if (capabilityBuilder_ == null) {
+            if (!other.capability_.isEmpty()) {
+              if (capability_.isEmpty()) {
+                capability_ = other.capability_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+              } else {
+                ensureCapabilityIsMutable();
+                capability_.addAll(other.capability_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.capability_.isEmpty()) {
+              if (capabilityBuilder_.isEmpty()) {
+                capabilityBuilder_.dispose();
+                capabilityBuilder_ = null;
+                capability_ = other.capability_;
+                bitField0_ = (bitField0_ & ~0x00000001);
+                capabilityBuilder_ = 
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                     getCapabilityFieldBuilder() : null;
+              } else {
+                capabilityBuilder_.addAllMessages(other.capability_);
+              }
+            }
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability> capability_ =
+          java.util.Collections.emptyList();
+        private void ensureCapabilityIsMutable() {
+          if (!((bitField0_ & 0x00000001) != 0)) {
+            capability_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability>(capability_);
+            bitField0_ |= 0x00000001;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder> capabilityBuilder_;
+
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability> getCapabilityList() {
+          if (capabilityBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(capability_);
+          } else {
+            return capabilityBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public int getCapabilityCount() {
+          if (capabilityBuilder_ == null) {
+            return capability_.size();
+          } else {
+            return capabilityBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability getCapability(int index) {
+          if (capabilityBuilder_ == null) {
+            return capability_.get(index);
+          } else {
+            return capabilityBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder setCapability(
+            int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability value) {
+          if (capabilityBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureCapabilityIsMutable();
+            capability_.set(index, value);
+            onChanged();
+          } else {
+            capabilityBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder setCapability(
+            int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder builderForValue) {
+          if (capabilityBuilder_ == null) {
+            ensureCapabilityIsMutable();
+            capability_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            capabilityBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder addCapability(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability value) {
+          if (capabilityBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureCapabilityIsMutable();
+            capability_.add(value);
+            onChanged();
+          } else {
+            capabilityBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder addCapability(
+            int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability value) {
+          if (capabilityBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureCapabilityIsMutable();
+            capability_.add(index, value);
+            onChanged();
+          } else {
+            capabilityBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder addCapability(
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder builderForValue) {
+          if (capabilityBuilder_ == null) {
+            ensureCapabilityIsMutable();
+            capability_.add(builderForValue.build());
+            onChanged();
+          } else {
+            capabilityBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder addCapability(
+            int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder builderForValue) {
+          if (capabilityBuilder_ == null) {
+            ensureCapabilityIsMutable();
+            capability_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            capabilityBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder addAllCapability(
+            java.lang.Iterable<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability> values) {
+          if (capabilityBuilder_ == null) {
+            ensureCapabilityIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, capability_);
+            onChanged();
+          } else {
+            capabilityBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder clearCapability() {
+          if (capabilityBuilder_ == null) {
+            capability_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000001);
+            onChanged();
+          } else {
+            capabilityBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public Builder removeCapability(int index) {
+          if (capabilityBuilder_ == null) {
+            ensureCapabilityIsMutable();
+            capability_.remove(index);
+            onChanged();
+          } else {
+            capabilityBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder getCapabilityBuilder(
+            int index) {
+          return getCapabilityFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder getCapabilityOrBuilder(
+            int index) {
+          if (capabilityBuilder_ == null) {
+            return capability_.get(index);  } else {
+            return capabilityBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder> 
+             getCapabilityOrBuilderList() {
+          if (capabilityBuilder_ != null) {
+            return capabilityBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(capability_);
+          }
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder addCapabilityBuilder() {
+          return getCapabilityFieldBuilder().addBuilder(
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder addCapabilityBuilder(
+            int index) {
+          return getCapabilityFieldBuilder().addBuilder(
+              index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .PeerUpPacket.Capability capability = 1;</code>
+         */
+        public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder> 
+             getCapabilityBuilderList() {
+          return getCapabilityFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder> 
+            getCapabilityFieldBuilder() {
+          if (capabilityBuilder_ == null) {
+            capabilityBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.Capability.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityOrBuilder>(
+                    capability_,
+                    ((bitField0_ & 0x00000001) != 0),
+                    getParentForChildren(),
+                    isClean());
+            capability_ = null;
+          }
+          return capabilityBuilder_;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:PeerUpPacket.CapabilityList)
+      }
+
+      // @@protoc_insertion_point(class_scope:PeerUpPacket.CapabilityList)
+      private static final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList();
+      }
+
+      public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<CapabilityList>
+          PARSER = new com.google.protobuf.AbstractParser<CapabilityList>() {
+        @java.lang.Override
+        public CapabilityList parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new CapabilityList(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<CapabilityList> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<CapabilityList> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
     public interface OpenMessageOrBuilder extends
         // @@protoc_insertion_point(interface_extends:PeerUpPacket.OpenMessage)
         com.google.protobuf.MessageOrBuilder {
@@ -5886,16 +7300,19 @@ public final class Transport {
       org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getIdOrBuilder();
 
       /**
-       * <code>string capabilities = 5;</code>
+       * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+       * @return Whether the capabilities field is set.
+       */
+      boolean hasCapabilities();
+      /**
+       * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
        * @return The capabilities.
        */
-      java.lang.String getCapabilities();
+      org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList getCapabilities();
       /**
-       * <code>string capabilities = 5;</code>
-       * @return The bytes for capabilities.
+       * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
        */
-      com.google.protobuf.ByteString
-          getCapabilitiesBytes();
+      org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder getCapabilitiesOrBuilder();
     }
     /**
      * Protobuf type {@code PeerUpPacket.OpenMessage}
@@ -5910,7 +7327,6 @@ public final class Transport {
         super(builder);
       }
       private OpenMessage() {
-        capabilities_ = "";
       }
 
       @java.lang.Override
@@ -5972,9 +7388,16 @@ public final class Transport {
                 break;
               }
               case 42: {
-                java.lang.String s = input.readStringRequireUtf8();
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder subBuilder = null;
+                if (capabilities_ != null) {
+                  subBuilder = capabilities_.toBuilder();
+                }
+                capabilities_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(capabilities_);
+                  capabilities_ = subBuilder.buildPartial();
+                }
 
-                capabilities_ = s;
                 break;
               }
               default: {
@@ -6063,39 +7486,26 @@ public final class Transport {
       }
 
       public static final int CAPABILITIES_FIELD_NUMBER = 5;
-      private volatile java.lang.Object capabilities_;
+      private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList capabilities_;
       /**
-       * <code>string capabilities = 5;</code>
-       * @return The capabilities.
+       * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+       * @return Whether the capabilities field is set.
        */
-      public java.lang.String getCapabilities() {
-        java.lang.Object ref = capabilities_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          capabilities_ = s;
-          return s;
-        }
+      public boolean hasCapabilities() {
+        return capabilities_ != null;
       }
       /**
-       * <code>string capabilities = 5;</code>
-       * @return The bytes for capabilities.
+       * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+       * @return The capabilities.
        */
-      public com.google.protobuf.ByteString
-          getCapabilitiesBytes() {
-        java.lang.Object ref = capabilities_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          capabilities_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList getCapabilities() {
+        return capabilities_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.getDefaultInstance() : capabilities_;
+      }
+      /**
+       * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder getCapabilitiesOrBuilder() {
+        return getCapabilities();
       }
 
       private byte memoizedIsInitialized = -1;
@@ -6124,8 +7534,8 @@ public final class Transport {
         if (id_ != null) {
           output.writeMessage(4, getId());
         }
-        if (!getCapabilitiesBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 5, capabilities_);
+        if (capabilities_ != null) {
+          output.writeMessage(5, getCapabilities());
         }
         unknownFields.writeTo(output);
       }
@@ -6152,8 +7562,9 @@ public final class Transport {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(4, getId());
         }
-        if (!getCapabilitiesBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, capabilities_);
+        if (capabilities_ != null) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(5, getCapabilities());
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -6181,8 +7592,11 @@ public final class Transport {
           if (!getId()
               .equals(other.getId())) return false;
         }
-        if (!getCapabilities()
-            .equals(other.getCapabilities())) return false;
+        if (hasCapabilities() != other.hasCapabilities()) return false;
+        if (hasCapabilities()) {
+          if (!getCapabilities()
+              .equals(other.getCapabilities())) return false;
+        }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
       }
@@ -6204,8 +7618,10 @@ public final class Transport {
           hash = (37 * hash) + ID_FIELD_NUMBER;
           hash = (53 * hash) + getId().hashCode();
         }
-        hash = (37 * hash) + CAPABILITIES_FIELD_NUMBER;
-        hash = (53 * hash) + getCapabilities().hashCode();
+        if (hasCapabilities()) {
+          hash = (37 * hash) + CAPABILITIES_FIELD_NUMBER;
+          hash = (53 * hash) + getCapabilities().hashCode();
+        }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
         return hash;
@@ -6351,8 +7767,12 @@ public final class Transport {
             id_ = null;
             idBuilder_ = null;
           }
-          capabilities_ = "";
-
+          if (capabilitiesBuilder_ == null) {
+            capabilities_ = null;
+          } else {
+            capabilities_ = null;
+            capabilitiesBuilder_ = null;
+          }
           return this;
         }
 
@@ -6387,7 +7807,11 @@ public final class Transport {
           } else {
             result.id_ = idBuilder_.build();
           }
-          result.capabilities_ = capabilities_;
+          if (capabilitiesBuilder_ == null) {
+            result.capabilities_ = capabilities_;
+          } else {
+            result.capabilities_ = capabilitiesBuilder_.build();
+          }
           onBuilt();
           return result;
         }
@@ -6448,9 +7872,8 @@ public final class Transport {
           if (other.hasId()) {
             mergeId(other.getId());
           }
-          if (!other.getCapabilities().isEmpty()) {
-            capabilities_ = other.capabilities_;
-            onChanged();
+          if (other.hasCapabilities()) {
+            mergeCapabilities(other.getCapabilities());
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -6690,80 +8113,123 @@ public final class Transport {
           return idBuilder_;
         }
 
-        private java.lang.Object capabilities_ = "";
+        private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList capabilities_;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder> capabilitiesBuilder_;
         /**
-         * <code>string capabilities = 5;</code>
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+         * @return Whether the capabilities field is set.
+         */
+        public boolean hasCapabilities() {
+          return capabilitiesBuilder_ != null || capabilities_ != null;
+        }
+        /**
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
          * @return The capabilities.
          */
-        public java.lang.String getCapabilities() {
-          java.lang.Object ref = capabilities_;
-          if (!(ref instanceof java.lang.String)) {
-            com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            capabilities_ = s;
-            return s;
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList getCapabilities() {
+          if (capabilitiesBuilder_ == null) {
+            return capabilities_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.getDefaultInstance() : capabilities_;
           } else {
-            return (java.lang.String) ref;
+            return capabilitiesBuilder_.getMessage();
           }
         }
         /**
-         * <code>string capabilities = 5;</code>
-         * @return The bytes for capabilities.
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
          */
-        public com.google.protobuf.ByteString
-            getCapabilitiesBytes() {
-          java.lang.Object ref = capabilities_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            capabilities_ = b;
-            return b;
+        public Builder setCapabilities(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList value) {
+          if (capabilitiesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            capabilities_ = value;
+            onChanged();
           } else {
-            return (com.google.protobuf.ByteString) ref;
+            capabilitiesBuilder_.setMessage(value);
           }
+
+          return this;
         }
         /**
-         * <code>string capabilities = 5;</code>
-         * @param value The capabilities to set.
-         * @return This builder for chaining.
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
          */
         public Builder setCapabilities(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  
-          capabilities_ = value;
-          onChanged();
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder builderForValue) {
+          if (capabilitiesBuilder_ == null) {
+            capabilities_ = builderForValue.build();
+            onChanged();
+          } else {
+            capabilitiesBuilder_.setMessage(builderForValue.build());
+          }
+
           return this;
         }
         /**
-         * <code>string capabilities = 5;</code>
-         * @return This builder for chaining.
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+         */
+        public Builder mergeCapabilities(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList value) {
+          if (capabilitiesBuilder_ == null) {
+            if (capabilities_ != null) {
+              capabilities_ =
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.newBuilder(capabilities_).mergeFrom(value).buildPartial();
+            } else {
+              capabilities_ = value;
+            }
+            onChanged();
+          } else {
+            capabilitiesBuilder_.mergeFrom(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
          */
         public Builder clearCapabilities() {
-          
-          capabilities_ = getDefaultInstance().getCapabilities();
-          onChanged();
+          if (capabilitiesBuilder_ == null) {
+            capabilities_ = null;
+            onChanged();
+          } else {
+            capabilities_ = null;
+            capabilitiesBuilder_ = null;
+          }
+
           return this;
         }
         /**
-         * <code>string capabilities = 5;</code>
-         * @param value The bytes for capabilities to set.
-         * @return This builder for chaining.
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
          */
-        public Builder setCapabilitiesBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder getCapabilitiesBuilder() {
           
-          capabilities_ = value;
           onChanged();
-          return this;
+          return getCapabilitiesFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder getCapabilitiesOrBuilder() {
+          if (capabilitiesBuilder_ != null) {
+            return capabilitiesBuilder_.getMessageOrBuilder();
+          } else {
+            return capabilities_ == null ?
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.getDefaultInstance() : capabilities_;
+          }
+        }
+        /**
+         * <code>.PeerUpPacket.CapabilityList capabilities = 5;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder> 
+            getCapabilitiesFieldBuilder() {
+          if (capabilitiesBuilder_ == null) {
+            capabilitiesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityList.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.PeerUpPacket.CapabilityListOrBuilder>(
+                    getCapabilities(),
+                    getParentForChildren(),
+                    isClean());
+            capabilities_ = null;
+          }
+          return capabilitiesBuilder_;
         }
         @java.lang.Override
         public final Builder setUnknownFields(
@@ -34835,6 +36301,16 @@ public final class Transport {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_PeerUpPacket_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_PeerUpPacket_Capability_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_PeerUpPacket_Capability_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_PeerUpPacket_CapabilityList_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_PeerUpPacket_CapabilityList_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_PeerUpPacket_OpenMessage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -35008,138 +36484,142 @@ public final class Transport {
       "min_label\030\004 \003(\t\022\033\n\005bgpId\030\373\377\003 \001(\0132\n.IpAdd" +
       "ress\"]\n\021TerminationPacket\022\017\n\007message\030\001 \003" +
       "(\t\022\016\n\006reason\030\002 \001(\r\022\'\n\007unknown\030\003 \001(\0132\026.go" +
-      "ogle.protobuf.Empty\"\353\002\n\014PeerUpPacket\022\023\n\004" +
+      "ogle.protobuf.Empty\"\205\004\n\014PeerUpPacket\022\023\n\004" +
       "peer\030\001 \001(\0132\005.Peer\022!\n\rlocal_address\030\002 \001(\013" +
       "2\n.IpAddress\022\022\n\nlocal_port\030\003 \001(\r\022\023\n\013remo" +
       "te_port\030\004 \001(\r\022+\n\010send_msg\030\005 \001(\0132\031.PeerUp" +
       "Packet.OpenMessage\022+\n\010recv_msg\030\006 \001(\0132\031.P" +
       "eerUpPacket.OpenMessage\022\020\n\010sys_name\030\007 \001(" +
-      "\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t \001(\t\032k\n\013" +
-      "OpenMessage\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002 \001(\007" +
-      "\022\021\n\thold_time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.IpAddr" +
-      "ess\022\024\n\014capabilities\030\005 \001(\t\"\315\002\n\016PeerDownPa" +
-      "cket\022\023\n\004peer\030\001 \001(\0132\005.Peer\0226\n\026local_bgp_n" +
-      "otification\030\002 \001(\0132\024.PeerDownPacket.CodeH" +
-      "\000\022\037\n\025local_no_notification\030\003 \001(\rH\000\0227\n\027re" +
-      "mote_bgp_notification\030\004 \001(\0132\024.PeerDownPa" +
-      "cket.CodeH\000\0228\n\026remote_no_notification\030\005 " +
-      "\001(\0132\026.google.protobuf.EmptyH\000\022)\n\007unknown" +
-      "\030\006 \001(\0132\026.google.protobuf.EmptyH\000\032%\n\004Code" +
-      "\022\014\n\004code\030\001 \001(\r\022\017\n\007subcode\030\002 \001(\rB\010\n\006reaso" +
-      "n\"\377\021\n\025RouteMonitoringPacket\022\023\n\004peer\030\001 \001(" +
-      "\0132\005.Peer\022/\n\twithdraws\030\002 \003(\0132\034.RouteMonit" +
-      "oringPacket.Route\0220\n\nreachables\030\003 \003(\0132\034." +
-      "RouteMonitoringPacket.Route\0228\n\nattribute" +
-      "s\030\004 \003(\0132$.RouteMonitoringPacket.PathAttr" +
-      "ibute\0323\n\005Route\022\032\n\006prefix\030\001 \001(\0132\n.IpAddre" +
-      "ss\022\016\n\006length\030\002 \001(\r\032\376\017\n\rPathAttribute\022\020\n\010" +
-      "optional\030\001 \001(\010\022\022\n\ntransitive\030\002 \001(\010\022\017\n\007pa" +
-      "rtial\030\003 \001(\010\022\020\n\010extended\030\004 \001(\010\022=\n\006origin\030" +
-      "\005 \001(\0162+.RouteMonitoringPacket.PathAttrib" +
-      "ute.OriginH\000\022>\n\007as_path\030\006 \001(\0132+.RouteMon" +
-      "itoringPacket.PathAttribute.AsPathH\000\022@\n\010" +
-      "next_hop\030\007 \001(\0132,.RouteMonitoringPacket.P" +
-      "athAttribute.NextHopH\000\022M\n\017multi_exit_dis" +
-      "c\030\010 \001(\01322.RouteMonitoringPacket.PathAttr" +
-      "ibute.MultiExitDiscH\000\022D\n\nlocal_pref\030\t \001(" +
-      "\0132..RouteMonitoringPacket.PathAttribute." +
-      "LocalPrefH\000\022P\n\020atomic_aggregate\030\n \001(\01324." +
-      "RouteMonitoringPacket.PathAttribute.Atom" +
-      "icAggregateH\000\022E\n\naggregator\030\013 \001(\0132/.Rout" +
-      "eMonitoringPacket.PathAttribute.Aggregat" +
-      "orH\000\022\023\n\tcommunity\030\014 \001(\rH\000\022\027\n\roriginator_" +
-      "id\030\r \001(\rH\000\022H\n\014cluster_list\030\016 \001(\01320.Route" +
-      "MonitoringPacket.PathAttribute.ClusterLi" +
-      "stH\000\022X\n\024extended_communities\030\017 \001(\01328.Rou" +
-      "teMonitoringPacket.PathAttribute.Extende" +
-      "dCommunitiesH\000\022\023\n\tconnector\030\020 \001(\007H\000\022I\n\ra" +
-      "s_path_limit\030\021 \001(\01320.RouteMonitoringPack" +
-      "et.PathAttribute.AsPathLimitH\000\022R\n\021large_" +
-      "communities\030\022 \001(\01325.RouteMonitoringPacke" +
-      "t.PathAttribute.LargeCommunitiesH\000\022@\n\010at" +
-      "tr_set\030\023 \001(\0132,.RouteMonitoringPacket.Pat" +
-      "hAttribute.AttrSetH\000\032\327\001\n\006AsPath\022E\n\010segme" +
-      "nts\030\001 \003(\01323.RouteMonitoringPacket.PathAt" +
-      "tribute.AsPath.Segment\032\205\001\n\007Segment\022F\n\004ty" +
-      "pe\030\001 \001(\01628.RouteMonitoringPacket.PathAtt" +
-      "ribute.AsPath.Segment.Type\022\r\n\005paths\030\002 \003(" +
-      "\007\"#\n\004Type\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE\020\001\032&" +
-      "\n\007NextHop\022\033\n\007address\030\001 \001(\0132\n.IpAddress\032&" +
-      "\n\rMultiExitDisc\022\025\n\rdiscriminator\030\001 \001(\r\032\037" +
-      "\n\tLocalPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017Atomi" +
-      "cAggregate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007\022\033\n\007" +
-      "address\030\002 \001(\0132\n.IpAddress\032-\n\013ClusterList" +
-      "\022\036\n\ncluster_id\030\001 \003(\0132\n.IpAddress\032k\n\023Exte" +
-      "ndedCommunities\022T\n\024extended_communities\030" +
-      "\001 \003(\01326.RouteMonitoringPacket.PathAttrib" +
-      "ute.ExtendedCommunity\0320\n\021ExtendedCommuni" +
-      "ty\022\014\n\004type\030\001 \001(\007\022\r\n\005value\030\002 \001(\014\032.\n\013AsPat" +
-      "hLimit\022\023\n\013upper_bound\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032" +
-      "b\n\020LargeCommunities\022N\n\021large_communities" +
-      "\030\001 \003(\01323.RouteMonitoringPacket.PathAttri" +
-      "bute.LargeCommunity\032d\n\016LargeCommunity\022\034\n" +
-      "\024global_administrator\030\001 \001(\r\022\031\n\021local_dat" +
-      "a_part_1\030\002 \001(\r\022\031\n\021local_data_part_2\030\003 \001(" +
-      "\r\032[\n\007AttrSet\022\021\n\torigin_as\030\001 \001(\r\022=\n\017path_" +
-      "attributes\030\002 \003(\0132$.RouteMonitoringPacket" +
-      ".PathAttribute\"*\n\006Origin\022\007\n\003IGP\020\000\022\007\n\003EGP" +
-      "\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005value\"\323\014\n\026Statisti" +
-      "csReportPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\0221\n\010r" +
-      "ejected\030d \001(\0132\037.StatisticsReportPacket.C" +
-      "ounter\0229\n\020duplicate_prefix\030e \001(\0132\037.Stati" +
-      "sticsReportPacket.Counter\022;\n\022duplicate_w" +
-      "ithdraw\030f \001(\0132\037.StatisticsReportPacket.C" +
-      "ounter\022M\n$invalid_update_due_to_as_confe" +
-      "d_loop\030g \001(\0132\037.StatisticsReportPacket.Co" +
-      "unter\022K\n\"invalid_update_due_to_as_path_l" +
-      "oop\030h \001(\0132\037.StatisticsReportPacket.Count" +
-      "er\022P\n\'invalid_update_due_to_cluster_list" +
-      "_loop\030i \001(\0132\037.StatisticsReportPacket.Cou" +
-      "nter\022L\n#invalid_update_due_to_originator" +
-      "_id\030j \001(\0132\037.StatisticsReportPacket.Count" +
-      "er\0221\n\nadj_rib_in\030k \001(\0132\035.StatisticsRepor" +
-      "tPacket.Gauge\0222\n\013adj_rib_out\030l \001(\0132\035.Sta" +
-      "tisticsReportPacket.Gauge\022G\n\022per_afi_adj" +
-      "_rib_in\030m \003(\0132+.StatisticsReportPacket.P" +
-      "erAfiAdjRibInEntry\022F\n\021per_afi_local_rib\030" +
-      "n \003(\0132+.StatisticsReportPacket.PerAfiLoc" +
-      "alRibEntry\022A\n\030update_treat_as_withdraw\030o" +
-      " \001(\0132\037.StatisticsReportPacket.Counter\022A\n" +
-      "\030prefix_treat_as_withdraw\030p \001(\0132\037.Statis" +
-      "ticsReportPacket.Counter\0229\n\020duplicate_up" +
-      "date\030q \001(\0132\037.StatisticsReportPacket.Coun" +
-      "ter\0220\n\tlocal_rib\030r \001(\0132\035.StatisticsRepor" +
-      "tPacket.Gauge\0221\n\nexport_rib\030s \001(\0132\035.Stat" +
-      "isticsReportPacket.Gauge\022I\n\023per_afi_adj_" +
-      "rib_out\030t \003(\0132,.StatisticsReportPacket.P" +
-      "erAfiAdjRibOutEntry\022H\n\022per_afi_export_ri" +
-      "b\030u \003(\0132,.StatisticsReportPacket.PerAfiE" +
-      "xportRibEntry\032\026\n\005Gauge\022\r\n\005value\030\001 \001(\004\032\030\n" +
-      "\007Counter\022\r\n\005count\030\001 \001(\r\032T\n\023PerAfiAdjRibI" +
-      "nEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Sta" +
-      "tisticsReportPacket.Gauge:\0028\001\032T\n\023PerAfiL" +
-      "ocalRibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\013" +
-      "2\035.StatisticsReportPacket.Gauge:\0028\001\032U\n\024P" +
-      "erAfiAdjRibOutEntry\022\013\n\003key\030\001 \001(\t\022,\n\005valu" +
-      "e\030\002 \001(\0132\035.StatisticsReportPacket.Gauge:\002" +
-      "8\001\032U\n\024PerAfiExportRibEntry\022\013\n\003key\030\001 \001(\t\022" +
-      ",\n\005value\030\002 \001(\0132\035.StatisticsReportPacket." +
-      "Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(\0162\017." +
-      "Heartbeat.Mode\022\033\n\007routers\030\002 \003(\0132\n.IpAddr" +
-      "ess\":\n\004Mode\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010" +
-      "PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\212\003\n\007Message\022\017\n\007v" +
-      "ersion\030\001 \001(\r\022\031\n\005bgpId\030\002 \001(\0132\n.IpAddress\022" +
-      "\'\n\ninitiation\030\005 \001(\0132\021.InitiationPacketH\000" +
-      "\022)\n\013termination\030\006 \001(\0132\022.TerminationPacke" +
-      "tH\000\022 \n\007peer_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n" +
-      "\tpeer_down\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020r" +
-      "oute_monitoring\030\t \001(\0132\026.RouteMonitoringP" +
-      "acketH\000\0224\n\021statistics_report\030\n \001(\0132\027.Sta" +
-      "tisticsReportPacketH\000\022\037\n\theartbeat\030\017 \001(\013" +
-      "2\n.HeartbeatH\000B\010\n\006packetJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013" +
-      "\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.opennms.netm" +
-      "gt.telemetry.protocols.bmp.transportB\tTr" +
-      "ansportP\000P\001b\006proto3"
+      "\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t \001(\t\0329\n\n" +
+      "Capability\022\014\n\004code\030\001 \001(\r\022\016\n\006length\030\002 \001(\r" +
+      "\022\r\n\005value\030\003 \001(\014\032>\n\016CapabilityList\022,\n\ncap" +
+      "ability\030\001 \003(\0132\030.PeerUpPacket.Capability\032" +
+      "\211\001\n\013OpenMessage\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002" +
+      " \001(\007\022\021\n\thold_time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.Ip" +
+      "Address\0222\n\014capabilities\030\005 \001(\0132\034.PeerUpPa" +
+      "cket.CapabilityList\"\315\002\n\016PeerDownPacket\022\023" +
+      "\n\004peer\030\001 \001(\0132\005.Peer\0226\n\026local_bgp_notific" +
+      "ation\030\002 \001(\0132\024.PeerDownPacket.CodeH\000\022\037\n\025l" +
+      "ocal_no_notification\030\003 \001(\rH\000\0227\n\027remote_b" +
+      "gp_notification\030\004 \001(\0132\024.PeerDownPacket.C" +
+      "odeH\000\0228\n\026remote_no_notification\030\005 \001(\0132\026." +
+      "google.protobuf.EmptyH\000\022)\n\007unknown\030\006 \001(\013" +
+      "2\026.google.protobuf.EmptyH\000\032%\n\004Code\022\014\n\004co" +
+      "de\030\001 \001(\r\022\017\n\007subcode\030\002 \001(\rB\010\n\006reason\"\377\021\n\025" +
+      "RouteMonitoringPacket\022\023\n\004peer\030\001 \001(\0132\005.Pe" +
+      "er\022/\n\twithdraws\030\002 \003(\0132\034.RouteMonitoringP" +
+      "acket.Route\0220\n\nreachables\030\003 \003(\0132\034.RouteM" +
+      "onitoringPacket.Route\0228\n\nattributes\030\004 \003(" +
+      "\0132$.RouteMonitoringPacket.PathAttribute\032" +
+      "3\n\005Route\022\032\n\006prefix\030\001 \001(\0132\n.IpAddress\022\016\n\006" +
+      "length\030\002 \001(\r\032\376\017\n\rPathAttribute\022\020\n\010option" +
+      "al\030\001 \001(\010\022\022\n\ntransitive\030\002 \001(\010\022\017\n\007partial\030" +
+      "\003 \001(\010\022\020\n\010extended\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162" +
+      "+.RouteMonitoringPacket.PathAttribute.Or" +
+      "iginH\000\022>\n\007as_path\030\006 \001(\0132+.RouteMonitorin" +
+      "gPacket.PathAttribute.AsPathH\000\022@\n\010next_h" +
+      "op\030\007 \001(\0132,.RouteMonitoringPacket.PathAtt" +
+      "ribute.NextHopH\000\022M\n\017multi_exit_disc\030\010 \001(" +
+      "\01322.RouteMonitoringPacket.PathAttribute." +
+      "MultiExitDiscH\000\022D\n\nlocal_pref\030\t \001(\0132..Ro" +
+      "uteMonitoringPacket.PathAttribute.LocalP" +
+      "refH\000\022P\n\020atomic_aggregate\030\n \001(\01324.RouteM" +
+      "onitoringPacket.PathAttribute.AtomicAggr" +
+      "egateH\000\022E\n\naggregator\030\013 \001(\0132/.RouteMonit" +
+      "oringPacket.PathAttribute.AggregatorH\000\022\023" +
+      "\n\tcommunity\030\014 \001(\rH\000\022\027\n\roriginator_id\030\r \001" +
+      "(\rH\000\022H\n\014cluster_list\030\016 \001(\01320.RouteMonito" +
+      "ringPacket.PathAttribute.ClusterListH\000\022X" +
+      "\n\024extended_communities\030\017 \001(\01328.RouteMoni" +
+      "toringPacket.PathAttribute.ExtendedCommu" +
+      "nitiesH\000\022\023\n\tconnector\030\020 \001(\007H\000\022I\n\ras_path" +
+      "_limit\030\021 \001(\01320.RouteMonitoringPacket.Pat" +
+      "hAttribute.AsPathLimitH\000\022R\n\021large_commun" +
+      "ities\030\022 \001(\01325.RouteMonitoringPacket.Path" +
+      "Attribute.LargeCommunitiesH\000\022@\n\010attr_set" +
+      "\030\023 \001(\0132,.RouteMonitoringPacket.PathAttri" +
+      "bute.AttrSetH\000\032\327\001\n\006AsPath\022E\n\010segments\030\001 " +
+      "\003(\01323.RouteMonitoringPacket.PathAttribut" +
+      "e.AsPath.Segment\032\205\001\n\007Segment\022F\n\004type\030\001 \001" +
+      "(\01628.RouteMonitoringPacket.PathAttribute" +
+      ".AsPath.Segment.Type\022\r\n\005paths\030\002 \003(\007\"#\n\004T" +
+      "ype\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007Next" +
+      "Hop\022\033\n\007address\030\001 \001(\0132\n.IpAddress\032&\n\rMult" +
+      "iExitDisc\022\025\n\rdiscriminator\030\001 \001(\r\032\037\n\tLoca" +
+      "lPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017AtomicAggre" +
+      "gate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007\022\033\n\007addres" +
+      "s\030\002 \001(\0132\n.IpAddress\032-\n\013ClusterList\022\036\n\ncl" +
+      "uster_id\030\001 \003(\0132\n.IpAddress\032k\n\023ExtendedCo" +
+      "mmunities\022T\n\024extended_communities\030\001 \003(\0132" +
+      "6.RouteMonitoringPacket.PathAttribute.Ex" +
+      "tendedCommunity\0320\n\021ExtendedCommunity\022\014\n\004" +
+      "type\030\001 \001(\007\022\r\n\005value\030\002 \001(\014\032.\n\013AsPathLimit" +
+      "\022\023\n\013upper_bound\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020Lar" +
+      "geCommunities\022N\n\021large_communities\030\001 \003(\013" +
+      "23.RouteMonitoringPacket.PathAttribute.L" +
+      "argeCommunity\032d\n\016LargeCommunity\022\034\n\024globa" +
+      "l_administrator\030\001 \001(\r\022\031\n\021local_data_part" +
+      "_1\030\002 \001(\r\022\031\n\021local_data_part_2\030\003 \001(\r\032[\n\007A" +
+      "ttrSet\022\021\n\torigin_as\030\001 \001(\r\022=\n\017path_attrib" +
+      "utes\030\002 \003(\0132$.RouteMonitoringPacket.PathA" +
+      "ttribute\"*\n\006Origin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\n" +
+      "INCOMPLETE\020\002B\007\n\005value\"\323\014\n\026StatisticsRepo" +
+      "rtPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\0221\n\010rejecte" +
+      "d\030d \001(\0132\037.StatisticsReportPacket.Counter" +
+      "\0229\n\020duplicate_prefix\030e \001(\0132\037.StatisticsR" +
+      "eportPacket.Counter\022;\n\022duplicate_withdra" +
+      "w\030f \001(\0132\037.StatisticsReportPacket.Counter" +
+      "\022M\n$invalid_update_due_to_as_confed_loop" +
+      "\030g \001(\0132\037.StatisticsReportPacket.Counter\022" +
+      "K\n\"invalid_update_due_to_as_path_loop\030h " +
+      "\001(\0132\037.StatisticsReportPacket.Counter\022P\n\'" +
+      "invalid_update_due_to_cluster_list_loop\030" +
+      "i \001(\0132\037.StatisticsReportPacket.Counter\022L" +
+      "\n#invalid_update_due_to_originator_id\030j " +
+      "\001(\0132\037.StatisticsReportPacket.Counter\0221\n\n" +
+      "adj_rib_in\030k \001(\0132\035.StatisticsReportPacke" +
+      "t.Gauge\0222\n\013adj_rib_out\030l \001(\0132\035.Statistic" +
+      "sReportPacket.Gauge\022G\n\022per_afi_adj_rib_i" +
+      "n\030m \003(\0132+.StatisticsReportPacket.PerAfiA" +
+      "djRibInEntry\022F\n\021per_afi_local_rib\030n \003(\0132" +
+      "+.StatisticsReportPacket.PerAfiLocalRibE" +
+      "ntry\022A\n\030update_treat_as_withdraw\030o \001(\0132\037" +
+      ".StatisticsReportPacket.Counter\022A\n\030prefi" +
+      "x_treat_as_withdraw\030p \001(\0132\037.StatisticsRe" +
+      "portPacket.Counter\0229\n\020duplicate_update\030q" +
+      " \001(\0132\037.StatisticsReportPacket.Counter\0220\n" +
+      "\tlocal_rib\030r \001(\0132\035.StatisticsReportPacke" +
+      "t.Gauge\0221\n\nexport_rib\030s \001(\0132\035.Statistics" +
+      "ReportPacket.Gauge\022I\n\023per_afi_adj_rib_ou" +
+      "t\030t \003(\0132,.StatisticsReportPacket.PerAfiA" +
+      "djRibOutEntry\022H\n\022per_afi_export_rib\030u \003(" +
+      "\0132,.StatisticsReportPacket.PerAfiExportR" +
+      "ibEntry\032\026\n\005Gauge\022\r\n\005value\030\001 \001(\004\032\030\n\007Count" +
+      "er\022\r\n\005count\030\001 \001(\r\032T\n\023PerAfiAdjRibInEntry" +
+      "\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Statistic" +
+      "sReportPacket.Gauge:\0028\001\032T\n\023PerAfiLocalRi" +
+      "bEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Sta" +
+      "tisticsReportPacket.Gauge:\0028\001\032U\n\024PerAfiA" +
+      "djRibOutEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(" +
+      "\0132\035.StatisticsReportPacket.Gauge:\0028\001\032U\n\024" +
+      "PerAfiExportRibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005val" +
+      "ue\030\002 \001(\0132\035.StatisticsReportPacket.Gauge:" +
+      "\0028\001\"\203\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(\0162\017.Heartb" +
+      "eat.Mode\022\033\n\007routers\030\002 \003(\0132\n.IpAddress\":\n" +
+      "\004Mode\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIOD" +
+      "IC\020\002\022\013\n\007STOPPED\020\003\"\212\003\n\007Message\022\017\n\007version" +
+      "\030\001 \001(\r\022\031\n\005bgpId\030\002 \001(\0132\n.IpAddress\022\'\n\nini" +
+      "tiation\030\005 \001(\0132\021.InitiationPacketH\000\022)\n\013te" +
+      "rmination\030\006 \001(\0132\022.TerminationPacketH\000\022 \n" +
+      "\007peer_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n\tpeer_" +
+      "down\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020route_m" +
+      "onitoring\030\t \001(\0132\026.RouteMonitoringPacketH" +
+      "\000\0224\n\021statistics_report\030\n \001(\0132\027.Statistic" +
+      "sReportPacketH\000\022\037\n\theartbeat\030\017 \001(\0132\n.Hea" +
+      "rtbeatH\000B\010\n\006packetJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014" +
+      "\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org.opennms.netmgt.tel" +
+      "emetry.protocols.bmp.transportB\tTranspor" +
+      "tP\000P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -35183,8 +36663,20 @@ public final class Transport {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PeerUpPacket_descriptor,
         new java.lang.String[] { "Peer", "LocalAddress", "LocalPort", "RemotePort", "SendMsg", "RecvMsg", "SysName", "SysDesc", "Message", });
-    internal_static_PeerUpPacket_OpenMessage_descriptor =
+    internal_static_PeerUpPacket_Capability_descriptor =
       internal_static_PeerUpPacket_descriptor.getNestedTypes().get(0);
+    internal_static_PeerUpPacket_Capability_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_PeerUpPacket_Capability_descriptor,
+        new java.lang.String[] { "Code", "Length", "Value", });
+    internal_static_PeerUpPacket_CapabilityList_descriptor =
+      internal_static_PeerUpPacket_descriptor.getNestedTypes().get(1);
+    internal_static_PeerUpPacket_CapabilityList_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_PeerUpPacket_CapabilityList_descriptor,
+        new java.lang.String[] { "Capability", });
+    internal_static_PeerUpPacket_OpenMessage_descriptor =
+      internal_static_PeerUpPacket_descriptor.getNestedTypes().get(2);
     internal_static_PeerUpPacket_OpenMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PeerUpPacket_OpenMessage_descriptor,
