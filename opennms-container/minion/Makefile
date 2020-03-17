@@ -61,8 +61,8 @@ help:
 
 test:
 	@echo "Test Docker Buildx installation and existence of the Minion tarball ..."
-	@command -v docker;
-	@command -v docker-buildx;
+	@command -v docker
+	@command -v docker-buildx
 	test -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
 
 build: test
@@ -71,7 +71,7 @@ build: test
 	@echo "Initialize builder instance ..."
 	# If we don't have a builder instance create it, otherwise use the existing one
 	@if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
-	@docker-buildx use $(DOCKERX_INSTANCE);
+	@docker-buildx use $(DOCKERX_INSTANCE)
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker-buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
@@ -84,11 +84,11 @@ build: test
 	  --build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
 	  --tag=$(DOCKER_TAG) \
 	  $(DOCKER_FLAGS) \
-	  . ;
+	  .
 
 install: images/minion.oci
 	@echo "Load image ..."
-	@docker image load -i images/minion.oci;
+	@docker image load -i images/minion.oci
 
 uninstall:
 	@echo "Remove image ..."
@@ -96,11 +96,11 @@ uninstall:
 
 clean:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker-buildx rm $(DOCKERX_INSTANCE);
+	@docker-buildx rm $(DOCKERX_INSTANCE)
 
 clean-all:
 	@echo "Destroy builder environment: $(DOCKERX_INSTANCE) ..."
-	@docker-buildx rm $(DOCKERX_INSTANCE);
+	@docker-buildx rm $(DOCKERX_INSTANCE)
 	@echo "Delete tarball and artifacts ..."
 	@rm -rf images/*.*
 	@rm -rf tarball/*.*
