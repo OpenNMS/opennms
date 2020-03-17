@@ -11,7 +11,7 @@
             class-name=org.opennms.netmgt.telemetry.listeners.UdpListener
 {{if not (exists (print $singlePortPath "/parameters/port")) -}}
             parameters.port=50000
-{{end -}}            
+{{end -}}
 {{range gets (print $singlePortPath "/parameters/*") -}}
             parameters.{{base .Key}}={{.Value}}
 {{end -}}
