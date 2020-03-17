@@ -8,7 +8,7 @@
 VERSION                 := localbuild
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:jre-1.0.0.b32
+BASE_IMAGE              := opennms/deploy-base:jre-1.0.0.b38
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKERX_INSTANCE        := env-minion-oci
 DOCKER_REGISTRY         := docker.io
