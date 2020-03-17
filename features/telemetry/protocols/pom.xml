@@ -11,9 +11,9 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Telemetry :: Protocols</name>
   <modules>
+    <module>adapters</module>
     <module>bmp</module>
     <module>common</module>
-    <module>collection</module>
     <module>flows</module>
     <module>jti</module>
     <module>nxos</module>

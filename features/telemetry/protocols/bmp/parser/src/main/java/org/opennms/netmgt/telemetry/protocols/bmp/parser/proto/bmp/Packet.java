@@ -54,5 +54,42 @@ public interface Packet {
         void visit(final InitiationPacket packet);
         void visit(final TerminationPacket packet);
         void visit(final RouteMirroringPacket packet);
+
+        class Adapter implements Visitor {
+            @Override
+            public void visit(RouteMonitoringPacket packet) {
+
+            }
+
+            @Override
+            public void visit(StatisticsReportPacket packet) {
+
+            }
+
+            @Override
+            public void visit(PeerDownPacket packet) {
+
+            }
+
+            @Override
+            public void visit(PeerUpPacket packet) {
+
+            }
+
+            @Override
+            public void visit(InitiationPacket packet) {
+
+            }
+
+            @Override
+            public void visit(TerminationPacket packet) {
+
+            }
+
+            @Override
+            public void visit(RouteMirroringPacket packet) {
+
+            }
+        }
     }
 }

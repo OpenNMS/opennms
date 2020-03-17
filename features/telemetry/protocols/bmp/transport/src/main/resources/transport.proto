@@ -260,7 +260,8 @@ message Heartbeat {
 
 message Message {
     uint32 version = 1;
-    reserved 2, 3, 4;
+    IpAddress bgpId = 2;
+    reserved 3, 4;
 
     oneof packet {
         InitiationPacket initiation = 5;

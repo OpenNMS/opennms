@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
@@ -39,6 +40,9 @@ public class BmpPeerStatusAdapterFactory extends AbstractAdapterFactory {
 
     @Autowired
     private EventForwarder eventForwarder;
+
+    @Autowired
+    private NodeDao nodeDao;
 
     public BmpPeerStatusAdapterFactory() {
         super(null);
@@ -58,7 +62,8 @@ public class BmpPeerStatusAdapterFactory extends AbstractAdapterFactory {
         return new BmpPeerStatusAdapter(adapterConfig,
                                         this.getInterfaceToNodeCache(),
                                         this.eventForwarder,
-                                        this.getTelemetryRegistry().getMetricRegistry());
+                                        this.getTelemetryRegistry().getMetricRegistry(),
+                                        this.nodeDao);
     }
 
     public EventForwarder getEventForwarder() {
