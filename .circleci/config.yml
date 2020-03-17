@@ -1,6 +1,5 @@
 version: 2.1
 
-
 executors:
   centos-build-executor:
     docker:
@@ -122,7 +121,7 @@ commands:
           name: Load Minion OCI image
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i images/minion.oci
       - run:
           name: Load Sentinel OCI image
           command: |
@@ -197,7 +196,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               install --builder smart --threads << parameters.number-vcpu >>
@@ -307,6 +306,9 @@ workflows:
   build-deploy:
     jobs:
       - build
+      - tarball-assembly:
+          requires:
+            - build
       - horizon-rpm-build:
           requires:
             - build
@@ -322,7 +324,7 @@ workflows:
       - smoke-test-full:
           requires:
             - horizon-rpm-build
-            - minion-rpm-build
+            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
@@ -332,12 +334,11 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^mvr.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
-            - minion-rpm-build
+            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
@@ -347,19 +348,10 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^mvr.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
             - horizon-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-      - minion-publish-oci:
-          requires:
-            - minion-rpm-build
           filters:
             branches:
               only:
@@ -437,6 +429,86 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
+
+  tarball-assembly:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    parameters:
+      number-vcpu:
+        default: 2
+        type: integer
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+      - dockerhub-login
+      - run:
+          name: Assemble tarballs
+          # Install fake makensis to satisfy the assemble dependency
+          command: |
+            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
+            ./assemble.pl -Dopennms.home=/opt/opennms \
+                          -DskipTests \
+                          -DupdatePolicy=never
+      - run:
+          name: Collect tarball artifacts
+          command: |
+            mkdir target/tarballs
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/opennms.tar.gz \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/minion.tar.gz \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/sentinel.tar.gz \;
+      - run:
+          name: Build Minion OCI
+          command: |
+            cd opennms-container/minion
+
+            # Create always a downloadable single OCI artifact for AMD architecture
+            make VERSION="$(../pom2version.py ../../pom.xml)" \
+                 DOCKER_TAG="minion:latest" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}"
+
+            # Build for multiple architectures only in release branches and push images with manifest to a registry
+            case "${CIRCLE_BRANCH}" in
+              "master" | "develop")
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="$(../pom2version.py ../../pom.xml)" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
+              *)
+                echo "No branch to push to registry."
+                ;;
+            esac
+      - store_artifacts:
+          path: ~/project/target/tarballs
+          destination: tarballs
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/minion.oci
+          destination: minion.oci
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/tarballs
+            - project/opennms-container/minion/images
+
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -497,16 +569,6 @@ jobs:
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Minion container image
-          command: |
-            cd opennms-container/minion
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/container.oci
-          destination: minion.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -514,7 +576,6 @@ jobs:
           root: ~/
           paths:
             - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/minion/images/
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -648,21 +709,6 @@ jobs:
           name: Load Horizon OCI image, tag it and publish to registry
           command: |
             cd opennms-container/horizon
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
-  minion-publish-oci:
-    executor: centos-build-executor
-    steps:
-      - attach_workspace:
-          at: ~/
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - dockerhub-login
-      - run:
-          name: Load Minion OCI image, tag it and publish to registry
-          command: |
-            cd opennms-container/minion
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
