@@ -1,4 +1,4 @@
-## 
+##
 # Makefile to build Minion container image with Docker
 ##
 .PHONY: help test build install uninstall clean clean-all
@@ -12,7 +12,7 @@ BASE_IMAGE              := opennms/deploy-base:jre-1.0.0.b31
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKERX_INSTANCE        := env-minion-oci
 DOCKER_REGISTRY         := docker.io
-DOCKER_ORG              := no42org
+DOCKER_ORG              := opennms
 DOCKER_PROJECT          := minion
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
