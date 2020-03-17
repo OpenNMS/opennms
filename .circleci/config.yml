@@ -477,15 +477,7 @@ jobs:
             cd opennms-container/minion
             make DOCKER_TAG="minion:latest" BUILD_NUMBER="${CIRCLE_BUILD_NUM}" BUILD_URL="${CIRCLE_BUILD_URL}" BUILD_BRANCH="${CIRCLE_BRANCH}"
             case "${CIRCLE_BRANCH}" in
-              master)
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="$(../pom2version.py ../../pom.xml)" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              develop)
+              "master" | "develop")
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
                      DOCKER_FLAGS=--push \
                      VERSION="$(../pom2version.py ../../pom.xml)" \
