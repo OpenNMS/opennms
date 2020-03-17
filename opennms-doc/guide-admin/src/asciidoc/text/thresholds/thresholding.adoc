@@ -105,15 +105,17 @@ This procedure describes how to create an expression-based threshold when the fi
 . Click `Create New Expression-based Threshold`. 
 . Select 
 
+== Creating an Expression-based Threshold
+This procedure describes how to create a threshold for when the percentage of disk space used reaches or goes above 90%.
+This threshold requires the use of an expression.
 
-
-
-
-== Creating a Threshold for the Number of Requests per Second
-Another more complex threshold. 
+1. 
 
 == Creating a Threshold for the Number of TCP Connections
-Another more complex threshold
+This procedure describes how to ...
+
+== Creating a Threshold for the Number of Requests per Second
+This procedure describes how to ....
 
 == Creating a Resource Filter for a Threshold
 Resource filters allow you to define conditions where you apply or do not apply the threshold (e.g., you have a file system that is read only, it will always be at 100% utilization, so you don't necessarily want to trigger on it).
@@ -189,7 +191,7 @@ We will create a threshold group called "demo_group". [better name?]
 
 ----
 
-. Once you have created the group in the _thresholds.xml_ file, switch to the UI, go to the threshold screen and click `Request a reload`.
+. Once you have created the group in the _thresholds.xml_ file, switch to the UI, go to the threshold screen and click `Request a reload threshold packages configuration`.
 
 .. The group you created should appear in the UI.
 
