@@ -307,8 +307,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.localPort = peerUp.getLocalPort();
         peer.localBgpId = address(peerUp.getSendMsg().getId());
         peer.infoData = peerUp.getMessage();
-        peer.advertisedCapabilities = ""; // TODO: Not parsed right now (see https://issues.opennms.org/browse/NMS-12571)
-        peer.receivedCapabilities = ""; // TODO: Not parsed right now (see https://issues.opennms.org/browse/NMS-12571)
+        peer.advertisedCapabilities = peerUp.getSendMsg().getCapabilities();
+        peer.receivedCapabilities = peerUp.getRecvMsg().getCapabilities();
         peer.remoteHolddown = uint32(peerUp.getRecvMsg().getHoldTime());
         peer.advertisedHolddown = uint32(peerUp.getSendMsg().getHoldTime());
         peer.bmpReason = null;

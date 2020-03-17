@@ -348,13 +348,19 @@ public class BmpParser implements TcpParser {
                    .setVersion(packet.sendOpenMessage.version)
                    .setAs(packet.sendOpenMessage.as)
                    .setHoldTime(packet.sendOpenMessage.holdTime)
-                   .setId(address(packet.sendOpenMessage.id));
+                   .setId(address(packet.sendOpenMessage.id))
+                   .setCapabilities(packet.sendOpenMessage.capabilities.stream()
+                           .map(c -> c.getMessage())
+                           .collect(Collectors.joining("/")));
 
             message.getRecvMsgBuilder()
                    .setVersion(packet.recvOpenMessage.version)
                    .setAs(packet.recvOpenMessage.as)
                    .setHoldTime(packet.recvOpenMessage.holdTime)
-                   .setId(address(packet.recvOpenMessage.id));
+                   .setId(address(packet.recvOpenMessage.id))
+                   .setCapabilities(packet.recvOpenMessage.capabilities.stream()
+                           .map(c -> c.getMessage())
+                           .collect(Collectors.joining("/")));
 
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
                                                  .orElse(""));
