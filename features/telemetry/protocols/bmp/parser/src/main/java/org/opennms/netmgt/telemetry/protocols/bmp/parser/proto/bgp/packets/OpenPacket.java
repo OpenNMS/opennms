@@ -92,10 +92,10 @@ public class OpenPacket implements Packet {
 
         final int parametersLength = uint8(buffer);
 
-        final List<Parameter> list = repeatRemaining(slice(buffer, parametersLength), Parameter::new);
-
-        parameters = list.stream().filter(p -> p.type != 2).collect(Collectors.toList());
-        capabilities = list.stream().filter(p -> p.type == 2).flatMap(p -> repeatRemaining(slice(p.value, p.length), Capability::new).stream()).collect(Collectors.toList());
+        // see https://tools.ietf.org/html/rfc4271#section-4.2
+        this.parameters = repeatRemaining(slice(buffer, parametersLength), Parameter::new);
+        // see https://tools.ietf.org/html/rfc3392
+        this.capabilities = this.parameters.stream().filter(p -> p.type == 2).flatMap(p -> repeatRemaining(slice(p.value, p.length), Capability::new).stream()).collect(Collectors.toList());
     }
 
     @Override
