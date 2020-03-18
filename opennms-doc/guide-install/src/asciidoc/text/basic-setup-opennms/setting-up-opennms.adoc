@@ -26,7 +26,7 @@ The following abbreviations will be used to refer to their respective entry thro
 .Operating Systems
 [width="100%", cols="1,4"]
 |===
-| _RHEL_                       | Red Hat Enterprise Linux 7 or higher, CentOS 7 or higher
+| _RHEL_                       | Red Hat Enterprise Linux 7 or higher, CentOS 8^*^ or higher
 ifndef::opennms-prime[]
 | _Debian_                     | Debian 9 or higher, Ubuntu 16.04 LTS or higher
 | _Windows_                    | Microsoft Windows Server 2012, Windows 10
@@ -34,7 +34,20 @@ endif::opennms-prime[]
 | _OpenJDK 11 Development Kit_ | Installed OpenJDK 11 Development Kit
 |===
 
-It is recommended to meet the following requirements:
++*+ Technically, users can install OpenNMS on CentOS 7, but our convenient `opennms` meta RPM package, which resolves external things like PostgreSQL, will not work. 
+You need to install Postgres10 by yourself.
+
+==== What If I'm Running CentOS 7?
+
+OpenNMS requires PostgreSQL as the database before installation. 
+With `yum install opennms`, the package `opennms` is like a convenience package and depends on the PostgreSQL package coming with the CentOS Linux distribution.
+CentOS 7 comes only with PostgreSQL 9. 
+Horizon 25+ and Meridian 2019+ require PostgreSQL 10+. 
+
+If you want to install Horizon 25+ or Meridian 2019+ on versions older than CentOS 8, the convenience package with `yum install opennms` will not work. 
+Instead, you must first install PostgreSQL 10 manually, and then install OpenNMS with `yum install opennms-core opennms-webapp-jetty`.
+
+We recommend you meet the following requirements:
 
 .Installation Requirements
 [width="100%", cols="1,4"]
