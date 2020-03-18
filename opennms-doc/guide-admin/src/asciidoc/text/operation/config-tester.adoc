@@ -6,7 +6,7 @@
 === Configuration Tester
 
 To identify configuration problems there is a config-tester located in `$OPENNMS_HOME/bin/`.
-The `config-tester` runs while OpenNMS starts and checks a number of configuration files. 
+Use `config-tester` to check configuration files. 
 Type `-l, --list` to view the list of files checked. 
 It prints issues into `output.log`.
 The tool can be used while OpenNMS is running to check configuration beforehand.
