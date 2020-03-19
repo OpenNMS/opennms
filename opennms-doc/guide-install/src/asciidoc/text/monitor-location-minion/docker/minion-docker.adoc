@@ -37,34 +37,38 @@ services:
   minion:
     image: opennms/minion:25.2.0
     container_name: minion<1>
+    network_mode: host<2>
     environment:
-      - TZ=Europe/Berlin<2>
-      - MINION_ID=my-minion<3>
-      - MINION_LOCATION=my-location<4>
-      - OPENNMS_BROKER_URL=failover:tcp://horizon-instance:61616<5>
-      - OPENNMS_BROKER_USER=minion-user<6>
+      - TZ=Europe/Berlin<3>
+      - MINION_ID=my-minion<4>
+      - MINION_LOCATION=my-location<5>
+      - OPENNMS_BROKER_URL=failover:tcp://horizon-instance:61616<6>
+      - OPENNMS_BROKER_USER=minion-user<7>
       - OPENNMS_BROKER_PASS=minion-password
-      - OPENNMS_HTTP_URL=http://horizon-instance:8980/opennms<7>
-      - OPENNMS_HTTP_USER=minion-user<8>
+      - OPENNMS_HTTP_URL=http://horizon-instance:8980/opennms<8>
+      - OPENNMS_HTTP_USER=minion-user<9>
       - OPENNMS_HTTP_PASS=minion-password
     command: ["-f"]
-    ports:<9>
-      - "8201:8201/tcp"
-      - "162:1162/udp"
 ----
 <1> Friendly container name
-<2> Time zone for the _Minion_
-<3> A defined identifier for this _Minion_. If not set, a unique user identifier (_UUID_) will be generated
-<4> The name of the location of the _Minion_ and the connection to the _ActiveMQ_ broker running in _{opennms-product-name}_
-<5> _ActiveMQ_ broker endpoint from _{opennms-product-name}_
-<6> Authentication for ActiveMQ broker
-<7> _REST_ endpoint to connect to the _{opennms-product-name}_ instance
-<8> Authentication for the _REST_ endpoint
-<9> Publish ports for SSH access to the _Karaf Shell_ and listen for _SNMP Traps_ forwarding to an internal unprivileged port
+<2> If you process UDP data like SNMP traps, Syslogs or flows, `network_mode: host` ensures the UDP source addresses are not modified
+<3> Time zone for the _Minion_
+<4> A defined identifier for this _Minion_. If not set, a unique user identifier (_UUID_) will be generated
+<5> The name of the location of the _Minion_ and the connection to the _ActiveMQ_ broker running in _{opennms-product-name}_
+<6> _ActiveMQ_ broker endpoint from _{opennms-product-name}_
+<7> Authentication for ActiveMQ broker
+<8> _REST_ endpoint to connect to the _{opennms-product-name}_ instance
+<9> Authentication for the _REST_ endpoint
 
 NOTE: In this example we haven't set credentials to connect the _Minion_ via _REST_ and the _ActiveMQ Message Broker_.
       The _Minion_ will fall back and uses the default admin/admin credentials for the communication.
       Permissions for _ActiveMQ_ and _REST_ are assigned with the role _ROLE_MINION_ on the _{opennms-product-name}_ instance.
+
+WARNING: In case you process UDP data and you don't use `network_mode: host` the UDP source address from your packets will be modified from Docker.
+         The source address is your Docker internal gateway instead of the source address of your device.
+         Source addresses are used to associate the Syslog or SNMP traps to the nodes in the OpenNMS database.
+         You can use an isolated network and publish ports as usual if you don't receive UDP based monitoring data.
+         If you don't use `network_mode: host` you have to publish the listener ports manually.
 
 ===== Step 2: Start the service stack and test the functionality
 
