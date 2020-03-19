@@ -96,6 +96,19 @@ You should see an event that indicates your threshold triggered, when more than 
 Log out the second user. 
 The `Events` page should indicate that the system has re-armed. 
 
+== Creating a Threshold for an XML Collector
+By default, OpenNMS 
+
+https://wiki.opennms.org/wiki/XML_Collector
+
+== Creating a Threshold with an HTTP Collector
+By default, OpenNMS 
+
+== Creating a Threshold with a JVX Collector
+By default, OpenNMS 
+
+== Creating a New Collector
+
 == Creating a Threshold for CPU Usage
 This procedure describes how to create an expression-based threshold when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 
