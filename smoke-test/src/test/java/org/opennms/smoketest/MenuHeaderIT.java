@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,42 +35,43 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
+public class MenuHeaderIT extends OpenNMSSeleniumIT {
+
     @Test
     public void testMenuEntries() throws Exception {
         clickMenuItem("Search", null, "element/index.jsp");
-        findElementByXpath("//h3[text()='Search for Nodes']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Search for Nodes']");
 
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-        findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
+        findElementByXpath("//h3[@class='panel-title']/span[text()='Nodes' or text()='Availability']");
 
         clickMenuItem("Info", "Assets", "asset/index.jsp");
-        findElementByXpath("//h3[text()='Search Asset Information']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Search Asset Information']");
 
         clickMenuItem("Info", "Path Outages", "pathOutage/index.jsp");
-        findElementByXpath("//h3[text()='All Path Outages']");
+        findElementByXpath("//h3[@class='panel-title' and text()='All Path Outages']");
 
         clickMenuItem("Status", "Events", "event/index");
-        findElementByXpath("//h3[text()='Event Queries']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Event Queries']");
 
         clickMenuItem("Status", "Alarms", "alarm/index.htm");
-        findElementByXpath("//h3[text()='Alarm Queries']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Alarm Queries']");
 
         clickMenuItem("Status", "Notifications", "notification/index.jsp");
-        findElementByXpath("//h3[text()='Notification queries']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Notification queries']");
 
         clickMenuItem("Status", "Outages", "outage/index.jsp");
-        findElementByXpath("//h3[text()='Outage Menu']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Outage Menu']");
 
         clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
-        findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
+        findElementByXpath("//h3[@class='panel-title' and contains(text(), 'Distributed Status Summary')]");
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
         // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("surveillance-view-ui");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        //driver.switchTo().frame("surveillance-view-ui");
+        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
         frontPage();
 
         final String reportsMenuName = "name=nav-Reports-top";
@@ -81,18 +82,18 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
 
         clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
-        findElementByXpath("//h3[text()='Customized Reports']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Customized Reports']");
 
         clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
-        findElementByXpath("//h3[text()='Statistics Report List']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Statistics Report List']");
 
         final String dashboardsMenuName = "name=nav-Dashboards-top";
         clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
         // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("surveillance-view-ui");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+        //driver.switchTo().frame("surveillance-view-ui");
+        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
         frontPage();
 
         clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");
@@ -100,38 +101,71 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         frontPage();
         final String mapsMenuName = "name=nav-Maps-top";
-        clickMenuItem(mapsMenuName, "Distributed", "RemotePollerMap/index.jsp");
-        // switchTo() by xpath is much faster than by ID
-        //m_driver.switchTo().frame("app");
-        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
-        m_driver.switchTo().parentFrame();
-        frontPage();
-
         clickMenuItem(mapsMenuName, "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
         clickMenuItem(mapsMenuName, "Geographical", "node-maps");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
 
         frontPage();
         final String adminMenuName = "name=nav-admin-top";
         clickMenuItem(adminMenuName, "Configure OpenNMS", "opennms/admin/index.jsp");
-        findElementByXpath("//h3[text()='OpenNMS System']");
-        findElementByXpath("//h3[text()='Provisioning']");
-        findElementByXpath("//h3[text()='Event Management']");
-        findElementByXpath("//h3[text()='Service Monitoring']");
-        findElementByXpath("//h3[text()='Performance Measurement']");
-        findElementByXpath("//h3[text()='Distributed Monitoring']");
+        findElementByXpath("//h3[@class='panel-title' and text()='OpenNMS System']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Provisioning']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Event Management']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Service Monitoring']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Performance Measurement']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Distributed Monitoring']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Additional Tools']");
 
         frontPage();
         clickMenuItem(adminMenuName, "Help/Support", "opennms/support/index.htm");
-        findElementByXpath("//h3[text()='Commercial Support']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Documentation']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Commercial Support']");
+        findElementByLink("About the OpenNMS Web Console").click();
+        findElementByXpath("//h3[@class='panel-title' and text()='OpenNMS Web Console']");
 
         frontPage();
         clickMenuItem(adminMenuName, "Log Out", "opennms/j_spring_security_logout");
         findElementById("input_j_username");
+    }
+
+    @Test
+    public void verifyReportsPage() {
+        // testAllTextIsPresent
+        reportsPage();
+        findElementByXpath("//h3[@class='panel-title' and text()='Reports']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Descriptions']");
+
+        // testAllFormsArePresent()
+        reportsPage();
+        findElementByName("resourceGraphs");
+        findElementByName("kscReports");
+
+
+        // testAllLinks
+        reportsPage();
+        findElementByLink("Resource Graphs").click();
+        findElementByXpath("//label[contains(text()[normalize-space()], 'Standard Resource')]");
+        findElementByXpath("//h3[@class='panel-title' and text()='Network Performance Data']");
+
+        reportsPage();
+        findElementByLink("KSC Performance, Nodes, Domains").click();
+        findElementByXpath("//h3[@class='panel-title' and text()='Customized Reports']");
+        findElementByXpath("//h3[@class='panel-title' and text()='Descriptions']");
+
+        reportsPage();
+        findElementByLink("Database Reports").click();
+        pageContainsText("List reports");
+        pageContainsText("View and manage pre-run reports");
+        pageContainsText("Manage the batch report schedule");
+
+        reportsPage();
+        findElementByLink("Statistics Reports").click();
+        findElementByXpath("//h3[@class='panel-title' and text()='Statistics Report List']");
     }
 
 }

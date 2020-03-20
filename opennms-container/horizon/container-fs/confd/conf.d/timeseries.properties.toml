@@ -1,0 +1,10 @@
+[template]
+src = "timeseries.properties.tpl"
+dest = "/opt/opennms/etc/opennms.properties.d/_confd.timeseries.properties"
+keys = [
+    "opennms/timeseries/strategy",
+    "opennms/rrd/storebyforeignsource",
+    "opennms/rrd/strategyclass",
+    "opennms/rrd/interfacejar",
+    "opennms/library/jrrd2"
+]
