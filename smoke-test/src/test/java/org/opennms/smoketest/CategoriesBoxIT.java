@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 
-public class CategoriesBoxIT extends OpenNMSSeleniumTestCase {
+public class CategoriesBoxIT extends OpenNMSSeleniumIT {
 
     @Before
     public void before() {
