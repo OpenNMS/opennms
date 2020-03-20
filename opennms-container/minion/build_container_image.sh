@@ -16,7 +16,7 @@ source ../version-tags.sh
 MINION_PACKAGES="opennms-minion"
 
 for PKG in ${MINION_PACKAGES}; do 
-  cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
+  cp ../.././opennms-assemblies/minion/target/*-minion.tar.gz tarball/minion.tar.gz
 done
 
 docker build -t minion \
