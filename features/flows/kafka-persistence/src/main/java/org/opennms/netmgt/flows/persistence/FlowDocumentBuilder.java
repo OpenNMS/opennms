@@ -59,49 +59,47 @@ public class FlowDocumentBuilder {
 
     static FlowDocument buildFlowDocument(EnrichedFlow enrichedFlow) {
         FlowDocument.Builder builder = FlowDocument.newBuilder();
-        builder.setTimestamp(enrichedFlow.getTimestamp());
-        builder.setDirection(fromDirection(enrichedFlow.getDirection()));
-        builder.setDirection(Direction.valueOf(enrichedFlow.getDirection().name()));
-        getUInt64Value(enrichedFlow.getDstAs()).ifPresent(builder::setDstAs);
-        getString(enrichedFlow.getDstAddr()).ifPresent(builder::setDstAddress);
-        getString(enrichedFlow.getDstAddrHostname()).ifPresent(builder::setDstHostname);
-        getUInt32Value(enrichedFlow.getDstMaskLen()).ifPresent(builder::setDstMaskLen);
-        getUInt32Value(enrichedFlow.getDstPort()).ifPresent(builder::setDstPort);
-        getString(enrichedFlow.getSrcAddr()).ifPresent(builder::setSrcAddress);
-        getString(enrichedFlow.getSrcAddrHostname()).ifPresent(builder::setSrcHostname);
-        getUInt64Value(enrichedFlow.getSrcAs()).ifPresent(builder::setSrcAs);
-        getUInt32Value(enrichedFlow.getSrcMaskLen()).ifPresent(builder::setSrcMaskLen);
-        getUInt32Value(enrichedFlow.getSrcPort()).ifPresent(builder::setSrcPort);
-        getUInt32Value(enrichedFlow.getEngineId()).ifPresent(builder::setEngineId);
-        getUInt32Value(enrichedFlow.getEngineType()).ifPresent(builder::setEngineType);
-        getUInt64Value(enrichedFlow.getBytes()).ifPresent(builder::setNumBytes);
-        getUInt64Value(enrichedFlow.getPackets()).ifPresent(builder::setNumPackets);
-        getUInt64Value(enrichedFlow.getDeltaSwitched()).ifPresent(builder::setDeltaSwitched);
-        getUInt64Value(enrichedFlow.getFirstSwitched()).ifPresent(builder::setFirstSwitched);
-        getUInt64Value(enrichedFlow.getLastSwitched()).ifPresent(builder::setLastSwitched);
-        getUInt32Value(enrichedFlow.getInputSnmp()).ifPresent(builder::setInputSnmpIfindex);
-        getUInt32Value(enrichedFlow.getOutputSnmp()).ifPresent(builder::setOutputSnmpIfindex);
-        getUInt32Value(enrichedFlow.getIpProtocolVersion()).ifPresent(builder::setIpProtocolVersion);
-        getUInt32Value(enrichedFlow.getProtocol()).ifPresent(builder::setProtocol);
-        getUInt32Value(enrichedFlow.getTcpFlags()).ifPresent(builder::setTcpFlags);
-        getUInt32Value(enrichedFlow.getTos()).ifPresent(builder::setTos);
+        builder.setTimestamp(enrichedFlow.getFlow().getTimestamp());
+        builder.setDirection(fromDirection(enrichedFlow.getFlow().getDirection()));
+        getUInt64Value(enrichedFlow.getFlow().getDstAs()).ifPresent(builder::setDstAs);
+        getString(enrichedFlow.getFlow().getDstAddr()).ifPresent(builder::setDstAddress);
+        enrichedFlow.getFlow().getDstAddrHostname().ifPresent(builder::setDstHostname);
+        getUInt32Value(enrichedFlow.getFlow().getDstMaskLen()).ifPresent(builder::setDstMaskLen);
+        getUInt32Value(enrichedFlow.getFlow().getDstPort()).ifPresent(builder::setDstPort);
+        getString(enrichedFlow.getFlow().getSrcAddr()).ifPresent(builder::setSrcAddress);
+        enrichedFlow.getFlow().getSrcAddrHostname().ifPresent(builder::setSrcHostname);
+        getUInt64Value(enrichedFlow.getFlow().getSrcAs()).ifPresent(builder::setSrcAs);
+        getUInt32Value(enrichedFlow.getFlow().getSrcMaskLen()).ifPresent(builder::setSrcMaskLen);
+        getUInt32Value(enrichedFlow.getFlow().getSrcPort()).ifPresent(builder::setSrcPort);
+        getUInt32Value(enrichedFlow.getFlow().getEngineId()).ifPresent(builder::setEngineId);
+        getUInt32Value(enrichedFlow.getFlow().getEngineType()).ifPresent(builder::setEngineType);
+        getUInt64Value(enrichedFlow.getFlow().getBytes()).ifPresent(builder::setNumBytes);
+        getUInt64Value(enrichedFlow.getFlow().getPackets()).ifPresent(builder::setNumPackets);
+        getUInt64Value(enrichedFlow.getFlow().getDeltaSwitched()).ifPresent(builder::setDeltaSwitched);
+        getUInt64Value(enrichedFlow.getFlow().getFirstSwitched()).ifPresent(builder::setFirstSwitched);
+        getUInt64Value(enrichedFlow.getFlow().getLastSwitched()).ifPresent(builder::setLastSwitched);
+        getUInt32Value(enrichedFlow.getFlow().getInputSnmp()).ifPresent(builder::setInputSnmpIfindex);
+        getUInt32Value(enrichedFlow.getFlow().getOutputSnmp()).ifPresent(builder::setOutputSnmpIfindex);
+        getUInt32Value(enrichedFlow.getFlow().getIpProtocolVersion()).ifPresent(builder::setIpProtocolVersion);
+        getUInt32Value(enrichedFlow.getFlow().getProtocol()).ifPresent(builder::setProtocol);
+        getUInt32Value(enrichedFlow.getFlow().getTcpFlags()).ifPresent(builder::setTcpFlags);
+        getUInt32Value(enrichedFlow.getFlow().getTos()).ifPresent(builder::setTos);
+        getUInt32Value(enrichedFlow.getFlow().getFlowRecords()).ifPresent(builder::setNumFlowRecords);
+        getUInt64Value(enrichedFlow.getFlow().getFlowSeqNum()).ifPresent(builder::setFlowSeqNum);
+        String vlan = enrichedFlow.getFlow().getVlan() != null ? Integer.toUnsignedString(enrichedFlow.getFlow().getVlan()) : null;
+        getString(vlan).ifPresent(builder::setVlan);
+        getString(enrichedFlow.getFlow().getNextHop()).ifPresent(builder::setNextHopAddress);
+        enrichedFlow.getFlow().getNextHopHostname().ifPresent(builder::setNextHopHostname);
+        builder.setSamplingAlgorithm(fromSamplingAlgorithm(enrichedFlow.getFlow().getSamplingAlgorithm()));
+        getDoubleValue(enrichedFlow.getFlow().getSamplingInterval()).ifPresent(builder::setSamplingInterval);
+        NetflowVersion netflowVersion = fromNetflowVersion(enrichedFlow.getFlow().getNetflowVersion());
+        Optional.ofNullable(netflowVersion).ifPresent(builder::setNetflowVersion);
         getString(enrichedFlow.getApplication()).ifPresent(builder::setApplication);
         getString(enrichedFlow.getHost()).ifPresent(builder::setHost);
-        getString(enrichedFlow.getNextHop()).ifPresent(builder::setNextHopAddress);
-        getString(enrichedFlow.getNextHopHostname()).ifPresent(builder::setNextHopHostname);
         getString(enrichedFlow.getLocation()).ifPresent(builder::setLocation);
-        getUInt32Value(enrichedFlow.getFlowRecords()).ifPresent(builder::setNumFlowRecords);
-        getUInt64Value(enrichedFlow.getFlowSeqNum()).ifPresent(builder::setFlowSeqNum);
-        getString(enrichedFlow.getVlan()).ifPresent(builder::setVlan);
         builder.setDstLocality(fromLocality(enrichedFlow.getDstLocality()));
         builder.setSrcLocality(fromLocality(enrichedFlow.getSrcLocality()));
         builder.setFlowLocality(fromLocality(enrichedFlow.getFlowLocality()));
-        builder.setSamplingAlgorithm(fromSamplingAlgorithm(enrichedFlow.getSamplingAlgorithm()));
-        getDoubleValue(enrichedFlow.getSamplingInterval()).ifPresent(builder::setSamplingInterval);
-        NetflowVersion netflowVersion = fromNetflowVersion(enrichedFlow.getNetflowVersion());
-        if(netflowVersion != null) {
-            builder.setNetflowVersion(netflowVersion);
-        }
         buildNodeInfo(enrichedFlow.getSrcNodeInfo()).ifPresent(builder::setSrcNode);
         buildNodeInfo(enrichedFlow.getExporterNodeInfo()).ifPresent(builder::setExporterNode);
         buildNodeInfo(enrichedFlow.getDstNodeInfo()).ifPresent(builder::setDestNode);
@@ -135,6 +133,7 @@ public class FlowDocumentBuilder {
         }
         return Optional.empty();
     }
+
 
     private static Direction fromDirection(org.opennms.netmgt.flows.api.Flow.Direction direction) {
         switch (direction) {

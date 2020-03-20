@@ -45,6 +45,16 @@ import com.google.gson.annotations.SerializedName;
 public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
 
+
+    public FlowDocument(Flow flow) {
+        this.flow = flow;
+    }
+
+    public FlowDocument() {
+    }
+
+
+    private transient Flow flow;
     /**
      * Flow timestamp in milliseconds.
      */
@@ -325,6 +335,10 @@ public class FlowDocument {
     public void addHost(String host) {
         Objects.requireNonNull(host);
         hosts.add(host);
+    }
+
+    public Flow getFlow() {
+        return flow;
     }
 
     public long getTimestamp() {
@@ -690,7 +704,7 @@ public class FlowDocument {
     }
 
     public static FlowDocument from(final Flow flow) {
-        final FlowDocument doc = new FlowDocument();
+        final FlowDocument doc = new FlowDocument(flow);
         doc.setTimestamp(flow.getTimestamp());
         doc.setBytes(flow.getBytes());
         doc.setDirection(Direction.from(flow.getDirection()));
@@ -730,7 +744,7 @@ public class FlowDocument {
 
     public static EnrichedFlow buildEnrichedFlow(FlowDocument flowDocument) {
 
-        EnrichedFlow enrichedFlow = new EnrichedFlow();
+        EnrichedFlow enrichedFlow = new EnrichedFlow(flowDocument.getFlow());
         enrichedFlow.setApplication(flowDocument.getApplication());
         enrichedFlow.setHost(flowDocument.getHost());
         enrichedFlow.setLocation(flowDocument.getLocation());
@@ -740,39 +754,6 @@ public class FlowDocument {
         enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
         enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
         enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
-        enrichedFlow.setTimeStamp(flowDocument.getTimestamp());
-        enrichedFlow.setBytes(flowDocument.getBytes());
-        enrichedFlow.setDstAddr(flowDocument.getDstAddr());
-        enrichedFlow.setDirection(matchDirection(flowDocument.getDirection()));
-        enrichedFlow.setDstAddrHostName(flowDocument.getDstAddrHostname());
-        enrichedFlow.setDstAs(flowDocument.getDstAs());
-        enrichedFlow.setDstMaskLen(flowDocument.getDstMaskLen());
-        enrichedFlow.setDstPort(flowDocument.getDstPort());
-        enrichedFlow.setEngineId(flowDocument.getEngineId());
-        enrichedFlow.setEngineType(flowDocument.getEngineType());
-        enrichedFlow.setFirstSwitched(flowDocument.getFirstSwitched());
-        enrichedFlow.setFlowRecords(flowDocument.getFlowRecords());
-        enrichedFlow.setFlowSeqNum(flowDocument.getFlowSeqNum());
-        enrichedFlow.setInputSnmp(flowDocument.getInputSnmp());
-        enrichedFlow.setIpProtocolVersion(flowDocument.getIpProtocolVersion());
-        enrichedFlow.setLastSwitched(flowDocument.getLastSwitched());
-        enrichedFlow.setNextHopAddr(flowDocument.getNextHop());
-        enrichedFlow.setNextHopHostName(flowDocument.getNextHop());
-        enrichedFlow.setOutputSnmp(flowDocument.getOutputSnmp());
-        enrichedFlow.setPackets(flowDocument.getPackets());
-        enrichedFlow.setProtocol(flowDocument.getProtocol());
-        enrichedFlow.setSamplingAlgorithm(matchSamplingAlgorithm(flowDocument.getSamplingAlgorithm()));
-        enrichedFlow.setSamplingInterval(flowDocument.getSamplingInterval());
-        enrichedFlow.setSrcAddr(flowDocument.getSrcAddr());
-        enrichedFlow.setSrcAddrHostName(flowDocument.getSrcAddrHostname());
-        enrichedFlow.setSrcAs(flowDocument.getSrcAs());
-        enrichedFlow.setSrcMaskLen(flowDocument.getSrcMaskLen());
-        enrichedFlow.setSrcPort(flowDocument.getSrcPort());
-        enrichedFlow.setTcpFlags(flowDocument.getTcpFlags());
-        enrichedFlow.setDeltaSwitched(flowDocument.getDeltaSwitched());
-        enrichedFlow.setTos(flowDocument.getTos());
-        enrichedFlow.setNetflowVersion(matchNetflowVersion(flowDocument.getNetflowVersion()));
-        enrichedFlow.setVlan(flowDocument.getVlan());
         return enrichedFlow;
 
     }
@@ -787,51 +768,6 @@ public class FlowDocument {
         return EnrichedFlow.Locality.PUBLIC;
     }
 
-    private static Flow.Direction matchDirection(Direction direction) {
-        switch (direction) {
-            case EGRESS:
-                return Flow.Direction.EGRESS;
-            case INGRESS:
-                return Flow.Direction.INGRESS;
-        }
-        return Flow.Direction.INGRESS;
-    }
-
-    private static Flow.NetflowVersion matchNetflowVersion(NetflowVersion netflowVersion) {
-        switch (netflowVersion) {
-            case V5:
-                return Flow.NetflowVersion.V5;
-            case V9:
-                return Flow.NetflowVersion.V9;
-            case IPFIX:
-                return Flow.NetflowVersion.IPFIX;
-            case SFLOW:
-                return Flow.NetflowVersion.SFLOW;
-        }
-        return null;
-    }
-
-    private static Flow.SamplingAlgorithm matchSamplingAlgorithm(SamplingAlgorithm samplingAlgorithm) {
-        switch (samplingAlgorithm) {
-            case Unassigned:
-                return Flow.SamplingAlgorithm.Unassigned;
-            case SystematicCountBasedSampling:
-                return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
-            case SystematicTimeBasedSampling:
-                return Flow.SamplingAlgorithm.SystematicTimeBasedSampling;
-            case RandomNoutOfNSampling:
-                return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
-            case UniformProbabilisticSampling:
-                return Flow.SamplingAlgorithm.UniformProbabilisticSampling;
-            case PropertyMatchFiltering:
-                return Flow.SamplingAlgorithm.PropertyMatchFiltering;
-            case HashBasedFiltering:
-                return Flow.SamplingAlgorithm.HashBasedFiltering;
-            case FlowStateDependentIntermediateFlowSelectionProcess:
-                return Flow.SamplingAlgorithm.FlowStateDependentIntermediateFlowSelectionProcess;
-        }
-        return Flow.SamplingAlgorithm.Unassigned;
-    }
 
     private static NodeInfo buildNodeInfo(NodeDocument nodeDocument) {
         if (nodeDocument == null) {

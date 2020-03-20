@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -131,6 +132,10 @@ public class KafkaFlowForwarderIT {
         Executors.newSingleThreadExecutor().execute(kafkaConsumerRunner);
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->
                 getFlowDocuments().size(), Matchers.greaterThan(0));
+        getFlowDocuments().forEach(flowDocument -> {
+            assertEquals(FlowDocumentTest.getMockFlow().getSrcAddr(), flowDocument.getSrcAddress());
+            assertEquals(FlowDocumentTest.getMockFlow().getDstAddr(), flowDocument.getDstAddress());
+        });
         elasticSearchRule.stopServer();
         kafkaConsumerRunner.destroy();
     }

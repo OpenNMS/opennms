@@ -35,6 +35,12 @@ public class EnrichedFlow {
         PRIVATE
     }
 
+    private final Flow flow;
+
+    public EnrichedFlow(Flow flow) {
+        this.flow = flow;
+    }
+
     private String application;
 
     private String host;
@@ -53,232 +59,28 @@ public class EnrichedFlow {
 
     private NodeInfo exporterNodeInfo;
 
-    private long timeStamp;
-
-    private Long bytes;
-
-    private Flow.Direction direction;
-
-    private String dstAddr;
-
-    private String dstAddrHostName;
-
-    private Long dstAs;
-
-    private Integer dstMaskLen;
-
-    private Integer dstPort;
-
-    private String srcAddr;
-
-    private String srcAddrHostName;
-
-    private Long srcAs;
-
-    private Integer srcMaskLen;
-
-    private Integer srcPort;
-
-    private String nextHopAddr;
-
-    private String nextHopHostName;
-
-    private Integer engineId;
-
-    private Integer engineType;
-
-    private Long firstSwitched;
-
-    private Long lastSwitched;
-
-    private Long deltaSwitched;
-
-    private int flowRecords;
-
-    private long flowSeqNum;
-
-    private Integer inputSnmp;
-
-    private Integer ipProtocolVersion;
-
-    private Integer outputSnmp;
-
-    private Integer protocol;
-
-    private Long packets;
-
-    private Flow.SamplingAlgorithm samplingAlgorithm;
-
-    private Double samplingInterval;
-
-    private Integer tcpFlags;
-
-    private Integer tos;
-
-    private Flow.NetflowVersion netflowVersion;
-
-    private String vlan;
-
-    private String nodeIdentifier;
-
-
-    public long getTimestamp() {
-        return this.timeStamp;
-    }
-
-    public Long getBytes() {
-        return this.bytes;
-    }
-
-
-    public Flow.Direction getDirection() {
-        return this.direction;
-    }
-
-    public String getDstAddr() {
-        return this.dstAddr;
-    }
-
-
-    public String getDstAddrHostname() {
-        return this.dstAddrHostName;
-    }
-
-    public Long getDstAs() {
-        return this.dstAs;
-    }
-
-    public Integer getDstMaskLen() {
-        return this.dstMaskLen;
-    }
-
-    public Integer getDstPort() {
-        return this.dstPort;
-    }
-
-    public Integer getEngineId() {
-        return this.engineId;
-    }
-
-    public Integer getEngineType() {
-        return this.engineType;
-    }
-
-    public Long getDeltaSwitched() {
-        return this.deltaSwitched;
-    }
-
-    public Long getFirstSwitched() {
-        return this.firstSwitched;
-    }
-
-    public int getFlowRecords() {
-        return this.flowRecords;
-    }
-
-    public long getFlowSeqNum() {
-        return this.flowSeqNum;
-    }
-
-    public Integer getInputSnmp() {
-        return this.inputSnmp;
-    }
-
-    public Integer getIpProtocolVersion() {
-        return this.ipProtocolVersion;
-    }
-
-    public Long getLastSwitched() {
-        return this.lastSwitched;
-    }
-
-    public String getNextHop() {
-        return this.nextHopAddr;
-    }
-
-    public String getNextHopHostname() {
-        return this.nextHopHostName;
-    }
-
-    public Integer getOutputSnmp() {
-        return this.outputSnmp;
-    }
-
-    public Long getPackets() {
-        return this.packets;
-    }
-
-    public Integer getProtocol() {
-        return this.protocol;
-    }
-
-    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
-        return this.samplingAlgorithm;
-    }
-
-    public Double getSamplingInterval() {
-        return this.samplingInterval;
-    }
-
-    public String getSrcAddr() {
-        return this.srcAddr;
-    }
-
-    public String getSrcAddrHostname() {
-        return this.srcAddrHostName;
-    }
-
-
-    public Long getSrcAs() {
-        return this.srcAs;
-    }
-
-    public Integer getSrcMaskLen() {
-        return this.srcMaskLen;
-    }
-
-    public Integer getSrcPort() {
-        return this.srcPort;
-    }
-
-    public Integer getTcpFlags() {
-        return this.tcpFlags;
-    }
-
-    public Integer getTos() {
-        return this.tos;
-    }
-
-    public Flow.NetflowVersion getNetflowVersion() {
-        return this.netflowVersion;
-    }
-
-    public String getVlan() {
-        return this.vlan;
-    }
-
-    public String getNodeIdentifier() {
-        return this.nodeIdentifier;
+    public Flow getFlow() {
+        return flow;
     }
 
     public String getApplication() {
-        return this.application;
+        return application;
     }
 
     public String getHost() {
-        return this.host;
+        return host;
     }
 
     public String getLocation() {
-        return this.location;
+        return location;
     }
 
     public Locality getSrcLocality() {
-        return this.srcLocality;
+        return srcLocality;
     }
 
     public Locality getDstLocality() {
-        return this.dstLocality;
+        return dstLocality;
     }
 
     public Locality getFlowLocality() {
@@ -286,151 +88,15 @@ public class EnrichedFlow {
     }
 
     public NodeInfo getSrcNodeInfo() {
-        return this.srcNodeInfo;
+        return srcNodeInfo;
     }
 
     public NodeInfo getDstNodeInfo() {
-        return this.dstNodeInfo;
+        return dstNodeInfo;
     }
 
     public NodeInfo getExporterNodeInfo() {
-        return this.exporterNodeInfo;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public void setBytes(Long bytes) {
-        this.bytes = bytes;
-    }
-
-    public void setDirection(Flow.Direction direction) {
-        this.direction = direction;
-    }
-
-    public void setDstAddr(String dstAddr) {
-        this.dstAddr = dstAddr;
-    }
-
-    public void setDstAddrHostName(String dstAddrHostName) {
-        this.dstAddrHostName = dstAddrHostName;
-    }
-
-    public void setDstAs(Long dstAs) {
-        this.dstAs = dstAs;
-    }
-
-    public void setDstMaskLen(Integer dstMaskLen) {
-        this.dstMaskLen = dstMaskLen;
-    }
-
-    public void setDstPort(Integer dstPort) {
-        this.dstPort = dstPort;
-    }
-
-    public void setSrcAddr(String srcAddr) {
-        this.srcAddr = srcAddr;
-    }
-
-    public void setSrcAddrHostName(String srcAddrHostName) {
-        this.srcAddrHostName = srcAddrHostName;
-    }
-
-    public void setSrcAs(Long srcAs) {
-        this.srcAs = srcAs;
-    }
-
-    public void setSrcMaskLen(Integer srcMaskLen) {
-        this.srcMaskLen = srcMaskLen;
-    }
-
-    public void setSrcPort(Integer srcPort) {
-        this.srcPort = srcPort;
-    }
-
-    public void setNextHopAddr(String nextHopAddr) {
-        this.nextHopAddr = nextHopAddr;
-    }
-
-    public void setNextHopHostName(String nextHopHostName) {
-        this.nextHopHostName = nextHopHostName;
-    }
-
-    public void setEngineId(Integer engineId) {
-        this.engineId = engineId;
-    }
-
-    public void setEngineType(Integer engineType) {
-        this.engineType = engineType;
-    }
-
-    public void setFirstSwitched(Long firstSwitched) {
-        this.firstSwitched = firstSwitched;
-    }
-
-    public void setLastSwitched(Long lastSwitched) {
-        this.lastSwitched = lastSwitched;
-    }
-
-    public void setDeltaSwitched(Long deltaSwitched) {
-        this.deltaSwitched = deltaSwitched;
-    }
-
-    public void setFlowRecords(int flowRecords) {
-        this.flowRecords = flowRecords;
-    }
-
-    public void setFlowSeqNum(long flowSeqNum) {
-        this.flowSeqNum = flowSeqNum;
-    }
-
-    public void setInputSnmp(Integer inputSnmp) {
-        this.inputSnmp = inputSnmp;
-    }
-
-    public void setIpProtocolVersion(Integer ipProtocolVersion) {
-        this.ipProtocolVersion = ipProtocolVersion;
-    }
-
-    public void setOutputSnmp(Integer outputSnmp) {
-        this.outputSnmp = outputSnmp;
-    }
-
-    public void setProtocol(Integer protocol) {
-        this.protocol = protocol;
-    }
-
-    public void setPackets(Long packets) {
-        this.packets = packets;
-    }
-
-    public void setSamplingAlgorithm(Flow.SamplingAlgorithm samplingAlgorithm) {
-        this.samplingAlgorithm = samplingAlgorithm;
-    }
-
-    public void setSamplingInterval(Double samplingInterval) {
-        this.samplingInterval = samplingInterval;
-    }
-
-    public void setTcpFlags(Integer tcpFlags) {
-        this.tcpFlags = tcpFlags;
-    }
-
-    public void setTos(Integer tos) {
-        this.tos = tos;
-    }
-
-    public void setNetflowVersion(Flow.NetflowVersion netflowVersion) {
-        this.netflowVersion = netflowVersion;
-    }
-
-    public void setVlan(String vlan) {
-        this.vlan = vlan;
-    }
-
-    public void setNodeIdentifier(String nodeIdentifier) {
-        this.nodeIdentifier = nodeIdentifier;
+        return exporterNodeInfo;
     }
 
     public void setApplication(String application) {
