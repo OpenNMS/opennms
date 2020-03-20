@@ -1,0 +1,32 @@
+<poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/poller" threads="30" nextOutageId="SELECT nextval('outageNxtId')" serviceUnresponsiveEnabled="false" pathOutageEnabled="false">
+   <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
+      <critical-service name="ICMP"/>
+   </node-outage>
+   <package name="thresholding-test">
+      <filter>catincThresholdingTest</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <rrd step="5">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+      <service name="SvcToThreshold" interval="5000" user-defined="true" status="on">
+         <parameter key="script" value="/opt/opennms/bin/thresholding-test-monitor.sh"/>
+         <parameter key="banner" value="OK"/>
+         <parameter key="retry" value="0"/>
+         <parameter key="args" value="${test:svc-delay}"/>
+         <parameter key="timeout" value="30000"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+         <parameter key="rrd-base-name" value="svc-to-thresh"/>
+         <parameter key="ds-name" value="svc-to-thresh"/>
+      </service>
+      <!-- Query every 5 seconds always -->
+      <downtime begin="0" interval="5000"/><!-- 5s -->
+   </package>
+
+   <monitor service="SvcToThreshold" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+</poller-configuration>
