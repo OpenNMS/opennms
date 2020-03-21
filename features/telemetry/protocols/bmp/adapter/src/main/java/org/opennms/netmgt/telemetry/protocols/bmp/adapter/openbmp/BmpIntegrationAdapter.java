@@ -320,11 +320,11 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.bgpErrorSubcode = null;
         peer.errorText = null;
         peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
-        peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
+        peer.prePolicy = bgpPeer.hasPeerFlags() && bgpPeer.getPeerFlags().getPolicy() == Transport.Peer.PeerFlags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());
-        peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
-        peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
-        peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib) (see https://issues.opennms.org/browse/NMS-12570)
+        peer.locRib = bgpPeer.getType() == Transport.Peer.Type.LOC_RIB_INSTANCE;
+        peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
+        peer.tableName = peerUp.getTableName();
 
         this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
@@ -379,11 +379,11 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         }
 
         peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
-        peer.prePolicy = bgpPeer.getFlags().getPolicy() == Transport.Peer.Flags.Policy.PRE_POLICY;
+        peer.prePolicy = bgpPeer.hasPeerFlags() && bgpPeer.getPeerFlags().getPolicy() == Transport.Peer.PeerFlags.Policy.PRE_POLICY;
         peer.ipv4 = isV4(bgpPeer.getAddress());
-        peer.locRib = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
-        peer.locRibFiltered = false; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
-        peer.tableName = ""; // TODO: Not implemented (see RFC draft-ietf-grow-bmp-loc-rib)
+        peer.locRib = bgpPeer.getType() == Transport.Peer.Type.LOC_RIB_INSTANCE;
+        peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
+        peer.tableName = "";
 
         this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
     }
@@ -573,8 +573,8 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         // TODO: Populate path id and labels attributes - see NMS-12560
         unicastPrefix.pathId = 0;
         unicastPrefix.labels = null;
-        unicastPrefix.prePolicy = Transport.Peer.Flags.Policy.PRE_POLICY.equals(peer.getFlags().getPolicy());
-        unicastPrefix.adjIn = peer.getFlags().getAdjIn();
+        unicastPrefix.prePolicy = peer.hasPeerFlags() && peer.getPeerFlags().getPolicy() == Transport.Peer.PeerFlags.Policy.PRE_POLICY;
+        unicastPrefix.adjIn = peer.hasPeerFlags() && peer.getPeerFlags().getAdjIn();
 
         // Augment with base attributes if present
         if (baseAttr != null) {

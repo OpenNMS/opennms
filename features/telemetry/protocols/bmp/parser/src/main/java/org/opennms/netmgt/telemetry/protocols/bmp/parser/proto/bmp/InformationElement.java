@@ -31,9 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
 import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
 
-import org.omg.CORBA.UNKNOWN;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
@@ -62,6 +60,13 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
         },
 
         SYS_NAME {
+            @Override
+            public String parse(final ByteBuf buffer, final Void parameter) {
+                return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.US_ASCII);
+            }
+        },
+
+        VRF_TABLE_NAME {
             @Override
             public String parse(final ByteBuf buffer, final Void parameter) {
                 return new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.US_ASCII);
@@ -99,6 +104,8 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
                     return SYS_DESCR;
                 case 2:
                     return SYS_NAME;
+                case 3:
+                    return VRF_TABLE_NAME;
                 case 4:
                     return ADMIN_LABEL;
                 case 65531:
