@@ -60,6 +60,7 @@ echo "#### Executing tests"
 mvn verify -P'!checkstyle' \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
+           -DrunPingTests=false \
            -DfailIfNoTests=false \
            -DskipITs=false \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
