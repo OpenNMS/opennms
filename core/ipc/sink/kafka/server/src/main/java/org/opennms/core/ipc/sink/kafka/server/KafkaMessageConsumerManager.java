@@ -60,7 +60,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.ipc.sink.model.SinkMessageProtos;
+import org.opennms.core.ipc.sink.model.SinkMessage;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
@@ -163,7 +163,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                     for (ConsumerRecord<String, byte[]> record : records) {
                         try {
                             // Parse sink message content from protobuf.
-                            SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.parseFrom(record.value());
+                            SinkMessage sinkMessage = SinkMessage.parseFrom(record.value());
                             byte[] messageInBytes = sinkMessage.getContent().toByteArray();
                             String messageId = sinkMessage.getMessageId();
                             // Handle large message where there are multiple chunks of message.
@@ -232,14 +232,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             }
         }
 
-        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessageProtos.SinkMessage sinkMessage) {
+        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessage sinkMessage) {
 
             Tracer tracer = getTracer();
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
-            sinkMessage.getTracingInfoList().forEach(tracingInfo -> {
-                tracingInfoMap.put(tracingInfo.getKey(), tracingInfo.getValue());
-            });
+            sinkMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
             SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
             if (context != null) {
                 // Span on consumer side will follow the span from producer (minion).
