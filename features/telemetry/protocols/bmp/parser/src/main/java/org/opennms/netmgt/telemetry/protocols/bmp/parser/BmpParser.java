@@ -277,29 +277,36 @@ public class BmpParser implements TcpParser {
                 }
             }));
 
-            final Transport.Peer.Flags.Builder flags = peer.getFlagsBuilder();
-            flags.setIpVersion(peerHeader.flags.addressVersion.map(v -> {
-                switch (v) {
-                    case IP_V4:
-                        return Transport.Peer.Flags.IpVersion.IP_V4;
-                    case IP_V6:
-                        return Transport.Peer.Flags.IpVersion.IP_V6;
-                    default:
-                        throw new IllegalStateException();
-                }
-            }));
-            flags.setPolicy(peerHeader.flags.policy.map(v -> {
-                switch (v) {
-                    case PRE_POLICY:
-                        return Transport.Peer.Flags.Policy.PRE_POLICY;
-                    case POST_POLICY:
-                        return Transport.Peer.Flags.Policy.POST_POLICY;
-                    default:
-                        throw new IllegalStateException();
-                }
-            }));
-            flags.setLegacyAsPath(peerHeader.flags.legacyASPath);
-            flags.setAdjIn(peerHeader.flags.adjIn);
+            if (peerHeader.type == PeerHeader.Type.LOC_RIB_INSTANCE) {
+                final Transport.Peer.LocRibFlags.Builder locRibFlags = peer.getLocRibFlagsBuilder();
+                locRibFlags.setFiltered(peerHeader.locRibFlags.filtered);
+                peer.setLocRibFlags(locRibFlags.build());
+            } else {
+                final Transport.Peer.PeerFlags.Builder peerFlags = peer.getPeerFlagsBuilder();
+                peerFlags.setIpVersion(peerHeader.flags.addressVersion.map(v -> {
+                    switch (v) {
+                        case IP_V4:
+                            return Transport.Peer.PeerFlags.IpVersion.IP_V4;
+                        case IP_V6:
+                            return Transport.Peer.PeerFlags.IpVersion.IP_V6;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                }));
+                peerFlags.setPolicy(peerHeader.flags.policy.map(v -> {
+                    switch (v) {
+                        case PRE_POLICY:
+                            return Transport.Peer.PeerFlags.Policy.PRE_POLICY;
+                        case POST_POLICY:
+                            return Transport.Peer.PeerFlags.Policy.POST_POLICY;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                }));
+                peerFlags.setLegacyAsPath(peerHeader.flags.legacyASPath);
+                peerFlags.setAdjIn(peerHeader.flags.adjIn);
+                peer.setPeerFlags(peerFlags.build());
+            }
 
             peer.setDistinguisher(peerHeader.distinguisher.longValue());
             peer.setAddress(address(peerHeader.address));
@@ -394,6 +401,8 @@ public class BmpParser implements TcpParser {
 
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
                                                  .orElse(""));
+            message.setTableName(packet.information.first(InformationElement.Type.VRF_TABLE_NAME)
+                    .orElse(""));
             message.setSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
                                                  .collect(Collectors.joining("\n")));
             message.setMessage(packet.information.all(InformationElement.Type.STRING)
