@@ -12,7 +12,23 @@ _{opennms-product-name}_ can be configured to use the Timeseries Integration Lay
 org.opennms.timeseries.strategy=integration
 ----
 
-It is also highly recommended that resources stored in the _Timeseries Integartion Layer_ are referenced by their foreign source and foreign ID, as opposed to their database ID.
+After activating the Timeseries Integration Layer an actual implementation needs to be started.
+This is done via Karaf.
+Here is an example on how to activate the im memory plugin:
+
+----
+clone & build:
+git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
+mvn install
+
+in Karaf shell:
+bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
+
+----
+
+For specific instructions check your plugin description.
+
+It is also highly recommended that resources stored in the _Timeseries Integration Layer_ are referenced by their foreign source and foreign ID, as opposed to their database ID.
 To this end, the following property should also be set in the same file:
 
 [source]
