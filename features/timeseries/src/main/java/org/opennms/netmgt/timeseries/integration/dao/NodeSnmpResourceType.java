@@ -50,7 +50,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  */
 public final class NodeSnmpResourceType implements OnmsResourceType {
 
-    private final ResourceStorageDao m_resourceStorageDao;
+    private final ResourceStorageDao resourceStorageDao;
 
     /**
      * <p>Constructor for NodeSnmpResourceType.</p>
@@ -58,7 +58,7 @@ public final class NodeSnmpResourceType implements OnmsResourceType {
      * @param resourceStorageDao a {@link ResourceStorageDao} object.
      */
     public NodeSnmpResourceType(ResourceStorageDao resourceStorageDao) {
-        m_resourceStorageDao = resourceStorageDao;
+        this.resourceStorageDao = resourceStorageDao;
     }
 
     /**
@@ -121,7 +121,7 @@ public final class NodeSnmpResourceType implements OnmsResourceType {
     }
 
     private OnmsResource getResourceForNode(OnmsResource node) {
-        final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(m_resourceStorageDao, node.getPath());
+        final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(resourceStorageDao, node.getPath());
         final Set<OnmsAttribute> attributes = new LazySet<OnmsAttribute>(loader);
         final OnmsResource resource = new OnmsResource("", "Node-level Performance Data", this, attributes, node.getPath());
         resource.setParent(node);
@@ -135,7 +135,7 @@ public final class NodeSnmpResourceType implements OnmsResourceType {
         }
 
         // Make sure we have one or more metrics in the parent path
-        if (!m_resourceStorageDao.exists(parent.getPath(), 0)) {
+        if (!resourceStorageDao.exists(parent.getPath(), 0)) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, "No metrics found in parent path '" + parent.getPath() + "'");
         }
     }

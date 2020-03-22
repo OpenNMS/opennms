@@ -41,12 +41,12 @@ import com.codahale.metrics.MetricRegistry;
 
 public class GuavaSearchableResourceMetadataCacheTest {
 
-    private MetricRegistry m_registry = new MetricRegistry();
+    private MetricRegistry registry = new MetricRegistry();
 
     @Test
     public void canGetEntriesWithPrefix() {
         Context ctx = Context.DEFAULT_CONTEXT;
-        GuavaSearchableResourceMetadataCache cache = new GuavaSearchableResourceMetadataCache(2048, m_registry);
+        GuavaSearchableResourceMetadataCache cache = new GuavaSearchableResourceMetadataCache(2048, registry);
 
         assertTrue(cache.getResourceIdsWithPrefix(ctx, "a").isEmpty());
 
@@ -67,7 +67,7 @@ public class GuavaSearchableResourceMetadataCacheTest {
         long numSearches = 1000;
 
         Context ctx = Context.DEFAULT_CONTEXT;
-        GuavaSearchableResourceMetadataCache cache = new GuavaSearchableResourceMetadataCache(numResourceIdsToCache, m_registry);
+        GuavaSearchableResourceMetadataCache cache = new GuavaSearchableResourceMetadataCache(numResourceIdsToCache, registry);
 
         ResourceMetadata resourceMetadata = new ResourceMetadata();
         for (long k = 0; k < numResourceIdsToCache; k++) {

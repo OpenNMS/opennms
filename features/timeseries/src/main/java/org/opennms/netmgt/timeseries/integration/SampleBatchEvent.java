@@ -40,22 +40,22 @@ import org.opennms.newts.api.Sample;
  * @author jwhite
  */
 public class SampleBatchEvent {
-    private List<Sample> m_samples;
-    private boolean m_indexOnly;
+    private List<Sample> samples;
+    private boolean indexOnly;
 
     public void setSamples(List<Sample> samples) {
-        m_samples = samples;
+        this.samples = samples;
     }
 
     public List<Sample> getSamples() {
-        return m_samples;
+        return samples;
     }
 
     public void setIndexOnly(boolean indexOnly) {
-        m_indexOnly = indexOnly;
+        this.indexOnly = indexOnly;
     }
 
     public boolean isIndexOnly() {
-        return m_indexOnly;
+        return indexOnly;
     }
 }

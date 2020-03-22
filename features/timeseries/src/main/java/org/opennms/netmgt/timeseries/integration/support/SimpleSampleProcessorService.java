@@ -46,21 +46,21 @@ import org.opennms.newts.api.SampleProcessorService;
  */
 public class SimpleSampleProcessorService implements SampleProcessorService {
 
-    private final Set<SampleProcessor> m_processors;
+    private final Set<SampleProcessor> processors;
 
     public SimpleSampleProcessorService(Set<SampleProcessor> processors) {
         if (TimeseriesUtils.DISABLE_INDEXING) {
             // Currently the only processor is the indexing processor so
             // we always use an empty set of processors when indexing is disabled
-            m_processors = Collections.emptySet();
+            this.processors = Collections.emptySet();
         } else {
-            m_processors = Objects.requireNonNull(processors);
+            this.processors = Objects.requireNonNull(processors);
         }
     }
 
     @Override
     public void submit(Collection<Sample> samples) {
-        m_processors.stream().forEach(p -> p.submit(samples));
+        processors.stream().forEach(p -> p.submit(samples));
     }
 
     @Override

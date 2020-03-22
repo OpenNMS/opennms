@@ -74,30 +74,30 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
 
     private static final Joiner m_keyJoiner = Joiner.on(':');
 
-    private final Cache<String, ResourceMetadata> m_cache;
-    private final ConcurrentRadixTree<ResourceMetadata> m_radixTree;
-    private final Meter m_metricReqs;
-    private final Meter m_attributeReqs;
-    private final Meter m_metricMisses;
-    private final Meter m_attributeMisses;
+    private final Cache<String, ResourceMetadata> cache;
+    private final ConcurrentRadixTree<ResourceMetadata> radixTree;
+    private final Meter metricReqs;
+    private final Meter attributeReqs;
+    private final Meter metricMisses;
+    private final Meter attributeMisses;
 
     @Inject
     public GuavaSearchableResourceMetadataCache(@Named("search.resourceMetadata.maxCacheEntries") long maxSize, @Named("timeseriesMetricRegistry") MetricRegistry registry) {
-        m_radixTree = new ConcurrentRadixTree<>(new DefaultCharArrayNodeFactory());
+        radixTree = new ConcurrentRadixTree<>(new DefaultCharArrayNodeFactory());
 
         LOG.info("Initializing resource metadata cache ({} max entries)", maxSize);
-        m_cache = CacheBuilder.newBuilder().maximumSize(maxSize).removalListener(this).build();
+        cache = CacheBuilder.newBuilder().maximumSize(maxSize).removalListener(this).build();
 
-        m_metricReqs = registry.meter(name("cache", "metric-reqs"));
-        m_metricMisses = registry.meter(name("cache", "metric-misses"));
-        m_attributeReqs = registry.meter(name("cache", "attribute-reqs"));
-        m_attributeMisses = registry.meter(name("cache", "attribute-misses"));
+        metricReqs = registry.meter(name("cache", "metric-reqs"));
+        metricMisses = registry.meter(name("cache", "metric-misses"));
+        attributeReqs = registry.meter(name("cache", "attribute-reqs"));
+        attributeMisses = registry.meter(name("cache", "attribute-misses"));
 
         registry.register(MetricRegistry.name("cache", "size"),
                 new Gauge<Long>() {
                     @Override
                     public Long getValue() {
-                        return m_cache.size();
+                        return cache.size();
                     }
                 });
         registry.register(MetricRegistry.name("cache", "max-size"),
@@ -111,13 +111,13 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
 
     @Override
     public Optional<ResourceMetadata> get(Context context, Resource resource) {
-        ResourceMetadata r = m_cache.getIfPresent(key(context, resource.getId()));
+        ResourceMetadata r = cache.getIfPresent(key(context, resource.getId()));
         return (r != null) ? Optional.of(r) : Optional.<ResourceMetadata>absent();
     }
 
     @Override
     public void delete(final Context context, final Resource resource) {
-        m_cache.invalidate(key(context, resource.getId()));
+        cache.invalidate(key(context, resource.getId()));
     }
 
     private String key(Context context, String resourceId) {
@@ -134,11 +134,11 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
         Optional<ResourceMetadata> o = get(context, resource);
 
         if (!o.isPresent()) {
-            ResourceMetadata newMetadata = new ResourceMetadata(m_metricReqs, m_attributeReqs, m_metricMisses, m_attributeMisses);
+            ResourceMetadata newMetadata = new ResourceMetadata(metricReqs, attributeReqs, metricMisses, attributeMisses);
             newMetadata.merge(metadata);
             String key = key(context, resource.getId());
-            m_cache.put(key, newMetadata);
-            m_radixTree.put(key, newMetadata);
+            cache.put(key, newMetadata);
+            radixTree.put(key, newMetadata);
             return;
         }
 
@@ -148,17 +148,17 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
 
     @Override
     public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
-        return StreamSupport.stream(m_radixTree.getKeysStartingWith(key(context, resourceIdPrefix)).spliterator(), false)
+        return StreamSupport.stream(radixTree.getKeysStartingWith(key(context, resourceIdPrefix)).spliterator(), false)
                 .map(cs -> resourceId(context, cs.toString()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public void onRemoval(RemovalNotification<String, ResourceMetadata> notification) {
-        m_radixTree.remove(notification.getKey());
+        radixTree.remove(notification.getKey());
     }
 
     public long getSize() {
-        return m_cache.size();
+        return cache.size();
     }
 }

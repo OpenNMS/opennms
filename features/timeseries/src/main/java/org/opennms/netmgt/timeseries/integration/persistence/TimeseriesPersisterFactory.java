@@ -48,11 +48,11 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     private final TimeseriesWriter timeseriesWriter;
 
-    private final Context m_context;
+    private final Context context;
 
     @Inject
     public TimeseriesPersisterFactory(Context context, TimeseriesWriter timeseriesWriter) {
-        m_context = Objects.requireNonNull(context);
+        this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
     }
 
@@ -66,7 +66,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, m_context);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, context);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }
