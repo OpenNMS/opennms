@@ -1506,7 +1506,7 @@
         </property>
       </activation>
       <properties>
-        <runPingTests>false</runPingTests>
+        <runPingTests>true</runPingTests>
       </properties>
     </profile>
     <profile>
