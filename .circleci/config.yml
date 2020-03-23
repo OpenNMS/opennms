@@ -527,8 +527,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -538,6 +540,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -625,8 +628,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -636,6 +641,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh sentinel
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
