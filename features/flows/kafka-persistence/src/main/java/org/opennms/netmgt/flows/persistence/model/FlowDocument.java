@@ -60,6 +60,8 @@ private static final long serialVersionUID = 0L;
     srcLocality_ = 0;
     dstLocality_ = 0;
     flowLocality_ = 0;
+    convoKey_ = "";
+    hosts_ = com.google.protobuf.LazyStringArrayList.EMPTY;
   }
 
   @java.lang.Override
@@ -82,6 +84,7 @@ private static final long serialVersionUID = 0L;
     if (extensionRegistry == null) {
       throw new java.lang.NullPointerException();
     }
+    int mutable_bitField0_ = 0;
     com.google.protobuf.UnknownFieldSet.Builder unknownFields =
         com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
@@ -518,6 +521,21 @@ private static final long serialVersionUID = 0L;
             flowLocality_ = rawValue;
             break;
           }
+          case 354: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            convoKey_ = s;
+            break;
+          }
+          case 362: {
+            java.lang.String s = input.readStringRequireUtf8();
+            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+              hosts_ = new com.google.protobuf.LazyStringArrayList();
+              mutable_bitField0_ |= 0x00000001;
+            }
+            hosts_.add(s);
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -533,6 +551,9 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      if (((mutable_bitField0_ & 0x00000001) != 0)) {
+        hosts_ = hosts_.getUnmodifiableView();
+      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
@@ -1874,6 +1895,69 @@ private static final long serialVersionUID = 0L;
     return result == null ? org.opennms.netmgt.flows.persistence.model.Locality.UNRECOGNIZED : result;
   }
 
+  public static final int CONVO_KEY_FIELD_NUMBER = 44;
+  private volatile java.lang.Object convoKey_;
+  /**
+   * <code>string convo_key = 44;</code>
+   */
+  public java.lang.String getConvoKey() {
+    java.lang.Object ref = convoKey_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      convoKey_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string convo_key = 44;</code>
+   */
+  public com.google.protobuf.ByteString
+      getConvoKeyBytes() {
+    java.lang.Object ref = convoKey_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      convoKey_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int HOSTS_FIELD_NUMBER = 45;
+  private com.google.protobuf.LazyStringList hosts_;
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  public com.google.protobuf.ProtocolStringList
+      getHostsList() {
+    return hosts_;
+  }
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  public int getHostsCount() {
+    return hosts_.size();
+  }
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  public java.lang.String getHosts(int index) {
+    return hosts_.get(index);
+  }
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  public com.google.protobuf.ByteString
+      getHostsBytes(int index) {
+    return hosts_.getByteString(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -2013,6 +2097,12 @@ private static final long serialVersionUID = 0L;
     }
     if (flowLocality_ != org.opennms.netmgt.flows.persistence.model.Locality.PUBLIC.getNumber()) {
       output.writeEnum(43, flowLocality_);
+    }
+    if (!getConvoKeyBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 44, convoKey_);
+    }
+    for (int i = 0; i < hosts_.size(); i++) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 45, hosts_.getRaw(i));
     }
     unknownFields.writeTo(output);
   }
@@ -2180,6 +2270,17 @@ private static final long serialVersionUID = 0L;
     if (flowLocality_ != org.opennms.netmgt.flows.persistence.model.Locality.PUBLIC.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(43, flowLocality_);
+    }
+    if (!getConvoKeyBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(44, convoKey_);
+    }
+    {
+      int dataSize = 0;
+      for (int i = 0; i < hosts_.size(); i++) {
+        dataSize += computeStringSizeNoTag(hosts_.getRaw(i));
+      }
+      size += dataSize;
+      size += 2 * getHostsList().size();
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -2349,6 +2450,10 @@ private static final long serialVersionUID = 0L;
     if (srcLocality_ != other.srcLocality_) return false;
     if (dstLocality_ != other.dstLocality_) return false;
     if (flowLocality_ != other.flowLocality_) return false;
+    if (!getConvoKey()
+        .equals(other.getConvoKey())) return false;
+    if (!getHostsList()
+        .equals(other.getHostsList())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -2495,6 +2600,12 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + dstLocality_;
     hash = (37 * hash) + FLOW_LOCALITY_FIELD_NUMBER;
     hash = (53 * hash) + flowLocality_;
+    hash = (37 * hash) + CONVO_KEY_FIELD_NUMBER;
+    hash = (53 * hash) + getConvoKey().hashCode();
+    if (getHostsCount() > 0) {
+      hash = (37 * hash) + HOSTS_FIELD_NUMBER;
+      hash = (53 * hash) + getHostsList().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -2812,6 +2923,10 @@ private static final long serialVersionUID = 0L;
 
       flowLocality_ = 0;
 
+      convoKey_ = "";
+
+      hosts_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000001);
       return this;
     }
 
@@ -2838,6 +2953,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.opennms.netmgt.flows.persistence.model.FlowDocument buildPartial() {
       org.opennms.netmgt.flows.persistence.model.FlowDocument result = new org.opennms.netmgt.flows.persistence.model.FlowDocument(this);
+      int from_bitField0_ = bitField0_;
       result.timestamp_ = timestamp_;
       if (numBytesBuilder_ == null) {
         result.numBytes_ = numBytes_;
@@ -2980,6 +3096,12 @@ private static final long serialVersionUID = 0L;
       result.srcLocality_ = srcLocality_;
       result.dstLocality_ = dstLocality_;
       result.flowLocality_ = flowLocality_;
+      result.convoKey_ = convoKey_;
+      if (((bitField0_ & 0x00000001) != 0)) {
+        hosts_ = hosts_.getUnmodifiableView();
+        bitField0_ = (bitField0_ & ~0x00000001);
+      }
+      result.hosts_ = hosts_;
       onBuilt();
       return result;
     }
@@ -3164,6 +3286,20 @@ private static final long serialVersionUID = 0L;
       if (other.flowLocality_ != 0) {
         setFlowLocalityValue(other.getFlowLocalityValue());
       }
+      if (!other.getConvoKey().isEmpty()) {
+        convoKey_ = other.convoKey_;
+        onChanged();
+      }
+      if (!other.hosts_.isEmpty()) {
+        if (hosts_.isEmpty()) {
+          hosts_ = other.hosts_;
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          ensureHostsIsMutable();
+          hosts_.addAll(other.hosts_);
+        }
+        onChanged();
+      }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
@@ -3192,6 +3328,7 @@ private static final long serialVersionUID = 0L;
       }
       return this;
     }
+    private int bitField0_;
 
     private long timestamp_ ;
     /**
@@ -8104,6 +8241,169 @@ private static final long serialVersionUID = 0L;
     public Builder clearFlowLocality() {
       
       flowLocality_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object convoKey_ = "";
+    /**
+     * <code>string convo_key = 44;</code>
+     */
+    public java.lang.String getConvoKey() {
+      java.lang.Object ref = convoKey_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        convoKey_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string convo_key = 44;</code>
+     */
+    public com.google.protobuf.ByteString
+        getConvoKeyBytes() {
+      java.lang.Object ref = convoKey_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        convoKey_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string convo_key = 44;</code>
+     */
+    public Builder setConvoKey(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      convoKey_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string convo_key = 44;</code>
+     */
+    public Builder clearConvoKey() {
+      
+      convoKey_ = getDefaultInstance().getConvoKey();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string convo_key = 44;</code>
+     */
+    public Builder setConvoKeyBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      convoKey_ = value;
+      onChanged();
+      return this;
+    }
+
+    private com.google.protobuf.LazyStringList hosts_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private void ensureHostsIsMutable() {
+      if (!((bitField0_ & 0x00000001) != 0)) {
+        hosts_ = new com.google.protobuf.LazyStringArrayList(hosts_);
+        bitField0_ |= 0x00000001;
+       }
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getHostsList() {
+      return hosts_.getUnmodifiableView();
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public int getHostsCount() {
+      return hosts_.size();
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public java.lang.String getHosts(int index) {
+      return hosts_.get(index);
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHostsBytes(int index) {
+      return hosts_.getByteString(index);
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public Builder setHosts(
+        int index, java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureHostsIsMutable();
+      hosts_.set(index, value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public Builder addHosts(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureHostsIsMutable();
+      hosts_.add(value);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public Builder addAllHosts(
+        java.lang.Iterable<java.lang.String> values) {
+      ensureHostsIsMutable();
+      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+          values, hosts_);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public Builder clearHosts() {
+      hosts_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bitField0_ = (bitField0_ & ~0x00000001);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>repeated string hosts = 45;</code>
+     */
+    public Builder addHostsBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      ensureHostsIsMutable();
+      hosts_.add(value);
       onChanged();
       return this;
     }

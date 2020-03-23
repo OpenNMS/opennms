@@ -866,4 +866,33 @@ public interface FlowDocumentOrBuilder extends
    * <code>.Locality flow_locality = 43;</code>
    */
   org.opennms.netmgt.flows.persistence.model.Locality getFlowLocality();
+
+  /**
+   * <code>string convo_key = 44;</code>
+   */
+  java.lang.String getConvoKey();
+  /**
+   * <code>string convo_key = 44;</code>
+   */
+  com.google.protobuf.ByteString
+      getConvoKeyBytes();
+
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  java.util.List<java.lang.String>
+      getHostsList();
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  int getHostsCount();
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  java.lang.String getHosts(int index);
+  /**
+   * <code>repeated string hosts = 45;</code>
+   */
+  com.google.protobuf.ByteString
+      getHostsBytes(int index);
 }

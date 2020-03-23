@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnrichedFlow {
 
     public enum Locality {
@@ -44,6 +47,10 @@ public class EnrichedFlow {
     private String application;
 
     private String host;
+
+    private List<String> hosts = new ArrayList<>();
+
+    private String convoKey;
 
     private String location;
 
@@ -99,6 +106,14 @@ public class EnrichedFlow {
         return exporterNodeInfo;
     }
 
+    public List<String> getHosts() {
+        return hosts;
+    }
+
+    public String getConvoKey() {
+        return convoKey;
+    }
+
     public void setApplication(String application) {
         this.application = application;
     }
@@ -134,4 +149,18 @@ public class EnrichedFlow {
     public void setExporterNodeInfo(NodeInfo exporterNodeInfo) {
         this.exporterNodeInfo = exporterNodeInfo;
     }
+
+    public void addHosts(String host) {
+        this.hosts.add(host);
+    }
+
+    public void setHosts(List<String> hosts) {
+        this.hosts = hosts;
+    }
+
+    public void setConvoKey(String convoKey) {
+        this.convoKey = convoKey;
+    }
+
+
 }

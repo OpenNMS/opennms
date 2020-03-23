@@ -747,6 +747,7 @@ public class FlowDocument {
         EnrichedFlow enrichedFlow = new EnrichedFlow(flowDocument.getFlow());
         enrichedFlow.setApplication(flowDocument.getApplication());
         enrichedFlow.setHost(flowDocument.getHost());
+        flowDocument.getHosts().forEach(enrichedFlow::addHosts);
         enrichedFlow.setLocation(flowDocument.getLocation());
         enrichedFlow.setDstLocality(matchLocality(flowDocument.getDstLocality()));
         enrichedFlow.setSrcLocality(matchLocality(flowDocument.getSrcLocality()));
@@ -754,6 +755,7 @@ public class FlowDocument {
         enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
         enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
         enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
+        enrichedFlow.setConvoKey(flowDocument.getConvoKey());
         return enrichedFlow;
 
     }

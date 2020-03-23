@@ -245,8 +245,7 @@ public class ElasticFlowRepository implements FlowRepository {
             throw new FlowException("Failed to enrich one or more flows.", e);
         }
         if(enableFlowForwarding) {
-            // Persist to kafka.
-            LOG.debug("Forwarding {} flow documents to Kafka", flowDocuments.size());
+            LOG.debug("Forwarding {} flow documents", flowDocuments.size());
             flowDocuments.stream().map(FlowDocument::buildEnrichedFlow).forEach(enrichedFlowForwarder::forward);
         }
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());

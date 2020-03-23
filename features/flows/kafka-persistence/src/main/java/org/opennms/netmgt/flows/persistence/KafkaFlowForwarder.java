@@ -62,7 +62,7 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
             .maxRate(1).every(Duration.standardSeconds(60))
             .build();
     private Properties producerConfig;
-    
+
     public KafkaFlowForwarder(ConfigurationAdmin configAdmin) {
         this.configAdmin = configAdmin;
     }
@@ -80,13 +80,13 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
             final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, flowDocument.toByteArray());
             producer.send(record, (recordMetadata, e) -> {
                 if (e != null) {
-                    RATE_LIMITED_LOG.warn("Failed to send flow document to producer: {}.", record, e);
+                    RATE_LIMITED_LOG.warn("Failed to send flow document to kafka: {}.", record, e);
                 } else if (LOG.isTraceEnabled()) {
                     LOG.trace("Persisted flow document {} to kafka.", flowDocument);
                 }
             });
         } catch (Exception e) {
-            LOG.error("Exception while sending flow to kafka", e);
+            LOG.error("Exception while sending flow to kafka.", e);
         }
     }
 
@@ -109,7 +109,7 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
             producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
             // Class-loader hack for accessing the kafka classes when initializing producer.
             producer = runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
-            LOG.info(" Kafka Producer initialized with config {} ", producerConfig);
+            LOG.info("Kafka Producer initialized with config {}", producerConfig);
         }
     }
 

@@ -97,12 +97,15 @@ public class FlowDocumentBuilder {
         getString(enrichedFlow.getApplication()).ifPresent(builder::setApplication);
         getString(enrichedFlow.getHost()).ifPresent(builder::setHost);
         getString(enrichedFlow.getLocation()).ifPresent(builder::setLocation);
+        getString(enrichedFlow.getConvoKey()).ifPresent(builder::setConvoKey);
+        enrichedFlow.getHosts().forEach(builder::addHosts);
         builder.setDstLocality(fromLocality(enrichedFlow.getDstLocality()));
         builder.setSrcLocality(fromLocality(enrichedFlow.getSrcLocality()));
         builder.setFlowLocality(fromLocality(enrichedFlow.getFlowLocality()));
         buildNodeInfo(enrichedFlow.getSrcNodeInfo()).ifPresent(builder::setSrcNode);
         buildNodeInfo(enrichedFlow.getExporterNodeInfo()).ifPresent(builder::setExporterNode);
         buildNodeInfo(enrichedFlow.getDstNodeInfo()).ifPresent(builder::setDestNode);
+
         return builder.build();
     }
 
