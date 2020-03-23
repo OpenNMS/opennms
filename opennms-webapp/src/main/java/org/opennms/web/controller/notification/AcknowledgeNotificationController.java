@@ -123,13 +123,7 @@ public class AcknowledgeNotificationController extends AbstractController implem
         request.setAttribute("notices", notices);
 
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
-        String viewName;
-        if (redirect != null) {
-            viewName = redirect;
-        } else {
-            viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? m_redirectView : m_redirectView + "?" + redirectParms);
-        }
+        String viewName = (redirectParms == null || "".equals(redirectParms) || "null".equals(redirectParms) ? m_redirectView : m_redirectView + "?" + redirectParms);
         RedirectView view = new RedirectView(viewName, true);
         return new ModelAndView(view);
 
