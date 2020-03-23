@@ -5,7 +5,7 @@
 
 ===== Enabling Timeseries Integration Layer
 
-_{opennms-product-name}_ can be configured to use the Timeseries Integration Layer by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
+_{opennms-product-name}_ can be configured to use the Timeseries Integration Layer by setting the following property in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
