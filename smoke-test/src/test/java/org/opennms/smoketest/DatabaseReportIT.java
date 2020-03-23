@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * <p>
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  * <p>
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * <p>
@@ -76,6 +76,8 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
                 {"local_AssetMangementMaintExpired", "PDF", "Maintenance contracts expired"},
                 {"local_AssetMangementMaintStrategy", "PDF", "Maintenance contracts strategy"},
                 {"local_Event-Analysis", "PDF", "Event Analysis report"},
+                {"local_defaultCalendarReport", "HTML", "Default Calendar Report"},
+                {"local_defaultClassicReport", "HTML", "Default Classic Report"},
         };
     }
 
