@@ -29,14 +29,12 @@
 package org.opennms.smoketest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
+public class AssetsPageForNodeIT extends OpenNMSSeleniumIT {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(AssetsPageForNodeIT.class);
@@ -79,7 +77,7 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
         sendPut("rest/nodes/SmokeTests:TestMachine1/assetRecord", "description=Right here, Right now", 204);
         LOG.debug("asset updated!");
 
-        m_driver.get(getBaseUrl() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
     }
 
     /**
@@ -98,16 +96,13 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumTestCase {
      * @throws Exception the exception
      */
     @Test
-    public void testAssetPage() throws Exception {
+    public void testAssetPage() {
         findElementByLink("Asset Info").click();
-        Alert alert = m_driver.switchTo().alert();
+        Alert alert = driver.switchTo().alert();
         alert.accept();
 
         final String descriptionXpath = "(//input[@ng-model='asset[field.model]'])[1]";
-        waitForElement(By.xpath(descriptionXpath));
-        WebElement description = findElementByXpath(descriptionXpath);
-        Assert.assertNotNull(description);
-        Assert.assertEquals("Right here, Right now", description.getAttribute("value"));
+        waitForValue(By.xpath(descriptionXpath), "Right here, Right now");
     }
 
 }
