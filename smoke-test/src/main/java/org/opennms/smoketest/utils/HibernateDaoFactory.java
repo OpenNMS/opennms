@@ -31,11 +31,11 @@ import java.net.InetSocketAddress;
 
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 
-import jersey.repackaged.com.google.common.base.Throwables;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Quick access to Hibernate DAOs.
@@ -48,20 +48,19 @@ public class HibernateDaoFactory {
     private final HibernateTemplate m_hibernateTemplate;
 
     public HibernateDaoFactory(InetSocketAddress pgsqlAddr) {
-        PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setPortNumber(pgsqlAddr.getPort());
-        dataSource.setUser("postgres");
-        dataSource.setPassword("postgres");
-        dataSource.setServerName(pgsqlAddr.getAddress().getHostAddress());
-        dataSource.setDatabaseName("opennms");
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://" + pgsqlAddr.getHostString() + ":" + pgsqlAddr.getPort() + "/opennms");
+        config.setUsername("opennms");
+        config.setPassword("opennms");
+        HikariDataSource ds = new HikariDataSource(config);
 
         AnnotationSessionFactoryBean sfb = new AnnotationSessionFactoryBean();
-        sfb.setDataSource(dataSource);
+        sfb.setDataSource(ds);
         sfb.setPackagesToScan("org.opennms.netmgt.model");
         try {
             sfb.afterPropertiesSet();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
         m_sessionFactory = sfb.getObject();
         m_hibernateTemplate = new HibernateTemplate(m_sessionFactory);
@@ -74,7 +73,7 @@ public class HibernateDaoFactory {
             dao.setSessionFactory(m_sessionFactory);
             return dao;
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 }

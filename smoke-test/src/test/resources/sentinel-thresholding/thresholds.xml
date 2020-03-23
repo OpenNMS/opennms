@@ -1,0 +1,5 @@
+<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding">
+    <group name="jti" rrdRepository="/opt/opennms/share/rrd/snmp/">
+        <expression description="Test" type="high" ds-type="if" value="100000" rearm="75000" trigger="1" ds-label="ifName" filterOperator="OR" expression="ifInOctets + ifOutOctets * ${requisition:multiplier|0}"/>
+    </group>
+</thresholding-config>
