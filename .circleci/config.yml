@@ -524,8 +524,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -535,6 +537,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh minion
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
