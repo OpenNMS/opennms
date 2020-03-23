@@ -33,11 +33,13 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.plugins.elasticsearch.rest.archive.OnmsRestEventsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 public class OpenNMSRestEventsClientTest {
 	private static final Logger LOG = LoggerFactory.getLogger(OpenNMSRestEventsClientTest.class);
 

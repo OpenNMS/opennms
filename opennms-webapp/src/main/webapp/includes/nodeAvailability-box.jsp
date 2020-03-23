@@ -97,7 +97,9 @@
 
 <div id="availability-box" class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Availability</h3>
+    <h3 class="panel-title">
+      <span>Availability</span>
+    </h3>
   </div>
   <table class="table table-condensed severity">
     <tr>

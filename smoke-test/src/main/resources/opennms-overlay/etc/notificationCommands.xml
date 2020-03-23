@@ -1,0 +1,21 @@
+<notification-commands xmlns="http://xmlns.opennms.org/xsd/notificationCommands">
+    <header>
+        <ver>25</ver>
+        <created>Thursday, June 13, 2019 12:10:00 AM EST</created>
+        <mstation>beer</mstation>
+    </header>
+    <command binary="false">
+      <name>browser</name>
+      <execute>org.opennms.netmgt.notifd.BrowserNotificationStrategy</execute>
+      <comment>Sending Notification to the Browser</comment>
+      <argument streamed="false">
+         <switch>-d</switch>
+      </argument>
+      <argument streamed="false">
+         <switch>-subject</switch>
+      </argument>
+       <argument streamed="false">
+           <switch>-tm</switch>
+       </argument>
+   </command>
+</notification-commands>

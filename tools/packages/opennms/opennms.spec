@@ -8,7 +8,7 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $OPENMS_HOME in the finished package
 %{!?instprefix:%define instprefix /opt/opennms}
-# This is where the OPENNMS_HOME variable will be set on the remote 
+# This is where the OPENNMS_HOME variable will be set on the remote
 # operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
 # This is where the "share" directory will link on RPM-based systems
@@ -57,7 +57,6 @@ BuildArch:		noarch
 
 Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
-BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
@@ -89,15 +88,17 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp
-Requires:	jicmp
-Requires(pre):	jicmp6
-Requires:	jicmp6
+Requires(pre):	jicmp >= 2.0.0
+Requires:	jicmp >= 2.0.0
+Requires(pre):	jicmp6 >= 2.0.0
+Requires:	jicmp6 >= 2.0.0
 Requires(pre):  jrrd2
 Requires:       jrrd2
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
+Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -237,7 +238,7 @@ Group:		Applications/System
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-northbounder-jms
-This northbounder allows you to send OpenNMS alarms to an 
+This northbounder allows you to send OpenNMS alarms to an
 external JMS listener.
 
 %{extrainfo}
@@ -313,7 +314,7 @@ Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-snmp-hardware-inventory
-The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
+The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating
 hardware fields with data fetched from the ENTITY-MIB and vendor extensions of this MIB.
 
 %{extrainfo}
@@ -418,10 +419,10 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 
 
 %package plugin-protocol-xml
-Summary:	XML Collector
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
+Summary:    XML Collector
+Group:      Applications/System
+Requires(pre):  %{name}-core = %{version}-%{release}
+Requires:   %{name}-core = %{version}-%{release}
 
 %description plugin-protocol-xml
 The XML protocol plugin provides a collector for XML data.
@@ -465,15 +466,14 @@ Requires:	%{name}-plugin-protocol-xml = %{version}-%{release}
 
 %description plugin-collector-vtdxml-handler
 The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
-VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
+VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 
 %{extrainfo}
 %{extrainfo2}
 
-
 %prep
 
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+tar -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -483,7 +483,7 @@ tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BU
 ##############################################################################
 
 %build
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 # nothing necessary
 
@@ -513,50 +513,48 @@ if [ "%{skip_compile}" = 1 ]; then
 		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 	fi
 	TOPDIR=`pwd`
-	for dir in . opennms-tools; do
-		cd $dir
-			"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
-		cd -
-	done
+	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install
+		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install --builder smart --threads ${CCI_MAXCPU:-2}
 fi
+
+cd opennms-tools
+	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+	-Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY \
 	-Dbuild=all \
 	-Dinstall.version="%{version}-%{release}" \
 	-Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" \
-	-Dbuild.profile=full \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
+	-Dopennms.home="%{instprefix}" \
 	-Prun-expensive-tasks \
-	install
-
-cd opennms-tools
-	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" install
-cd -
+	-Dbuild.profile=full install \
+	--builder smart \
+	--threads ${CCI_MAXCPU:-2}
 
 echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
 
-mkdir -p $RPM_BUILD_ROOT%{instprefix}
+mkdir -p %{buildroot}%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
+# Untar the tar.gz created by opennms-full-assembly
+tar zxf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
 ### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
-mkdir -p $RPM_BUILD_ROOT%{profiledir}
-cat > $RPM_BUILD_ROOT%{profiledir}/%{name}.sh << END
+mkdir -p %{buildroot}%{profiledir}
+cat > %{buildroot}%{profiledir}/%{name}.sh << END
 #!/bin/bash
 
 OPENNMS_HOME=%{instprefix}
@@ -569,43 +567,43 @@ export OPENNMS_HOME PATH
 END
 
 # Move the docs into %{_docdir}
-rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-mkdir -p $RPM_BUILD_ROOT%{_docdir}
-mv $RPM_BUILD_ROOT%{instprefix}/docs $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
-rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
+rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
+mkdir -p %{buildroot}%{_docdir}
+mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
+cp README* %{buildroot}%{instprefix}/etc/
+rm -rf %{buildroot}%{instprefix}/etc/README
+rm -rf %{buildroot}%{instprefix}/etc/README.build
 
-install -d -m 755 $RPM_BUILD_ROOT%{logdir}
-mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
+install -d -m 755 %{buildroot}%{logdir}
+mv %{buildroot}%{instprefix}/logs/.readme %{buildroot}%{logdir}/
+rm -rf %{buildroot}%{instprefix}/logs
 
-install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
-mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/share
+install -d -m 755 %{buildroot}%{sharedir}
+mv %{buildroot}%{instprefix}/share/* %{buildroot}%{sharedir}/
+rm -rf %{buildroot}%{instprefix}/share
 
 # Copy the /etc directory into /etc/pristine
-rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
-chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
+rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{sharedir}/etc-pristine/
+chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
-install -d -m 755 $RPM_BUILD_ROOT%{_initrddir} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
-install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
-rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
+install -d -m 755 %{buildroot}%{_initrddir} %{buildroot}%{_sysconfdir}/sysconfig
+install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
+install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
+rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
 
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
+rm -rf %{buildroot}%{instprefix}/lib/*.tar.gz
 
 # Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
-for FILE in $RPM_BUILD_ROOT%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find $RPM_BUILD_ROOT%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
+for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
 # Remove all duplicate JARs from /jetty-webapps/opennms-remoting/webstart and symlink them to the JARs in /lib to save disk space
 # NOTE: We can't do this because the JARs in webstart are signed
-#for FILE in $RPM_BUILD_ROOT%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find $RPM_BUILD_ROOT%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
+#for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
 
-cd $RPM_BUILD_ROOT
+cd %{buildroot}
 
 # core package files
-find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+find %{buildroot}%{instprefix}/etc ! -type d | \
+	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
@@ -628,8 +626,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort > %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
@@ -652,14 +650,14 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{instprefix}/bin ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v '/jmx-config-generator' | \
 	grep -v '/remote-poller.sh' | \
 	grep -v '/remote-poller.jar' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{sharedir} ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v 'etc-pristine' | \
 	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
@@ -669,12 +667,12 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{instprefix}/contrib ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'xml-collector' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{instprefix}/lib ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jdhcp' | \
 	grep -v 'jradius' | \
@@ -695,36 +693,36 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'vtd-xml' | \
 	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+find %{buildroot}%{instprefix}/system ! -type d | \
+    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jira-' | \
     sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
-find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUILD_ROOT%{instprefix}/system -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
-find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{jettydir} ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
 	grep -v '/WEB-INF/jsp/alarm/ncs' | \
 	grep -v '/WEB-INF/jsp/ncs/' | \
 	grep -v '/WEB-INF/lib/ncs' | \
 	sort >> %{_tmppath}/files.jetty
-find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
-	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
+find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
+	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
-find $RPM_BUILD_ROOT%{jettydir} -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+find %{buildroot}%{jettydir} -type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 ##############################################################################
 # file setup
@@ -810,8 +808,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-ticketer-jira
 %defattr(664 root root 775)
-%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
-%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar*
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar*
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 
@@ -1024,8 +1022,8 @@ done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
-	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print | xargs rm -rf
-	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
+	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
 fi
 echo "done"
 
