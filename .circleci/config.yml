@@ -440,8 +440,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -451,6 +453,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
