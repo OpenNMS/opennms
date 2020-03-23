@@ -16,7 +16,7 @@ executors:
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
-  sign-packages: opennms/sign-packages@2.0.0
+  sign-packages: opennms/sign-packages@2.1.1
 
 commands:
   cached-checkout:
@@ -442,8 +442,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -452,6 +454,7 @@ jobs:
             export CCI_MAXCPU=4
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -481,8 +484,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -492,6 +497,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -560,8 +566,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -570,6 +578,7 @@ jobs:
             export CCI_MAXCPU=4
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -586,8 +595,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -597,6 +608,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh minion
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
