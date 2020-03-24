@@ -14,7 +14,7 @@ org.opennms.timeseries.strategy=integration
 
 After activating the _Timeseries Integration Layer_, you need to start an actual implementation.
 Do this via Karaf.
-Here is an example of how to activate the im memory plugin:
+Here is an example of how to activate the _in memory timeseries_ plugin:
 
 ----
 clone & build:
