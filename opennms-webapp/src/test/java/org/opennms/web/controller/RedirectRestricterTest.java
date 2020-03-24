@@ -39,7 +39,7 @@ public class RedirectRestricterTest {
     @Test
     public void shouldRejectNullAndEmptyRedirects() {
         assertThrowsException(NullPointerException.class, () -> RedirectRestricter.builder().allowRedirect(null).build());
-        assertThrowsException(NullPointerException.class, () -> RedirectRestricter.builder().allowRedirect("").build());
+        assertThrowsException(IllegalArgumentException.class, () -> RedirectRestricter.builder().allowRedirect("").build());
         RedirectRestricter.builder().allowRedirect("something").build(); // should be ok
     }
 
@@ -68,9 +68,9 @@ public class RedirectRestricterTest {
                 .allowRedirect("redirectA")
                 .allowRedirect("redirectB").build();
 
-        assertEquals("redirectA?blah", restricter.getRedirectOrNull("redirectA?blah"));
-        assertEquals("redirectB?blub", restricter.getRedirectOrNull("redirectB?blub"));
-        assertEquals("default", restricter.getRedirectOrNull("unknownRedirect=blah"));
+        assertEquals("redirectA?a=b", restricter.getRedirectOrNull("redirectA?a=b"));
+        assertEquals("redirectB?c=d", restricter.getRedirectOrNull("redirectB?c=d"));
+        assertNull(restricter.getRedirectOrNull("unknownRedirect?e=f"));
     }
 
     public static void assertThrowsException(Class<? extends Throwable> expectedException, Runnable function) {
