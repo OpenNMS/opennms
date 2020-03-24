@@ -63,6 +63,7 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
     
     private String m_redirectView;
 
+    // it seems there is no link with a redirect pointing to this controller, therefor we use an empty whitelist.
     private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
             .build();
 
