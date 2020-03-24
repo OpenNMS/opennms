@@ -299,6 +299,11 @@ include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
 
+[[ga-opennms-operation-timeseries]]
+=== Timeseries Integration Layer
+include::text/operation/timeseries/introduction.adoc[]
+include::text/operation/timeseries/configuration.adoc[]
+
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
 include::text/operation/daemon-config-files/introduction.adoc[]
