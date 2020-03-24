@@ -876,23 +876,4 @@ public interface FlowDocumentOrBuilder extends
    */
   com.google.protobuf.ByteString
       getConvoKeyBytes();
-
-  /**
-   * <code>repeated string hosts = 45;</code>
-   */
-  java.util.List<java.lang.String>
-      getHostsList();
-  /**
-   * <code>repeated string hosts = 45;</code>
-   */
-  int getHostsCount();
-  /**
-   * <code>repeated string hosts = 45;</code>
-   */
-  java.lang.String getHosts(int index);
-  /**
-   * <code>repeated string hosts = 45;</code>
-   */
-  com.google.protobuf.ByteString
-      getHostsBytes(int index);
 }

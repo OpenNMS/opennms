@@ -90,5 +90,4 @@ message FlowDocument {
     Locality dst_locality = 42;
     Locality flow_locality = 43;
     string convo_key = 44;
-    repeated string hosts = 45;
 }
