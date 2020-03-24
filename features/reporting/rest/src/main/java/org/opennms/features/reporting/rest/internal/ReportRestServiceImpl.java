@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -381,7 +381,7 @@ public class ReportRestServiceImpl implements ReportRestService {
             return Response.status(Status.NOT_FOUND).build();
         }
         // Some reports are persisted as jrprint and must be reran to download/view
-        boolean mustRender = reportCatalogEntry.getLocation().endsWith("jrprint");
+        boolean mustRender = reportCatalogEntry.getLocation().endsWith("jrprint") || reportCatalogEntry.getLocation().endsWith("xml");
         if (mustRender) { // the format should be set if we need to re-render the report
             if (Strings.isNullOrEmpty(format)) {
                 return Response.status(Status.BAD_REQUEST)
@@ -416,6 +416,10 @@ public class ReportRestServiceImpl implements ReportRestService {
                 return responseBuilder.type("application/pdf;charset=UTF-8")
                         .header("Content-disposition", "inline; filename=" + filename)
                         .build();
+            }
+            if (ReportFormat.HTML == reportFormat) {
+                responseBuilder.type("text/html;charset=UTF-8")
+                .header("Content-disposition", "inline; filename=" + filename);
             }
             if (ReportFormat.CSV == reportFormat) {
                 responseBuilder.type("text/csv;charset=UTF-8")
