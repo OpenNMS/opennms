@@ -7,10 +7,7 @@ option java_outer_classname = "SinkMessageProtos";
 message SinkMessage {
 string message_id = 1;
 bytes  content = 2;
-string system_id = 3;
-string location = 4;
-int32  current_chunk_number = 5;
-int32  total_chunks = 6;
-map<string, string> tracing_info = 7;
-string module_id = 8;
+int32  current_chunk_number = 3;
+int32  total_chunks = 4;
+map<string, string> tracing_info = 5;
 }

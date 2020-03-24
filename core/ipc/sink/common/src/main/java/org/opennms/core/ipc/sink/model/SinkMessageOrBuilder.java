@@ -51,41 +51,21 @@ public interface SinkMessageOrBuilder extends
   com.google.protobuf.ByteString getContent();
 
   /**
-   * <code>string system_id = 3;</code>
-   */
-  java.lang.String getSystemId();
-  /**
-   * <code>string system_id = 3;</code>
-   */
-  com.google.protobuf.ByteString
-      getSystemIdBytes();
-
-  /**
-   * <code>string location = 4;</code>
-   */
-  java.lang.String getLocation();
-  /**
-   * <code>string location = 4;</code>
-   */
-  com.google.protobuf.ByteString
-      getLocationBytes();
-
-  /**
-   * <code>int32 current_chunk_number = 5;</code>
+   * <code>int32 current_chunk_number = 3;</code>
    */
   int getCurrentChunkNumber();
 
   /**
-   * <code>int32 total_chunks = 6;</code>
+   * <code>int32 total_chunks = 4;</code>
    */
   int getTotalChunks();
 
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
   int getTracingInfoCount();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
   boolean containsTracingInfo(
       java.lang.String key);
@@ -96,31 +76,21 @@ public interface SinkMessageOrBuilder extends
   java.util.Map<java.lang.String, java.lang.String>
   getTracingInfo();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
   java.util.Map<java.lang.String, java.lang.String>
   getTracingInfoMap();
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
 
   java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
       java.lang.String defaultValue);
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 7;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
 
   java.lang.String getTracingInfoOrThrow(
       java.lang.String key);
-
-  /**
-   * <code>string module_id = 8;</code>
-   */
-  java.lang.String getModuleId();
-  /**
-   * <code>string module_id = 8;</code>
-   */
-  com.google.protobuf.ByteString
-      getModuleIdBytes();
 }

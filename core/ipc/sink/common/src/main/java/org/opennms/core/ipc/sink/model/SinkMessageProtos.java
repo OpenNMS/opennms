@@ -61,15 +61,14 @@ public final class SinkMessageProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\022sink-message.proto\"\207\002\n\013SinkMessage\022\022\n\n" +
-      "message_id\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\022\021\n\tsys" +
-      "tem_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\034\n\024curren" +
-      "t_chunk_number\030\005 \001(\005\022\024\n\014total_chunks\030\006 \001" +
-      "(\005\0223\n\014tracing_info\030\007 \003(\0132\035.SinkMessage.T" +
-      "racingInfoEntry\022\021\n\tmodule_id\030\010 \001(\t\0322\n\020Tr" +
-      "acingInfoEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001" +
-      "(\t:\0028\001B6\n\037org.opennms.core.ipc.sink.mode" +
-      "lB\021SinkMessageProtosP\001b\006proto3"
+      "\n\022sink-message.proto\"\317\001\n\013SinkMessage\022\022\n\n" +
+      "message_id\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\022\034\n\024cur" +
+      "rent_chunk_number\030\003 \001(\005\022\024\n\014total_chunks\030" +
+      "\004 \001(\005\0223\n\014tracing_info\030\005 \003(\0132\035.SinkMessag" +
+      "e.TracingInfoEntry\0322\n\020TracingInfoEntry\022\013" +
+      "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B6\n\037org.op" +
+      "ennms.core.ipc.sink.modelB\021SinkMessagePr" +
+      "otosP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -88,7 +87,7 @@ public final class SinkMessageProtos {
     internal_static_SinkMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SinkMessage_descriptor,
-        new java.lang.String[] { "MessageId", "Content", "SystemId", "Location", "CurrentChunkNumber", "TotalChunks", "TracingInfo", "ModuleId", });
+        new java.lang.String[] { "MessageId", "Content", "CurrentChunkNumber", "TotalChunks", "TracingInfo", });
     internal_static_SinkMessage_TracingInfoEntry_descriptor =
       internal_static_SinkMessage_descriptor.getNestedTypes().get(0);
     internal_static_SinkMessage_TracingInfoEntry_fieldAccessorTable = new
