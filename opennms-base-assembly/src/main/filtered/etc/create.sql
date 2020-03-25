@@ -2822,3 +2822,10 @@ CREATE TABLE kvstore_bytea (
     value bytea NOT NULL,
     CONSTRAINT pk_kvstore_bytea PRIMARY KEY (key, context)
 );
+
+CREATE TABLE timeseries_meta (
+    resourceid TEXT NOT NULL,
+    name TEXT NOT NULL,
+    value TEXT NOT NULL,
+    CONSTRAINT pk_timeseries_meta PRIMARY KEY (resourceid, name)
+);

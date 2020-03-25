@@ -15,5 +15,6 @@
     <module>classification</module>
     <module>elastic</module>
     <module>rest</module>
+    <module>kafka-persistence</module>
   </modules>
 </project>

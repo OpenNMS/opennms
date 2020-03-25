@@ -30,6 +30,7 @@
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
+            <cm:property name="enableForwarding" value="false" /> <!-- Disable flow forwarding -->
             <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
@@ -131,6 +132,9 @@
 
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+
+    <reference id="enrichedFlowForwarder" interface="org.opennms.netmgt.flows.api.EnrichedFlowForwarder"/>
+
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
           init-method="start">
@@ -144,9 +148,11 @@
         <argument ref="snmpInterfaceDao"/>
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
+        <argument ref="enrichedFlowForwarder"/>
         <argument ref="indexSettings"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
+        <property name="enableFlowForwarding" value="${enableForwarding}"/>
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">

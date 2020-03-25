@@ -168,7 +168,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
                     3, 12000);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));

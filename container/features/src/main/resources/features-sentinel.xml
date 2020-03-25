@@ -122,6 +122,9 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
+        <feature>opennms-kafka</feature>
+        <feature>rate-limited-logger</feature>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -199,7 +202,7 @@
         <feature>newts-cassandra-search</feature>
         <feature>fst</feature>
 
-        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/2.5.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-trees/concurrent-trees/${concurrentTreesVersion}</bundle>
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.2</bundle>
