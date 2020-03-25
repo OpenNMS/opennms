@@ -498,7 +498,7 @@ rm -rf %{buildroot}
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true -DskipTests=true"
 
 if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
@@ -511,7 +511,7 @@ if [ "%{skip_compile}" = 1 ]; then
 		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 	fi
 	TOPDIR=`pwd`
-	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -PskipCompile -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
@@ -527,7 +527,8 @@ cd -
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads ${CCI_MAXCPU:-2}
+	-Dopennms.home="%{instprefix}" -Dinstall.init.dir="/etc/init.d" \
+	-Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads ${CCI_MAXCPU:-2}
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -559,6 +560,7 @@ END
 # Move the docs into %{_docdir}
 rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
 mkdir -p %{buildroot}%{_docdir}
+find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -n 1 -0 -r rmdir 2>/dev/null || true
 mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
 cp README* %{buildroot}%{instprefix}/etc/
 rm -rf %{buildroot}%{instprefix}/etc/README
@@ -684,9 +686,9 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
-    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jira-' | \
-    sort >> %{_tmppath}/files.main
+	sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
 find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
@@ -878,22 +880,31 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 [ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
 [ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
-printf -- "- making symlink for $ROOT_INST/docs... "
-if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
-	echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/docs... "
+	if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
+		echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		install -d -m 755 "$ROOT_INST"
+		rm -rf "$ROOT_INST/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
+		echo "done"
+	fi
 else
-	rm -rf "$ROOT_INST/docs"
-	ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
-	echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/docs... %{name}-core is not installed\n"
 fi
 
-printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
-if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
-  echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}" ]; then
+	printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+	if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		echo "done"
+	fi
 else
-  rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/jetty-webapps/%{servletdir}/docs... %{name}-webapp-jetty not installed\n"
 fi
 
 %postun -p /bin/bash docs
@@ -905,20 +916,20 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 [ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ "$1" = 0 ]; then
-	if [ -L "$ROOT_INST/docs" ]; then
+	if [ -e "$ROOT_INST" ] && [ -L "$ROOT_INST/docs" ]; then
 		rm -f "$ROOT_INST/docs"
 	fi
 fi
 
 if [ "$1" = 0 ]; then
-  if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
-    rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  fi
+	if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+	fi
 fi
 
 %pre -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
-[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$ROOT_INST" ] && ROOT_INST="%{instprefix}"
 if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi
@@ -979,7 +990,7 @@ echo "done"
 
 printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar     -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then
@@ -1013,7 +1024,9 @@ done
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
 	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
-	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+	if [ -d "$ROOT_INST/data/tmp" ]; then
+		find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+	fi
 fi
 echo "done"
 
