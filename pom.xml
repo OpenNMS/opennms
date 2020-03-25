@@ -1498,7 +1498,7 @@
         </property>
       </activation>
       <properties>
-        <runPingTests>true</runPingTests>
+        <runPingTests>false</runPingTests>
       </properties>
     </profile>
     <profile>
