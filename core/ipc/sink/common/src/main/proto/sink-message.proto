@@ -1,0 +1,13 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "org.opennms.core.ipc.sink.model";
+option java_outer_classname = "SinkMessageProtos";
+
+
+message SinkMessage {
+string message_id = 1;
+bytes  content = 2;
+int32  current_chunk_number = 3;
+int32  total_chunks = 4;
+map<string, string> tracing_info = 5;
+}
