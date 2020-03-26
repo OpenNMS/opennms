@@ -1,8 +1,6 @@
 
-=== Configuration Reference
-
 [[gi-docker-opennms-config-reference]]
-==== _{opennms-product-name}_
+==== Configuration Reference
 
 ===== Startup Arguments
 
@@ -88,7 +86,7 @@
 | `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to _Cassandra_                                      | optional | `cassandra`
 |===
 
-===== Directory Conventions
+====== Directory Conventions
 
 [options="header, autowidth"]
 |===
