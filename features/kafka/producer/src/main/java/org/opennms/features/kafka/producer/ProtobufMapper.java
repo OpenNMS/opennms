@@ -233,6 +233,7 @@ public class ProtobufMapper {
         }
 
         setTimeIfNotNull(event.getTime(), builder::setTime);
+        setTimeIfNotNull(event.getCreationTime(), builder::setCreateTime);
 
         return builder;
     }
