@@ -516,6 +516,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         return factObjects;
     }
 
+    /**
+     * This checks if fact is declared in drl.
+     * Facts which are inserted in the session will throw exception.
+     * Currently, there is no better way to find if the fact is a declared fact or not.
+     */
     private FactType getDeclaredFactType(String packageName, String className) {
         try {
             return m_kieBase.getFactType(packageName, className);
