@@ -13,7 +13,7 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 # OpenNMS Minion packages
-MINION_PACKAGES="opennms-minion-container opennms-minion-features-core opennms-minion-features-default"
+MINION_PACKAGES="opennms-minion opennms-minion-container opennms-minion-features-core opennms-minion-features-default"
 
 for PKG in ${MINION_PACKAGES}; do 
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
