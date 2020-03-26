@@ -23,13 +23,13 @@ PLAN_KEY=$(echo "${BUILD}" | awk -F'-' '{ print $(NF-2) "-" $(NF-1) }')
 BUILD_ID=$(echo "${BUILD}" | awk -F'-' '{ print $NF }')
 
 # Figure out RPM_VERSION
-RPM_VERSION=$(curl -s "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/" | grep -i opennms-core | sed -E 's/(.*>)(opennms-core-)(.*)\.noarch.rpm<\/a>.*/\3/g')
+RPM_VERSION=$(curl -s "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/" | grep -i meridian-core | sed -E 's/(.*>)(meridian-core-)(.*)\.noarch.rpm<\/a>.*/\3/g')
 
-RPMS_HORIZON=("opennms-core-${RPM_VERSION}.noarch.rpm"
-              "opennms-webapp-jetty-${RPM_VERSION}.noarch.rpm"
-              "opennms-webapp-remoting-${RPM_VERSION}.noarch.rpm")
+RPMS_HORIZON=("meridian-core-${RPM_VERSION}.noarch.rpm"
+              "meridian-webapp-jetty-${RPM_VERSION}.noarch.rpm"
+              "meridian-webapp-remoting-${RPM_VERSION}.noarch.rpm")
 
-RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm")
+RPMS_MINION=("meridian-minion-${RPM_VERSION}.noarch.rpm")
 
 # Start Downloading
 
