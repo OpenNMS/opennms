@@ -29,13 +29,14 @@ You must have at least the following components installed:
 Create a project directory with `mkdir opennms-minion` and create a `docker-compose.yml` file in that directory with the following content:
 
 [source,yaml]
+[subs="verbatim,attributes"]
 ----
 ---
 version: '3'
 
 services:  
   minion:
-    image: opennms/minion:25.2.0
+    image: opennms/minion:{opennms-version}
     container_name: minion<1>
     network_mode: host<2>
     environment:

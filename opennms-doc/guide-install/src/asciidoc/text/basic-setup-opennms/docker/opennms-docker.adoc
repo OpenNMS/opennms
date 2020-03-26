@@ -32,6 +32,7 @@ The first section describes how to set up _{opennms-product-name}_ service stack
 Create a project directory with `mkdir opennms-horizon` and create a `docker-compose.yml` file in that directory with the following content:
 
 [source]
+[subs="verbatim,attributes"]
 ----
 ---
 version: '3'
@@ -57,7 +58,7 @@ services:
       retries: 3
 
   horizon:
-    image: opennms/horizon:25.2.0<9>
+    image: opennms/horizon:{opennms-version}<9>
     container_name: horizon
     environment:<10>
       - TZ=Europe/Berlin
