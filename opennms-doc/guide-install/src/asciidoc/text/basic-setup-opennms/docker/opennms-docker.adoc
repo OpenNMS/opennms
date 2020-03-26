@@ -2,7 +2,7 @@
 === Run with Docker
 
 Modern infrastructure allows you to deploy and run workloads in containers.
-With _{opennms-product-name}_ we provide and publish container images on link:https://hub.docker.com/u/opennms[DockerHub].
+_{opennms-product-name}_ provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
 
 NOTE: We don't install all available plugins in our published Docker image.
       If you want to customize and maintain your own image, you can find the _Dockerfiles_ in our link:https://github.com/OpenNMS/opennms/tree/develop/opennms-container[source repository].
@@ -17,9 +17,9 @@ NOTE: We don't install all available plugins in our published Docker image.
 
 You must have at least the following components installed:
 
-* Current stable _Docker_ release installed, e.g. installed from link:https://docs.docker.com/[Docker Documentation]
-* Current stable _Docker Compose_ installed, e.g. installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
-* You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
+* Current stable _Docker_ release installed, e.g., installed from link:https://docs.docker.com/[Docker Documentation]
+* Current stable _Docker Compose_ installed, e.g., installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
+You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
 
 ==== Quickstart service stack
 
@@ -83,16 +83,16 @@ services:
       timeout: 5s
       retries: 3
 ----
-<1> Volume definition to persist permanently the _PostgreSQL_ database
-<2> Volume definition to persist permanently the _RRD_ files from _{opennms-product-name}_
+<1> Volume definition to persist  the _PostgreSQL_ database permanently 
+<2> Volume definition to persist the _RRD_ files from _{opennms-product-name}_ permanently 
 <3> Service name `database` for the _PostgreSQL_ instance
 <4> Image reference for the vanilla _PostgreSQL_ Docker image with a fixed version
 <5> Friendly container name
-<6> Environment variables to initialize a postgres user with a password.
+<6> Environment variables to initialize a postgres user with a password
 <7> Assign volume to persist the _PostgreSQL_ database
 <8> Create a health check for the _PostgreSQL_ database
 <9> Image reference for the _{opennms-product-name}_ container image using the latest stable version
-<10> Setup a data base connection using the `postgres` root user and initialize an `opennms` database with user and credentials
+<10> Set up a database connection using the `postgres` root user and initialize an `opennms` database with user and credentials
 <11> Assign the volume to persist the _RRD_ files permanently
 <12> Mount the configuration files to make them accessible in a local directory
 <13> Publish ports for the web user interface, _Karaf Shell_ and _ActiveMQ_
@@ -108,9 +108,9 @@ docker-compose up -d
 
 NOTE: The startup and download can take a while; you can use the `docker-compose ps` command and wait until the health check for the `horizon` service is `up (healthy)`.
       
-===== Step 3: Login to the Web UI
+===== Step 3: Log in to the Web UI
 
-After download and startup verify if you can access the web user interface by going to http://localhost:8980.
+After download and startup, verify that you can access the web user interface by going to http://localhost:8980.
 The default login is `admin` with password `admin`.
 
 IMPORTANT: Please immediately change your admin account and set a strong password.

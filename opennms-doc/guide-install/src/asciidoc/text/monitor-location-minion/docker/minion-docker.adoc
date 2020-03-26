@@ -2,7 +2,7 @@
 === Run with Docker
 
 Modern infrastructure allows you to deploy and run workloads in containers.
-With _{opennms-product-name}_ we provide and publish container images on link:https://hub.docker.com/u/opennms[DockerHub].
+_{opennms-product-name}_ provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
 
 ==== Objectives
 
@@ -15,9 +15,9 @@ You must have at least the following components installed:
 
 * Current stable _Docker_ release installed, e.g., installed from link:https://docs.docker.com/[Docker Documentation]
 * Current stable _Docker Compose_ installed, e.g., installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
-* You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
-* _{opennms-product-name}_ is configured to accept connections via _ActiveMQ_ and a Minion user with _ROLE_MINION_ 
-* The _Minion_ can connect to _{opennms-product-name}_ with port `61616/TCP` for _ActiveMQ_ and _REST_ on port `8980/TCP`
+You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
+_{opennms-product-name}_ is configured to accept connections via _ActiveMQ_ and a Minion user with _ROLE_MINION_ 
+The _Minion_ can connect to _{opennms-product-name}_ with port `61616/TCP` for _ActiveMQ_ and _REST_ on port `8980/TCP`
 
 ==== Quickstart service stack
 
@@ -62,13 +62,13 @@ services:
 <9> Authentication for the _REST_ endpoint
 
 NOTE: In this example we haven't set credentials to connect the _Minion_ via _REST_ and the _ActiveMQ Message Broker_.
-      The _Minion_ will fall back and uses the default admin/admin credentials for the communication.
+      The _Minion_ will fall back and uses the default admin/admin credentials for communication.
       Permissions for _ActiveMQ_ and _REST_ are assigned with the role _ROLE_MINION_ on the _{opennms-product-name}_ instance.
 
-WARNING: In case you process UDP data and you don't use `network_mode: host` the UDP source address from your packets will be modified from Docker.
+WARNING: If you process UDP data and you don't use `network_mode: host`, the UDP source address from your packets will be modified from Docker.
          The source address is your Docker internal gateway instead of the source address of your device.
-         Source addresses are used to associate the Syslog or SNMP traps to the nodes in the OpenNMS database.
-         You can use an isolated network and publish ports as usual if you don't receive UDP based monitoring data.
+         Source addresses associate the Syslog or SNMP traps to the nodes in the OpenNMS database.
+         You can use an isolated network and publish ports as usual if you don't receive UDP-based monitoring data.
          If you don't use `network_mode: host` you have to publish the listener ports manually.
 
 ===== Step 2: Start the service stack and test the functionality
@@ -79,7 +79,7 @@ cd opennms-minion
 docker-compose up -d
 ----
 
-===== Step 3: Run _Minion_ health check
+===== Step 3: Run _Minion_ Health Check
 
 .Log in to the _Minion Karaf Shell_ and run the health check
 [source, shell]
@@ -98,11 +98,11 @@ Connecting to JMS Broker         [ Success  ]
 
 NOTE: The default admin password for the _Minion Karaf Shell_ is _admin_.
 
-===== Step 4: Verify status in the administrative Web UI
+===== Step 4: Verify status in the web UI
 
 * Log in as admin in the _{opennms-product-name}_ web interface
 * _Configure OpenNMS -> Manage Minions_. The _Minion_ should be registered and the status should be _up_
-* Verify if _Minion_ is provisioned automatically by going to _Info -> Nodes_ and select the _Minion_. The services _JMX-Minion_, _Minion-Heartbeat_ and _Minion-RPC_ should be _up_ and provisioned on the local loop-back interface
+* Verify that _Minion_ is provisioned automatically by going to _Info -> Nodes_ and selecting the _Minion_. The services _JMX-Minion_, _Minion-Heartbeat_ and _Minion-RPC_ should be _up_ and provisioned on the local loop-back interface
 
 // Enable section numbers
 :sectnums:
