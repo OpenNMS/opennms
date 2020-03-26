@@ -13,7 +13,7 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 # OpenNMS Horizon packages
-ONMS_PACKAGES="opennms-core opennms-webapp-jetty"
+ONMS_PACKAGES="meridian-core meridian-webapp-jetty"
 
 for PKG in ${ONMS_PACKAGES}; do
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
