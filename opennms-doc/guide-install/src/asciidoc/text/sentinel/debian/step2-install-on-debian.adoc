@@ -12,7 +12,7 @@ apt update
 .Install the Sentinel package
 [source, bash]
 ----
-apt -y install opennms-sentinel
+apt -y install meridian-sentinel
 ----
 
 The _Sentinel_ packages setup the following directory structure:

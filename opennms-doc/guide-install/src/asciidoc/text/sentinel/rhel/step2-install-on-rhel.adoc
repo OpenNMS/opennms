@@ -12,7 +12,7 @@ rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 .Install the Sentinel package
 [source, bash]
 ----
-dnf -y install opennms-sentinel
+dnf -y install meridian-sentinel
 ----
 
 With the successful installed packages the _Sentinel_ is installed in the following directory structure:
