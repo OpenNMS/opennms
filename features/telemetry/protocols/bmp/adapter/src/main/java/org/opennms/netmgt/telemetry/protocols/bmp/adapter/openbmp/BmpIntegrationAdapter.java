@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
@@ -497,15 +498,18 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
                 .collect(Collectors.joining(" "));
 
         // Derive the extended community list from the path attributes
-        getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.EXTENDED_COMMUNITIES)
-                .map(Transport.RouteMonitoringPacket.PathAttribute::getExtendedCommunities)
-                .ifPresent(extendedCommunities -> {
-                    baseAttr.extCommunityList = extendedCommunities.getExtendedCommunitiesList().stream()
-                            .map(extendedCommunity -> String.format("%d:%s",
-                                    uint32(extendedCommunity.getType()),
-                                    extendedCommunity.getValue()))
-                            .collect(Collectors.joining(" "));
-                });
+        baseAttr.extCommunityList = Stream.concat(
+                getPathAttributesOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.EXTENDED_COMMUNITIES)
+                        .map(Transport.RouteMonitoringPacket.PathAttribute::getExtendedCommunities)
+                        .flatMap(extendedCommunities -> extendedCommunities.getExtendedCommunitiesList().stream()
+                                                                           .map(extendedCommunity -> String.format("%s=%s", extendedCommunity.getType(), extendedCommunity.getValue()))
+                                ),
+                getPathAttributesOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.EXTENDED_V6_COMMUNITIES)
+                        .map(Transport.RouteMonitoringPacket.PathAttribute::getExtendedV6Communities)
+                        .flatMap(extendedV6Communities -> extendedV6Communities.getExtendedCommunitiesList().stream()
+                                                                               .map(extendedCommunity -> String.format("%s=%s", extendedCommunity.getType(), extendedCommunity.getValue()))
+                                )
+        ).collect(Collectors.joining(" "));
 
         // Derive the cluster list from the path attributes
         getPathAttributeOfType(routeMonitoring, Transport.RouteMonitoringPacket.PathAttribute.ValueCase.CLUSTER_LIST)

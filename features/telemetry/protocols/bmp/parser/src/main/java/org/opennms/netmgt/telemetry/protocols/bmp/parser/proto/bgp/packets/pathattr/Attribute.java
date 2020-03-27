@@ -43,6 +43,7 @@ public interface Attribute {
         void visit(final OriginatorId originatorId);
         void visit(final ClusterList clusterList);
         void visit(final ExtendedCommunities extendedCommunities);
+        void visit(final ExtendedV6Communities extendedV6Communities);
         void visit(final Connector connector);
         void visit(final AsPathLimit asPathLimit);
         void visit(final LargeCommunities largeCommunity);

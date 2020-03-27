@@ -14118,6 +14118,21 @@ public final class Transport {
        */
       org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.AttrSetOrBuilder getAttrSetOrBuilder();
 
+      /**
+       * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+       * @return Whether the extendedV6Communities field is set.
+       */
+      boolean hasExtendedV6Communities();
+      /**
+       * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+       * @return The extendedV6Communities.
+       */
+      org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities getExtendedV6Communities();
+      /**
+       * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+       */
+      org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder getExtendedV6CommunitiesOrBuilder();
+
       public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ValueCase getValueCase();
     }
     /**
@@ -14358,6 +14373,20 @@ public final class Transport {
                   value_ = subBuilder.buildPartial();
                 }
                 valueCase_ = 19;
+                break;
+              }
+              case 162: {
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder subBuilder = null;
+                if (valueCase_ == 20) {
+                  subBuilder = ((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_).toBuilder();
+                }
+                value_ =
+                    input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_);
+                  value_ = subBuilder.buildPartial();
+                }
+                valueCase_ = 20;
                 break;
               }
               default: {
@@ -20383,21 +20412,845 @@ public final class Transport {
 
       }
 
+      public interface ExtendedV6CommunitiesOrBuilder extends
+          // @@protoc_insertion_point(interface_extends:RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)
+          com.google.protobuf.MessageOrBuilder {
+
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity> 
+            getExtendedCommunitiesList();
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity getExtendedCommunities(int index);
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        int getExtendedCommunitiesCount();
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder> 
+            getExtendedCommunitiesOrBuilderList();
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder getExtendedCommunitiesOrBuilder(
+            int index);
+      }
+      /**
+       * Protobuf type {@code RouteMonitoringPacket.PathAttribute.ExtendedV6Communities}
+       */
+      public  static final class ExtendedV6Communities extends
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)
+          ExtendedV6CommunitiesOrBuilder {
+      private static final long serialVersionUID = 0L;
+        // Use ExtendedV6Communities.newBuilder() to construct.
+        private ExtendedV6Communities(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+          super(builder);
+        }
+        private ExtendedV6Communities() {
+          extendedCommunities_ = java.util.Collections.emptyList();
+        }
+
+        @java.lang.Override
+        @SuppressWarnings({"unused"})
+        protected java.lang.Object newInstance(
+            UnusedPrivateParameter unused) {
+          return new ExtendedV6Communities();
+        }
+
+        @java.lang.Override
+        public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+          return this.unknownFields;
+        }
+        private ExtendedV6Communities(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          this();
+          if (extensionRegistry == null) {
+            throw new java.lang.NullPointerException();
+          }
+          int mutable_bitField0_ = 0;
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+              com.google.protobuf.UnknownFieldSet.newBuilder();
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                case 10: {
+                  if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                    extendedCommunities_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity>();
+                    mutable_bitField0_ |= 0x00000001;
+                  }
+                  extendedCommunities_.add(
+                      input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.parser(), extensionRegistry));
+                  break;
+                }
+                default: {
+                  if (!parseUnknownField(
+                      input, unknownFields, extensionRegistry, tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw e.setUnfinishedMessage(this);
+          } catch (java.io.IOException e) {
+            throw new com.google.protobuf.InvalidProtocolBufferException(
+                e).setUnfinishedMessage(this);
+          } finally {
+            if (((mutable_bitField0_ & 0x00000001) != 0)) {
+              extendedCommunities_ = java.util.Collections.unmodifiableList(extendedCommunities_);
+            }
+            this.unknownFields = unknownFields.build();
+            makeExtensionsImmutable();
+          }
+        }
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder.class);
+        }
+
+        public static final int EXTENDED_COMMUNITIES_FIELD_NUMBER = 1;
+        private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity> extendedCommunities_;
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity> getExtendedCommunitiesList() {
+          return extendedCommunities_;
+        }
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder> 
+            getExtendedCommunitiesOrBuilderList() {
+          return extendedCommunities_;
+        }
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        public int getExtendedCommunitiesCount() {
+          return extendedCommunities_.size();
+        }
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity getExtendedCommunities(int index) {
+          return extendedCommunities_.get(index);
+        }
+        /**
+         * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder getExtendedCommunitiesOrBuilder(
+            int index) {
+          return extendedCommunities_.get(index);
+        }
+
+        private byte memoizedIsInitialized = -1;
+        @java.lang.Override
+        public final boolean isInitialized() {
+          byte isInitialized = memoizedIsInitialized;
+          if (isInitialized == 1) return true;
+          if (isInitialized == 0) return false;
+
+          memoizedIsInitialized = 1;
+          return true;
+        }
+
+        @java.lang.Override
+        public void writeTo(com.google.protobuf.CodedOutputStream output)
+                            throws java.io.IOException {
+          for (int i = 0; i < extendedCommunities_.size(); i++) {
+            output.writeMessage(1, extendedCommunities_.get(i));
+          }
+          unknownFields.writeTo(output);
+        }
+
+        @java.lang.Override
+        public int getSerializedSize() {
+          int size = memoizedSize;
+          if (size != -1) return size;
+
+          size = 0;
+          for (int i = 0; i < extendedCommunities_.size(); i++) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeMessageSize(1, extendedCommunities_.get(i));
+          }
+          size += unknownFields.getSerializedSize();
+          memoizedSize = size;
+          return size;
+        }
+
+        @java.lang.Override
+        public boolean equals(final java.lang.Object obj) {
+          if (obj == this) {
+           return true;
+          }
+          if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)) {
+            return super.equals(obj);
+          }
+          org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) obj;
+
+          if (!getExtendedCommunitiesList()
+              .equals(other.getExtendedCommunitiesList())) return false;
+          if (!unknownFields.equals(other.unknownFields)) return false;
+          return true;
+        }
+
+        @java.lang.Override
+        public int hashCode() {
+          if (memoizedHashCode != 0) {
+            return memoizedHashCode;
+          }
+          int hash = 41;
+          hash = (19 * hash) + getDescriptor().hashCode();
+          if (getExtendedCommunitiesCount() > 0) {
+            hash = (37 * hash) + EXTENDED_COMMUNITIES_FIELD_NUMBER;
+            hash = (53 * hash) + getExtendedCommunitiesList().hashCode();
+          }
+          hash = (29 * hash) + unknownFields.hashCode();
+          memoizedHashCode = hash;
+          return hash;
+        }
+
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(byte[] data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return PARSER.parseFrom(data, extensionRegistry);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseDelimitedFrom(java.io.InputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input);
+        }
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parseFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          return com.google.protobuf.GeneratedMessageV3
+              .parseWithIOException(PARSER, input, extensionRegistry);
+        }
+
+        @java.lang.Override
+        public Builder newBuilderForType() { return newBuilder(); }
+        public static Builder newBuilder() {
+          return DEFAULT_INSTANCE.toBuilder();
+        }
+        public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities prototype) {
+          return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+        }
+        @java.lang.Override
+        public Builder toBuilder() {
+          return this == DEFAULT_INSTANCE
+              ? new Builder() : new Builder().mergeFrom(this);
+        }
+
+        @java.lang.Override
+        protected Builder newBuilderForType(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          Builder builder = new Builder(parent);
+          return builder;
+        }
+        /**
+         * Protobuf type {@code RouteMonitoringPacket.PathAttribute.ExtendedV6Communities}
+         */
+        public static final class Builder extends
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder {
+          public static final com.google.protobuf.Descriptors.Descriptor
+              getDescriptor() {
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_descriptor;
+          }
+
+          @java.lang.Override
+          protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+              internalGetFieldAccessorTable() {
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_fieldAccessorTable
+                .ensureFieldAccessorsInitialized(
+                    org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder.class);
+          }
+
+          // Construct using org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.newBuilder()
+          private Builder() {
+            maybeForceBuilderInitialization();
+          }
+
+          private Builder(
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            super(parent);
+            maybeForceBuilderInitialization();
+          }
+          private void maybeForceBuilderInitialization() {
+            if (com.google.protobuf.GeneratedMessageV3
+                    .alwaysUseFieldBuilders) {
+              getExtendedCommunitiesFieldBuilder();
+            }
+          }
+          @java.lang.Override
+          public Builder clear() {
+            super.clear();
+            if (extendedCommunitiesBuilder_ == null) {
+              extendedCommunities_ = java.util.Collections.emptyList();
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              extendedCommunitiesBuilder_.clear();
+            }
+            return this;
+          }
+
+          @java.lang.Override
+          public com.google.protobuf.Descriptors.Descriptor
+              getDescriptorForType() {
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_descriptor;
+          }
+
+          @java.lang.Override
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities getDefaultInstanceForType() {
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+          }
+
+          @java.lang.Override
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities build() {
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities result = buildPartial();
+            if (!result.isInitialized()) {
+              throw newUninitializedMessageException(result);
+            }
+            return result;
+          }
+
+          @java.lang.Override
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities buildPartial() {
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities(this);
+            int from_bitField0_ = bitField0_;
+            if (extendedCommunitiesBuilder_ == null) {
+              if (((bitField0_ & 0x00000001) != 0)) {
+                extendedCommunities_ = java.util.Collections.unmodifiableList(extendedCommunities_);
+                bitField0_ = (bitField0_ & ~0x00000001);
+              }
+              result.extendedCommunities_ = extendedCommunities_;
+            } else {
+              result.extendedCommunities_ = extendedCommunitiesBuilder_.build();
+            }
+            onBuilt();
+            return result;
+          }
+
+          @java.lang.Override
+          public Builder clone() {
+            return super.clone();
+          }
+          @java.lang.Override
+          public Builder setField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.setField(field, value);
+          }
+          @java.lang.Override
+          public Builder clearField(
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
+            return super.clearField(field);
+          }
+          @java.lang.Override
+          public Builder clearOneof(
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+            return super.clearOneof(oneof);
+          }
+          @java.lang.Override
+          public Builder setRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
+            return super.setRepeatedField(field, index, value);
+          }
+          @java.lang.Override
+          public Builder addRepeatedField(
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
+            return super.addRepeatedField(field, value);
+          }
+          @java.lang.Override
+          public Builder mergeFrom(com.google.protobuf.Message other) {
+            if (other instanceof org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) {
+              return mergeFrom((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)other);
+            } else {
+              super.mergeFrom(other);
+              return this;
+            }
+          }
+
+          public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities other) {
+            if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance()) return this;
+            if (extendedCommunitiesBuilder_ == null) {
+              if (!other.extendedCommunities_.isEmpty()) {
+                if (extendedCommunities_.isEmpty()) {
+                  extendedCommunities_ = other.extendedCommunities_;
+                  bitField0_ = (bitField0_ & ~0x00000001);
+                } else {
+                  ensureExtendedCommunitiesIsMutable();
+                  extendedCommunities_.addAll(other.extendedCommunities_);
+                }
+                onChanged();
+              }
+            } else {
+              if (!other.extendedCommunities_.isEmpty()) {
+                if (extendedCommunitiesBuilder_.isEmpty()) {
+                  extendedCommunitiesBuilder_.dispose();
+                  extendedCommunitiesBuilder_ = null;
+                  extendedCommunities_ = other.extendedCommunities_;
+                  bitField0_ = (bitField0_ & ~0x00000001);
+                  extendedCommunitiesBuilder_ = 
+                    com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                       getExtendedCommunitiesFieldBuilder() : null;
+                } else {
+                  extendedCommunitiesBuilder_.addAllMessages(other.extendedCommunities_);
+                }
+              }
+            }
+            this.mergeUnknownFields(other.unknownFields);
+            onChanged();
+            return this;
+          }
+
+          @java.lang.Override
+          public final boolean isInitialized() {
+            return true;
+          }
+
+          @java.lang.Override
+          public Builder mergeFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities parsedMessage = null;
+            try {
+              parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+              parsedMessage = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) e.getUnfinishedMessage();
+              throw e.unwrapIOException();
+            } finally {
+              if (parsedMessage != null) {
+                mergeFrom(parsedMessage);
+              }
+            }
+            return this;
+          }
+          private int bitField0_;
+
+          private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity> extendedCommunities_ =
+            java.util.Collections.emptyList();
+          private void ensureExtendedCommunitiesIsMutable() {
+            if (!((bitField0_ & 0x00000001) != 0)) {
+              extendedCommunities_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity>(extendedCommunities_);
+              bitField0_ |= 0x00000001;
+             }
+          }
+
+          private com.google.protobuf.RepeatedFieldBuilderV3<
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder> extendedCommunitiesBuilder_;
+
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity> getExtendedCommunitiesList() {
+            if (extendedCommunitiesBuilder_ == null) {
+              return java.util.Collections.unmodifiableList(extendedCommunities_);
+            } else {
+              return extendedCommunitiesBuilder_.getMessageList();
+            }
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public int getExtendedCommunitiesCount() {
+            if (extendedCommunitiesBuilder_ == null) {
+              return extendedCommunities_.size();
+            } else {
+              return extendedCommunitiesBuilder_.getCount();
+            }
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity getExtendedCommunities(int index) {
+            if (extendedCommunitiesBuilder_ == null) {
+              return extendedCommunities_.get(index);
+            } else {
+              return extendedCommunitiesBuilder_.getMessage(index);
+            }
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder setExtendedCommunities(
+              int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity value) {
+            if (extendedCommunitiesBuilder_ == null) {
+              if (value == null) {
+                throw new NullPointerException();
+              }
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.set(index, value);
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.setMessage(index, value);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder setExtendedCommunities(
+              int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder builderForValue) {
+            if (extendedCommunitiesBuilder_ == null) {
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.set(index, builderForValue.build());
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.setMessage(index, builderForValue.build());
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder addExtendedCommunities(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity value) {
+            if (extendedCommunitiesBuilder_ == null) {
+              if (value == null) {
+                throw new NullPointerException();
+              }
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.add(value);
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.addMessage(value);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder addExtendedCommunities(
+              int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity value) {
+            if (extendedCommunitiesBuilder_ == null) {
+              if (value == null) {
+                throw new NullPointerException();
+              }
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.add(index, value);
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.addMessage(index, value);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder addExtendedCommunities(
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder builderForValue) {
+            if (extendedCommunitiesBuilder_ == null) {
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.add(builderForValue.build());
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.addMessage(builderForValue.build());
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder addExtendedCommunities(
+              int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder builderForValue) {
+            if (extendedCommunitiesBuilder_ == null) {
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.add(index, builderForValue.build());
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.addMessage(index, builderForValue.build());
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder addAllExtendedCommunities(
+              java.lang.Iterable<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity> values) {
+            if (extendedCommunitiesBuilder_ == null) {
+              ensureExtendedCommunitiesIsMutable();
+              com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                  values, extendedCommunities_);
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.addAllMessages(values);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder clearExtendedCommunities() {
+            if (extendedCommunitiesBuilder_ == null) {
+              extendedCommunities_ = java.util.Collections.emptyList();
+              bitField0_ = (bitField0_ & ~0x00000001);
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.clear();
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public Builder removeExtendedCommunities(int index) {
+            if (extendedCommunitiesBuilder_ == null) {
+              ensureExtendedCommunitiesIsMutable();
+              extendedCommunities_.remove(index);
+              onChanged();
+            } else {
+              extendedCommunitiesBuilder_.remove(index);
+            }
+            return this;
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder getExtendedCommunitiesBuilder(
+              int index) {
+            return getExtendedCommunitiesFieldBuilder().getBuilder(index);
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder getExtendedCommunitiesOrBuilder(
+              int index) {
+            if (extendedCommunitiesBuilder_ == null) {
+              return extendedCommunities_.get(index);  } else {
+              return extendedCommunitiesBuilder_.getMessageOrBuilder(index);
+            }
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder> 
+               getExtendedCommunitiesOrBuilderList() {
+            if (extendedCommunitiesBuilder_ != null) {
+              return extendedCommunitiesBuilder_.getMessageOrBuilderList();
+            } else {
+              return java.util.Collections.unmodifiableList(extendedCommunities_);
+            }
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder addExtendedCommunitiesBuilder() {
+            return getExtendedCommunitiesFieldBuilder().addBuilder(
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.getDefaultInstance());
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder addExtendedCommunitiesBuilder(
+              int index) {
+            return getExtendedCommunitiesFieldBuilder().addBuilder(
+                index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.getDefaultInstance());
+          }
+          /**
+           * <code>repeated .RouteMonitoringPacket.PathAttribute.ExtendedCommunity extended_communities = 1;</code>
+           */
+          public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder> 
+               getExtendedCommunitiesBuilderList() {
+            return getExtendedCommunitiesFieldBuilder().getBuilderList();
+          }
+          private com.google.protobuf.RepeatedFieldBuilderV3<
+              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder> 
+              getExtendedCommunitiesFieldBuilder() {
+            if (extendedCommunitiesBuilder_ == null) {
+              extendedCommunitiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunityOrBuilder>(
+                      extendedCommunities_,
+                      ((bitField0_ & 0x00000001) != 0),
+                      getParentForChildren(),
+                      isClean());
+              extendedCommunities_ = null;
+            }
+            return extendedCommunitiesBuilder_;
+          }
+          @java.lang.Override
+          public final Builder setUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.setUnknownFields(unknownFields);
+          }
+
+          @java.lang.Override
+          public final Builder mergeUnknownFields(
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
+            return super.mergeUnknownFields(unknownFields);
+          }
+
+
+          // @@protoc_insertion_point(builder_scope:RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)
+        }
+
+        // @@protoc_insertion_point(class_scope:RouteMonitoringPacket.PathAttribute.ExtendedV6Communities)
+        private static final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities DEFAULT_INSTANCE;
+        static {
+          DEFAULT_INSTANCE = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities();
+        }
+
+        public static org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities getDefaultInstance() {
+          return DEFAULT_INSTANCE;
+        }
+
+        private static final com.google.protobuf.Parser<ExtendedV6Communities>
+            PARSER = new com.google.protobuf.AbstractParser<ExtendedV6Communities>() {
+          @java.lang.Override
+          public ExtendedV6Communities parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new ExtendedV6Communities(input, extensionRegistry);
+          }
+        };
+
+        public static com.google.protobuf.Parser<ExtendedV6Communities> parser() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Parser<ExtendedV6Communities> getParserForType() {
+          return PARSER;
+        }
+
+        @java.lang.Override
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities getDefaultInstanceForType() {
+          return DEFAULT_INSTANCE;
+        }
+
+      }
+
       public interface ExtendedCommunityOrBuilder extends
           // @@protoc_insertion_point(interface_extends:RouteMonitoringPacket.PathAttribute.ExtendedCommunity)
           com.google.protobuf.MessageOrBuilder {
 
         /**
-         * <code>fixed32 type = 1;</code>
-         * @return The type.
+         * <code>uint32 high_type = 1;</code>
+         * @return The highType.
          */
-        int getType();
+        int getHighType();
 
         /**
-         * <code>bytes value = 2;</code>
+         * <code>uint32 low_type = 2;</code>
+         * @return The lowType.
+         */
+        int getLowType();
+
+        /**
+         * <code>bool authoritative = 3;</code>
+         * @return The authoritative.
+         */
+        boolean getAuthoritative();
+
+        /**
+         * <code>bool transitive = 4;</code>
+         * @return The transitive.
+         */
+        boolean getTransitive();
+
+        /**
+         * <code>string type = 5;</code>
+         * @return The type.
+         */
+        java.lang.String getType();
+        /**
+         * <code>string type = 5;</code>
+         * @return The bytes for type.
+         */
+        com.google.protobuf.ByteString
+            getTypeBytes();
+
+        /**
+         * <code>string value = 6;</code>
          * @return The value.
          */
-        com.google.protobuf.ByteString getValue();
+        java.lang.String getValue();
+        /**
+         * <code>string value = 6;</code>
+         * @return The bytes for value.
+         */
+        com.google.protobuf.ByteString
+            getValueBytes();
       }
       /**
        * Protobuf type {@code RouteMonitoringPacket.PathAttribute.ExtendedCommunity}
@@ -20412,7 +21265,8 @@ public final class Transport {
           super(builder);
         }
         private ExtendedCommunity() {
-          value_ = com.google.protobuf.ByteString.EMPTY;
+          type_ = "";
+          value_ = "";
         }
 
         @java.lang.Override
@@ -20445,14 +21299,36 @@ public final class Transport {
                 case 0:
                   done = true;
                   break;
-                case 13: {
+                case 8: {
 
-                  type_ = input.readFixed32();
+                  highType_ = input.readUInt32();
                   break;
                 }
-                case 18: {
+                case 16: {
 
-                  value_ = input.readBytes();
+                  lowType_ = input.readUInt32();
+                  break;
+                }
+                case 24: {
+
+                  authoritative_ = input.readBool();
+                  break;
+                }
+                case 32: {
+
+                  transitive_ = input.readBool();
+                  break;
+                }
+                case 42: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  type_ = s;
+                  break;
+                }
+                case 50: {
+                  java.lang.String s = input.readStringRequireUtf8();
+
+                  value_ = s;
                   break;
                 }
                 default: {
@@ -20487,24 +21363,116 @@ public final class Transport {
                   org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.class, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder.class);
         }
 
-        public static final int TYPE_FIELD_NUMBER = 1;
-        private int type_;
+        public static final int HIGH_TYPE_FIELD_NUMBER = 1;
+        private int highType_;
         /**
-         * <code>fixed32 type = 1;</code>
-         * @return The type.
+         * <code>uint32 high_type = 1;</code>
+         * @return The highType.
          */
-        public int getType() {
-          return type_;
+        public int getHighType() {
+          return highType_;
         }
 
-        public static final int VALUE_FIELD_NUMBER = 2;
-        private com.google.protobuf.ByteString value_;
+        public static final int LOW_TYPE_FIELD_NUMBER = 2;
+        private int lowType_;
         /**
-         * <code>bytes value = 2;</code>
+         * <code>uint32 low_type = 2;</code>
+         * @return The lowType.
+         */
+        public int getLowType() {
+          return lowType_;
+        }
+
+        public static final int AUTHORITATIVE_FIELD_NUMBER = 3;
+        private boolean authoritative_;
+        /**
+         * <code>bool authoritative = 3;</code>
+         * @return The authoritative.
+         */
+        public boolean getAuthoritative() {
+          return authoritative_;
+        }
+
+        public static final int TRANSITIVE_FIELD_NUMBER = 4;
+        private boolean transitive_;
+        /**
+         * <code>bool transitive = 4;</code>
+         * @return The transitive.
+         */
+        public boolean getTransitive() {
+          return transitive_;
+        }
+
+        public static final int TYPE_FIELD_NUMBER = 5;
+        private volatile java.lang.Object type_;
+        /**
+         * <code>string type = 5;</code>
+         * @return The type.
+         */
+        public java.lang.String getType() {
+          java.lang.Object ref = type_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            type_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string type = 5;</code>
+         * @return The bytes for type.
+         */
+        public com.google.protobuf.ByteString
+            getTypeBytes() {
+          java.lang.Object ref = type_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            type_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+
+        public static final int VALUE_FIELD_NUMBER = 6;
+        private volatile java.lang.Object value_;
+        /**
+         * <code>string value = 6;</code>
          * @return The value.
          */
-        public com.google.protobuf.ByteString getValue() {
-          return value_;
+        public java.lang.String getValue() {
+          java.lang.Object ref = value_;
+          if (ref instanceof java.lang.String) {
+            return (java.lang.String) ref;
+          } else {
+            com.google.protobuf.ByteString bs = 
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            value_ = s;
+            return s;
+          }
+        }
+        /**
+         * <code>string value = 6;</code>
+         * @return The bytes for value.
+         */
+        public com.google.protobuf.ByteString
+            getValueBytes() {
+          java.lang.Object ref = value_;
+          if (ref instanceof java.lang.String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            value_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
         }
 
         private byte memoizedIsInitialized = -1;
@@ -20521,11 +21489,23 @@ public final class Transport {
         @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
-          if (type_ != 0) {
-            output.writeFixed32(1, type_);
+          if (highType_ != 0) {
+            output.writeUInt32(1, highType_);
           }
-          if (!value_.isEmpty()) {
-            output.writeBytes(2, value_);
+          if (lowType_ != 0) {
+            output.writeUInt32(2, lowType_);
+          }
+          if (authoritative_ != false) {
+            output.writeBool(3, authoritative_);
+          }
+          if (transitive_ != false) {
+            output.writeBool(4, transitive_);
+          }
+          if (!getTypeBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 5, type_);
+          }
+          if (!getValueBytes().isEmpty()) {
+            com.google.protobuf.GeneratedMessageV3.writeString(output, 6, value_);
           }
           unknownFields.writeTo(output);
         }
@@ -20536,13 +21516,27 @@ public final class Transport {
           if (size != -1) return size;
 
           size = 0;
-          if (type_ != 0) {
+          if (highType_ != 0) {
             size += com.google.protobuf.CodedOutputStream
-              .computeFixed32Size(1, type_);
+              .computeUInt32Size(1, highType_);
           }
-          if (!value_.isEmpty()) {
+          if (lowType_ != 0) {
             size += com.google.protobuf.CodedOutputStream
-              .computeBytesSize(2, value_);
+              .computeUInt32Size(2, lowType_);
+          }
+          if (authoritative_ != false) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBoolSize(3, authoritative_);
+          }
+          if (transitive_ != false) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeBoolSize(4, transitive_);
+          }
+          if (!getTypeBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, type_);
+          }
+          if (!getValueBytes().isEmpty()) {
+            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, value_);
           }
           size += unknownFields.getSerializedSize();
           memoizedSize = size;
@@ -20559,8 +21553,16 @@ public final class Transport {
           }
           org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity other = (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity) obj;
 
-          if (getType()
-              != other.getType()) return false;
+          if (getHighType()
+              != other.getHighType()) return false;
+          if (getLowType()
+              != other.getLowType()) return false;
+          if (getAuthoritative()
+              != other.getAuthoritative()) return false;
+          if (getTransitive()
+              != other.getTransitive()) return false;
+          if (!getType()
+              .equals(other.getType())) return false;
           if (!getValue()
               .equals(other.getValue())) return false;
           if (!unknownFields.equals(other.unknownFields)) return false;
@@ -20574,8 +21576,18 @@ public final class Transport {
           }
           int hash = 41;
           hash = (19 * hash) + getDescriptor().hashCode();
+          hash = (37 * hash) + HIGH_TYPE_FIELD_NUMBER;
+          hash = (53 * hash) + getHighType();
+          hash = (37 * hash) + LOW_TYPE_FIELD_NUMBER;
+          hash = (53 * hash) + getLowType();
+          hash = (37 * hash) + AUTHORITATIVE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getAuthoritative());
+          hash = (37 * hash) + TRANSITIVE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getTransitive());
           hash = (37 * hash) + TYPE_FIELD_NUMBER;
-          hash = (53 * hash) + getType();
+          hash = (53 * hash) + getType().hashCode();
           hash = (37 * hash) + VALUE_FIELD_NUMBER;
           hash = (53 * hash) + getValue().hashCode();
           hash = (29 * hash) + unknownFields.hashCode();
@@ -20711,9 +21723,17 @@ public final class Transport {
           @java.lang.Override
           public Builder clear() {
             super.clear();
-            type_ = 0;
+            highType_ = 0;
 
-            value_ = com.google.protobuf.ByteString.EMPTY;
+            lowType_ = 0;
+
+            authoritative_ = false;
+
+            transitive_ = false;
+
+            type_ = "";
+
+            value_ = "";
 
             return this;
           }
@@ -20741,6 +21761,10 @@ public final class Transport {
           @java.lang.Override
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity buildPartial() {
             org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity result = new org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity(this);
+            result.highType_ = highType_;
+            result.lowType_ = lowType_;
+            result.authoritative_ = authoritative_;
+            result.transitive_ = transitive_;
             result.type_ = type_;
             result.value_ = value_;
             onBuilt();
@@ -20791,11 +21815,25 @@ public final class Transport {
 
           public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity other) {
             if (other == org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.getDefaultInstance()) return this;
-            if (other.getType() != 0) {
-              setType(other.getType());
+            if (other.getHighType() != 0) {
+              setHighType(other.getHighType());
             }
-            if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
-              setValue(other.getValue());
+            if (other.getLowType() != 0) {
+              setLowType(other.getLowType());
+            }
+            if (other.getAuthoritative() != false) {
+              setAuthoritative(other.getAuthoritative());
+            }
+            if (other.getTransitive() != false) {
+              setTransitive(other.getTransitive());
+            }
+            if (!other.getType().isEmpty()) {
+              type_ = other.type_;
+              onChanged();
+            }
+            if (!other.getValue().isEmpty()) {
+              value_ = other.value_;
+              onChanged();
             }
             this.mergeUnknownFields(other.unknownFields);
             onChanged();
@@ -20826,50 +21864,243 @@ public final class Transport {
             return this;
           }
 
-          private int type_ ;
+          private int highType_ ;
           /**
-           * <code>fixed32 type = 1;</code>
-           * @return The type.
+           * <code>uint32 high_type = 1;</code>
+           * @return The highType.
            */
-          public int getType() {
-            return type_;
+          public int getHighType() {
+            return highType_;
           }
           /**
-           * <code>fixed32 type = 1;</code>
+           * <code>uint32 high_type = 1;</code>
+           * @param value The highType to set.
+           * @return This builder for chaining.
+           */
+          public Builder setHighType(int value) {
+            
+            highType_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>uint32 high_type = 1;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearHighType() {
+            
+            highType_ = 0;
+            onChanged();
+            return this;
+          }
+
+          private int lowType_ ;
+          /**
+           * <code>uint32 low_type = 2;</code>
+           * @return The lowType.
+           */
+          public int getLowType() {
+            return lowType_;
+          }
+          /**
+           * <code>uint32 low_type = 2;</code>
+           * @param value The lowType to set.
+           * @return This builder for chaining.
+           */
+          public Builder setLowType(int value) {
+            
+            lowType_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>uint32 low_type = 2;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearLowType() {
+            
+            lowType_ = 0;
+            onChanged();
+            return this;
+          }
+
+          private boolean authoritative_ ;
+          /**
+           * <code>bool authoritative = 3;</code>
+           * @return The authoritative.
+           */
+          public boolean getAuthoritative() {
+            return authoritative_;
+          }
+          /**
+           * <code>bool authoritative = 3;</code>
+           * @param value The authoritative to set.
+           * @return This builder for chaining.
+           */
+          public Builder setAuthoritative(boolean value) {
+            
+            authoritative_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>bool authoritative = 3;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearAuthoritative() {
+            
+            authoritative_ = false;
+            onChanged();
+            return this;
+          }
+
+          private boolean transitive_ ;
+          /**
+           * <code>bool transitive = 4;</code>
+           * @return The transitive.
+           */
+          public boolean getTransitive() {
+            return transitive_;
+          }
+          /**
+           * <code>bool transitive = 4;</code>
+           * @param value The transitive to set.
+           * @return This builder for chaining.
+           */
+          public Builder setTransitive(boolean value) {
+            
+            transitive_ = value;
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>bool transitive = 4;</code>
+           * @return This builder for chaining.
+           */
+          public Builder clearTransitive() {
+            
+            transitive_ = false;
+            onChanged();
+            return this;
+          }
+
+          private java.lang.Object type_ = "";
+          /**
+           * <code>string type = 5;</code>
+           * @return The type.
+           */
+          public java.lang.String getType() {
+            java.lang.Object ref = type_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              type_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
+          }
+          /**
+           * <code>string type = 5;</code>
+           * @return The bytes for type.
+           */
+          public com.google.protobuf.ByteString
+              getTypeBytes() {
+            java.lang.Object ref = type_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              type_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string type = 5;</code>
            * @param value The type to set.
            * @return This builder for chaining.
            */
-          public Builder setType(int value) {
-            
+          public Builder setType(
+              java.lang.String value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  
             type_ = value;
             onChanged();
             return this;
           }
           /**
-           * <code>fixed32 type = 1;</code>
+           * <code>string type = 5;</code>
            * @return This builder for chaining.
            */
           public Builder clearType() {
             
-            type_ = 0;
+            type_ = getDefaultInstance().getType();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string type = 5;</code>
+           * @param value The bytes for type to set.
+           * @return This builder for chaining.
+           */
+          public Builder setTypeBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            type_ = value;
             onChanged();
             return this;
           }
 
-          private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
+          private java.lang.Object value_ = "";
           /**
-           * <code>bytes value = 2;</code>
+           * <code>string value = 6;</code>
            * @return The value.
            */
-          public com.google.protobuf.ByteString getValue() {
-            return value_;
+          public java.lang.String getValue() {
+            java.lang.Object ref = value_;
+            if (!(ref instanceof java.lang.String)) {
+              com.google.protobuf.ByteString bs =
+                  (com.google.protobuf.ByteString) ref;
+              java.lang.String s = bs.toStringUtf8();
+              value_ = s;
+              return s;
+            } else {
+              return (java.lang.String) ref;
+            }
           }
           /**
-           * <code>bytes value = 2;</code>
+           * <code>string value = 6;</code>
+           * @return The bytes for value.
+           */
+          public com.google.protobuf.ByteString
+              getValueBytes() {
+            java.lang.Object ref = value_;
+            if (ref instanceof String) {
+              com.google.protobuf.ByteString b = 
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                      (java.lang.String) ref);
+              value_ = b;
+              return b;
+            } else {
+              return (com.google.protobuf.ByteString) ref;
+            }
+          }
+          /**
+           * <code>string value = 6;</code>
            * @param value The value to set.
            * @return This builder for chaining.
            */
-          public Builder setValue(com.google.protobuf.ByteString value) {
+          public Builder setValue(
+              java.lang.String value) {
             if (value == null) {
     throw new NullPointerException();
   }
@@ -20879,12 +22110,28 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>bytes value = 2;</code>
+           * <code>string value = 6;</code>
            * @return This builder for chaining.
            */
           public Builder clearValue() {
             
             value_ = getDefaultInstance().getValue();
+            onChanged();
+            return this;
+          }
+          /**
+           * <code>string value = 6;</code>
+           * @param value The bytes for value to set.
+           * @return This builder for chaining.
+           */
+          public Builder setValueBytes(
+              com.google.protobuf.ByteString value) {
+            if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+            
+            value_ = value;
             onChanged();
             return this;
           }
@@ -23781,6 +25028,7 @@ public final class Transport {
         AS_PATH_LIMIT(17),
         LARGE_COMMUNITIES(18),
         ATTR_SET(19),
+        EXTENDED_V6_COMMUNITIES(20),
         VALUE_NOT_SET(0);
         private final int value;
         private ValueCase(int value) {
@@ -23813,6 +25061,7 @@ public final class Transport {
             case 17: return AS_PATH_LIMIT;
             case 18: return LARGE_COMMUNITIES;
             case 19: return ATTR_SET;
+            case 20: return EXTENDED_V6_COMMUNITIES;
             case 0: return VALUE_NOT_SET;
             default: return null;
           }
@@ -24237,6 +25486,34 @@ public final class Transport {
         return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.AttrSet.getDefaultInstance();
       }
 
+      public static final int EXTENDED_V6_COMMUNITIES_FIELD_NUMBER = 20;
+      /**
+       * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+       * @return Whether the extendedV6Communities field is set.
+       */
+      public boolean hasExtendedV6Communities() {
+        return valueCase_ == 20;
+      }
+      /**
+       * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+       * @return The extendedV6Communities.
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities getExtendedV6Communities() {
+        if (valueCase_ == 20) {
+           return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_;
+        }
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+      }
+      /**
+       * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+       */
+      public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder getExtendedV6CommunitiesOrBuilder() {
+        if (valueCase_ == 20) {
+           return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_;
+        }
+        return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+      }
+
       private byte memoizedIsInitialized = -1;
       @java.lang.Override
       public final boolean isInitialized() {
@@ -24310,6 +25587,9 @@ public final class Transport {
         }
         if (valueCase_ == 19) {
           output.writeMessage(19, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.AttrSet) value_);
+        }
+        if (valueCase_ == 20) {
+          output.writeMessage(20, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_);
         }
         unknownFields.writeTo(output);
       }
@@ -24399,6 +25679,10 @@ public final class Transport {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(19, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.AttrSet) value_);
         }
+        if (valueCase_ == 20) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(20, (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_);
+        }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
         return size;
@@ -24483,6 +25767,10 @@ public final class Transport {
           case 19:
             if (!getAttrSet()
                 .equals(other.getAttrSet())) return false;
+            break;
+          case 20:
+            if (!getExtendedV6Communities()
+                .equals(other.getExtendedV6Communities())) return false;
             break;
           case 0:
           default:
@@ -24570,6 +25858,10 @@ public final class Transport {
           case 19:
             hash = (37 * hash) + ATTR_SET_FIELD_NUMBER;
             hash = (53 * hash) + getAttrSet().hashCode();
+            break;
+          case 20:
+            hash = (37 * hash) + EXTENDED_V6_COMMUNITIES_FIELD_NUMBER;
+            hash = (53 * hash) + getExtendedV6Communities().hashCode();
             break;
           case 0:
           default:
@@ -24836,6 +26128,13 @@ public final class Transport {
               result.value_ = attrSetBuilder_.build();
             }
           }
+          if (valueCase_ == 20) {
+            if (extendedV6CommunitiesBuilder_ == null) {
+              result.value_ = value_;
+            } else {
+              result.value_ = extendedV6CommunitiesBuilder_.build();
+            }
+          }
           result.valueCase_ = valueCase_;
           onBuilt();
           return result;
@@ -24956,6 +26255,10 @@ public final class Transport {
             }
             case ATTR_SET: {
               mergeAttrSet(other.getAttrSet());
+              break;
+            }
+            case EXTENDED_V6_COMMUNITIES: {
+              mergeExtendedV6Communities(other.getExtendedV6Communities());
               break;
             }
             case VALUE_NOT_SET: {
@@ -26805,6 +28108,144 @@ public final class Transport {
           valueCase_ = 19;
           onChanged();;
           return attrSetBuilder_;
+        }
+
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder> extendedV6CommunitiesBuilder_;
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         * @return Whether the extendedV6Communities field is set.
+         */
+        public boolean hasExtendedV6Communities() {
+          return valueCase_ == 20;
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         * @return The extendedV6Communities.
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities getExtendedV6Communities() {
+          if (extendedV6CommunitiesBuilder_ == null) {
+            if (valueCase_ == 20) {
+              return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_;
+            }
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+          } else {
+            if (valueCase_ == 20) {
+              return extendedV6CommunitiesBuilder_.getMessage();
+            }
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+          }
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        public Builder setExtendedV6Communities(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities value) {
+          if (extendedV6CommunitiesBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            value_ = value;
+            onChanged();
+          } else {
+            extendedV6CommunitiesBuilder_.setMessage(value);
+          }
+          valueCase_ = 20;
+          return this;
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        public Builder setExtendedV6Communities(
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder builderForValue) {
+          if (extendedV6CommunitiesBuilder_ == null) {
+            value_ = builderForValue.build();
+            onChanged();
+          } else {
+            extendedV6CommunitiesBuilder_.setMessage(builderForValue.build());
+          }
+          valueCase_ = 20;
+          return this;
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        public Builder mergeExtendedV6Communities(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities value) {
+          if (extendedV6CommunitiesBuilder_ == null) {
+            if (valueCase_ == 20 &&
+                value_ != org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance()) {
+              value_ = org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.newBuilder((org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_)
+                  .mergeFrom(value).buildPartial();
+            } else {
+              value_ = value;
+            }
+            onChanged();
+          } else {
+            if (valueCase_ == 20) {
+              extendedV6CommunitiesBuilder_.mergeFrom(value);
+            }
+            extendedV6CommunitiesBuilder_.setMessage(value);
+          }
+          valueCase_ = 20;
+          return this;
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        public Builder clearExtendedV6Communities() {
+          if (extendedV6CommunitiesBuilder_ == null) {
+            if (valueCase_ == 20) {
+              valueCase_ = 0;
+              value_ = null;
+              onChanged();
+            }
+          } else {
+            if (valueCase_ == 20) {
+              valueCase_ = 0;
+              value_ = null;
+            }
+            extendedV6CommunitiesBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder getExtendedV6CommunitiesBuilder() {
+          return getExtendedV6CommunitiesFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder getExtendedV6CommunitiesOrBuilder() {
+          if ((valueCase_ == 20) && (extendedV6CommunitiesBuilder_ != null)) {
+            return extendedV6CommunitiesBuilder_.getMessageOrBuilder();
+          } else {
+            if (valueCase_ == 20) {
+              return (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_;
+            }
+            return org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+          }
+        }
+        /**
+         * <code>.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities extended_v6_communities = 20;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder> 
+            getExtendedV6CommunitiesFieldBuilder() {
+          if (extendedV6CommunitiesBuilder_ == null) {
+            if (!(valueCase_ == 20)) {
+              value_ = org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.getDefaultInstance();
+            }
+            extendedV6CommunitiesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6CommunitiesOrBuilder>(
+                    (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities) value_,
+                    getParentForChildren(),
+                    isClean());
+            value_ = null;
+          }
+          valueCase_ = 20;
+          onChanged();;
+          return extendedV6CommunitiesBuilder_;
         }
         @java.lang.Override
         public final Builder setUnknownFields(
@@ -37352,6 +38793,11 @@ public final class Transport {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunities_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunity_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -37475,14 +38921,14 @@ public final class Transport {
       "ote_no_notification\030\005 \001(\0132\026.google.proto" +
       "buf.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.pr" +
       "otobuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007" +
-      "subcode\030\002 \001(\rB\010\n\006reason\"\377\021\n\025RouteMonitor" +
+      "subcode\030\002 \001(\rB\010\n\006reason\"\236\024\n\025RouteMonitor" +
       "ingPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdr" +
       "aws\030\002 \003(\0132\034.RouteMonitoringPacket.Route\022" +
       "0\n\nreachables\030\003 \003(\0132\034.RouteMonitoringPac" +
       "ket.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMon" +
       "itoringPacket.PathAttribute\0323\n\005Route\022\032\n\006" +
       "prefix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r" +
-      "\032\376\017\n\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\n" +
+      "\032\235\022\n\rPathAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\n" +
       "transitive\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010ext" +
       "ended\030\004 \001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonit" +
       "oringPacket.PathAttribute.OriginH\000\022>\n\007as" +
@@ -37508,88 +38954,95 @@ public final class Transport {
       "5.RouteMonitoringPacket.PathAttribute.La" +
       "rgeCommunitiesH\000\022@\n\010attr_set\030\023 \001(\0132,.Rou" +
       "teMonitoringPacket.PathAttribute.AttrSet" +
-      "H\000\032\327\001\n\006AsPath\022E\n\010segments\030\001 \003(\01323.RouteM" +
-      "onitoringPacket.PathAttribute.AsPath.Seg" +
-      "ment\032\205\001\n\007Segment\022F\n\004type\030\001 \001(\01628.RouteMo" +
-      "nitoringPacket.PathAttribute.AsPath.Segm" +
-      "ent.Type\022\r\n\005paths\030\002 \003(\007\"#\n\004Type\022\n\n\006AS_SE" +
-      "T\020\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007NextHop\022\033\n\007addre" +
-      "ss\030\001 \001(\0132\n.IpAddress\032&\n\rMultiExitDisc\022\025\n" +
-      "\rdiscriminator\030\001 \001(\r\032\037\n\tLocalPref\022\022\n\npre" +
-      "ference\030\001 \001(\r\032\021\n\017AtomicAggregate\0325\n\nAggr" +
-      "egator\022\n\n\002as\030\001 \001(\007\022\033\n\007address\030\002 \001(\0132\n.Ip" +
-      "Address\032-\n\013ClusterList\022\036\n\ncluster_id\030\001 \003" +
-      "(\0132\n.IpAddress\032k\n\023ExtendedCommunities\022T\n" +
-      "\024extended_communities\030\001 \003(\01326.RouteMonit" +
-      "oringPacket.PathAttribute.ExtendedCommun" +
-      "ity\0320\n\021ExtendedCommunity\022\014\n\004type\030\001 \001(\007\022\r" +
-      "\n\005value\030\002 \001(\014\032.\n\013AsPathLimit\022\023\n\013upper_bo" +
-      "und\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020LargeCommunitie" +
-      "s\022N\n\021large_communities\030\001 \003(\01323.RouteMoni" +
-      "toringPacket.PathAttribute.LargeCommunit" +
-      "y\032d\n\016LargeCommunity\022\034\n\024global_administra" +
-      "tor\030\001 \001(\r\022\031\n\021local_data_part_1\030\002 \001(\r\022\031\n\021" +
-      "local_data_part_2\030\003 \001(\r\032[\n\007AttrSet\022\021\n\tor" +
-      "igin_as\030\001 \001(\r\022=\n\017path_attributes\030\002 \003(\0132$" +
-      ".RouteMonitoringPacket.PathAttribute\"*\n\006" +
-      "Origin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002" +
-      "B\007\n\005value\"\323\014\n\026StatisticsReportPacket\022\023\n\004" +
-      "peer\030\001 \001(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.St" +
-      "atisticsReportPacket.Counter\0229\n\020duplicat" +
-      "e_prefix\030e \001(\0132\037.StatisticsReportPacket." +
-      "Counter\022;\n\022duplicate_withdraw\030f \001(\0132\037.St" +
-      "atisticsReportPacket.Counter\022M\n$invalid_" +
-      "update_due_to_as_confed_loop\030g \001(\0132\037.Sta" +
-      "tisticsReportPacket.Counter\022K\n\"invalid_u" +
-      "pdate_due_to_as_path_loop\030h \001(\0132\037.Statis" +
-      "ticsReportPacket.Counter\022P\n\'invalid_upda" +
-      "te_due_to_cluster_list_loop\030i \001(\0132\037.Stat" +
-      "isticsReportPacket.Counter\022L\n#invalid_up" +
-      "date_due_to_originator_id\030j \001(\0132\037.Statis" +
-      "ticsReportPacket.Counter\0221\n\nadj_rib_in\030k" +
-      " \001(\0132\035.StatisticsReportPacket.Gauge\0222\n\013a" +
-      "dj_rib_out\030l \001(\0132\035.StatisticsReportPacke" +
-      "t.Gauge\022G\n\022per_afi_adj_rib_in\030m \003(\0132+.St" +
-      "atisticsReportPacket.PerAfiAdjRibInEntry" +
-      "\022F\n\021per_afi_local_rib\030n \003(\0132+.Statistics" +
-      "ReportPacket.PerAfiLocalRibEntry\022A\n\030upda" +
-      "te_treat_as_withdraw\030o \001(\0132\037.StatisticsR" +
-      "eportPacket.Counter\022A\n\030prefix_treat_as_w" +
-      "ithdraw\030p \001(\0132\037.StatisticsReportPacket.C" +
-      "ounter\0229\n\020duplicate_update\030q \001(\0132\037.Stati" +
-      "sticsReportPacket.Counter\0220\n\tlocal_rib\030r" +
-      " \001(\0132\035.StatisticsReportPacket.Gauge\0221\n\ne" +
-      "xport_rib\030s \001(\0132\035.StatisticsReportPacket" +
-      ".Gauge\022I\n\023per_afi_adj_rib_out\030t \003(\0132,.St" +
-      "atisticsReportPacket.PerAfiAdjRibOutEntr" +
-      "y\022H\n\022per_afi_export_rib\030u \003(\0132,.Statisti" +
-      "csReportPacket.PerAfiExportRibEntry\032\026\n\005G" +
-      "auge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030" +
-      "\001 \001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(" +
-      "\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportPacke" +
-      "t.Gauge:\0028\001\032T\n\023PerAfiLocalRibEntry\022\013\n\003ke" +
-      "y\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsRepor" +
-      "tPacket.Gauge:\0028\001\032U\n\024PerAfiAdjRibOutEntr" +
+      "H\000\022]\n\027extended_v6_communities\030\024 \001(\0132:.Ro" +
+      "uteMonitoringPacket.PathAttribute.Extend" +
+      "edV6CommunitiesH\000\032\327\001\n\006AsPath\022E\n\010segments" +
+      "\030\001 \003(\01323.RouteMonitoringPacket.PathAttri" +
+      "bute.AsPath.Segment\032\205\001\n\007Segment\022F\n\004type\030" +
+      "\001 \001(\01628.RouteMonitoringPacket.PathAttrib" +
+      "ute.AsPath.Segment.Type\022\r\n\005paths\030\002 \003(\007\"#" +
+      "\n\004Type\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007N" +
+      "extHop\022\033\n\007address\030\001 \001(\0132\n.IpAddress\032&\n\rM" +
+      "ultiExitDisc\022\025\n\rdiscriminator\030\001 \001(\r\032\037\n\tL" +
+      "ocalPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017AtomicAg" +
+      "gregate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007\022\033\n\007add" +
+      "ress\030\002 \001(\0132\n.IpAddress\032-\n\013ClusterList\022\036\n" +
+      "\ncluster_id\030\001 \003(\0132\n.IpAddress\032k\n\023Extende" +
+      "dCommunities\022T\n\024extended_communities\030\001 \003" +
+      "(\01326.RouteMonitoringPacket.PathAttribute" +
+      ".ExtendedCommunity\032m\n\025ExtendedV6Communit" +
+      "ies\022T\n\024extended_communities\030\001 \003(\01326.Rout" +
+      "eMonitoringPacket.PathAttribute.Extended" +
+      "Community\032\200\001\n\021ExtendedCommunity\022\021\n\thigh_" +
+      "type\030\001 \001(\r\022\020\n\010low_type\030\002 \001(\r\022\025\n\rauthorit" +
+      "ative\030\003 \001(\010\022\022\n\ntransitive\030\004 \001(\010\022\014\n\004type\030" +
+      "\005 \001(\t\022\r\n\005value\030\006 \001(\t\032.\n\013AsPathLimit\022\023\n\013u" +
+      "pper_bound\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020LargeCom" +
+      "munities\022N\n\021large_communities\030\001 \003(\01323.Ro" +
+      "uteMonitoringPacket.PathAttribute.LargeC" +
+      "ommunity\032d\n\016LargeCommunity\022\034\n\024global_adm" +
+      "inistrator\030\001 \001(\r\022\031\n\021local_data_part_1\030\002 " +
+      "\001(\r\022\031\n\021local_data_part_2\030\003 \001(\r\032[\n\007AttrSe" +
+      "t\022\021\n\torigin_as\030\001 \001(\r\022=\n\017path_attributes\030" +
+      "\002 \003(\0132$.RouteMonitoringPacket.PathAttrib" +
+      "ute\"*\n\006Origin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOM" +
+      "PLETE\020\002B\007\n\005value\"\323\014\n\026StatisticsReportPac" +
+      "ket\022\023\n\004peer\030\001 \001(\0132\005.Peer\0221\n\010rejected\030d \001" +
+      "(\0132\037.StatisticsReportPacket.Counter\0229\n\020d" +
+      "uplicate_prefix\030e \001(\0132\037.StatisticsReport" +
+      "Packet.Counter\022;\n\022duplicate_withdraw\030f \001" +
+      "(\0132\037.StatisticsReportPacket.Counter\022M\n$i" +
+      "nvalid_update_due_to_as_confed_loop\030g \001(" +
+      "\0132\037.StatisticsReportPacket.Counter\022K\n\"in" +
+      "valid_update_due_to_as_path_loop\030h \001(\0132\037" +
+      ".StatisticsReportPacket.Counter\022P\n\'inval" +
+      "id_update_due_to_cluster_list_loop\030i \001(\013" +
+      "2\037.StatisticsReportPacket.Counter\022L\n#inv" +
+      "alid_update_due_to_originator_id\030j \001(\0132\037" +
+      ".StatisticsReportPacket.Counter\0221\n\nadj_r" +
+      "ib_in\030k \001(\0132\035.StatisticsReportPacket.Gau" +
+      "ge\0222\n\013adj_rib_out\030l \001(\0132\035.StatisticsRepo" +
+      "rtPacket.Gauge\022G\n\022per_afi_adj_rib_in\030m \003" +
+      "(\0132+.StatisticsReportPacket.PerAfiAdjRib" +
+      "InEntry\022F\n\021per_afi_local_rib\030n \003(\0132+.Sta" +
+      "tisticsReportPacket.PerAfiLocalRibEntry\022" +
+      "A\n\030update_treat_as_withdraw\030o \001(\0132\037.Stat" +
+      "isticsReportPacket.Counter\022A\n\030prefix_tre" +
+      "at_as_withdraw\030p \001(\0132\037.StatisticsReportP" +
+      "acket.Counter\0229\n\020duplicate_update\030q \001(\0132" +
+      "\037.StatisticsReportPacket.Counter\0220\n\tloca" +
+      "l_rib\030r \001(\0132\035.StatisticsReportPacket.Gau" +
+      "ge\0221\n\nexport_rib\030s \001(\0132\035.StatisticsRepor" +
+      "tPacket.Gauge\022I\n\023per_afi_adj_rib_out\030t \003" +
+      "(\0132,.StatisticsReportPacket.PerAfiAdjRib" +
+      "OutEntry\022H\n\022per_afi_export_rib\030u \003(\0132,.S" +
+      "tatisticsReportPacket.PerAfiExportRibEnt" +
+      "ry\032\026\n\005Gauge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n" +
+      "\005count\030\001 \001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003k" +
+      "ey\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsRepo" +
+      "rtPacket.Gauge:\0028\001\032T\n\023PerAfiLocalRibEntr" +
       "y\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Statisti" +
-      "csReportPacket.Gauge:\0028\001\032U\n\024PerAfiExport" +
-      "RibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.S" +
-      "tatisticsReportPacket.Gauge:\0028\001\"\203\001\n\tHear" +
-      "tbeat\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007" +
-      "routers\030\002 \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007STA" +
-      "RTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOP" +
-      "PED\020\003\"\212\003\n\007Message\022\017\n\007version\030\001 \001(\r\022\031\n\005bg" +
-      "pId\030\002 \001(\0132\n.IpAddress\022\'\n\ninitiation\030\005 \001(" +
-      "\0132\021.InitiationPacketH\000\022)\n\013termination\030\006 " +
-      "\001(\0132\022.TerminationPacketH\000\022 \n\007peer_up\030\007 \001" +
-      "(\0132\r.PeerUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017" +
-      ".PeerDownPacketH\000\0222\n\020route_monitoring\030\t " +
-      "\001(\0132\026.RouteMonitoringPacketH\000\0224\n\021statist" +
-      "ics_report\030\n \001(\0132\027.StatisticsReportPacke" +
-      "tH\000\022\037\n\theartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006" +
-      "packetJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016" +
-      "\020\017BA\n4org.opennms.netmgt.telemetry.proto" +
-      "cols.bmp.transportB\tTransportP\000P\001b\006proto" +
-      "3"
+      "csReportPacket.Gauge:\0028\001\032U\n\024PerAfiAdjRib" +
+      "OutEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.S" +
+      "tatisticsReportPacket.Gauge:\0028\001\032U\n\024PerAf" +
+      "iExportRibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 " +
+      "\001(\0132\035.StatisticsReportPacket.Gauge:\0028\001\"\203" +
+      "\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.M" +
+      "ode\022\033\n\007routers\030\002 \003(\0132\n.IpAddress\":\n\004Mode" +
+      "\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022" +
+      "\013\n\007STOPPED\020\003\"\212\003\n\007Message\022\017\n\007version\030\001 \001(" +
+      "\r\022\031\n\005bgpId\030\002 \001(\0132\n.IpAddress\022\'\n\ninitiati" +
+      "on\030\005 \001(\0132\021.InitiationPacketH\000\022)\n\013termina" +
+      "tion\030\006 \001(\0132\022.TerminationPacketH\000\022 \n\007peer" +
+      "_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n\tpeer_down\030" +
+      "\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020route_monito" +
+      "ring\030\t \001(\0132\026.RouteMonitoringPacketH\000\0224\n\021" +
+      "statistics_report\030\n \001(\0132\027.StatisticsRepo" +
+      "rtPacketH\000\022\037\n\theartbeat\030\017 \001(\0132\n.Heartbea" +
+      "tH\000B\010\n\006packetJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010" +
+      "\r\020\016J\004\010\016\020\017BA\n4org.opennms.netmgt.telemetr" +
+      "y.protocols.bmp.transportB\tTransportP\000P\001" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -37686,7 +39139,7 @@ public final class Transport {
     internal_static_RouteMonitoringPacket_PathAttribute_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_descriptor,
-        new java.lang.String[] { "Optional", "Transitive", "Partial", "Extended", "Origin", "AsPath", "NextHop", "MultiExitDisc", "LocalPref", "AtomicAggregate", "Aggregator", "Community", "OriginatorId", "ClusterList", "ExtendedCommunities", "Connector", "AsPathLimit", "LargeCommunities", "AttrSet", "Value", });
+        new java.lang.String[] { "Optional", "Transitive", "Partial", "Extended", "Origin", "AsPath", "NextHop", "MultiExitDisc", "LocalPref", "AtomicAggregate", "Aggregator", "Community", "OriginatorId", "ClusterList", "ExtendedCommunities", "Connector", "AsPathLimit", "LargeCommunities", "AttrSet", "ExtendedV6Communities", "Value", });
     internal_static_RouteMonitoringPacket_PathAttribute_AsPath_descriptor =
       internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(0);
     internal_static_RouteMonitoringPacket_PathAttribute_AsPath_fieldAccessorTable = new
@@ -37741,32 +39194,38 @@ public final class Transport {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunities_descriptor,
         new java.lang.String[] { "ExtendedCommunities", });
-    internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunity_descriptor =
+    internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_descriptor =
       internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(8);
+    internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_RouteMonitoringPacket_PathAttribute_ExtendedV6Communities_descriptor,
+        new java.lang.String[] { "ExtendedCommunities", });
+    internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunity_descriptor =
+      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(9);
     internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_ExtendedCommunity_descriptor,
-        new java.lang.String[] { "Type", "Value", });
+        new java.lang.String[] { "HighType", "LowType", "Authoritative", "Transitive", "Type", "Value", });
     internal_static_RouteMonitoringPacket_PathAttribute_AsPathLimit_descriptor =
-      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(9);
+      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(10);
     internal_static_RouteMonitoringPacket_PathAttribute_AsPathLimit_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_AsPathLimit_descriptor,
         new java.lang.String[] { "UpperBound", "As", });
     internal_static_RouteMonitoringPacket_PathAttribute_LargeCommunities_descriptor =
-      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(10);
+      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(11);
     internal_static_RouteMonitoringPacket_PathAttribute_LargeCommunities_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_LargeCommunities_descriptor,
         new java.lang.String[] { "LargeCommunities", });
     internal_static_RouteMonitoringPacket_PathAttribute_LargeCommunity_descriptor =
-      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(11);
+      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(12);
     internal_static_RouteMonitoringPacket_PathAttribute_LargeCommunity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_LargeCommunity_descriptor,
         new java.lang.String[] { "GlobalAdministrator", "LocalDataPart1", "LocalDataPart2", });
     internal_static_RouteMonitoringPacket_PathAttribute_AttrSet_descriptor =
-      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(12);
+      internal_static_RouteMonitoringPacket_PathAttribute_descriptor.getNestedTypes().get(13);
     internal_static_RouteMonitoringPacket_PathAttribute_AttrSet_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_AttrSet_descriptor,

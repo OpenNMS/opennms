@@ -179,9 +179,19 @@ message RouteMonitoringPacket {
             repeated ExtendedCommunity extended_communities = 1;
         }
 
+        message ExtendedV6Communities {
+            repeated ExtendedCommunity extended_communities = 1;
+        }
+
         message ExtendedCommunity {
-            fixed32 type = 1;
-            bytes value = 2;
+            uint32 high_type = 1;
+            uint32 low_type = 2;
+
+            bool authoritative = 3;
+            bool transitive = 4;
+
+            string type = 5;
+            string value = 6;
         }
 
         message AsPathLimit {
@@ -225,6 +235,7 @@ message RouteMonitoringPacket {
             AsPathLimit as_path_limit = 17;
             LargeCommunities large_communities = 18;
             AttrSet attr_set = 19;
+            ExtendedV6Communities extended_v6_communities = 20;
         }
     }
 
