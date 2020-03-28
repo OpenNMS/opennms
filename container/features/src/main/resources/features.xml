@@ -433,7 +433,6 @@
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
         <bundle dependency="true">mvn:org.scala-lang/scala-library/${scalaLibraryVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.10</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
@@ -938,8 +937,8 @@
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
-        <bundle dependency="true">mvn:org.lz4/lz4-java/1.4</bundle>
-        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.4</bundle>
+        <bundle dependency="true">mvn:org.lz4/lz4-java/1.6.0</bundle>
+        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.7.3</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <!-- These are only needed for  servicemix implementation of kafka streams -->
         <!--
@@ -1048,6 +1047,8 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-api</feature>
+        <feature>opennms-kafka</feature>
+        <feature>rate-limited-logger</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
@@ -1059,6 +1060,7 @@
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>

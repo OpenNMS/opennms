@@ -1044,6 +1044,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- GraphML dependencies -->
     <dependency>
       <groupId>org.opennms.features.graphml</groupId>

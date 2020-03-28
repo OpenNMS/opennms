@@ -204,7 +204,6 @@
         <KeyValuePair key="snmp-poller"          value="DEBUG" />
         <KeyValuePair key="syslogd"              value="DEBUG" />
         <KeyValuePair key="telemetryd"           value="DEBUG" />
-        <KeyValuePair key="threshd"              value="DEBUG" />
         <KeyValuePair key="tl1d"                 value="DEBUG" />
         <KeyValuePair key="trapd"                value="DEBUG" />
         <KeyValuePair key="trouble-ticketer"     value="DEBUG" />
