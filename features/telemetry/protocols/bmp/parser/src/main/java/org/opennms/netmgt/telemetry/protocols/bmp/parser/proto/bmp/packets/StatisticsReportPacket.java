@@ -38,6 +38,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.AdjRibIn;
@@ -71,7 +72,7 @@ public class StatisticsReportPacket implements Packet {
 
     public final TLV.List<Element, Element.Type, Metric> statistics;
 
-    public StatisticsReportPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public StatisticsReportPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 

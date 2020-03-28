@@ -36,6 +36,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalBgpNotification;
@@ -56,7 +57,7 @@ public class PeerDownPacket implements Packet {
     public final Type type;     // uint8
     public final Reason reason; // variable
 
-    public PeerDownPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public PeerDownPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 

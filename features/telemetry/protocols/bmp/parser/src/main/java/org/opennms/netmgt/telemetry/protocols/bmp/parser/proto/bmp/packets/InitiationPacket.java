@@ -36,6 +36,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 
 import com.google.common.base.MoreObjects;
@@ -46,7 +47,7 @@ public class InitiationPacket implements Packet {
     public final Header header;
     public final TLV.List<InformationElement, InformationElement.Type, String> information;
 
-    public InitiationPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public InitiationPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.information = TLV.List.wrap(repeatRemaining(buffer, InformationElement::new));
     }

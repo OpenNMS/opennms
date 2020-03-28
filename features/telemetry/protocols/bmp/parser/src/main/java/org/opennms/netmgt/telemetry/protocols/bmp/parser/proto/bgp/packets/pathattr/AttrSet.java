@@ -29,16 +29,15 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -63,9 +62,9 @@ public class AttrSet implements Attribute {
     public final long originAs;
     public final List<UpdatePacket.PathAttribute> pathAttributes;
 
-    public AttrSet(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+    public AttrSet(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.originAs = uint32(buffer);
-        this.pathAttributes = repeatRemaining(buffer, pathAttributeBuffer -> new UpdatePacket.PathAttribute(pathAttributeBuffer, flags));
+        this.pathAttributes = repeatRemaining(buffer, pathAttributeBuffer -> new UpdatePacket.PathAttribute(pathAttributeBuffer, flags, peerInfo));
     }
 
     @Override
