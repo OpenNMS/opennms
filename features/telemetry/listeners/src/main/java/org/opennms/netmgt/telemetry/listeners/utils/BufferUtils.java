@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.listeners.utils;
 
-import java.net.UnknownHostException;
 import java.nio.BufferUnderflowException;
 import java.util.Collections;
 import java.util.List;
@@ -195,6 +194,6 @@ public final class BufferUtils {
 
     @FunctionalInterface
     public interface Parser<T, E extends Exception> {
-        T parse(final ByteBuf buffer) throws E, IllegalAccessException, InstantiationException, UnknownHostException;
+        T parse(final ByteBuf buffer) throws E;
     }
 }

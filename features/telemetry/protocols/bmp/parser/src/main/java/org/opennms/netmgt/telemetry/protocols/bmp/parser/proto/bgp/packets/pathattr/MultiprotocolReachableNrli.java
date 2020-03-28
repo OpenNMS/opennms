@@ -115,10 +115,12 @@ public class MultiprotocolReachableNrli implements Attribute {
             parseAfi(buffer, peerInfo);
         } catch (UnknownHostException ex) {
             throw new InvalidPacketException(buffer, "Error parsing IP address", ex);
+        } catch (Exception ex) {
+            throw new InvalidPacketException(buffer, "Error parsing packet", ex);
         }
     }
 
-    void parseAfi(final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws UnknownHostException {
+    void parseAfi(final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         switch (this.afi) {
             case BGP_AFI_IPV6:
                 parseAfi_IPv4IPv6(false, buffer, peerInfo);
@@ -185,7 +187,7 @@ public class MultiprotocolReachableNrli implements Attribute {
         });
     }
 
-    void parseAfi_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws UnknownHostException {
+    void parseAfi_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         switch (this.safi) {
             case BGP_SAFI_UNICAST:
                 if (nextHopBytes.length > 16) {
@@ -242,7 +244,7 @@ public class MultiprotocolReachableNrli implements Attribute {
         });
     }
 
-    static <T extends PrefixTuple> List<T> parseNlriData_LabelIPv4IPv6(Class<T> clazz, boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws UnknownHostException {
+    static <T extends PrefixTuple> List<T> parseNlriData_LabelIPv4IPv6(Class<T> clazz, boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         boolean isVPN = clazz.equals(VPNPrefixTuple.class);
         boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, isVPN ? BGP_SAFI_MPLS : BGP_SAFI_NLRI_LABEL) : false;
         return BufferUtils.repeatRemaining(buffer, b -> {

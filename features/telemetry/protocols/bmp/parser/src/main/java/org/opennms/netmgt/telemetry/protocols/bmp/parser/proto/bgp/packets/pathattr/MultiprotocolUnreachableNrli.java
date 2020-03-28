@@ -65,10 +65,12 @@ public class MultiprotocolUnreachableNrli implements Attribute {
             parseAfi(buffer, peerInfo);
         } catch (UnknownHostException ex) {
             throw new InvalidPacketException(buffer, "Error parsing IP address", ex);
+        } catch (Exception ex) {
+            throw new InvalidPacketException(buffer, "Error parsing packet", ex);
         }
     }
 
-    void parseAfi(final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws UnknownHostException {
+    void parseAfi(final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         switch (this.afi) {
             case MultiprotocolReachableNrli.BGP_AFI_IPV6:
                 parseAfi_IPv4IPv6(false, buffer, peerInfo);
@@ -101,7 +103,7 @@ public class MultiprotocolUnreachableNrli implements Attribute {
         }
     }
 
-    void parseAfi_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws UnknownHostException {
+    void parseAfi_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         switch (this.safi) {
             case MultiprotocolReachableNrli.BGP_SAFI_UNICAST:
                 this.withdrawn = MultiprotocolReachableNrli.parseNlriData_IPv4IPv6(isIPv4, buffer, peerInfo);

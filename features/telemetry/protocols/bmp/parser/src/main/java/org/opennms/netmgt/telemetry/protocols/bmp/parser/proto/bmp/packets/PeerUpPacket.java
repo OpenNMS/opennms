@@ -68,10 +68,10 @@ public class PeerUpPacket implements Packet {
         this.localPort = uint16(buffer);
         this.remotePort = uint16(buffer);
 
-        this.sendOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags);
-        this.recvOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags);
+        this.sendOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader));
+        this.recvOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader));
 
-        this.information = TLV.List.wrap(repeatRemaining(buffer, InformationElement::new));
+        this.information = TLV.List.wrap(repeatRemaining(buffer, b -> new InformationElement(b, peerAccessor.getPeerInfo(peerHeader))));
     }
 
     @Override

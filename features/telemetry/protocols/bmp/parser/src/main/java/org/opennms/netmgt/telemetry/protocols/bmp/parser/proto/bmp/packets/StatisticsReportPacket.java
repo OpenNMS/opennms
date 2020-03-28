@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatCou
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.AdjRibIn;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.AdjRibOut;
@@ -76,7 +78,7 @@ public class StatisticsReportPacket implements Packet {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
-        this.statistics = TLV.List.wrap(repeatCount(buffer, (int) uint32(buffer), Element::new));
+        this.statistics = TLV.List.wrap(repeatCount(buffer, (int) uint32(buffer), b -> new Element(b, peerAccessor.getPeerInfo(peerHeader))));
     }
 
     @Override
@@ -86,8 +88,8 @@ public class StatisticsReportPacket implements Packet {
 
     public static class Element extends TLV<Element.Type, Metric, Void> {
 
-        public Element(final ByteBuf buffer) throws InvalidPacketException {
-            super(buffer, Element.Type::from, null);
+        public Element(final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+            super(buffer, Element.Type::from, null, peerInfo);
         }
 
         public enum Type implements TLV.Type<Metric, Void> {
@@ -145,7 +147,7 @@ public class StatisticsReportPacket implements Packet {
             }
 
             @Override
-            public Metric parse(final ByteBuf buffer, final Void parameter) throws InvalidPacketException {
+            public Metric parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
                 return this.parser.apply(buffer);
             }
         }

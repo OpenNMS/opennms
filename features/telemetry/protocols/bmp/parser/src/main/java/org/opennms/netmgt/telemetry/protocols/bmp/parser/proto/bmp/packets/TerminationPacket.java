@@ -34,12 +34,14 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 
 import com.google.common.base.MoreObjects;
@@ -64,20 +66,20 @@ public class TerminationPacket implements Packet {
     public static class Element extends TLV<Element.Type, Information, Void> {
 
         public Element(final ByteBuf buffer) throws InvalidPacketException {
-            super(buffer, Element.Type::from, null);
+            super(buffer, Element.Type::from, null, Optional.empty());
         }
 
         public enum Type implements TLV.Type<Information, Void> {
             STRING {
                 @Override
-                public Information parse(final ByteBuf buffer, final Void parameter) {
+                public Information parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) {
                     return new StringInformation(new String(bytes(buffer, buffer.readableBytes()), StandardCharsets.UTF_8));
                 }
             },
 
             REASON {
                 @Override
-                public Information parse(final ByteBuf buffer, final Void parameter) {
+                public Information parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) {
                     final int reason = uint16(buffer);
                     return new ReasonInformation(reason);
                 }
@@ -85,7 +87,7 @@ public class TerminationPacket implements Packet {
 
             UNKNOWN {
                 @Override
-                public Information parse(final ByteBuf buffer, final Void parameter) throws InvalidPacketException {
+                public Information parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
                     return new UnknownInformation();
                 }
             };

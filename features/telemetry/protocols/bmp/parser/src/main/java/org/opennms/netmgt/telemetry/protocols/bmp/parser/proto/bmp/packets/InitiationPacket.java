@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
@@ -49,7 +50,7 @@ public class InitiationPacket implements Packet {
 
     public InitiationPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
-        this.information = TLV.List.wrap(repeatRemaining(buffer, InformationElement::new));
+        this.information = TLV.List.wrap(repeatRemaining(buffer, b -> new InformationElement(b, Optional.empty())));
     }
 
     @Override
