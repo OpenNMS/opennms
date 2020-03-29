@@ -785,13 +785,69 @@ public class BmpParser implements TcpParser {
             }
 
             @Override
-            public void visit(MultiprotocolReachableNrli multiprotocolReachableNrli) {
-                // TODO: Implement the stuff
+            public void visit(final MultiprotocolReachableNrli multiprotocolReachableNrli) {
+                final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli.newBuilder()
+                        .addAllAdvertised(multiprotocolReachableNrli.advertised.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.PathAttribute.Prefix.newBuilder()
+                                    .setIpv4(r.ipv4)
+                                    .setLabels(r.labels)
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(r.prefix)
+                                    .setType(r.type)
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .addAllVpnAdvertised(multiprotocolReachableNrli.vpnAdvertised.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.PathAttribute.VpnPrefix.newBuilder()
+                                    .setIpv4(r.ipv4)
+                                    .setLabels(r.labels)
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(r.prefix)
+                                    .setType(r.type)
+                                    .setRdAdministratorSubfield(r.rdAdministratorSubfield)
+                                    .setRdAssignedNumber(r.rdAssignedNumber)
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .setAfi(multiprotocolReachableNrli.afi)
+                        .setSafi(multiprotocolReachableNrli.safi)
+                        .setNextHop(address(multiprotocolReachableNrli.nextHop))
+                        .build();
+
+                attributesBuilder.setMpReachNrli(mpReachNrli);
             }
 
             @Override
-            public void visit(MultiprotocolUnreachableNrli multiprotocolUnreachableNrli) {
-                // TODO: Implement the stuff
+            public void visit(final MultiprotocolUnreachableNrli multiprotocolUnreachableNrli) {
+                final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli.newBuilder()
+                        .addAllAdvertised(multiprotocolUnreachableNrli.withdrawn.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.PathAttribute.Prefix.newBuilder()
+                                    .setIpv4(r.ipv4)
+                                    .setLabels(r.labels)
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(r.prefix)
+                                    .setType(r.type)
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .addAllVpnAdvertised(multiprotocolUnreachableNrli.vpnWithdrawn.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.PathAttribute.VpnPrefix.newBuilder()
+                                    .setIpv4(r.ipv4)
+                                    .setLabels(r.labels)
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(r.prefix)
+                                    .setType(r.type)
+                                    .setRdAdministratorSubfield(r.rdAdministratorSubfield)
+                                    .setRdAssignedNumber(r.rdAssignedNumber)
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .setAfi(multiprotocolUnreachableNrli.afi)
+                        .setSafi(multiprotocolUnreachableNrli.safi)
+                        .setNextHop(address(multiprotocolUnreachableNrli.nextHop))
+                        .build();
+
+                attributesBuilder.setMpUnreachNrli(mpReachNrli);
             }
         });
         return attributesBuilder;

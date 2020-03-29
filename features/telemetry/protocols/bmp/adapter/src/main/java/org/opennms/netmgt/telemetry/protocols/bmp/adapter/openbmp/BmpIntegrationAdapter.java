@@ -571,6 +571,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.length = route.getLength();
         unicastPrefix.ipv4 = isV4(route.getPrefix());
         // TODO: Populate path id and labels attributes - see NMS-12560
+
         unicastPrefix.pathId = 0;
         unicastPrefix.labels = null;
         unicastPrefix.prePolicy = peer.hasPeerFlags() && peer.getPeerFlags().getPolicy() == Transport.Peer.PeerFlags.Policy.PRE_POLICY;
