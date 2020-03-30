@@ -222,7 +222,7 @@ public class MultiprotocolReachableNlri implements Attribute {
     }
 
     static List<PrefixTuple> parseNlriData_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) {
-        boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, BGP_SAFI_UNICAST) : false;
+        final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, BGP_SAFI_UNICAST) : false;
 
         return BufferUtils.repeatRemaining(buffer, b -> {
             final PrefixTuple tuple = new PrefixTuple();
@@ -245,8 +245,8 @@ public class MultiprotocolReachableNlri implements Attribute {
     }
 
     static <T extends PrefixTuple> List<T> parseNlriData_LabelIPv4IPv6(Class<T> clazz, boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
-        boolean isVPN = clazz.equals(VPNPrefixTuple.class);
-        boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, isVPN ? BGP_SAFI_MPLS : BGP_SAFI_NLRI_LABEL) : false;
+        final boolean isVPN = clazz.equals(VPNPrefixTuple.class);
+        final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, isVPN ? BGP_SAFI_MPLS : BGP_SAFI_NLRI_LABEL) : false;
         return BufferUtils.repeatRemaining(buffer, b -> {
             final T tuple = clazz.newInstance();
 
