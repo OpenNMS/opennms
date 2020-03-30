@@ -38,37 +38,21 @@ import java.util.Optional;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.primitives.UnsignedLong;
 
 import io.netty.buffer.ByteBuf;
 
 public class MultiprotocolReachableNlri implements Attribute {
     public static final Logger LOG = LoggerFactory.getLogger(MultiprotocolReachableNlri.class);
 
-    public static class PrefixTuple {
-        public int type = 0;
-        public int length = 0;
-        public String prefix;
-        public long pathId = 0;
-        public boolean ipv4 = false;
-        public String labels;
-    }
-
-    public static class VPNPrefixTuple extends PrefixTuple {
-        public String rdAdministratorSubfield;
-        public String rdAssignedNumber;
-    }
-
-
     final static int BGP_AFI_IPV4 = 1;
     final static int BGP_AFI_IPV6 = 2;
     final static int BGP_AFI_L2VPN = 25;
-    public final static int BGP_AFI_BGPLS = 16388;
+    final static int BGP_AFI_BGPLS = 16388;
 
     final static int BGP_SAFI_UNICAST = 1;
     final static int BGP_SAFI_MULTICAST = 2;
@@ -102,8 +86,8 @@ public class MultiprotocolReachableNlri implements Attribute {
     public final int length;
     public final byte[] nextHopBytes;
     public InetAddress nextHop;
-    public List<PrefixTuple> advertised;
-    public List<VPNPrefixTuple> vpnAdvertised;
+    public List<UpdatePacket.Prefix> advertised;
+    public List<UpdatePacket.Prefix> vpnAdvertised;
 
     public MultiprotocolReachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
@@ -130,11 +114,7 @@ public class MultiprotocolReachableNlri implements Attribute {
                 break;
             case BGP_AFI_BGPLS:
                 nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
-                if (safi == BGP_SAFI_BGPLS) {
-                    parseLinkStateNlriData(buffer);
-                } else {
-                    LOG.info("MP_REACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
-                }
+                LOG.info("MP_REACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
                 break;
             case BGP_AFI_L2VPN:
                 if (nextHopBytes.length > 16) {
@@ -142,49 +122,12 @@ public class MultiprotocolReachableNlri implements Attribute {
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
                 }
-                if (safi == BGP_SAFI_EVPN) {
-                    parseEvpnNlriData(buffer);
-                } else {
-                    LOG.info("EVPN::parse SAFI=%d is not implemented yet, skipping", safi);
-                }
+                LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI=%d is not implemented yet, skipping", safi);
                 break;
             default:
                 LOG.info("MP_REACH AFI=%d is not implemented yet, skipping", afi);
                 break;
         }
-    }
-
-    static void parseEvpnNlriData(final ByteBuf buffer) {
-        // TODO: parse EVPN data
-    }
-
-    static List<Object> parseLinkStateNlriData(final ByteBuf buffer) {
-        return BufferUtils.repeatRemaining(buffer, b -> {
-            final int nrlitype = BufferUtils.uint16(b);
-            final int nrliLength = BufferUtils.uint16(b);
-
-            final int proto_id = BufferUtils.uint8(b);
-            final UnsignedLong id = BufferUtils.uint64(b);
-            switch (nrlitype) {
-                case NLRI_TYPE_NODE:
-                    // TODO: parse node
-                    break;
-                case NLRI_TYPE_LINK:
-                    // TODO: parse link
-                    break;
-                case NLRI_TYPE_IPV4_PREFIX:
-                    // TODO: parse prefix
-                    break;
-                case NLRI_TYPE_IPV6_PREFIX:
-                    // TODO: parse v6 prefix
-                    break;
-                default:
-                    LOG.info("bgp-ls NLRI Type %d is not implemented yet, skipping for now", nrlitype);
-                    break;
-            }
-
-            return new Object();
-        });
     }
 
     void parseAfi_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
@@ -203,7 +146,7 @@ public class MultiprotocolReachableNlri implements Attribute {
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
                 }
-                this.advertised = parseNlriData_LabelIPv4IPv6(PrefixTuple.class, isIPv4, buffer, peerInfo);
+                this.advertised = parseNlriData_LabelIPv4IPv6(isIPv4, buffer, peerInfo, false);
                 break;
             case BGP_SAFI_MPLS:
                 if (isIPv4) {
@@ -214,21 +157,18 @@ public class MultiprotocolReachableNlri implements Attribute {
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
                 }
-                this.vpnAdvertised = parseNlriData_LabelIPv4IPv6(VPNPrefixTuple.class, isIPv4, buffer, peerInfo);
+                this.vpnAdvertised = parseNlriData_LabelIPv4IPv6(isIPv4, buffer, peerInfo, true);
                 break;
             default:
                 LOG.info("MP_REACH AFI=ipv4/ipv6 (%d) SAFI=%d is not implemented yet, skipping for now", isIPv4, this.safi);
         }
     }
 
-    static List<PrefixTuple> parseNlriData_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) {
+    static List<UpdatePacket.Prefix> parseNlriData_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) {
         final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, BGP_SAFI_UNICAST) : false;
 
         return BufferUtils.repeatRemaining(buffer, b -> {
-            final PrefixTuple tuple = new PrefixTuple();
-
-            tuple.ipv4 = isIPv4;
-            tuple.type = isIPv4 ? PREFIX_UNICAST_V4 : PREFIX_UNICAST_V6;
+            final UpdatePacket.Prefix tuple = new UpdatePacket.Prefix();
 
             if (addPathCapabilityEnabled) {
                 tuple.pathId = BufferUtils.uint32(b);
@@ -238,20 +178,16 @@ public class MultiprotocolReachableNlri implements Attribute {
             final int byteCount = tuple.length / 8 + (tuple.length % 8 > 0 ? 1 : 0);
             final byte[] prefixBytes = BufferUtils.bytes(b, byteCount);
 
-            tuple.prefix = InetAddressUtils.str(isIPv4 ? InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 4)) : InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 16)));
+            tuple.prefix = isIPv4 ? InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 4)) : InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 16));
 
             return tuple;
         });
     }
 
-    static <T extends PrefixTuple> List<T> parseNlriData_LabelIPv4IPv6(Class<T> clazz, boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
-        final boolean isVPN = clazz.equals(VPNPrefixTuple.class);
+    static List<UpdatePacket.Prefix> parseNlriData_LabelIPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo, boolean isVPN) throws Exception {
         final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, isVPN ? BGP_SAFI_MPLS : BGP_SAFI_NLRI_LABEL) : false;
         return BufferUtils.repeatRemaining(buffer, b -> {
-            final T tuple = clazz.newInstance();
-
-            tuple.ipv4 = isIPv4;
-            tuple.type = isIPv4 ? PREFIX_LABEL_UNICAST_V4 : PREFIX_LABEL_UNICAST_V6;
+            final UpdatePacket.Prefix tuple = new UpdatePacket.Prefix();
 
             if (addPathCapabilityEnabled && !isVPN) {
                 tuple.pathId = BufferUtils.uint32(b);
@@ -267,27 +203,24 @@ public class MultiprotocolReachableNlri implements Attribute {
             tuple.length = tuple.length - (8 * 3 * labels.size());
 
             if (isVPN && byteCount >= 8) {
-                final VPNPrefixTuple vpnPrefixTuple = (VPNPrefixTuple) tuple;
+                final UpdatePacket.Prefix vpnPrefixTuple = tuple;
                 final int type = BufferUtils.uint16(b);
 
                 switch (type) {
                     case 0:
                         // Administrator subfield: 2 bytes, ASN
                         // Assigned Number subfield: 4 bytes, Number space number
-                        vpnPrefixTuple.rdAdministratorSubfield = String.valueOf(BufferUtils.uint16(b));
-                        vpnPrefixTuple.rdAssignedNumber = String.valueOf(BufferUtils.uint32(b));
+                        BufferUtils.skip(b, 6);
                         break;
                     case 1:
                         // Administrator subfield: 4 bytes, IP Address
                         // Assigned Number subfield: 2 bytes, Number space number
-                        vpnPrefixTuple.rdAdministratorSubfield = InetAddressUtils.str(InetAddress.getByAddress(BufferUtils.bytes(b, 4)));
-                        vpnPrefixTuple.rdAssignedNumber = String.valueOf(BufferUtils.uint16(b));
+                        BufferUtils.skip(b, 6);
                         break;
                     case 2:
                         // Administrator subfield: 4 bytes, 4-byte ASN
                         // Assigned Number subfield: 2 bytes, Number space number
-                        vpnPrefixTuple.rdAdministratorSubfield = String.valueOf(BufferUtils.uint32(b));
-                        vpnPrefixTuple.rdAssignedNumber = String.valueOf(BufferUtils.uint16(b));
+                        BufferUtils.skip(b, 6);
                         break;
                 }
                 byteCount -= 8;
@@ -296,9 +229,9 @@ public class MultiprotocolReachableNlri implements Attribute {
 
             if (byteCount > 0) {
                 final byte[] prefixBytes = BufferUtils.bytes(b, byteCount);
-                tuple.prefix = InetAddressUtils.str(isIPv4 ? InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 4)) : InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 16)));
+                tuple.prefix = isIPv4 ? InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 4)) : InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 16));
             } else {
-                tuple.prefix = isIPv4 ? "0.0.0.0" : "::";
+                tuple.prefix = InetAddressUtils.addr(isIPv4 ? "0.0.0.0" : "::");
             }
 
             return tuple;

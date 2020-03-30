@@ -37,6 +37,7 @@ import java.util.Optional;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.slf4j.Logger;
@@ -52,8 +53,8 @@ public class MultiprotocolUnreachableNlri implements Attribute {
     public final int length;
     public final byte[] nextHopBytes;
     public InetAddress nextHop;
-    public List<MultiprotocolReachableNlri.PrefixTuple> withdrawn;
-    public List<MultiprotocolReachableNlri.VPNPrefixTuple> vpnWithdrawn;
+    public List<UpdatePacket.Prefix> withdrawn;
+    public List<UpdatePacket.Prefix> vpnWithdrawn;
 
     public MultiprotocolUnreachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
@@ -79,11 +80,7 @@ public class MultiprotocolUnreachableNlri implements Attribute {
                 parseAfi_IPv4IPv6(true, buffer, peerInfo);
                 break;
             case MultiprotocolReachableNlri.BGP_AFI_BGPLS:
-                if (safi == MultiprotocolReachableNlri.BGP_SAFI_BGPLS) {
-                    MultiprotocolReachableNlri.parseLinkStateNlriData(buffer);
-                } else {
-                    LOG.info("MP_UNREACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
-                }
+                LOG.info("MP_UNREACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
                 break;
             case MultiprotocolReachableNlri.BGP_AFI_L2VPN:
                 if (nextHopBytes.length > 16) {
@@ -91,11 +88,7 @@ public class MultiprotocolUnreachableNlri implements Attribute {
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
                 }
-                if (safi == MultiprotocolReachableNlri.BGP_SAFI_EVPN) {
-                    MultiprotocolReachableNlri.parseEvpnNlriData(buffer);
-                } else {
-                    LOG.info("EVPN::parse SAFI=%d is not implemented yet, skipping", safi);
-                }
+                LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI=%d is not implemented yet, skipping", safi);
                 break;
             default:
                 LOG.info("MP_UNREACH AFI=%d is not implemented yet, skipping", afi);
@@ -109,11 +102,10 @@ public class MultiprotocolUnreachableNlri implements Attribute {
                 this.withdrawn = MultiprotocolReachableNlri.parseNlriData_IPv4IPv6(isIPv4, buffer, peerInfo);
                 break;
             case MultiprotocolReachableNlri.BGP_SAFI_NLRI_LABEL:
-                this.withdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(MultiprotocolReachableNlri.PrefixTuple.class, isIPv4, buffer, peerInfo);
+                this.withdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(isIPv4, buffer, peerInfo, false);
                 break;
             case MultiprotocolReachableNlri.BGP_SAFI_MPLS:
-                this.vpnWithdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(MultiprotocolReachableNlri.VPNPrefixTuple.class, isIPv4, buffer, peerInfo);
-
+                this.vpnWithdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(isIPv4, buffer, peerInfo, true);
                 break;
             default:
                 LOG.info("MP_UNREACH AFI=ipv4/ipv6 (%d) SAFI=%d is not implemented yet, skipping for now", isIPv4, this.safi);

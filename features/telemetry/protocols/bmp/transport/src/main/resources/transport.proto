@@ -128,6 +128,8 @@ message RouteMonitoringPacket {
     message Route {
         IpAddress prefix = 1;
         uint32 length = 2;
+        uint64 pathId = 3;
+        string labels = 4;
     }
 
     message PathAttribute {
@@ -204,40 +206,20 @@ message RouteMonitoringPacket {
             repeated PathAttribute path_attributes = 2;
         }
 
-        message Prefix {
-            uint32 type = 1;
-            uint32 length = 2;
-            string prefix = 3;
-            uint64 pathId = 4;
-            bool ipv4 = 5;
-            string labels = 6;
-        }
-
-        message VpnPrefix {
-            uint32 type = 1;
-            uint32 length = 2;
-            string prefix = 3;
-            uint64 pathId = 4;
-            bool ipv4 = 5;
-            string labels = 6;
-            string rdAdministratorSubfield = 7;
-            string rdAssignedNumber = 8;
-        }
-
         message MultiprotocolReachableNrli {
             uint32 afi = 1;
             uint32 safi = 2;
             IpAddress nextHop = 3;
-            repeated Prefix advertised = 4;
-            repeated VpnPrefix vpnAdvertised = 5;
+            repeated Route advertised = 4;
+            repeated Route vpnAdvertised = 5;
         }
 
         message MultiprotocolUnreachableNrli {
             uint32 afi = 1;
             uint32 safi = 2;
             IpAddress nextHop = 3;
-            repeated Prefix advertised = 4;
-            repeated VpnPrefix vpnAdvertised = 5;
+            repeated Route withdrawn = 4;
+            repeated Route vpnWithdrawn = 5;
         }
 
         bool optional = 1;

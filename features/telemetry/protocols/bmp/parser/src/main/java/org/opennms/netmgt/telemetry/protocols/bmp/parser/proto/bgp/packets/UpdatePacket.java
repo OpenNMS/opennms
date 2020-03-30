@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
@@ -79,9 +80,9 @@ public class UpdatePacket implements Packet {
     public UpdatePacket(final Header header, final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
-        this.withdrawRoutes = repeatRemaining(slice(buffer, uint16(buffer)), prefixBuffer -> new Prefix(prefixBuffer, flags));
+        this.withdrawRoutes = repeatRemaining(slice(buffer, uint16(buffer)), prefixBuffer -> new Prefix(prefixBuffer, flags, peerInfo));
         this.pathAttributes = repeatRemaining(slice(buffer, uint16(buffer)), pathAttributeBuffer -> new PathAttribute(pathAttributeBuffer, flags, peerInfo));
-        this.reachableRoutes = repeatRemaining(buffer, prefixBuffer -> new Prefix(prefixBuffer, flags));
+        this.reachableRoutes = repeatRemaining(buffer, prefixBuffer -> new Prefix(prefixBuffer, flags, peerInfo));
     }
 
     @Override
@@ -90,10 +91,20 @@ public class UpdatePacket implements Packet {
     }
 
     public static class Prefix {
-        public final int length;         // uint8
-        public final InetAddress prefix; // byte[length padded to 8 bits]
+        private static final int BGP_AFI_IPV4 = 1;
+        private static final int BGP_SAFI_UNICAST = 1;
+        public int length;         // uint8
+        public InetAddress prefix; // byte[length padded to 8 bits]
+        public String labels = "";
+        public long pathId = 0;
 
-        public Prefix(final ByteBuf buffer, final PeerFlags flags) {
+        public Prefix(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
+            final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(BGP_AFI_IPV4, BGP_SAFI_UNICAST) : false;
+
+            if (addPathCapabilityEnabled) {
+                this.pathId = uint32(buffer);
+            }
+
             this.length = uint8(buffer);
 
             // Create a buffer for the address with the size required to hold the full address (depending on the
@@ -107,11 +118,16 @@ public class UpdatePacket implements Packet {
             this.prefix = InetAddressUtils.getInetAddress(prefix);
         }
 
+        public Prefix() {
+        }
+
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
                     .add("length", this.length)
                     .add("prefix", this.prefix)
+                    .add("pathId", this.pathId)
+                    .add("labels", this.labels)
                     .toString();
         }
     }

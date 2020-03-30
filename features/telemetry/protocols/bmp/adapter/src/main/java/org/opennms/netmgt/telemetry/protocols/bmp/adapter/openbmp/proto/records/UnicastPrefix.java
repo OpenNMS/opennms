@@ -63,7 +63,7 @@ public class UnicastPrefix extends Record {
     public boolean atomicAgg;
     public boolean nextHopIpv4;
     public String originatorId;
-    public Integer pathId;
+    public Long pathId;
     public String labels;
     public boolean prePolicy;
     public boolean adjIn;

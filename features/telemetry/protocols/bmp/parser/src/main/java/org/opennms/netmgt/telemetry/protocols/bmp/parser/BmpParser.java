@@ -788,25 +788,19 @@ public class BmpParser implements TcpParser {
             public void visit(final MultiprotocolReachableNlri multiprotocolReachableNrli) {
                 final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli.newBuilder()
                         .addAllAdvertised(multiprotocolReachableNrli.advertised.stream().map(r -> {
-                            return Transport.RouteMonitoringPacket.PathAttribute.Prefix.newBuilder()
-                                    .setIpv4(r.ipv4)
-                                    .setLabels(r.labels)
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
                                     .setLength(r.length)
                                     .setPathId(r.pathId)
-                                    .setPrefix(r.prefix)
-                                    .setType(r.type)
+                                    .setPrefix(address(r.prefix))
                                     .build();
                         }).collect(Collectors.toList()))
                         .addAllVpnAdvertised(multiprotocolReachableNrli.vpnAdvertised.stream().map(r -> {
-                            return Transport.RouteMonitoringPacket.PathAttribute.VpnPrefix.newBuilder()
-                                    .setIpv4(r.ipv4)
-                                    .setLabels(r.labels)
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
                                     .setLength(r.length)
                                     .setPathId(r.pathId)
-                                    .setPrefix(r.prefix)
-                                    .setType(r.type)
-                                    .setRdAdministratorSubfield(r.rdAdministratorSubfield)
-                                    .setRdAssignedNumber(r.rdAssignedNumber)
+                                    .setPrefix(address(r.prefix))
                                     .build();
                         }).collect(Collectors.toList()))
                         .setAfi(multiprotocolReachableNrli.afi)
@@ -820,26 +814,20 @@ public class BmpParser implements TcpParser {
             @Override
             public void visit(final MultiprotocolUnreachableNlri multiprotocolUnreachableNlri) {
                 final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli.newBuilder()
-                        .addAllAdvertised(multiprotocolUnreachableNlri.withdrawn.stream().map(r -> {
-                            return Transport.RouteMonitoringPacket.PathAttribute.Prefix.newBuilder()
-                                    .setIpv4(r.ipv4)
-                                    .setLabels(r.labels)
+                        .addAllWithdrawn(multiprotocolUnreachableNlri.withdrawn.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
                                     .setLength(r.length)
                                     .setPathId(r.pathId)
-                                    .setPrefix(r.prefix)
-                                    .setType(r.type)
+                                    .setPrefix(address(r.prefix))
                                     .build();
                         }).collect(Collectors.toList()))
-                        .addAllVpnAdvertised(multiprotocolUnreachableNlri.vpnWithdrawn.stream().map(r -> {
-                            return Transport.RouteMonitoringPacket.PathAttribute.VpnPrefix.newBuilder()
-                                    .setIpv4(r.ipv4)
-                                    .setLabels(r.labels)
+                        .addAllVpnWithdrawn(multiprotocolUnreachableNlri.vpnWithdrawn.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
                                     .setLength(r.length)
                                     .setPathId(r.pathId)
-                                    .setPrefix(r.prefix)
-                                    .setType(r.type)
-                                    .setRdAdministratorSubfield(r.rdAdministratorSubfield)
-                                    .setRdAssignedNumber(r.rdAssignedNumber)
+                                    .setPrefix(address(r.prefix))
                                     .build();
                         }).collect(Collectors.toList()))
                         .setAfi(multiprotocolUnreachableNlri.afi)
