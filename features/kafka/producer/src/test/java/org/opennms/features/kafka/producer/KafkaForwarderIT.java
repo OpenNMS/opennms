@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
@@ -313,6 +314,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                         && e.getNodeCriteria().getForeignSource() != null)
                 .collect(Collectors.toList());
         assertThat(eventsWithFsAndFid, hasSize(greaterThanOrEqualTo(2)));
+        assertThat(eventsWithFsAndFid.get(0).getCreateTime(), greaterThan(0L));
 
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
