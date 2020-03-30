@@ -68,8 +68,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolReachableNrli;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolUnreachableNrli;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolReachableNlri;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolUnreachableNlri;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
@@ -785,7 +785,7 @@ public class BmpParser implements TcpParser {
             }
 
             @Override
-            public void visit(final MultiprotocolReachableNrli multiprotocolReachableNrli) {
+            public void visit(final MultiprotocolReachableNlri multiprotocolReachableNrli) {
                 final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli.newBuilder()
                         .addAllAdvertised(multiprotocolReachableNrli.advertised.stream().map(r -> {
                             return Transport.RouteMonitoringPacket.PathAttribute.Prefix.newBuilder()
@@ -818,9 +818,9 @@ public class BmpParser implements TcpParser {
             }
 
             @Override
-            public void visit(final MultiprotocolUnreachableNrli multiprotocolUnreachableNrli) {
+            public void visit(final MultiprotocolUnreachableNlri multiprotocolUnreachableNlri) {
                 final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli.newBuilder()
-                        .addAllAdvertised(multiprotocolUnreachableNrli.withdrawn.stream().map(r -> {
+                        .addAllAdvertised(multiprotocolUnreachableNlri.withdrawn.stream().map(r -> {
                             return Transport.RouteMonitoringPacket.PathAttribute.Prefix.newBuilder()
                                     .setIpv4(r.ipv4)
                                     .setLabels(r.labels)
@@ -830,7 +830,7 @@ public class BmpParser implements TcpParser {
                                     .setType(r.type)
                                     .build();
                         }).collect(Collectors.toList()))
-                        .addAllVpnAdvertised(multiprotocolUnreachableNrli.vpnWithdrawn.stream().map(r -> {
+                        .addAllVpnAdvertised(multiprotocolUnreachableNlri.vpnWithdrawn.stream().map(r -> {
                             return Transport.RouteMonitoringPacket.PathAttribute.VpnPrefix.newBuilder()
                                     .setIpv4(r.ipv4)
                                     .setLabels(r.labels)
@@ -842,9 +842,9 @@ public class BmpParser implements TcpParser {
                                     .setRdAssignedNumber(r.rdAssignedNumber)
                                     .build();
                         }).collect(Collectors.toList()))
-                        .setAfi(multiprotocolUnreachableNrli.afi)
-                        .setSafi(multiprotocolUnreachableNrli.safi)
-                        .setNextHop(address(multiprotocolUnreachableNrli.nextHop))
+                        .setAfi(multiprotocolUnreachableNlri.afi)
+                        .setSafi(multiprotocolUnreachableNlri.safi)
+                        .setNextHop(address(multiprotocolUnreachableNlri.nextHop))
                         .build();
 
                 attributesBuilder.setMpUnreachNrli(mpReachNrli);

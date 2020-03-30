@@ -44,18 +44,18 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
 
-public class MultiprotocolUnreachableNrli implements Attribute {
-    public static final Logger LOG = LoggerFactory.getLogger(MultiprotocolUnreachableNrli.class);
+public class MultiprotocolUnreachableNlri implements Attribute {
+    public static final Logger LOG = LoggerFactory.getLogger(MultiprotocolUnreachableNlri.class);
 
     public final int afi;
     public final int safi;
     public int length;
     public byte[] nextHopBytes;
     public InetAddress nextHop;
-    public List<MultiprotocolReachableNrli.PrefixTuple> withdrawn;
-    public List<MultiprotocolReachableNrli.VPNPrefixTuple> vpnWithdrawn;
+    public List<MultiprotocolReachableNlri.PrefixTuple> withdrawn;
+    public List<MultiprotocolReachableNlri.VPNPrefixTuple> vpnWithdrawn;
 
-    public MultiprotocolUnreachableNrli(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+    public MultiprotocolUnreachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
         this.safi = BufferUtils.uint8(buffer);
         this.length = BufferUtils.uint8(buffer);
@@ -72,27 +72,27 @@ public class MultiprotocolUnreachableNrli implements Attribute {
 
     void parseAfi(final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         switch (this.afi) {
-            case MultiprotocolReachableNrli.BGP_AFI_IPV6:
+            case MultiprotocolReachableNlri.BGP_AFI_IPV6:
                 parseAfi_IPv4IPv6(false, buffer, peerInfo);
                 break;
-            case MultiprotocolReachableNrli.BGP_AFI_IPV4:
+            case MultiprotocolReachableNlri.BGP_AFI_IPV4:
                 parseAfi_IPv4IPv6(true, buffer, peerInfo);
                 break;
-            case MultiprotocolReachableNrli.BGP_AFI_BGPLS:
-                if (safi == MultiprotocolReachableNrli.BGP_SAFI_BGPLS) {
-                    MultiprotocolReachableNrli.parseLinkStateNlriData(buffer);
+            case MultiprotocolReachableNlri.BGP_AFI_BGPLS:
+                if (safi == MultiprotocolReachableNlri.BGP_SAFI_BGPLS) {
+                    MultiprotocolReachableNlri.parseLinkStateNlriData(buffer);
                 } else {
                     LOG.info("MP_UNREACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
                 }
                 break;
-            case MultiprotocolReachableNrli.BGP_AFI_L2VPN:
+            case MultiprotocolReachableNlri.BGP_AFI_L2VPN:
                 if (nextHopBytes.length > 16) {
                     nextHop = InetAddressUtils.getInetAddress(Arrays.copyOf(nextHopBytes, 16));
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
                 }
-                if (safi == MultiprotocolReachableNrli.BGP_SAFI_EVPN) {
-                    MultiprotocolReachableNrli.parseEvpnNlriData(buffer);
+                if (safi == MultiprotocolReachableNlri.BGP_SAFI_EVPN) {
+                    MultiprotocolReachableNlri.parseEvpnNlriData(buffer);
                 } else {
                     LOG.info("EVPN::parse SAFI=%d is not implemented yet, skipping", safi);
                 }
@@ -105,14 +105,14 @@ public class MultiprotocolUnreachableNrli implements Attribute {
 
     void parseAfi_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) throws Exception {
         switch (this.safi) {
-            case MultiprotocolReachableNrli.BGP_SAFI_UNICAST:
-                this.withdrawn = MultiprotocolReachableNrli.parseNlriData_IPv4IPv6(isIPv4, buffer, peerInfo);
+            case MultiprotocolReachableNlri.BGP_SAFI_UNICAST:
+                this.withdrawn = MultiprotocolReachableNlri.parseNlriData_IPv4IPv6(isIPv4, buffer, peerInfo);
                 break;
-            case MultiprotocolReachableNrli.BGP_SAFI_NLRI_LABEL:
-                this.withdrawn = MultiprotocolReachableNrli.parseNlriData_LabelIPv4IPv6(MultiprotocolReachableNrli.PrefixTuple.class, isIPv4, buffer, peerInfo);
+            case MultiprotocolReachableNlri.BGP_SAFI_NLRI_LABEL:
+                this.withdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(MultiprotocolReachableNlri.PrefixTuple.class, isIPv4, buffer, peerInfo);
                 break;
-            case MultiprotocolReachableNrli.BGP_SAFI_MPLS:
-                this.vpnWithdrawn = MultiprotocolReachableNrli.parseNlriData_LabelIPv4IPv6(MultiprotocolReachableNrli.VPNPrefixTuple.class, isIPv4, buffer, peerInfo);
+            case MultiprotocolReachableNlri.BGP_SAFI_MPLS:
+                this.vpnWithdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(MultiprotocolReachableNlri.VPNPrefixTuple.class, isIPv4, buffer, peerInfo);
 
                 break;
             default:

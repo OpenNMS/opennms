@@ -64,8 +64,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolReachableNrli;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolUnreachableNrli;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolReachableNlri;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolUnreachableNlri;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
@@ -198,12 +198,12 @@ public class BlackboxTest implements Packet.Visitor {
         }
 
         @Override
-        public void visit(MultiprotocolReachableNrli multiprotocolReachableNrli) {
+        public void visit(MultiprotocolReachableNlri multiprotocolReachableNlri) {
             fail("Wrong Attribute MultiprotocolReachableNrli");
         }
 
         @Override
-        public void visit(MultiprotocolUnreachableNrli multiprotocolUnreachableNrli) {
+        public void visit(MultiprotocolUnreachableNlri multiprotocolUnreachableNlri) {
             fail("Wrong Attribute MultiprotocolUnreachableNrli");
         }
     }

@@ -47,8 +47,8 @@ import com.google.common.primitives.UnsignedLong;
 
 import io.netty.buffer.ByteBuf;
 
-public class MultiprotocolReachableNrli implements Attribute {
-    public static final Logger LOG = LoggerFactory.getLogger(MultiprotocolReachableNrli.class);
+public class MultiprotocolReachableNlri implements Attribute {
+    public static final Logger LOG = LoggerFactory.getLogger(MultiprotocolReachableNlri.class);
 
     public static class PrefixTuple {
         public int type = 0;
@@ -105,7 +105,7 @@ public class MultiprotocolReachableNrli implements Attribute {
     public List<PrefixTuple> advertised;
     public List<VPNPrefixTuple> vpnAdvertised;
 
-    public MultiprotocolReachableNrli(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+    public MultiprotocolReachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
         this.safi = BufferUtils.uint8(buffer);
         this.length = BufferUtils.uint8(buffer);
