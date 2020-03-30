@@ -49,8 +49,8 @@ public class MultiprotocolUnreachableNlri implements Attribute {
 
     public final int afi;
     public final int safi;
-    public int length;
-    public byte[] nextHopBytes;
+    public final int length;
+    public final byte[] nextHopBytes;
     public InetAddress nextHop;
     public List<MultiprotocolReachableNlri.PrefixTuple> withdrawn;
     public List<MultiprotocolReachableNlri.VPNPrefixTuple> vpnWithdrawn;

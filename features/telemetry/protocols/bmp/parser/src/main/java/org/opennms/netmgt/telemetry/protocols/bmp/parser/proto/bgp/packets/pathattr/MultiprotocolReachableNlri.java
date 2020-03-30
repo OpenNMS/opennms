@@ -99,8 +99,8 @@ public class MultiprotocolReachableNlri implements Attribute {
 
     public final int afi;
     public final int safi;
-    public int length;
-    public byte[] nextHopBytes;
+    public final int length;
+    public final byte[] nextHopBytes;
     public InetAddress nextHop;
     public List<PrefixTuple> advertised;
     public List<VPNPrefixTuple> vpnAdvertised;
@@ -160,11 +160,11 @@ public class MultiprotocolReachableNlri implements Attribute {
 
     static List<Object> parseLinkStateNlriData(final ByteBuf buffer) {
         return BufferUtils.repeatRemaining(buffer, b -> {
-            int nrlitype = BufferUtils.uint16(b);
-            int nrliLength = BufferUtils.uint16(b);
+            final int nrlitype = BufferUtils.uint16(b);
+            final int nrliLength = BufferUtils.uint16(b);
 
-            int proto_id = BufferUtils.uint8(b);
-            UnsignedLong id = BufferUtils.uint64(b);
+            final int proto_id = BufferUtils.uint8(b);
+            final UnsignedLong id = BufferUtils.uint64(b);
             switch (nrlitype) {
                 case NLRI_TYPE_NODE:
                     // TODO: parse node
@@ -235,8 +235,8 @@ public class MultiprotocolReachableNlri implements Attribute {
             }
 
             tuple.length = BufferUtils.uint8(b);
-            int byteCount = tuple.length / 8 + (tuple.length % 8 > 0 ? 1 : 0);
-            byte[] prefixBytes = BufferUtils.bytes(b, byteCount);
+            final int byteCount = tuple.length / 8 + (tuple.length % 8 > 0 ? 1 : 0);
+            final byte[] prefixBytes = BufferUtils.bytes(b, byteCount);
 
             tuple.prefix = InetAddressUtils.str(isIPv4 ? InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 4)) : InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 16)));
 
@@ -268,7 +268,7 @@ public class MultiprotocolReachableNlri implements Attribute {
 
             if (isVPN && byteCount >= 8) {
                 final VPNPrefixTuple vpnPrefixTuple = (VPNPrefixTuple) tuple;
-                int type = BufferUtils.uint16(b);
+                final int type = BufferUtils.uint16(b);
 
                 switch (type) {
                     case 0:
@@ -295,7 +295,7 @@ public class MultiprotocolReachableNlri implements Attribute {
             }
 
             if (byteCount > 0) {
-                byte[] prefixBytes = BufferUtils.bytes(b, byteCount);
+                final byte[] prefixBytes = BufferUtils.bytes(b, byteCount);
                 tuple.prefix = InetAddressUtils.str(isIPv4 ? InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 4)) : InetAddressUtils.getInetAddress(Arrays.copyOf(prefixBytes, 16)));
             } else {
                 tuple.prefix = isIPv4 ? "0.0.0.0" : "::";
@@ -309,11 +309,11 @@ public class MultiprotocolReachableNlri implements Attribute {
         final List<String> labels = new ArrayList<>();
 
         while (buffer.readableBytes() > 0) {
-            int data = BufferUtils.uint24(buffer);
+            final int data = BufferUtils.uint24(buffer);
 
-            int label = data >> 4;
-            int exp = (data & 0x0000000E) >> 1;
-            int bos = (data & 0x00000001);
+            final int label = data >> 4;
+            final int exp = (data & 0x0000000E) >> 1;
+            final int bos = (data & 0x00000001);
 
             labels.add(String.valueOf(label));
 
