@@ -495,6 +495,14 @@ jobs:
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
                      BUILD_BRANCH="${CIRCLE_BRANCH}"
                 ;;
+              "release-"*)
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="release-candidate" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
               "develop")
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
                      DOCKER_FLAGS=--push \
