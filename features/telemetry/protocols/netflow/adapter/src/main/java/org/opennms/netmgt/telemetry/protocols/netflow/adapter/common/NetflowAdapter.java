@@ -38,13 +38,13 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.MetricRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-public abstract class AbstractNetflowAdapter extends AbstractFlowAdapter<FlowMessage> {
+public class NetflowAdapter extends AbstractFlowAdapter<FlowMessage> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractNetflowAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetflowAdapter.class);
 
-    public AbstractNetflowAdapter(final String name,
-                                  final MetricRegistry metricRegistry,
-                                  final FlowRepository flowRepository) {
+    public NetflowAdapter(final String name,
+                          final MetricRegistry metricRegistry,
+                          final FlowRepository flowRepository) {
         super(name, metricRegistry, flowRepository, new NetflowConverter());
     }
 

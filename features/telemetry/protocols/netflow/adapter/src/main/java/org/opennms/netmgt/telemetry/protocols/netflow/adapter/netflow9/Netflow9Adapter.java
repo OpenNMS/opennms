@@ -29,11 +29,11 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.AbstractNetflowAdapter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class Netflow9Adapter extends AbstractNetflowAdapter {
+public class Netflow9Adapter extends NetflowAdapter {
 
     public Netflow9Adapter(final String name,
                            final MetricRegistry metricRegistry,

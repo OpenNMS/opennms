@@ -29,11 +29,11 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.AbstractNetflowAdapter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class IpfixAdapter extends AbstractNetflowAdapter {
+public class IpfixAdapter extends NetflowAdapter {
 
 
     public IpfixAdapter(final String name,
