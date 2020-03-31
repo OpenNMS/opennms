@@ -65,7 +65,7 @@ if (locator == null) {
                         .append(resource.getPath())
                         .append("?v=").append(lastModified)
                         .append("\"");
-                    if (mediaString != null && mediaString.trim().equals("")) {
+                    if (mediaString != null && !mediaString.trim().equals("")) {
                         sb.append(mediaString);
                     }
                     sb.append(">");
