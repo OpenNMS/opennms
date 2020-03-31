@@ -47,7 +47,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Head
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.NetFlow9MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
@@ -87,7 +87,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
 
     @Override
     protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
-        NetFlow9MessageBuilder builder = new NetFlow9MessageBuilder(record, enrichment);
+        Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
         return builder.buildData();
     }
 

@@ -116,8 +116,6 @@ public class IpFixMessageBuilder {
     private Long flowInactiveTimeout;
     private Long numBytes;
     private Long numPackets;
-    private Long firstSwitched;
-    private Long lastSwitched;
 
     public IpFixMessageBuilder(Iterable<Value<?>> values, RecordEnrichment enrichment) {
         this.values = values;
@@ -176,7 +174,7 @@ public class IpFixMessageBuilder {
                 postDot1qCustomerVlanId)
                 .ifPresent(vlanId -> builder.setVlan(setIntValue(vlanId.intValue())));
 
-        long timeStamp = exportTime * 1000;
+        long timeStamp = this.exportTime  != null ? exportTime * 1000 : 0;
         builder.setTimestamp(timeStamp);
 
         // Set first switched
@@ -192,12 +190,10 @@ public class IpFixMessageBuilder {
                 flowStartMicroseconds,
                 flowStartNanoseconds).map(Instant::toEpochMilli);
         if (firstSwitchedInMilli.isPresent()) {
-            this.firstSwitched = firstSwitchedInMilli.get();
             builder.setFirstSwitched(setLongValue(firstSwitchedInMilli.get()));
         } else {
             first(flowStartDeltaMicroseconds,
                     flowStartSysUpTime).ifPresent(firstSwitched -> {
-                        this.firstSwitched = firstSwitched;
                         builder.setFirstSwitched(setLongValue(firstSwitched));
                     }
             );
@@ -218,9 +214,9 @@ public class IpFixMessageBuilder {
             builder.setLastSwitched(setLongValue(lastSwitchedInMilli.get()));
         } else {
             first(flowEndDeltaMicroseconds,
-                    flowEndSysUpTime).ifPresent(lastSwitchedValue ->
-                    builder.setLastSwitched(setLongValue(lastSwitchedValue))
-            );
+                    flowEndSysUpTime).ifPresent(lastSwitchedValue -> {
+                builder.setLastSwitched(setLongValue(lastSwitchedValue));
+            });
         }
 
         first(packetDeltaCount,
@@ -341,19 +337,18 @@ public class IpFixMessageBuilder {
                 builder.setSamplingInterval(setDoubleValue(1.0));
             }
         }
-        Long deltaSwitched = null;
-        if (flowActiveTimeout != null && flowInactiveTimeout != null) {
-            long activeTimeout = flowActiveTimeout * 1000L;
-            long inactiveTimeout = flowInactiveTimeout * 1000L;
-            MessageUtils.Timeout timeout = new MessageUtils.Timeout(activeTimeout, inactiveTimeout);
-            deltaSwitched = Optional.of(timeout)
-                    .map(timeoutValue -> (this.numBytes > 0 || this.numPackets > 0) ? timeoutValue.getActive() : timeout.getInactive())
-                    .map(timeoutValue -> this.lastSwitched - timeoutValue)
-                    .map(t -> Math.max(this.lastSwitched, t)).orElse(null);
-        }
-        if (deltaSwitched == null && this.firstSwitched != null) {
-            builder.setDeltaSwitched(setLongValue(firstSwitched));
-        }
+
+        // Build delta switched
+        Long firstSwitched = builder.hasFirstSwitched() ? builder.getFirstSwitched().getValue() : null;
+        Long lastSwitched = builder.hasLastSwitched() ? builder.getLastSwitched().getValue() : null;
+
+        Timeout timeout = new Timeout(flowActiveTimeout, flowInactiveTimeout);
+        timeout.setFirstSwitched(firstSwitched);
+        timeout.setLastSwitched(lastSwitched);
+        timeout.setNumBytes(this.numBytes);
+        timeout.setNumPackets(this.numPackets);
+        Long deltaSwitched = timeout.getDeltaSwitched();
+        getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
 
         builder.setNetflowVersion(NetflowVersion.IPFIX);
         return builder.build().toByteArray();

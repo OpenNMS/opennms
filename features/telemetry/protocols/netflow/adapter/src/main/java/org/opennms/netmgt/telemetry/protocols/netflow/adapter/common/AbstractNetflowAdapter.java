@@ -45,7 +45,7 @@ public abstract class AbstractNetflowAdapter extends AbstractFlowAdapter<FlowMes
     public AbstractNetflowAdapter(final String name,
                                   final MetricRegistry metricRegistry,
                                   final FlowRepository flowRepository) {
-        super(name, metricRegistry, flowRepository, new NetFlowConverter());
+        super(name, metricRegistry, flowRepository, new NetflowConverter());
     }
 
     @Override

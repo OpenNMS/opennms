@@ -46,7 +46,7 @@ import org.junit.Test;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetFlowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
@@ -62,7 +62,7 @@ import io.netty.buffer.Unpooled;
 
 
 /**
- * This test validates netflow protobuf values against bson output.
+ * This test validates netflow protobuf values against json output.
  */
 public class IpFixProtobufValidationTest {
 
@@ -71,12 +71,14 @@ public class IpFixProtobufValidationTest {
     @Test
     public void canValidateIpFixFlowsWithJsonOutput() {
         // Generate flows from existing packet payloads
-        ipFixConverter = new NetFlowConverter();
-        List<Flow> flows = getFlowsForPayloadsInSession("/flows/ipfix.dat",
-                "/flows/ipfix_test.dat");
+        ipFixConverter = new NetflowConverter();
+        List<Flow> flows = getFlowsForPayloadsInSession("/flows/ipfix_test_1.dat",
+                "/flows/ipfix_test_2.dat");
         assertThat(flows, hasSize(8));
-        ipFixConverter = new Utils.JsonConverter();
-        List<Flow> jsonData = ipFixConverter.convert(IpfixTestData.ipFixData);
+        Utils.JsonConverter jsonConverter = new Utils.JsonConverter();
+        List<String> jsonStrings = jsonConverter.getJsonStringFromResources("/flows/ipfix_test_1.json",
+                "/flows/ipfix_test_2.json");
+        List<Flow> jsonData = jsonConverter.convert(jsonStrings);
         assertThat(jsonData, hasSize(8));
         for (int i = 0; i < 8; i++) {
             Assert.assertEquals(flows.get(i).getFlowSeqNum(), jsonData.get(i).getFlowSeqNum());
@@ -136,6 +138,7 @@ public class IpFixProtobufValidationTest {
         for (byte[] payload : payloads) {
             final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
+
             try {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
@@ -153,6 +156,7 @@ public class IpFixProtobufValidationTest {
                 throw new RuntimeException(e);
             }
         }
+
         return flows;
     }
 }

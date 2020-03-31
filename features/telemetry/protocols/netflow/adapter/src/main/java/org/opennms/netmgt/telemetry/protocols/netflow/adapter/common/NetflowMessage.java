@@ -35,12 +35,12 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
 import com.google.common.base.Strings;
 
-public class NetFlowMessage implements Flow {
+public class NetflowMessage implements Flow {
 
     private final FlowMessage flowMessageProto;
 
 
-    public NetFlowMessage(FlowMessage flowMessageProto) {
+    public NetflowMessage(FlowMessage flowMessageProto) {
         this.flowMessageProto = flowMessageProto;
     }
 

@@ -28,22 +28,29 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter;
 
-import java.net.InetAddress;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetFlowMessage;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.NetFlow9MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow5MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 
@@ -51,17 +58,12 @@ public class Utils {
 
 
     public static byte[] buildAndSerialize(Protocol protocol, Iterable<Value<?>> record) {
-        RecordEnrichment enrichment = new RecordEnrichment() {
-            @Override
-            public Optional<String> getHostnameFor(InetAddress srcAddress) {
-                return Optional.empty();
-            }
-        };
+        RecordEnrichment enrichment = (address -> Optional.empty());
         if (protocol.equals(Protocol.NETFLOW5)) {
             Netflow5MessageBuilder builder = new Netflow5MessageBuilder(record, enrichment);
             return builder.buildData();
         } else if (protocol.equals(Protocol.NETFLOW9)) {
-            NetFlow9MessageBuilder builder = new NetFlow9MessageBuilder(record, enrichment);
+            Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
             return builder.buildData();
         } else if (protocol.equals(Protocol.IPFIX)) {
             IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
@@ -70,20 +72,46 @@ public class Utils {
         return null;
     }
 
-    public static class JsonConverter implements Converter<String[]> {
+    public static class JsonConverter implements Converter<List<String>> {
 
-        @Override
-        public List<Flow> convert(String[] packets) {
-            List<Flow> flows = new ArrayList<>();
-            for(String packet : packets) {
-                FlowMessage.Builder builder = FlowMessage.newBuilder();
-                try {
-                    JsonFormat.parser().merge(packet, builder);
-                    flows.add(new NetFlowMessage(builder.build()));
-                } catch (InvalidProtocolBufferException e) {
-                    //pass
+
+        public List<String> getJsonStringFromResources(String... resources) {
+            final List<String> jsonStrings = new ArrayList<>();
+            for (String resource : resources) {
+                URL resourceURL = getClass().getResource(resource);
+                try (FileReader reader = new FileReader(resourceURL.toURI().getPath())) {
+                    JsonReader jsonReader = new JsonReader(reader);
+                    jsonReader.setLenient(false);
+                    JsonParser jsonParser = new JsonParser();
+                    JsonElement jsonElement = jsonParser.parse(jsonReader);
+
+                    if(jsonElement instanceof JsonArray) {
+                        JsonArray jsonArray = jsonElement.getAsJsonArray();
+                        for(JsonElement json: jsonArray) {
+                            jsonStrings.add(json.toString());
+                        }
+                    }
+                } catch (IOException | URISyntaxException e) {
+                    throw new RuntimeException(e);
                 }
             }
+            return jsonStrings;
+        }
+
+        @Override
+        public List<Flow> convert(List<String> resources) {
+
+            List<Flow> flows = new ArrayList<>();
+
+            resources.forEach(resource -> {
+                try {
+                    FlowMessage.Builder builder = FlowMessage.newBuilder();
+                    JsonFormat.parser().merge(resource, builder);
+                    flows.add(new NetflowMessage(builder.build()));
+                } catch (InvalidProtocolBufferException e) {
+                    //Ignore.
+                }
+            });
             return flows;
         }
     }

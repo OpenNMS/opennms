@@ -38,7 +38,6 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setLongValue;
 
 import java.net.InetAddress;
-import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -47,7 +46,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
 
-public class NetFlow9MessageBuilder {
+public class Netflow9MessageBuilder {
 
     private final FlowMessage.Builder builder;
     private final Iterable<Value<?>> values;
@@ -75,7 +74,7 @@ public class NetFlow9MessageBuilder {
     private Long firstSwitched;
     private Long lastSwitched;
 
-    public NetFlow9MessageBuilder(Iterable<Value<?>> values, RecordEnrichment enrichment) {
+    public Netflow9MessageBuilder(Iterable<Value<?>> values, RecordEnrichment enrichment) {
         this.values = values;
         this.enrichment = enrichment;
         builder = FlowMessage.newBuilder();
@@ -86,17 +85,17 @@ public class NetFlow9MessageBuilder {
 
         values.forEach(this::addField);
 
-        long timeStampInMsecs = this.unixSecs * 1000;
+        long timeStampInMsecs = this.unixSecs != null ? this.unixSecs * 1000 : 0;
+        builder.setTimestamp(timeStampInMsecs);
+
         long bootTime = timeStampInMsecs - this.sysUpTime;
+
         if (this.firstSwitched != null) {
-            Long firstSwitched = this.firstSwitched + bootTime;
-            builder.setFirstSwitched(setLongValue(firstSwitched));
-            this.firstSwitched = firstSwitched;
+            builder.setFirstSwitched(setLongValue(this.firstSwitched + bootTime));
         }
         if(this.lastSwitched != null) {
             builder.setLastSwitched(setLongValue(this.lastSwitched + bootTime));
         }
-        builder.setTimestamp(timeStampInMsecs);
 
         // Set Destination address and host name.
         first(ipv6DstAddress, ipv4DstAddress).ifPresent(inetAddress -> {
@@ -126,23 +125,18 @@ public class NetFlow9MessageBuilder {
         // set vlan
         first(srcVlan, dstVlan).ifPresent( vlan -> builder.setVlan(setIntValue(vlan.intValue())));
 
-        builder.setNetflowVersion(NetflowVersion.V9);
+        Long firstSwitched = builder.hasFirstSwitched() ? builder.getFirstSwitched().getValue() : null;
+        Long lastSwitched = builder.hasLastSwitched() ? builder.getLastSwitched().getValue() : null;
 
-        Long deltaSwitched = null;
-        if(flowActiveTimeout != null && flowInActiveTimeout != null) {
-            long activeTimeout = flowActiveTimeout * 1000L;
-            long inactiveTimeout = flowInActiveTimeout * 1000L;
-            MessageUtils.Timeout timeout = new MessageUtils.Timeout(activeTimeout, inactiveTimeout);
-            deltaSwitched = Optional.of(timeout)
-                    .map(timeoutValue -> (this.numBytes > 0  || this.numPackets > 0) ? timeoutValue.active : timeout.inactive)
-                    .map(timeoutValue -> lastSwitched - timeoutValue)
-                    .map(t -> Math.max(lastSwitched, t)).orElse(null);
-        }
-        if(deltaSwitched == null && this.firstSwitched != null) {
-            deltaSwitched = this.firstSwitched;
-        }
+        Timeout timeout = new Timeout(flowActiveTimeout, flowInActiveTimeout);
+        timeout.setFirstSwitched(firstSwitched);
+        timeout.setLastSwitched(lastSwitched);
+        timeout.setNumBytes(this.numBytes);
+        timeout.setNumPackets(this.numPackets);
+        Long deltaSwitched = timeout.getDeltaSwitched();
         getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
 
+        builder.setNetflowVersion(NetflowVersion.V9);
         return builder.build().toByteArray();
     }
 

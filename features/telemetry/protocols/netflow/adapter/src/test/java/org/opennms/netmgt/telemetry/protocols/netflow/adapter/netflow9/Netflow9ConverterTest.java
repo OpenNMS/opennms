@@ -48,7 +48,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetFlowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
@@ -64,7 +64,7 @@ import io.netty.buffer.Unpooled;
 
 public class Netflow9ConverterTest {
 
-    private NetFlowConverter nf9Converter = new NetFlowConverter();
+    private NetflowConverter nf9Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow9Flows() {

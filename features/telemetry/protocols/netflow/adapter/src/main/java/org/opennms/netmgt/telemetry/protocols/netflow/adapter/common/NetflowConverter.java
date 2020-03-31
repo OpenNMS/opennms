@@ -35,10 +35,10 @@ import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
-public class NetFlowConverter implements Converter<FlowMessage> {
+public class NetflowConverter implements Converter<FlowMessage> {
 
     @Override
     public List<Flow> convert(FlowMessage packet) {
-        return Collections.singletonList(new NetFlowMessage(packet));
+        return Collections.singletonList(new NetflowMessage(packet));
     }
 }

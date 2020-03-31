@@ -48,7 +48,7 @@ import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetFlowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
@@ -62,7 +62,7 @@ import io.netty.buffer.Unpooled;
 
 public class Netflow5ConverterTest {
 
-    private NetFlowConverter nf5Converter = new NetFlowConverter();
+    private NetflowConverter nf5Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow5Flows() {

@@ -88,23 +88,6 @@ public class MessageUtils {
                 .findFirst();
     }
 
-    public static class Timeout {
-        protected final long active;
-        protected final long inactive;
-
-        public Timeout(final long active, final long inactive) {
-            this.active = active;
-            this.inactive = inactive;
-        }
-
-        public long getActive() {
-            return this.active;
-        }
-
-        public long getInactive() {
-            return this.inactive;
-        }
-    }
 
     static Optional<UInt64Value> getUInt64Value(Value<?> value) {
         Long longValue = getLongValue(value);

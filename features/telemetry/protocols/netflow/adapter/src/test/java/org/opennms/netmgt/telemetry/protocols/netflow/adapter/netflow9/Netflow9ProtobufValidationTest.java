@@ -47,7 +47,7 @@ import org.junit.Test;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetFlowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
@@ -63,7 +63,7 @@ import io.netty.buffer.Unpooled;
 
 
 /**
- * This test validates netflow protobuf values against bson output.
+ * This test validates netflow protobuf values against json output.
  */
 public class Netflow9ProtobufValidationTest {
 
@@ -71,17 +71,20 @@ public class Netflow9ProtobufValidationTest {
 
 
     @Test
-    public void canValidateNetflow9FlowsWithBson() {
+    public void canValidateNetflow9FlowsWithJsonOutput() {
         // Generate flows from existing packet payloads
-        nf9Converter = new NetFlowConverter();
+        nf9Converter = new NetflowConverter();
         List<Flow> flows = getFlowsForPayloadsInSession("/flows/netflow9.dat",
-                                                        "/flows/netflow9_template.dat",
-                                                        "/flows/netflow9_records.dat");
+                "/flows/netflow9_template.dat",
+                "/flows/netflow9_records.dat");
+
         assertThat(flows, hasSize(12));
-        nf9Converter = new Utils.JsonConverter();
-        List<Flow> jsonFlows = nf9Converter.convert(Netflow9TestData.Netflow9Message);
+        Utils.JsonConverter jsonConverter = new Utils.JsonConverter();
+        List<String> jsonStrings = jsonConverter.getJsonStringFromResources("/flows/netflow9.json",
+                "/flows/netflow9_1.json");
+        List<Flow> jsonFlows = jsonConverter.convert(jsonStrings);
         assertThat(jsonFlows, hasSize(12));
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 12; i++) {
             Assert.assertEquals(flows.get(i).getFlowSeqNum(), jsonFlows.get(i).getFlowSeqNum());
             Assert.assertEquals(flows.get(i).getFlowRecords(), jsonFlows.get(i).getFlowRecords());
             Assert.assertEquals(flows.get(i).getTimestamp(), jsonFlows.get(i).getTimestamp());
@@ -137,6 +140,7 @@ public class Netflow9ProtobufValidationTest {
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
         final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+
         for (byte[] payload : payloads) {
             final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
@@ -153,12 +157,12 @@ public class Netflow9ProtobufValidationTest {
                         throw new RuntimeException(e);
 
                     }
-
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);
             }
         }
+
         return flows;
     }
 }
