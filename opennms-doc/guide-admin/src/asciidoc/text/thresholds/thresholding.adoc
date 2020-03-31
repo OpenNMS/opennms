@@ -15,10 +15,10 @@ _{opennms-product-name}_ uses four thresholding algorithms that trigger an event
 * *Relative* - changes by percent (e.g., available disk space changes more than 5% from the last poll)
 
 These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression). 
-You can also create notifications for threshold events [insert cross-reference]. 
+You can also create notifications for threshold events #TODO: insert cross-reference#. 
 
-_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. [is this information too technical?]
-This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc. [do we need to list protocols?]
+_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. #TODO: is this information too technical?#
+This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc. #do we need to list protocols?
 
 [[threshold-bw]]
 === Basic Walk-through – Thresholding
@@ -133,7 +133,7 @@ This procedure describes how to ....
 == Creating a Resource Filter for a Threshold
 Resource filters allow you to define conditions where you apply or do not apply the threshold (e.g., you have a file system that is read only, it will always be at 100% utilization, so you don't necessarily want to trigger on it).
 These filters can be as simple or as complex as required, by using and/or operators for multiple filters. 
-Let's create a resource filter for [one of our previous procedures].
+Let's create a resource filter for #TODO: one of our previous procedures#.
 
 
 == General Thresholding Tasks
@@ -154,7 +154,7 @@ For example,
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold. 
 For example, "Number of Processes" or "System Uptime":
 +
-image::thresholding/graphs.png[]
+image::thresholding/graphs.png[Thresholding graph, 200]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime"):
 
@@ -210,9 +210,9 @@ We will create a threshold group called "demo_group". [better name?]
 
 . Click `Edit` to edit it. 
 
- [add information, then show how it looks in the _thresholds.xml_ file]
+ #TODO: add information, then show how it looks in the _thresholds.xml_ file#
 
-The following is a sample of how the threshold appears in the _thresholds.xml_ file: [update and label]
+The following is a sample of how the threshold appears in the _thresholds.xml_ file: #TODO: update and label#
 
 [source]
 ----
