@@ -24,19 +24,19 @@ defaults: &defaults
     from_branch:
       description: the auto-merge source branch
       type: string
-      default: jira/NMS-12628
+      default: foundation-2016
     from_branch_label:
       description: the auto-merge source branch (escaped, no slashes)
       type: string
-      default: jira-NMS-12628
+      default: foundation-2016
     to_branch:
       description: the auto-merge target branch
       type: string
-      default: jira/NMS-12628-master
+      default: foundation-2017
     to_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: jira-NMS-12628-master
+      default: foundation-2017
 
 docker_container_config: &docker_container_config
   executor: docker-executor
