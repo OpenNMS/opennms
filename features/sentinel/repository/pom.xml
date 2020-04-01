@@ -63,6 +63,7 @@
                                 <feature>sentinel-persistence</feature>
                                 <feature>sentinel-jms</feature>
                                 <feature>sentinel-telemetry</feature>
+                                <feature>sentinel-telemetry-bmp</feature>
                                 <feature>sentinel-telemetry-jti</feature>
                                 <feature>sentinel-telemetry-nxos</feature>
                                 <feature>sentinel-flows</feature>
@@ -345,6 +346,11 @@
         <dependency>
             <groupId>org.opennms.features.sentinel</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.bmp.adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

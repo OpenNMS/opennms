@@ -116,6 +116,18 @@ public class TcpListener implements Listener {
                                         session.parse(in)
                                                .ifPresent(out::add);
                                     }
+
+                                    @Override
+                                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                        super.channelActive(ctx);
+                                        session.active();
+                                    }
+
+                                    @Override
+                                    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+                                        super.channelInactive(ctx);
+                                        session.inactive();
+                                    }
                                 })
                                 .addLast(new SimpleChannelInboundHandler<CompletableFuture<?>>() {
                                     @Override
@@ -134,6 +146,8 @@ public class TcpListener implements Listener {
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
+
+                                        session.inactive();
 
                                         ctx.close();
                                     }

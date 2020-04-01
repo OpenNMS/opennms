@@ -28,24 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 
-import org.bson.BsonDocument;
-import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class IpfixAdapter extends AbstractFlowAdapter<BsonDocument> {
+public class IpfixAdapter extends NetflowAdapter {
 
-    public IpfixAdapter(final String name,
+    public IpfixAdapter(final AdapterDefinition adapterConfig,
                         final MetricRegistry metricRegistry,
                         final FlowRepository flowRepository) {
-        super(name, metricRegistry, flowRepository, new IpfixConverter());
+        super(adapterConfig, metricRegistry, flowRepository);
     }
 
-    @Override
-    protected BsonDocument parse(TelemetryMessageLogEntry message) {
-        return new RawBsonDocument(message.getByteArray());
-    }
 }

@@ -29,7 +29,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols</groupId>
-      <artifactId>org.opennms.features.telemetry.protocols.collection</artifactId>
+      <artifactId>org.opennms.features.telemetry.protocols.adapters</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

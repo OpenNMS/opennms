@@ -46,8 +46,7 @@ public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final NxosGpbAdapter adapter = new NxosGpbAdapter(adapterConfig.getName(), getTelemetryRegistry().getMetricRegistry());
-        adapter.setConfig(adapterConfig);
+        final NxosGpbAdapter adapter = new NxosGpbAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry());
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
         adapter.setNodeDao(getNodeDao());

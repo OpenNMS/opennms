@@ -13,5 +13,6 @@
   <modules>
     <module>parser</module>
     <module>adapter</module>
+    <module>transport</module>
   </modules>
 </project>
