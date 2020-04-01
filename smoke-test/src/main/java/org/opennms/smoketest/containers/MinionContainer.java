@@ -98,10 +98,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT);
-                    if (profile.isIcmpSupportEnabled()) {
-                        // Run as root when ICMP is enabled
-                        createCmd.withUser("root");
-                    }
                 })
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
