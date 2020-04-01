@@ -398,7 +398,6 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-full
-            - integration-test
           filters:
             branches:
               only: merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
@@ -408,7 +407,6 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-full
-            - integration-test
           filters:
             branches:
               only:
