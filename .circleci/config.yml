@@ -7,11 +7,38 @@ executors:
   debian-build-executor:
     docker:
       - image: opennms/build-env:debian-jdk8-b3572
+  docker-executor:
+    docker:
+      - image: docker:19.03.0-git
   integration-test-executor:
     machine: true
   smoke-test-executor:
     machine:
       image: ubuntu-1604:201903-01
+
+# NOTE: the "_label" versions of these are for the case when your source or target
+# branches have slashes in them, that way the merge branch gets created properly
+defaults: &defaults
+  parameters:
+    from_branch:
+      description: the auto-merge source branch
+      type: string
+      default: release-26.0.0
+    from_branch_label:
+      description: the auto-merge source branch (escaped, no slashes)
+      type: string
+      default: release-26.0.0
+    to_branch:
+      description: the auto-merge target branch
+      type: string
+      default: develop
+    to_branch_label:
+      description: the auto-merge target branch (escaped, no slashes)
+      type: string
+      default: develop
+
+docker_container_config: &docker_container_config
+  executor: docker-executor
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
@@ -304,6 +331,7 @@ workflows:
           requires:
             - integration-test-with-coverage
   build-deploy:
+    <<: *defaults
     jobs:
       - build
       - tarball-assembly:
@@ -334,6 +362,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -348,6 +377,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
@@ -357,6 +387,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /^release-.*/
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
@@ -365,6 +396,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /^release-.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -378,6 +410,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
           requires:
@@ -390,6 +423,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
           requires:
@@ -402,7 +436,33 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
+      - create-merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: << parameters.from_branch >>
+      - merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -818,6 +878,52 @@ jobs:
           at: ~/
       - run-smoke-tests:
           minimal: true
+  create-merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+      - checkout
+      - run:
+          name: Create git identity
+          command: |
+            git config user.email "cicd-system@opennms.com"
+            git config user.name "CI/CD System"
+      - run:
+          name: Checkout target branch and merge from source
+          command: |
+            export GIT_MERGE_AUTOEDIT=no
+            git checkout << parameters.to_branch >>
+            git merge origin/<< parameters.from_branch >>
+      - run:
+          name: Push to github
+          command: git push -f origin << parameters.to_branch >>:merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
+
+  merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+      - checkout
+      - run:
+          name: Create git identity
+          command: |
+            git config user.email "cicd-system@opennms.com"
+            git config user.name "CI/CD System"
+      - run:
+          name: Checkout target and merge with merge branch
+          command: |
+            export GIT_MERGE_AUTOEDIT=no
+            git checkout << parameters.to_branch >>
+            git merge origin/merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
+      - run:
+          name: Push to github
+          command: git push origin << parameters.to_branch >>:<< parameters.to_branch >>
+
   publish-cloudsmith:
     executor: cloudsmith/default
     resource_class: small
