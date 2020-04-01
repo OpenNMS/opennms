@@ -1,10 +1,14 @@
-require('vendor/jquery-ui-js');
-require('vendor/bootstrap-js');
+const load = require('./vendor-loader');
 
-import Util from 'lib/util';
+module.exports = load('global', () => {
+  require('vendor/jquery-ui-js');
+  require('vendor/bootstrap-js');
+  
+  const Util = require('lib/util');
+  
+  window['getBaseHref'] = Util.getBaseHref;
+  window['setLocation'] = Util.setLocation;
+  window['toggle'] = Util.toggle;
 
-console.log('init: global'); // eslint-disable-line no-console
-
-window.getBaseHref = Util.getBaseHref;
-window.setLocation = Util.setLocation;
-window.toggle = Util.toggle;
+  return Util;
+});

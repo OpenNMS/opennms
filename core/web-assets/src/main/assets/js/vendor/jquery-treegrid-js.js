@@ -1,8 +1,10 @@
-const jQuery = require('vendor/jquery-js');
+const load = require('./vendor-loader');
 
-require('jquery-treegrid/js/jquery.treegrid');
-require('jquery-treegrid/css/jquery.treegrid.css');
+module.exports = load('jquery-treegrid', () => {
+  const jQuery = require('vendor/jquery-js');
 
-console.log('init: jquery-treegrid'); // eslint-disable-line no-console
-
-module.exports = jQuery;
+  require('jquery-treegrid/js/jquery.treegrid');
+  require('jquery-treegrid/css/jquery.treegrid.css');
+  
+  return jQuery;
+});

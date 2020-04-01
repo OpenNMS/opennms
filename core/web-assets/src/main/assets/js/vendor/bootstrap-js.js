@@ -1,6 +1,7 @@
-console.log('init: bootstrap-js'); // eslint-disable-line no-console
+const load = require('./vendor-loader');
 
-const jQuery = require('vendor/jquery-js');
-require('bootstrap/dist/js/bootstrap');
-
-module.exports = jQuery;
+module.exports = load('bootstrap', () => {
+  const jQuery = require('vendor/jquery-js');
+  require('bootstrap/dist/js/bootstrap');
+  return jQuery;
+});

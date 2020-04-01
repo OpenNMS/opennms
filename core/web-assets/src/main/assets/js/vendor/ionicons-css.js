@@ -1,5 +1,5 @@
-const css = require('ionicons/css/ionicons.css');
+const load = require('./vendor-loader');
 
-console.log('init: ionicons-css'); // eslint-disable-line no-console
-
-module.exports = css;
+module.exports = load('ionicons', () => {
+  return require('ionicons/css/ionicons.css');
+});

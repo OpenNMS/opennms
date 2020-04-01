@@ -1,5 +1,8 @@
-const holder = require('holderjs');
+const load = require('./vendor-loader');
 
-console.log('init: holder-js'); // eslint-disable-line no-console
+module.exports = load('holder', () => {
+  const holder = require('holderjs');
 
-module.exports = window['Holder'] = window['holder'] = holder;
+  window['Holder'] = window['holder'] = holder;
+  return holder;
+});

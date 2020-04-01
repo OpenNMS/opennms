@@ -275,7 +275,10 @@ const GraphContainers = {
   render: render
 };
 
-console.log('init: onms-graph'); // eslint-disable-line no-console
+if (window['GraphContainers']) {
+  console.debug('init: onms-graph already loaded'); // eslint-disable-line no-console
+} else {
+  window['GraphContainers'] = GraphContainers;
+}
 
-module.exports = GraphContainers;
-window.GraphContainers = GraphContainers;
+module.exports = window['GraphContainers'];

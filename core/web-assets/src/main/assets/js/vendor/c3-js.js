@@ -1,9 +1,9 @@
-if (window['c3']) {
-  console.debug('init: c3-js already loaded'); // eslint-disable-line no-console
-} else {
-  console.info('init: c3-js'); // eslint-disable-line no-console
-  require('vendor/d3-js');
-  window['c3'] = require('c3');
-}
+const load = require('./vendor-loader');
 
-module.exports = window['c3'];
+module.exports = load('c3', () => {
+  require('vendor/d3-js');
+
+  const c3 = require('c3/c3');
+  window['c3'] = c3;
+  return c3;
+});

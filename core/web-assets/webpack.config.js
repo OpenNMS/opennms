@@ -263,20 +263,6 @@ var config = {
         }]
       },
       {
-        test: require.resolve('c3'),
-        use: [{
-          loader: 'expose-loader',
-          options: 'c3'
-        }]
-      },
-      {
-        test: require.resolve('d3'),
-        use: [{
-          loader: 'expose-loader',
-          options: 'd3'
-        }]
-      },
-      {
         test: require.resolve('holderjs'),
         use: [{
           loader: 'expose-loader',
@@ -567,7 +553,6 @@ function createConfig(options) {
   const smp = new SpeedMeasurePlugin({
     outputTarget: 'target/smp-' + (options.production === 'vaadin' ? 'vaadin' : myconf.mode) + '.log'
   });
-  
   return smp.wrap( myconf );
 }
 

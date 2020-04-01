@@ -1,9 +1,12 @@
-const L = require('leaflet/dist/leaflet-src');
-require('leaflet.markercluster/dist/leaflet.markercluster-src');
-require('../../static/legacy/openlayers-2.10/OpenLayers');
+const load = require('./vendor-loader');
 
-//require('leaflet.scss');
+module.exports = load('leaflet', () => {
+  const L = require('leaflet/dist/leaflet-src');
+  require('leaflet.markercluster/dist/leaflet.markercluster-src');
+  require('../../static/legacy/openlayers-2.10/OpenLayers');
+  
+  //require('leaflet.scss');
 
-console.log('init: leaflet-js'); // eslint-disable-line no-console
-
-module.exports = window['L'] = L;
+  window['L'] = L;
+  return L;
+});

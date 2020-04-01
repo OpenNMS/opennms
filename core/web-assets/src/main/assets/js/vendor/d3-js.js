@@ -1,8 +1,7 @@
-if (window['d3']) {
-  console.debug('init: d3-js already loaded'); // eslint-disable-line no-console
-} else {
-  console.info('init: d3-js'); // eslint-disable-line no-console
-  window['d3'] = require('d3');
-}
+const load = require('./vendor-loader');
 
-module.exports = window['d3'];
+module.exports = load('d3', () => {
+  const d3 = require('d3/d3');
+  window['d3'] = d3;
+  return d3;
+});

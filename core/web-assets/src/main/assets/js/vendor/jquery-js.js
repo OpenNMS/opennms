@@ -1,4 +1,7 @@
-console.log('init: jquery-js'); // eslint-disable-line no-console
+const load = require('./vendor-loader');
 
-const jQuery = require('jquery');
-module.exports = jQuery;
+module.exports = load('jquery', () => {
+  const jQuery = require('jquery');
+  window['jQuery'] = window['$'] = jQuery;
+  return jQuery;
+});

@@ -1,8 +1,10 @@
-const ex = require('../lib/3rdparty/extremecomponents/extremecomponents.js');
+const load = require('./vendor-loader');
 
-window.getParameterMap = ex.getParameterMap;
-window.setFormAction = ex.setFormAction;
+module.exports = load('extremecomponents', () => {
+  const ex = require('../lib/3rdparty/extremecomponents/extremecomponents.js');
 
-console.log('init: extremecomponents-js'); // eslint-disable-line no-console
+  window['getParameterMap'] = ex.getParameterMap;
+  window['setFormAction'] = ex.setFormAction;
 
-module.exports = ex;
+  return ex;
+});

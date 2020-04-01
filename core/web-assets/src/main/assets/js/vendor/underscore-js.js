@@ -1,5 +1,7 @@
-const _ = require('underscore');
+const load = require('./vendor-loader');
 
-console.log('init: underscore-js'); // eslint-disable-line no-console
-
-module.exports = window['_'] = _;
+module.exports = load('underscore', () => {
+  const _ = require('underscore');
+  window['_'] = _;
+  return _;
+});

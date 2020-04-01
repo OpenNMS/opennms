@@ -1,23 +1,26 @@
-/* Angular Core */
-const angular = require('angular');
-require('angular-animate');
-require('angular-cookies');
-require('angular-route');
-require('angular-resource');
-require('angular-sanitize');
+const load = require('./vendor-loader');
 
-/* 3rd-Party Modules */
-require('angular-growl-v2');
-require('angular-loading-bar');
+module.exports = load('angular', () => {
+  /* Angular Core */
+  const angular = require('angular');
+  require('angular-animate');
+  require('angular-cookies');
+  require('angular-route');
+  require('angular-resource');
+  require('angular-sanitize');
 
-require('angular-growl-v2/build/angular-growl.css');
-require('angular-loading-bar/build/loading-bar.css');
+  /* 3rd-Party Modules */
+  require('angular-growl-v2');
+  require('angular-loading-bar');
 
-/* Bootstrap UI */
-require('vendor/bootstrap-js');
-require('angular-bootstrap-checkbox');
-require('ui-bootstrap4'); // angular-ui-boostrap for bootstrap 4
+  require('angular-growl-v2/build/angular-growl.css');
+  require('angular-loading-bar/build/loading-bar.css');
 
-console.log('init: angular-js'); // eslint-disable-line no-console
+  /* Bootstrap UI */
+  require('vendor/bootstrap-js');
+  require('angular-bootstrap-checkbox');
+  require('ui-bootstrap4'); // angular-ui-boostrap for bootstrap 4
 
-module.exports = window['angular'] = angular;
+  window['angular'] = angular;
+  return angular;
+});
