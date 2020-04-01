@@ -29,16 +29,17 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class Netflow5Adapter extends NetflowAdapter {
 
-    public Netflow5Adapter(final String name,
+    public Netflow5Adapter(final AdapterDefinition adapterConfig,
                            final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository) {
-        super(name, metricRegistry, flowRepository);
+        super(adapterConfig, metricRegistry, flowRepository);
     }
 
 }

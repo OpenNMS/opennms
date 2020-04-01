@@ -154,6 +154,12 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-telemetry-bmp" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-bmp</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
 
     <!--Coordination-->
     <feature name="sentinel-coordination-api" description="OpenNMS :: Features :: Distributed :: Coordination :: API"

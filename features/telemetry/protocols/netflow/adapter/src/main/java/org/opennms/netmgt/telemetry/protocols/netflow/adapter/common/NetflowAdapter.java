@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.slf4j.Logger;
@@ -42,10 +43,10 @@ public class NetflowAdapter extends AbstractFlowAdapter<FlowMessage> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NetflowAdapter.class);
 
-    public NetflowAdapter(final String name,
+    public NetflowAdapter(final AdapterDefinition adapterConfig,
                           final MetricRegistry metricRegistry,
                           final FlowRepository flowRepository) {
-        super(name, metricRegistry, flowRepository, new NetflowConverter());
+        super(adapterConfig, metricRegistry, flowRepository, new NetflowConverter());
     }
 
     @Override

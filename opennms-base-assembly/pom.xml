@@ -1064,6 +1064,16 @@
       </dependency>
     <!-- Telemetryd -->
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>

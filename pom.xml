@@ -1285,7 +1285,7 @@
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.8</paxWebVersion>
-    <protobufVersion>3.9.0</protobufVersion>
+    <protobufVersion>3.11.4</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
