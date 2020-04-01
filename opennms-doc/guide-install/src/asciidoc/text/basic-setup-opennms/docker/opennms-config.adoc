@@ -1,0 +1,96 @@
+
+[[gi-docker-opennms-config-reference]]
+==== Configuration Reference
+
+===== Startup Arguments
+
+[options="header, autowidth"]
+|===
+| Argument | Description
+| `-h`     | Display help with available arguments.
+| `-f`     | Start the process in the foreground and use existing data and configuration.
+| `-i`     | One-time command to initialize or update database and configuration files and do *NOT* start.
+| `-s`     | Command to initialize or update database and configuration files and start OpenNMS in the foreground.
+| `-t`     | One-time command to run the config-tester against the configuration.
+|===
+
+===== Environment Variables
+
+.Java options
+|===
+| Environment variable  | Description                           | Required | Default value
+| `JAVA_OPTS`           | Allows to add additional Java options | optional | `-`
+|===
+
+.PostgreSQL connection configuration in opennms-datasources.xml
+[options="header, autowidth"]
+|===
+| Environment variable                       | Description                                                                       | Required | Default value
+| `OPENNMS_DBNAME`                           | Database name used for _{opennms-product-name}_                                   | required | -
+| `OPENNMS_DBUSER`                           | Username with access to the database                                              | required | -
+| `OPENNMS_DBPASS`                           | Password for user with acccess to the database                                    | required | -
+| `POSTGRES_HOST`                            | Host with the PostgreSQL server instance running                                  | required | -
+| `POSTGRES_PORT`                            | PostgreSQL server port                                                            | optional | `5432`
+| `POSTGRES_USER`                            | PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME` | required | -
+| `POSTGRES_PASSWORD`                        | PostgreSQL super user password                                                    | required | -
+| `OPENNMS_DATABASE_CONNECTION_POOLFACTORY`  | Database connection pool factory                                                  | optional | `org.opennms.core.db.HikariCPConnectionFactory`
+| `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Database connection pool idle timeout                                             | optional | `600`
+| `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Database connection pool login timeout                                            | optional | `3`
+| `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Minimal connection pool size                                                      | optional | `50`
+| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Maximum connection pool size                                                      | optional | `50`
+| `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Maximum connections                                                               | optional | `50`
+|===
+
+.Timeseries storage configuration in opennms.properties.d/_confd.timeseries.properties
+[options="header, autowidth"]
+|===
+| Environment variable               | Description                                                             | Required | Default value
+| `OPENNMS_TIMESERIES_STRATEGY`      | Used Timeseries storage strategy                                        | optional | `rrd`
+| `OPENNMS_RRD_STOREBYFOREIGNSOURCE` | Store timeseries data by foreign source instead of the database node id | optional | `true`
+| `OPENNMS_RRD_STRATEGYCLASS`        | Java RRD Strategy class                                                 | optional | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy`
+| `OPENNMS_RRD_INTERFACEJAR`         | Java RRD Interface library                                              | optional | `/usr/share/java/jrrd2.jar`
+| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 libray path                                                       | optional | `/usr/lib64/libjrrd2.so`
+|===
+
+.SNMP Trap receiver configuration in trapd-configuration.xml
+[options="header, autowidth"]
+|===
+| Environment variable              | Description                                                       | Required | Default value
+| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for _SNMP Trapd_                                 | optional | `*`
+| `OPENNMS_TRAPD_PORT`              | Port to listen for _SNMP Traps_                                   | optional | `1162`
+| `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event based Trap recepient for unknown devices | optional | `false`
+| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in _SNMP Traps_                             | optional | `false`
+| `OPENNMS_TRAPD_THREADS`           | Set maximum thread size to process SNMP Traps                     | optional | `0`
+| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for _SNMP Trap_ processing                      | optional | `10000`
+| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for _SNMP Trap_ processing                         | optional | `1000`
+| `OPENNMS_TRAPD_BATCHINTERVAL`     | Set batch processing interval in milliseconds                     | optional | `500`
+|===
+
+.Karaf Shell configuration in org.apache.karaf.shell.cfg
+[options="header, autowidth"]
+|===
+| Environment variable     | Description                        | Required | Default value
+| `OPENNMS_karaf_SSH_HOST` | Listen interface for _Karaf_ shell | optional | `0.0.0.0`
+| `OPENNMS_karaf_SSH_PORT` | _SSH_ Port for _Karaf_ shell       | optional | `8101`
+|===
+
+.Cassandra and Newts configuration in opennms.properties.d/_confd.newts.properties
+[options="header, autowidth"]
+|===
+| Environment variable          | Description                                                                       | Required | Default value
+| `REPLICATION_FACTOR`          | Set _Cassandra_ replication factor for the newts keyspace if _Newts_ is used      | optional | `1` 
+| `OPENNMS_CASSANDRA_HOSTNAMES` | A comma separated list with _Cassandra_ hosts for _Newts_                         | optional | `localhost`
+| `OPENNMS_CASSANDRA_KEYSPACE`  | Name of the keyspace used by _Newts_                                              | optional | `newts`
+| `OPENNMS_CASSANDRA_PORT`      | _Cassandra_ server port                                                           | optional | `9042`
+| `OPENNMS_CASSANDRA_USERNAME`  | Username with access to _Cassandra_                                               | optional | `cassandra`
+| `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to _Cassandra_                                      | optional | `cassandra`
+|===
+
+====== Directory Conventions
+
+[options="header, autowidth"]
+|===
+| Mountpoint             | Description
+| `/opt/opennms-overlay` | Allows to overwrite files relative to `/opt/opennms`
+| `/opennms-data`        | Directory with RRDTool/JRobin files and generated PDF reports sent to the file system
+|===

@@ -1,0 +1,7 @@
+[template]
+src = "kafka-sink.boot.tmpl"
+dest = "/opt/minion/etc/featuresBoot.d/kafka-sink.boot"
+keys = [
+    "/ipc/sink/kafka"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/featuresBoot.d/kafka-sink.boot"

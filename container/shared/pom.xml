@@ -94,6 +94,7 @@
 
                         <!-- OPENNMS: Additional tools -->
                         <feature>hawtio-offline</feature>
+                        <feature>jolokia</feature>
                     </bootFeatures>
                     <libraries>
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
