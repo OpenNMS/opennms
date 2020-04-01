@@ -1060,10 +1060,12 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>

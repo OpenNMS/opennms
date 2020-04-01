@@ -39,9 +39,11 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -84,5 +86,11 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
             return Optional.of(this.transmit(packet, remoteAddress));
         };
+    }
+
+    @Override
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
+        IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
+        return builder.buildData();
     }
 }

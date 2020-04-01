@@ -134,6 +134,7 @@
         <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
