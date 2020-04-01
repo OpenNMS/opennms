@@ -24,19 +24,19 @@ defaults: &defaults
     from_branch:
       description: the auto-merge source branch
       type: string
-      default: foundation-2017
+      default: foundation-2018
     from_branch_label:
       description: the auto-merge source branch (escaped, no slashes)
       type: string
-      default: foundation-2017
+      default: foundation-2018
     to_branch:
       description: the auto-merge target branch
       type: string
-      default: foundation-2018
+      default: foundation-2019
     to_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: foundation-2018
+      default: foundation-2019
 
 docker_container_config: &docker_container_config
   executor: docker-executor
