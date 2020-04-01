@@ -362,6 +362,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -376,6 +377,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
@@ -408,6 +410,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
           requires:
@@ -420,6 +423,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
           requires:
@@ -432,6 +436,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
@@ -453,7 +458,6 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
-            - smoke-test-minimal
             - smoke-test-full
             - integration-test
           filters:
