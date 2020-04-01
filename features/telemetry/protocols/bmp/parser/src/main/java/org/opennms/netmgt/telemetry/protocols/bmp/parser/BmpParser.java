@@ -181,7 +181,7 @@ public class BmpParser implements TcpParser {
                 if (peerHeader == null || peerHeader.id == null) {
                     return Optional.empty();
                 }
-                return Optional.of(peerInfoMap.get(peerHeader.id));
+                return Optional.ofNullable(peerInfoMap.get(peerHeader.id));
             };
 
             @Override
