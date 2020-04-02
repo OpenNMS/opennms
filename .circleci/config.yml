@@ -596,7 +596,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
-      - checkout
+      - cached-checkout
       - run:
           name: Create git identity
           command: |
@@ -606,7 +606,9 @@ jobs:
           name: Checkout target and merge with merge branch
           command: |
             export GIT_MERGE_AUTOEDIT=no
+            git fetch --all
             git checkout << parameters.to_branch >>
+            git reset --hard origin/<< parameters.to_branch >>
             git merge origin/merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
       - run:
           name: Push to github
