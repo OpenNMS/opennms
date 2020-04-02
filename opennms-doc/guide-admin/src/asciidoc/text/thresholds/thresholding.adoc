@@ -7,6 +7,12 @@
 
 Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 
+== How Thresholding Works
+
+The collectd daemon gathers and stores performance data from different sources, including the following: SNMP, JMX, HTTP, XML (in XML mode), XML (in JSON mode), WS-Management/WinRM, JDBC (works against any relational database), and VMware.
+
+
+
 _{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
 
 * *Low* - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (e.g., available disk space falls under the specified value)
@@ -89,7 +95,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 
 === Testing the Threshold
 
-To test the threshold we just created, log a second person into OpenNMS. 
+To test the threshold we just created, log a second person into the node you are monitoring. 
 Navigate to the `Events` page.
 You should see an event that indicates your threshold triggered, when more than one user logged in. 
 
