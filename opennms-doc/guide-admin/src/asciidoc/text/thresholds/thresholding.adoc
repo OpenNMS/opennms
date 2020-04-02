@@ -7,11 +7,19 @@
 
 Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 
-== How Thresholding Works
+== How Thresholding Works in {opennms-product-name} 
 
-The collectd daemon gathers and stores performance data from different sources, including the following: SNMP, JMX, HTTP, XML (in XML mode), XML (in JSON mode), WS-Management/WinRM, JDBC (works against any relational database), and VMware.
+OpenNMS uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
+You can specify configuration for a particular collector in a _collection package_: essentially the set of instructions that drives the behavior of the collector. 
 
+The _collectd_ daemon gathers and stores performance data from these collectors. 
+This is the data against which OpenNMS applies thresholds. 
+Thresholds trigger events when a specified threshold value is met. 
+You can further create notifications and alarms for threshold events. 
 
+image:thresholding/thresholding-flow.png[thresholding, 400]
+
+=== What Triggers a Thresholding Event?
 
 _{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
 
@@ -21,9 +29,8 @@ _{opennms-product-name}_ uses four thresholding algorithms that trigger an event
 * *Relative* - changes by percent (e.g., available disk space changes more than 5% from the last poll)
 
 These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression). 
-You can also create notifications for threshold events #TODO: insert cross-reference#. 
 
-_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. #TODO: is this information too technical?#
+_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. 
 This includes, but is not limited to metrics such as CPU load, bandwidth, disk space, etc. #do we need to list protocols?
 
 [[threshold-bw]]
@@ -31,6 +38,9 @@ This includes, but is not limited to metrics such as CPU load, bandwidth, disk s
 
 This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
 Our threshold will tell OpenNMS to create an event when the number of logged-in users exceeds two, and re-arm when it falls below two. 
+
+NOTE: The basic walkthrough focuses on how to set a threshold using default values in the {opennms-product-name} setup. 
+For information on how to set up collectors and collectd, see xxx
 
 Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold. 
 
@@ -160,7 +170,7 @@ For example,
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold. 
 For example, "Number of Processes" or "System Uptime":
 +
-image::thresholding/graphs.png[Thresholding graph, 200]
+image:thresholding/thresholding/graphs.png[Thresholding graph, 200]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime"):
 
