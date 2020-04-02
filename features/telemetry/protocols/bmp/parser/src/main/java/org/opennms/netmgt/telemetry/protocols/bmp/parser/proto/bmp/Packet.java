@@ -43,7 +43,7 @@ public interface Packet {
     void accept(final Visitor visitor);
 
     interface Parser {
-        Packet parse(final Header header, final ByteBuf buffer) throws InvalidPacketException;
+        Packet parse(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException;
     }
 
     interface Visitor {

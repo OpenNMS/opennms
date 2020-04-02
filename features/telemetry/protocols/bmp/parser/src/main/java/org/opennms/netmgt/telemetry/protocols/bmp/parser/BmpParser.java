@@ -29,13 +29,17 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -64,13 +68,17 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolReachableNlri;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolUnreachableNlri;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerUpPacket;
@@ -115,6 +123,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
@@ -149,9 +158,9 @@ public class BmpParser implements TcpParser {
     public void start(final ScheduledExecutorService executorService) {
         this.sendHeartbeat(HeartbeatMode.STARTED);
         this.heartbeatFuture = executorService.scheduleAtFixedRate(() -> this.sendHeartbeat(HeartbeatMode.PERIODIC),
-                                                                   HEARTBEAT_INTERVAL,
-                                                                   HEARTBEAT_INTERVAL,
-                                                                   TimeUnit.MILLISECONDS);
+                HEARTBEAT_INTERVAL,
+                HEARTBEAT_INTERVAL,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -164,7 +173,16 @@ public class BmpParser implements TcpParser {
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
         return new Handler() {
+            private static final int ADD_PATH_CAP = 69;
             private InetAddress bgpId;
+            private Map<InetAddress, PeerInfo> peerInfoMap = new HashMap<>();
+
+            private PeerAccessor peerAccessor = peerHeader -> {
+                if (peerHeader == null || peerHeader.id == null) {
+                    return Optional.empty();
+                }
+                return Optional.ofNullable(peerInfoMap.get(peerHeader.id));
+            };
 
             @Override
             public Optional<CompletableFuture<?>> parse(ByteBuf buffer) throws Exception {
@@ -180,7 +198,7 @@ public class BmpParser implements TcpParser {
 
                 final Packet packet;
                 if (buffer.isReadable(header.payloadLength())) {
-                    packet = header.parsePayload(slice(buffer, header.payloadLength()));
+                    packet = header.parsePayload(slice(buffer, header.payloadLength()), peerAccessor);
                 } else {
                     buffer.resetReaderIndex();
                     return Optional.empty();
@@ -197,8 +215,29 @@ public class BmpParser implements TcpParser {
                     }
                 });
 
+                packet.accept(new Packet.Visitor.Adapter() {
+                    @Override
+                    public void visit(PeerUpPacket packet) {
+                        packet.sendOpenMessage.capabilities.stream().filter(c -> c.getCode() == ADD_PATH_CAP).forEach(c -> {
+                            ByteBuf b = Unpooled.wrappedBuffer(c.getValue().toByteArray());
+                            int afi = uint16(b);
+                            int safi = uint8(b);
+                            int sendReceive = uint8(b);
+                            peerInfoMap.computeIfAbsent(packet.peerHeader.id, k -> new PeerInfo()).addPathCapability(afi, safi, sendReceive, true);
+                        });
+
+                        packet.recvOpenMessage.capabilities.stream().filter(c -> c.getCode() == ADD_PATH_CAP).forEach(c -> {
+                            ByteBuf b = Unpooled.wrappedBuffer(c.getValue().toByteArray());
+                            int afi = uint16(b);
+                            int safi = uint8(b);
+                            int sendReceive = uint8(b);
+                            peerInfoMap.computeIfAbsent(packet.peerHeader.id, k -> new PeerInfo()).addPathCapability(afi, safi, sendReceive, false);
+                        });
+                    }
+                });
+
                 final Transport.Message.Builder message = Transport.Message.newBuilder()
-                                                                           .setVersion(header.version);
+                        .setVersion(header.version);
 
                 if (bgpId != null) {
                     message.setBgpId(address(bgpId));
@@ -241,14 +280,21 @@ public class BmpParser implements TcpParser {
         final Transport.Message.Builder message = Transport.Message.newBuilder();
 
         message.getHeartbeatBuilder()
-               .setMode(mode.map(m -> { switch(m) {
-                   case STARTED: return Transport.Heartbeat.Mode.STARTED;
-                   case STOPPED: return Transport.Heartbeat.Mode.STOPPED;
-                   case PERIODIC: return Transport.Heartbeat.Mode.PERIODIC;
-                   case CHANGE: return Transport.Heartbeat.Mode.CHANGE;
-                   default: throw new IllegalStateException();
-               }}))
-               .addAllRouters(Iterables.transform(this.connections, BmpParser::address));
+                .setMode(mode.map(m -> {
+                    switch (m) {
+                        case STARTED:
+                            return Transport.Heartbeat.Mode.STARTED;
+                        case STOPPED:
+                            return Transport.Heartbeat.Mode.STOPPED;
+                        case PERIODIC:
+                            return Transport.Heartbeat.Mode.PERIODIC;
+                        case CHANGE:
+                            return Transport.Heartbeat.Mode.CHANGE;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                }))
+                .addAllRouters(Iterables.transform(this.connections, BmpParser::address));
 
         this.dispatcher.send(new TelemetryMessage(InetSocketAddress.createUnresolved("0.0.0.0", 0), ByteBuffer.wrap(message.build().toByteArray())));
         BmpParser.this.recordsDispatched.mark();
@@ -314,8 +360,8 @@ public class BmpParser implements TcpParser {
             peer.setId(address(peerHeader.id));
 
             peer.getTimestampBuilder()
-                .setSeconds(peerHeader.timestamp.getEpochSecond())
-                .setNanos(peerHeader.timestamp.getNano());
+                    .setSeconds(peerHeader.timestamp.getEpochSecond())
+                    .setNanos(peerHeader.timestamp.getNano());
 
             return peer.build();
         }
@@ -324,11 +370,11 @@ public class BmpParser implements TcpParser {
         public void visit(final InitiationPacket packet) {
             final Transport.InitiationPacket.Builder message = this.message.getInitiationBuilder();
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
-                                                 .orElse(""));
+                    .orElse(""));
             message.addAllSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
-                                                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList()));
             message.addAllMessage(packet.information.all(InformationElement.Type.STRING)
-                                                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList()));
             packet.information.first(InformationElement.Type.BGP_ID)
                     .map(addr -> address(InetAddressUtils.addr(addr)))
                     .ifPresent(message::setBgpId);
@@ -377,11 +423,11 @@ public class BmpParser implements TcpParser {
             }
 
             message.getSendMsgBuilder()
-                   .setVersion(packet.sendOpenMessage.version)
-                   .setAs(packet.sendOpenMessage.as)
-                   .setHoldTime(packet.sendOpenMessage.holdTime)
-                   .setId(address(packet.sendOpenMessage.id))
-                   .setCapabilities(sendCapabilitiesBuilder.build());
+                    .setVersion(packet.sendOpenMessage.version)
+                    .setAs(packet.sendOpenMessage.as)
+                    .setHoldTime(packet.sendOpenMessage.holdTime)
+                    .setId(address(packet.sendOpenMessage.id))
+                    .setCapabilities(sendCapabilitiesBuilder.build());
 
             Transport.PeerUpPacket.CapabilityList.Builder recvCapabilitiesBuilder = Transport.PeerUpPacket.CapabilityList.newBuilder();
             for (final Capability capability : packet.recvOpenMessage.capabilities) {
@@ -393,20 +439,20 @@ public class BmpParser implements TcpParser {
             }
 
             message.getRecvMsgBuilder()
-                   .setVersion(packet.recvOpenMessage.version)
-                   .setAs(packet.recvOpenMessage.as)
-                   .setHoldTime(packet.recvOpenMessage.holdTime)
-                   .setId(address(packet.recvOpenMessage.id))
-                   .setCapabilities(recvCapabilitiesBuilder.build());
+                    .setVersion(packet.recvOpenMessage.version)
+                    .setAs(packet.recvOpenMessage.as)
+                    .setHoldTime(packet.recvOpenMessage.holdTime)
+                    .setId(address(packet.recvOpenMessage.id))
+                    .setCapabilities(recvCapabilitiesBuilder.build());
 
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
-                                                 .orElse(""));
+                    .orElse(""));
             message.setTableName(packet.information.first(InformationElement.Type.VRF_TABLE_NAME)
                     .orElse(""));
             message.setSysDesc(packet.information.all(InformationElement.Type.SYS_DESCR)
-                                                 .collect(Collectors.joining("\n")));
+                    .collect(Collectors.joining("\n")));
             message.setMessage(packet.information.all(InformationElement.Type.STRING)
-                                                 .collect(Collectors.joining("\n")));
+                    .collect(Collectors.joining("\n")));
         }
 
         @Override
@@ -502,16 +548,16 @@ public class BmpParser implements TcpParser {
                     public void visit(final PerAfiAdjRibIn perAfiAdjRibIn) {
                         final String key = String.format("%d:%d", perAfiAdjRibIn.afi, perAfiAdjRibIn.safi);
                         message.putPerAfiAdjRibIn(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
-                                                                                             .setValue(perAfiAdjRibIn.gauge.longValue())
-                                                                                             .build());
+                                .setValue(perAfiAdjRibIn.gauge.longValue())
+                                .build());
                     }
 
                     @Override
                     public void visit(final PerAfiLocalRib perAfiLocalRib) {
                         final String key = String.format("%d:%d", perAfiLocalRib.afi, perAfiLocalRib.safi);
                         message.putPerAfiLocalRib(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
-                                                                                             .setValue(perAfiLocalRib.gauge.longValue())
-                                                                                             .build());
+                                .setValue(perAfiLocalRib.gauge.longValue())
+                                .build());
                     }
 
                     @Override
@@ -543,16 +589,16 @@ public class BmpParser implements TcpParser {
                     public void visit(final PerAfiAdjRibOut perAfiAdjRibOut) {
                         final String key = String.format("%d:%d", perAfiAdjRibOut.afi, perAfiAdjRibOut.safi);
                         message.putPerAfiAdjRibOut(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
-                                                                                              .setValue(perAfiAdjRibOut.gauge.longValue())
-                                                                                              .build());
+                                .setValue(perAfiAdjRibOut.gauge.longValue())
+                                .build());
                     }
 
                     @Override
                     public void visit(final PerAfiExportRib perAfiExportRib) {
                         final String key = String.format("%d:%d", perAfiExportRib.afi, perAfiExportRib.safi);
                         message.putPerAfiExportRib(key, Transport.StatisticsReportPacket.Gauge.newBuilder()
-                                                                                              .setValue(perAfiExportRib.gauge.longValue())
-                                                                                              .build());
+                                .setValue(perAfiExportRib.gauge.longValue())
+                                .build());
                     }
 
                     @Override
@@ -569,14 +615,14 @@ public class BmpParser implements TcpParser {
 
             for (final UpdatePacket.Prefix prefix : packet.updateMessage.withdrawRoutes) {
                 message.addWithdrawsBuilder()
-                       .setPrefix(address(prefix.prefix))
-                       .setLength(prefix.length);
+                        .setPrefix(address(prefix.prefix))
+                        .setLength(prefix.length);
             }
 
             for (final UpdatePacket.Prefix prefix : packet.updateMessage.reachableRoutes) {
                 message.addReachablesBuilder()
-                       .setPrefix(address(prefix.prefix))
-                       .setLength(prefix.length);
+                        .setPrefix(address(prefix.prefix))
+                        .setLength(prefix.length);
             }
 
             for (final UpdatePacket.PathAttribute attribute : packet.updateMessage.pathAttributes) {
@@ -717,9 +763,9 @@ public class BmpParser implements TcpParser {
                 Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.Builder largeCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.LargeCommunities.newBuilder();
                 for (LargeCommunities.LargeCommunity largeCommunity : largeCommunities.largeCommunities) {
                     largeCommunitiesBuilder.addLargeCommunitiesBuilder()
-                            .setGlobalAdministrator((int)largeCommunity.globalAdministrator)
-                            .setLocalDataPart1((int)largeCommunity.localDataPart1)
-                            .setLocalDataPart2((int)largeCommunity.localDataPart2);
+                            .setGlobalAdministrator((int) largeCommunity.globalAdministrator)
+                            .setLocalDataPart1((int) largeCommunity.localDataPart1)
+                            .setLocalDataPart2((int) largeCommunity.localDataPart2);
                 }
                 attributesBuilder.setLargeCommunities(largeCommunitiesBuilder);
             }
@@ -727,7 +773,7 @@ public class BmpParser implements TcpParser {
             @Override
             public void visit(AttrSet attrSet) {
                 Transport.RouteMonitoringPacket.PathAttribute.AttrSet.Builder attrSetBuilder = Transport.RouteMonitoringPacket.PathAttribute.AttrSet.newBuilder()
-                        .setOriginAs((int)attrSet.originAs);
+                        .setOriginAs((int) attrSet.originAs);
                 for (UpdatePacket.PathAttribute attribute : attrSet.pathAttributes) {
                     attrSetBuilder.addPathAttributes(pathAttribute(attribute));
                 }
@@ -736,6 +782,60 @@ public class BmpParser implements TcpParser {
 
             @Override
             public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown unknown) {
+            }
+
+            @Override
+            public void visit(final MultiprotocolReachableNlri multiprotocolReachableNrli) {
+                final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli.newBuilder()
+                        .addAllAdvertised(multiprotocolReachableNrli.advertised.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(address(r.prefix))
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .addAllVpnAdvertised(multiprotocolReachableNrli.vpnAdvertised.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(address(r.prefix))
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .setAfi(multiprotocolReachableNrli.afi)
+                        .setSafi(multiprotocolReachableNrli.safi)
+                        .setNextHop(address(multiprotocolReachableNrli.nextHop))
+                        .build();
+
+                attributesBuilder.setMpReachNrli(mpReachNrli);
+            }
+
+            @Override
+            public void visit(final MultiprotocolUnreachableNlri multiprotocolUnreachableNlri) {
+                final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli mpReachNrli = Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolUnreachableNrli.newBuilder()
+                        .addAllWithdrawn(multiprotocolUnreachableNlri.withdrawn.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(address(r.prefix))
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .addAllVpnWithdrawn(multiprotocolUnreachableNlri.vpnWithdrawn.stream().map(r -> {
+                            return Transport.RouteMonitoringPacket.Route.newBuilder()
+                                    .setLabels(r.labels != null ? r.labels : "")
+                                    .setLength(r.length)
+                                    .setPathId(r.pathId)
+                                    .setPrefix(address(r.prefix))
+                                    .build();
+                        }).collect(Collectors.toList()))
+                        .setAfi(multiprotocolUnreachableNlri.afi)
+                        .setSafi(multiprotocolUnreachableNlri.safi)
+                        .setNextHop(address(multiprotocolUnreachableNlri.nextHop))
+                        .build();
+
+                attributesBuilder.setMpUnreachNrli(mpReachNrli);
             }
         });
         return attributesBuilder;

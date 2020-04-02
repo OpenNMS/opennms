@@ -128,6 +128,8 @@ message RouteMonitoringPacket {
     message Route {
         IpAddress prefix = 1;
         uint32 length = 2;
+        uint64 pathId = 3;
+        string labels = 4;
     }
 
     message PathAttribute {
@@ -204,6 +206,22 @@ message RouteMonitoringPacket {
             repeated PathAttribute path_attributes = 2;
         }
 
+        message MultiprotocolReachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route advertised = 4;
+            repeated Route vpnAdvertised = 5;
+        }
+
+        message MultiprotocolUnreachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route withdrawn = 4;
+            repeated Route vpnWithdrawn = 5;
+        }
+
         bool optional = 1;
         bool transitive = 2;
         bool partial = 3;
@@ -225,6 +243,8 @@ message RouteMonitoringPacket {
             AsPathLimit as_path_limit = 17;
             LargeCommunities large_communities = 18;
             AttrSet attr_set = 19;
+            MultiprotocolReachableNrli mpReachNrli = 20;
+            MultiprotocolUnreachableNrli mpUnreachNrli = 21;
         }
     }
 

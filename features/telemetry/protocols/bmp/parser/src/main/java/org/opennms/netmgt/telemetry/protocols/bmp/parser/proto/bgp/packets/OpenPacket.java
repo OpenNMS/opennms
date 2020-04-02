@@ -37,6 +37,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -82,7 +84,7 @@ public class OpenPacket implements Packet {
         }
     }
 
-    public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
+    public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
         this.header = Objects.requireNonNull(header);
 
         this.version = uint8(buffer);
@@ -103,13 +105,13 @@ public class OpenPacket implements Packet {
         visitor.visit(this);
     }
 
-    public static OpenPacket parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+    public static OpenPacket parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.OPEN) {
             throw new InvalidPacketException(buffer, "Expected Open Message, got: {}", header.type);
         }
 
-        return new OpenPacket(header, slice(buffer, header.length - Header.SIZE), flags);
+        return new OpenPacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo);
     }
 
     @Override
