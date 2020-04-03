@@ -28,15 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down;
 
+import java.util.Optional;
+
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
 
 public class RemoteNoNotification implements Reason {
-    public RemoteNoNotification(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+    public RemoteNoNotification(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
     }
 
     @Override

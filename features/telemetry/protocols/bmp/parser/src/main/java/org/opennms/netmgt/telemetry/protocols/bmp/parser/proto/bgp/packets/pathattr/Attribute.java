@@ -49,5 +49,7 @@ public interface Attribute {
         void visit(final LargeCommunities largeCommunity);
         void visit(final AttrSet attrSet);
         void visit(final Unknown unknown);
+        void visit(final MultiprotocolReachableNlri multiprotocolReachableNlri);
+        void visit(final MultiprotocolUnreachableNlri multiprotocolUnreachableNlri);
     }
 }

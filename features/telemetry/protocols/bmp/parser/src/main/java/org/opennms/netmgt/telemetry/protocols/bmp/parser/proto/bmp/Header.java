@@ -74,8 +74,8 @@ public class Header {
         return this.length - Header.SIZE;
     }
 
-    public Packet parsePayload(final ByteBuf buffer) throws InvalidPacketException {
-        return this.type.parse(this, buffer);
+    public Packet parsePayload(final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
+        return this.type.parse(this, buffer, peerAccessor);
     }
 
     public enum Type {
@@ -94,8 +94,8 @@ public class Header {
             this.parser = Objects.requireNonNull(parser);
         }
 
-        private Packet parse(final Header header, final ByteBuf buffer) throws InvalidPacketException {
-            return this.parser.parse(header, buffer);
+        private Packet parse(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
+            return this.parser.parse(header, buffer, peerAccessor);
         }
 
         private static Type from(final ByteBuf buffer) throws InvalidPacketException {

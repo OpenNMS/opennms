@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,14 +65,18 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolReachableNlri;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiprotocolUnreachableNlri;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.NextHop;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Origin;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.OriginatorId;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerUpPacket;
@@ -196,6 +201,16 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Unknown unknown) {
             fail("Wrong Attribute Unknown");
+        }
+
+        @Override
+        public void visit(MultiprotocolReachableNlri multiprotocolReachableNlri) {
+            fail("Wrong Attribute MultiprotocolReachableNrli");
+        }
+
+        @Override
+        public void visit(MultiprotocolUnreachableNlri multiprotocolUnreachableNlri) {
+            fail("Wrong Attribute MultiprotocolUnreachableNrli");
         }
     }
 
@@ -328,7 +343,12 @@ public class BlackboxTest implements Packet.Visitor {
             final ByteBuf buf = Unpooled.wrappedBuffer(buffer);
 
             final Header header = new Header(slice(buf, Header.SIZE));
-            final Packet packet = header.parsePayload(buf);
+            final Packet packet = header.parsePayload(buf, new PeerAccessor() {
+                @Override
+                public Optional<PeerInfo> getPeerInfo(PeerHeader peerHeader) {
+                    return Optional.empty();
+                }
+            });
             assertThat(packet, isA(clazz));
             assertThat((long) header.length, is(channel.size()));
             packet.accept(this);

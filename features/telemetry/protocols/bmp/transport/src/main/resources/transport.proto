@@ -55,6 +55,8 @@ message Peer {
     IpAddress id = 7;
 
     google.protobuf.Timestamp timestamp = 8;
+
+    string hostname = 15;
 }
 
 message InitiationPacket {
@@ -63,6 +65,8 @@ message InitiationPacket {
     repeated string message = 3;
     repeated string admin_label = 4;
     IpAddress bgpId = 65531;
+
+    string hostname = 65535;
 }
 
 message TerminationPacket {
@@ -128,6 +132,8 @@ message RouteMonitoringPacket {
     message Route {
         IpAddress prefix = 1;
         uint32 length = 2;
+        uint64 pathId = 3;
+        string labels = 4;
     }
 
     message PathAttribute {
@@ -214,6 +220,22 @@ message RouteMonitoringPacket {
             repeated PathAttribute path_attributes = 2;
         }
 
+        message MultiprotocolReachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route advertised = 4;
+            repeated Route vpnAdvertised = 5;
+        }
+
+        message MultiprotocolUnreachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route withdrawn = 4;
+            repeated Route vpnWithdrawn = 5;
+        }
+
         bool optional = 1;
         bool transitive = 2;
         bool partial = 3;
@@ -236,6 +258,8 @@ message RouteMonitoringPacket {
             LargeCommunities large_communities = 18;
             AttrSet attr_set = 19;
             ExtendedV6Communities extended_v6_communities = 20;
+            MultiprotocolReachableNrli mpReachNrli = 21;
+            MultiprotocolUnreachableNrli mpUnreachNrli = 22;
         }
     }
 
