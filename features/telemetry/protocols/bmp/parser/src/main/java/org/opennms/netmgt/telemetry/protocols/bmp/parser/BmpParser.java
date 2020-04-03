@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -49,8 +50,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.joda.time.Duration;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.Capability;
@@ -121,12 +124,20 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
 
     public final static long HEARTBEAT_INTERVAL = 4 * 60 * 60 * 1000;
 
@@ -138,13 +149,22 @@ public class BmpParser implements TcpParser {
 
     private ScheduledFuture<?> heartbeatFuture;
 
-    private HashSet<InetAddress> connections = Sets.newHashSet();
+    private Set<InetAddress> connections = Sets.newConcurrentHashSet();
+
+    private final DnsResolver dnsResolver;
+    private boolean dnsLookupsEnabled = true;
+
+    private final Bulkhead bulkhead;
 
     public BmpParser(final String name,
                      final AsyncDispatcher<TelemetryMessage> dispatcher,
+                     final DnsResolver dnsResolver,
+                     final Bulkhead bulkhead,
                      final MetricRegistry metricRegistry) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
+        this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.bulkhead = Objects.requireNonNull(bulkhead);
 
         this.recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsDispatched"));
     }
@@ -206,6 +226,12 @@ public class BmpParser implements TcpParser {
 
                 LOG.trace("Got packet: {}", packet);
 
+                // Build the message from the received packet
+                final Transport.Message.Builder message = Transport.Message.newBuilder()
+                        .setVersion(header.version);
+
+                packet.accept(new Serializer(message));
+
                 packet.accept(new Packet.Visitor.Adapter() {
                     @Override
                     public void visit(InitiationPacket packet) {
@@ -236,17 +262,33 @@ public class BmpParser implements TcpParser {
                     }
                 });
 
-                final Transport.Message.Builder message = Transport.Message.newBuilder()
-                        .setVersion(header.version);
-
                 if (bgpId != null) {
-                    message.setBgpId(address(bgpId));
+                    message.setBgpId(BmpParser.address(bgpId));
                 }
 
-                packet.accept(new Serializer(message));
+                // Enrich the message with resolved hostnames
+                CompletableFuture<Transport.Message.Builder> enriched = CompletableFuture.completedFuture(message);
+                if (BmpParser.this.dnsLookupsEnabled) {
+                    // Limit number of outstanding requests with a bulk-head and put backpressure on the socket
+                    try {
+                        bulkhead.acquirePermission();
+                        // We got permission, let's issue the async lookups
+                        enriched = enriched.thenCompose(BmpParser.this.resolvePeer(packet))
+                                .thenCompose(BmpParser.this.resolveSysName(packet, remoteAddress.getAddress()));
+                        // Release permission when these complete, successfully or not
+                        enriched.whenComplete((v,e) -> bulkhead.releasePermission());
+                    } catch (BulkheadFullException bfe) {
+                        RATE_LIMITED_LOG.warn("Skipping enrichment. Too many requests already in flight (bulk-head is full).");
+                    }
+                }
 
-                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
-                BmpParser.this.recordsDispatched.mark();
+                // Dispatch the final message
+                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = enriched.thenCompose(msg -> {
+                    final ByteBuffer payload = ByteBuffer.wrap(msg.build().toByteArray());
+                    final CompletableFuture<AsyncDispatcher.DispatchStatus> status = BmpParser.this.dispatcher.send(new TelemetryMessage(remoteAddress, payload));
+                    BmpParser.this.recordsDispatched.mark();
+                    return status;
+                });
 
                 return Optional.of(dispatched);
             }
@@ -263,6 +305,54 @@ public class BmpParser implements TcpParser {
                 BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
             }
         };
+    }
+
+    private Function<Transport.Message.Builder, CompletableFuture<Transport.Message.Builder>> resolvePeer(final Packet packet) {
+        return message -> packet.map(new Packet.Mapper.Adapter<CompletableFuture<Transport.Message.Builder>>(CompletableFuture.completedFuture(message)) {
+
+            private CompletableFuture<Transport.Message.Builder> resolvePeer(final PeerHeader peerHeader,
+                                                                             final Transport.Peer.Builder builder) {
+                return BmpParser.this.dnsResolver.reverseLookup(peerHeader.address)
+                        .thenApply(hostname -> {
+                            hostname.ifPresent(builder::setHostname);
+                            return message;
+                        });
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final PeerUpPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getPeerUpBuilder().getPeerBuilder());
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final PeerDownPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getPeerDownBuilder().getPeerBuilder());
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final StatisticsReportPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getStatisticsReportBuilder().getPeerBuilder());
+            }
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final RouteMonitoringPacket packet) {
+                return resolvePeer(packet.peerHeader, message.getRouteMonitoringBuilder().getPeerBuilder());
+            }
+        });
+    }
+
+    private Function<Transport.Message.Builder, CompletableFuture<Transport.Message.Builder>> resolveSysName(final Packet packet, final InetAddress sourceAddress) {
+        return message -> packet.map(new Packet.Mapper.Adapter<CompletableFuture<Transport.Message.Builder>>(CompletableFuture.completedFuture(message)) {
+
+            @Override
+            public CompletableFuture<Transport.Message.Builder> map(final InitiationPacket packet) {
+                return BmpParser.this.dnsResolver.reverseLookup(sourceAddress)
+                        .thenApply(hostname -> {
+                            hostname.ifPresent(message.getInitiationBuilder()::setHostname);
+                            return message;
+                        });
+            }
+        });
     }
 
     private enum HeartbeatMode {
@@ -298,6 +388,14 @@ public class BmpParser implements TcpParser {
 
         this.dispatcher.send(new TelemetryMessage(InetSocketAddress.createUnresolved("0.0.0.0", 0), ByteBuffer.wrap(message.build().toByteArray())));
         BmpParser.this.recordsDispatched.mark();
+    }
+
+    public boolean isDnsLookupsEnabled() {
+        return this.dnsLookupsEnabled;
+    }
+
+    public void setDnsLookupsEnabled(final boolean dnsLookupsEnabled) {
+        this.dnsLookupsEnabled = dnsLookupsEnabled;
     }
 
     private static class Serializer implements Packet.Visitor {

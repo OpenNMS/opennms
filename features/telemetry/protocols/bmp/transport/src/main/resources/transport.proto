@@ -55,6 +55,8 @@ message Peer {
     IpAddress id = 7;
 
     google.protobuf.Timestamp timestamp = 8;
+
+    string hostname = 15;
 }
 
 message InitiationPacket {
@@ -63,6 +65,8 @@ message InitiationPacket {
     repeated string message = 3;
     repeated string admin_label = 4;
     IpAddress bgpId = 65531;
+
+    string hostname = 65535;
 }
 
 message TerminationPacket {

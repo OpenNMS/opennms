@@ -232,7 +232,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
-        router.name = initiation.getSysName(); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569) - resolved name has precedence over sys_name
+        router.name = initiation.getSysName() != null
+            ? initiation.getSysName()
+            : initiation.getHostname();
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = Joiner.on('\n').join(initiation.getSysDescList());
@@ -294,7 +296,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = addressAsStr(bgpPeer.getAddress()); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569)
+        peer.name = !Strings.isNullOrEmpty(bgpPeer.getHostname())
+                ? bgpPeer.getHostname()
+                : addressAsStr(bgpPeer.getAddress());
         peer.hash = Record.hash(bgpPeer.getAddress(),
                                 bgpPeer.getDistinguisher(),
                                 context.routerHashId);
@@ -337,7 +341,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = InetAddressUtils.str(address(bgpPeer.getAddress())); // TODO: resolve Ip via DNS?
+        peer.name = !Strings.isNullOrEmpty(bgpPeer.getHostname())
+                    ? bgpPeer.getHostname()
+                    : addressAsStr(bgpPeer.getAddress());
         peer.hash = Record.hash(bgpPeer.getAddress(),
                 bgpPeer.getDistinguisher(),
                 context.routerHashId);

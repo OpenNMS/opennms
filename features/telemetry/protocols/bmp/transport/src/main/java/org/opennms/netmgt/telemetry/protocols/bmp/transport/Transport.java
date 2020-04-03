@@ -805,6 +805,18 @@ public final class Transport {
      */
     com.google.protobuf.TimestampOrBuilder getTimestampOrBuilder();
 
+    /**
+     * <code>string hostname = 15;</code>
+     * @return The hostname.
+     */
+    java.lang.String getHostname();
+    /**
+     * <code>string hostname = 15;</code>
+     * @return The bytes for hostname.
+     */
+    com.google.protobuf.ByteString
+        getHostnameBytes();
+
     public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.Peer.FlagsCase getFlagsCase();
   }
   /**
@@ -821,6 +833,7 @@ public final class Transport {
     }
     private Peer() {
       type_ = 0;
+      hostname_ = "";
     }
 
     @java.lang.Override
@@ -934,6 +947,12 @@ public final class Transport {
                 timestamp_ = subBuilder.buildPartial();
               }
 
+              break;
+            }
+            case 122: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              hostname_ = s;
               break;
             }
             default: {
@@ -2756,6 +2775,42 @@ public final class Transport {
       return getTimestamp();
     }
 
+    public static final int HOSTNAME_FIELD_NUMBER = 15;
+    private volatile java.lang.Object hostname_;
+    /**
+     * <code>string hostname = 15;</code>
+     * @return The hostname.
+     */
+    public java.lang.String getHostname() {
+      java.lang.Object ref = hostname_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        hostname_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string hostname = 15;</code>
+     * @return The bytes for hostname.
+     */
+    public com.google.protobuf.ByteString
+        getHostnameBytes() {
+      java.lang.Object ref = hostname_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        hostname_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2793,6 +2848,9 @@ public final class Transport {
       }
       if (timestamp_ != null) {
         output.writeMessage(8, getTimestamp());
+      }
+      if (!getHostnameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 15, hostname_);
       }
       unknownFields.writeTo(output);
     }
@@ -2835,6 +2893,9 @@ public final class Transport {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, getTimestamp());
       }
+      if (!getHostnameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(15, hostname_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -2870,6 +2931,8 @@ public final class Transport {
         if (!getTimestamp()
             .equals(other.getTimestamp())) return false;
       }
+      if (!getHostname()
+          .equals(other.getHostname())) return false;
       if (!getFlagsCase().equals(other.getFlagsCase())) return false;
       switch (flagsCase_) {
         case 2:
@@ -2913,6 +2976,8 @@ public final class Transport {
         hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
         hash = (53 * hash) + getTimestamp().hashCode();
       }
+      hash = (37 * hash) + HOSTNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getHostname().hashCode();
       switch (flagsCase_) {
         case 2:
           hash = (37 * hash) + PEERFLAGS_FIELD_NUMBER;
@@ -3082,6 +3147,8 @@ public final class Transport {
           timestamp_ = null;
           timestampBuilder_ = null;
         }
+        hostname_ = "";
+
         flagsCase_ = 0;
         flags_ = null;
         return this;
@@ -3142,6 +3209,7 @@ public final class Transport {
         } else {
           result.timestamp_ = timestampBuilder_.build();
         }
+        result.hostname_ = hostname_;
         result.flagsCase_ = flagsCase_;
         onBuilt();
         return result;
@@ -3208,6 +3276,10 @@ public final class Transport {
         }
         if (other.hasTimestamp()) {
           mergeTimestamp(other.getTimestamp());
+        }
+        if (!other.getHostname().isEmpty()) {
+          hostname_ = other.hostname_;
+          onChanged();
         }
         switch (other.getFlagsCase()) {
           case PEERFLAGS: {
@@ -4010,6 +4082,82 @@ public final class Transport {
         }
         return timestampBuilder_;
       }
+
+      private java.lang.Object hostname_ = "";
+      /**
+       * <code>string hostname = 15;</code>
+       * @return The hostname.
+       */
+      public java.lang.String getHostname() {
+        java.lang.Object ref = hostname_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          hostname_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string hostname = 15;</code>
+       * @return The bytes for hostname.
+       */
+      public com.google.protobuf.ByteString
+          getHostnameBytes() {
+        java.lang.Object ref = hostname_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hostname_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string hostname = 15;</code>
+       * @param value The hostname to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHostname(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        hostname_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string hostname = 15;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHostname() {
+        
+        hostname_ = getDefaultInstance().getHostname();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string hostname = 15;</code>
+       * @param value The bytes for hostname to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHostnameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        hostname_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -4168,6 +4316,18 @@ public final class Transport {
      * <code>.IpAddress bgpId = 65531;</code>
      */
     org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getBgpIdOrBuilder();
+
+    /**
+     * <code>string hostname = 65535;</code>
+     * @return The hostname.
+     */
+    java.lang.String getHostname();
+    /**
+     * <code>string hostname = 65535;</code>
+     * @return The bytes for hostname.
+     */
+    com.google.protobuf.ByteString
+        getHostnameBytes();
   }
   /**
    * Protobuf type {@code InitiationPacket}
@@ -4186,6 +4346,7 @@ public final class Transport {
       sysDesc_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       message_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       adminLabel_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      hostname_ = "";
     }
 
     @java.lang.Override
@@ -4263,6 +4424,12 @@ public final class Transport {
                 bgpId_ = subBuilder.buildPartial();
               }
 
+              break;
+            }
+            case 524282: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              hostname_ = s;
               break;
             }
             default: {
@@ -4470,6 +4637,42 @@ public final class Transport {
       return getBgpId();
     }
 
+    public static final int HOSTNAME_FIELD_NUMBER = 65535;
+    private volatile java.lang.Object hostname_;
+    /**
+     * <code>string hostname = 65535;</code>
+     * @return The hostname.
+     */
+    public java.lang.String getHostname() {
+      java.lang.Object ref = hostname_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        hostname_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string hostname = 65535;</code>
+     * @return The bytes for hostname.
+     */
+    public com.google.protobuf.ByteString
+        getHostnameBytes() {
+      java.lang.Object ref = hostname_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        hostname_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -4498,6 +4701,9 @@ public final class Transport {
       }
       if (bgpId_ != null) {
         output.writeMessage(65531, getBgpId());
+      }
+      if (!getHostnameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 65535, hostname_);
       }
       unknownFields.writeTo(output);
     }
@@ -4539,6 +4745,9 @@ public final class Transport {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(65531, getBgpId());
       }
+      if (!getHostnameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(65535, hostname_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -4567,6 +4776,8 @@ public final class Transport {
         if (!getBgpId()
             .equals(other.getBgpId())) return false;
       }
+      if (!getHostname()
+          .equals(other.getHostname())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -4596,6 +4807,8 @@ public final class Transport {
         hash = (37 * hash) + BGPID_FIELD_NUMBER;
         hash = (53 * hash) + getBgpId().hashCode();
       }
+      hash = (37 * hash) + HOSTNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getHostname().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -4743,6 +4956,8 @@ public final class Transport {
           bgpId_ = null;
           bgpIdBuilder_ = null;
         }
+        hostname_ = "";
+
         return this;
       }
 
@@ -4791,6 +5006,7 @@ public final class Transport {
         } else {
           result.bgpId_ = bgpIdBuilder_.build();
         }
+        result.hostname_ = hostname_;
         onBuilt();
         return result;
       }
@@ -4875,6 +5091,10 @@ public final class Transport {
         }
         if (other.hasBgpId()) {
           mergeBgpId(other.getBgpId());
+        }
+        if (!other.getHostname().isEmpty()) {
+          hostname_ = other.hostname_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -5429,6 +5649,82 @@ public final class Transport {
           bgpId_ = null;
         }
         return bgpIdBuilder_;
+      }
+
+      private java.lang.Object hostname_ = "";
+      /**
+       * <code>string hostname = 65535;</code>
+       * @return The hostname.
+       */
+      public java.lang.String getHostname() {
+        java.lang.Object ref = hostname_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          hostname_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string hostname = 65535;</code>
+       * @return The bytes for hostname.
+       */
+      public com.google.protobuf.ByteString
+          getHostnameBytes() {
+        java.lang.Object ref = hostname_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hostname_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string hostname = 65535;</code>
+       * @param value The hostname to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHostname(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        hostname_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string hostname = 65535;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHostname() {
+        
+        hostname_ = getDefaultInstance().getHostname();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string hostname = 65535;</code>
+       * @param value The bytes for hostname to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHostnameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        hostname_ = value;
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -41088,177 +41384,178 @@ public final class Transport {
       "\n\017transport.proto\032\033google/protobuf/empty" +
       ".proto\032\037google/protobuf/timestamp.proto\"" +
       "2\n\tIpAddress\022\014\n\002v4\030\001 \001(\014H\000\022\014\n\002v6\030\002 \001(\014H\000" +
-      "B\t\n\007address\"\323\004\n\004Peer\022\030\n\004type\030\001 \001(\0162\n.Pee" +
+      "B\t\n\007address\"\345\004\n\004Peer\022\030\n\004type\030\001 \001(\0162\n.Pee" +
       "r.Type\022$\n\tpeerFlags\030\002 \001(\0132\017.Peer.PeerFla" +
       "gsH\000\022(\n\013locRibFlags\030\003 \001(\0132\021.Peer.LocRibF" +
       "lagsH\000\022\025\n\rdistinguisher\030\004 \001(\006\022\033\n\007address" +
       "\030\005 \001(\0132\n.IpAddress\022\n\n\002as\030\006 \001(\007\022\026\n\002id\030\007 \001" +
       "(\0132\n.IpAddress\022-\n\ttimestamp\030\010 \001(\0132\032.goog" +
-      "le.protobuf.Timestamp\032\037\n\013LocRibFlags\022\020\n\010" +
-      "filtered\030\001 \001(\010\032\327\001\n\tPeerFlags\022-\n\nip_versi" +
-      "on\030\001 \001(\0162\031.Peer.PeerFlags.IpVersion\022&\n\006p" +
-      "olicy\030\002 \001(\0162\026.Peer.PeerFlags.Policy\022\026\n\016l" +
-      "egacy_as_path\030\003 \001(\010\022\r\n\005adjIn\030\004 \001(\010\"!\n\tIp" +
-      "Version\022\t\n\005IP_V4\020\000\022\t\n\005IP_V6\020\001\")\n\006Policy\022" +
-      "\016\n\nPRE_POLICY\020\000\022\017\n\013POST_POLICY\020\001\"V\n\004Type" +
-      "\022\023\n\017GLOBAL_INSTANCE\020\000\022\017\n\013RD_INSTANCE\020\001\022\022" +
-      "\n\016LOCAL_INSTANCE\020\002\022\024\n\020LOC_RIB_INSTANCE\020\003" +
-      "B\007\n\005flags\"y\n\020InitiationPacket\022\020\n\010sys_nam" +
-      "e\030\001 \001(\t\022\020\n\010sys_desc\030\002 \003(\t\022\017\n\007message\030\003 \003" +
-      "(\t\022\023\n\013admin_label\030\004 \003(\t\022\033\n\005bgpId\030\373\377\003 \001(\013" +
-      "2\n.IpAddress\"]\n\021TerminationPacket\022\017\n\007mes" +
-      "sage\030\001 \003(\t\022\016\n\006reason\030\002 \001(\r\022\'\n\007unknown\030\003 " +
-      "\001(\0132\026.google.protobuf.Empty\"\231\004\n\014PeerUpPa" +
-      "cket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022!\n\rlocal_addre" +
-      "ss\030\002 \001(\0132\n.IpAddress\022\022\n\nlocal_port\030\003 \001(\r" +
-      "\022\023\n\013remote_port\030\004 \001(\r\022+\n\010send_msg\030\005 \001(\0132" +
-      "\031.PeerUpPacket.OpenMessage\022+\n\010recv_msg\030\006" +
-      " \001(\0132\031.PeerUpPacket.OpenMessage\022\020\n\010sys_n" +
-      "ame\030\007 \001(\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t" +
-      " \001(\t\022\022\n\ntable_name\030\n \001(\t\0329\n\nCapability\022\014" +
-      "\n\004code\030\001 \001(\r\022\016\n\006length\030\002 \001(\r\022\r\n\005value\030\003 " +
-      "\001(\014\032>\n\016CapabilityList\022,\n\ncapability\030\001 \003(" +
-      "\0132\030.PeerUpPacket.Capability\032\211\001\n\013OpenMess" +
-      "age\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002 \001(\007\022\021\n\thold" +
-      "_time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.IpAddress\0222\n\014c" +
-      "apabilities\030\005 \001(\0132\034.PeerUpPacket.Capabil" +
-      "ityList\"\315\002\n\016PeerDownPacket\022\023\n\004peer\030\001 \001(\013" +
-      "2\005.Peer\0226\n\026local_bgp_notification\030\002 \001(\0132" +
-      "\024.PeerDownPacket.CodeH\000\022\037\n\025local_no_noti" +
-      "fication\030\003 \001(\rH\000\0227\n\027remote_bgp_notificat" +
-      "ion\030\004 \001(\0132\024.PeerDownPacket.CodeH\000\0228\n\026rem" +
-      "ote_no_notification\030\005 \001(\0132\026.google.proto" +
-      "buf.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.pr" +
-      "otobuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007" +
-      "subcode\030\002 \001(\rB\010\n\006reason\"\317\026\n\025RouteMonitor" +
-      "ingPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdr" +
-      "aws\030\002 \003(\0132\034.RouteMonitoringPacket.Route\022" +
-      "0\n\nreachables\030\003 \003(\0132\034.RouteMonitoringPac" +
-      "ket.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMon" +
-      "itoringPacket.PathAttribute\032S\n\005Route\022\032\n\006" +
-      "prefix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r" +
-      "\022\016\n\006pathId\030\003 \001(\004\022\016\n\006labels\030\004 \001(\t\032\256\024\n\rPat" +
-      "hAttribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntransiti" +
-      "ve\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010extended\030\004 " +
-      "\001(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitoringPac" +
-      "ket.PathAttribute.OriginH\000\022>\n\007as_path\030\006 " +
-      "\001(\0132+.RouteMonitoringPacket.PathAttribut" +
-      "e.AsPathH\000\022@\n\010next_hop\030\007 \001(\0132,.RouteMoni" +
-      "toringPacket.PathAttribute.NextHopH\000\022M\n\017" +
-      "multi_exit_disc\030\010 \001(\01322.RouteMonitoringP" +
-      "acket.PathAttribute.MultiExitDiscH\000\022D\n\nl" +
-      "ocal_pref\030\t \001(\0132..RouteMonitoringPacket." +
-      "PathAttribute.LocalPrefH\000\022P\n\020atomic_aggr" +
-      "egate\030\n \001(\01324.RouteMonitoringPacket.Path" +
-      "Attribute.AtomicAggregateH\000\022E\n\naggregato" +
-      "r\030\013 \001(\0132/.RouteMonitoringPacket.PathAttr" +
-      "ibute.AggregatorH\000\022\023\n\tcommunity\030\014 \001(\rH\000\022" +
-      "\027\n\roriginator_id\030\r \001(\rH\000\022H\n\014cluster_list" +
-      "\030\016 \001(\01320.RouteMonitoringPacket.PathAttri" +
-      "bute.ClusterListH\000\022X\n\024extended_communiti" +
-      "es\030\017 \001(\01328.RouteMonitoringPacket.PathAtt" +
-      "ribute.ExtendedCommunitiesH\000\022\023\n\tconnecto" +
-      "r\030\020 \001(\007H\000\022I\n\ras_path_limit\030\021 \001(\01320.Route" +
-      "MonitoringPacket.PathAttribute.AsPathLim" +
-      "itH\000\022R\n\021large_communities\030\022 \001(\01325.RouteM" +
-      "onitoringPacket.PathAttribute.LargeCommu" +
-      "nitiesH\000\022@\n\010attr_set\030\023 \001(\0132,.RouteMonito" +
-      "ringPacket.PathAttribute.AttrSetH\000\022V\n\013mp" +
-      "ReachNrli\030\024 \001(\0132?.RouteMonitoringPacket." +
-      "PathAttribute.MultiprotocolReachableNrli" +
-      "H\000\022Z\n\rmpUnreachNrli\030\025 \001(\0132A.RouteMonitor" +
-      "ingPacket.PathAttribute.MultiprotocolUnr" +
-      "eachableNrliH\000\032\327\001\n\006AsPath\022E\n\010segments\030\001 " +
-      "\003(\01323.RouteMonitoringPacket.PathAttribut" +
-      "e.AsPath.Segment\032\205\001\n\007Segment\022F\n\004type\030\001 \001" +
-      "(\01628.RouteMonitoringPacket.PathAttribute" +
-      ".AsPath.Segment.Type\022\r\n\005paths\030\002 \003(\007\"#\n\004T" +
-      "ype\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007Next" +
-      "Hop\022\033\n\007address\030\001 \001(\0132\n.IpAddress\032&\n\rMult" +
-      "iExitDisc\022\025\n\rdiscriminator\030\001 \001(\r\032\037\n\tLoca" +
-      "lPref\022\022\n\npreference\030\001 \001(\r\032\021\n\017AtomicAggre" +
-      "gate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007\022\033\n\007addres" +
-      "s\030\002 \001(\0132\n.IpAddress\032-\n\013ClusterList\022\036\n\ncl" +
-      "uster_id\030\001 \003(\0132\n.IpAddress\032k\n\023ExtendedCo" +
-      "mmunities\022T\n\024extended_communities\030\001 \003(\0132" +
-      "6.RouteMonitoringPacket.PathAttribute.Ex" +
-      "tendedCommunity\0320\n\021ExtendedCommunity\022\014\n\004" +
-      "type\030\001 \001(\007\022\r\n\005value\030\002 \001(\014\032.\n\013AsPathLimit" +
-      "\022\023\n\013upper_bound\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020Lar" +
-      "geCommunities\022N\n\021large_communities\030\001 \003(\013" +
-      "23.RouteMonitoringPacket.PathAttribute.L" +
-      "argeCommunity\032d\n\016LargeCommunity\022\034\n\024globa" +
-      "l_administrator\030\001 \001(\r\022\031\n\021local_data_part" +
-      "_1\030\002 \001(\r\022\031\n\021local_data_part_2\030\003 \001(\r\032[\n\007A" +
-      "ttrSet\022\021\n\torigin_as\030\001 \001(\r\022=\n\017path_attrib" +
-      "utes\030\002 \003(\0132$.RouteMonitoringPacket.PathA" +
-      "ttribute\032\273\001\n\032MultiprotocolReachableNrli\022" +
-      "\013\n\003afi\030\001 \001(\r\022\014\n\004safi\030\002 \001(\r\022\033\n\007nextHop\030\003 " +
-      "\001(\0132\n.IpAddress\0220\n\nadvertised\030\004 \003(\0132\034.Ro" +
-      "uteMonitoringPacket.Route\0223\n\rvpnAdvertis" +
-      "ed\030\005 \003(\0132\034.RouteMonitoringPacket.Route\032\273" +
-      "\001\n\034MultiprotocolUnreachableNrli\022\013\n\003afi\030\001" +
-      " \001(\r\022\014\n\004safi\030\002 \001(\r\022\033\n\007nextHop\030\003 \001(\0132\n.Ip" +
-      "Address\022/\n\twithdrawn\030\004 \003(\0132\034.RouteMonito" +
-      "ringPacket.Route\0222\n\014vpnWithdrawn\030\005 \003(\0132\034" +
-      ".RouteMonitoringPacket.Route\"*\n\006Origin\022\007" +
-      "\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005valu" +
-      "e\"\323\014\n\026StatisticsReportPacket\022\023\n\004peer\030\001 \001" +
-      "(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.Statistics" +
-      "ReportPacket.Counter\0229\n\020duplicate_prefix" +
-      "\030e \001(\0132\037.StatisticsReportPacket.Counter\022" +
-      ";\n\022duplicate_withdraw\030f \001(\0132\037.Statistics" +
-      "ReportPacket.Counter\022M\n$invalid_update_d" +
-      "ue_to_as_confed_loop\030g \001(\0132\037.StatisticsR" +
-      "eportPacket.Counter\022K\n\"invalid_update_du" +
-      "e_to_as_path_loop\030h \001(\0132\037.StatisticsRepo" +
-      "rtPacket.Counter\022P\n\'invalid_update_due_t" +
-      "o_cluster_list_loop\030i \001(\0132\037.StatisticsRe" +
-      "portPacket.Counter\022L\n#invalid_update_due" +
-      "_to_originator_id\030j \001(\0132\037.StatisticsRepo" +
-      "rtPacket.Counter\0221\n\nadj_rib_in\030k \001(\0132\035.S" +
-      "tatisticsReportPacket.Gauge\0222\n\013adj_rib_o" +
-      "ut\030l \001(\0132\035.StatisticsReportPacket.Gauge\022" +
-      "G\n\022per_afi_adj_rib_in\030m \003(\0132+.Statistics" +
-      "ReportPacket.PerAfiAdjRibInEntry\022F\n\021per_" +
-      "afi_local_rib\030n \003(\0132+.StatisticsReportPa" +
-      "cket.PerAfiLocalRibEntry\022A\n\030update_treat" +
-      "_as_withdraw\030o \001(\0132\037.StatisticsReportPac" +
-      "ket.Counter\022A\n\030prefix_treat_as_withdraw\030" +
-      "p \001(\0132\037.StatisticsReportPacket.Counter\0229" +
-      "\n\020duplicate_update\030q \001(\0132\037.StatisticsRep" +
-      "ortPacket.Counter\0220\n\tlocal_rib\030r \001(\0132\035.S" +
-      "tatisticsReportPacket.Gauge\0221\n\nexport_ri" +
-      "b\030s \001(\0132\035.StatisticsReportPacket.Gauge\022I" +
-      "\n\023per_afi_adj_rib_out\030t \003(\0132,.Statistics" +
-      "ReportPacket.PerAfiAdjRibOutEntry\022H\n\022per" +
-      "_afi_export_rib\030u \003(\0132,.StatisticsReport" +
-      "Packet.PerAfiExportRibEntry\032\026\n\005Gauge\022\r\n\005" +
-      "value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 \001(\r\032T\n" +
-      "\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022,\n\005val" +
-      "ue\030\002 \001(\0132\035.StatisticsReportPacket.Gauge:" +
-      "\0028\001\032T\n\023PerAfiLocalRibEntry\022\013\n\003key\030\001 \001(\t\022" +
-      ",\n\005value\030\002 \001(\0132\035.StatisticsReportPacket." +
-      "Gauge:\0028\001\032U\n\024PerAfiAdjRibOutEntry\022\013\n\003key" +
-      "\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReport" +
-      "Packet.Gauge:\0028\001\032U\n\024PerAfiExportRibEntry" +
-      "\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Statistic" +
-      "sReportPacket.Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n" +
-      "\004mode\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007routers\030" +
-      "\002 \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007STARTED\020\000\022\n" +
-      "\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\212\003" +
-      "\n\007Message\022\017\n\007version\030\001 \001(\r\022\031\n\005bgpId\030\002 \001(" +
-      "\0132\n.IpAddress\022\'\n\ninitiation\030\005 \001(\0132\021.Init" +
-      "iationPacketH\000\022)\n\013termination\030\006 \001(\0132\022.Te" +
-      "rminationPacketH\000\022 \n\007peer_up\030\007 \001(\0132\r.Pee" +
-      "rUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.PeerDow" +
-      "nPacketH\000\0222\n\020route_monitoring\030\t \001(\0132\026.Ro" +
-      "uteMonitoringPacketH\000\0224\n\021statistics_repo" +
-      "rt\030\n \001(\0132\027.StatisticsReportPacketH\000\022\037\n\th" +
-      "eartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006packetJ\004" +
-      "\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4or" +
-      "g.opennms.netmgt.telemetry.protocols.bmp" +
-      ".transportB\tTransportP\000P\001b\006proto3"
+      "le.protobuf.Timestamp\022\020\n\010hostname\030\017 \001(\t\032" +
+      "\037\n\013LocRibFlags\022\020\n\010filtered\030\001 \001(\010\032\327\001\n\tPee" +
+      "rFlags\022-\n\nip_version\030\001 \001(\0162\031.Peer.PeerFl" +
+      "ags.IpVersion\022&\n\006policy\030\002 \001(\0162\026.Peer.Pee" +
+      "rFlags.Policy\022\026\n\016legacy_as_path\030\003 \001(\010\022\r\n" +
+      "\005adjIn\030\004 \001(\010\"!\n\tIpVersion\022\t\n\005IP_V4\020\000\022\t\n\005" +
+      "IP_V6\020\001\")\n\006Policy\022\016\n\nPRE_POLICY\020\000\022\017\n\013POS" +
+      "T_POLICY\020\001\"V\n\004Type\022\023\n\017GLOBAL_INSTANCE\020\000\022" +
+      "\017\n\013RD_INSTANCE\020\001\022\022\n\016LOCAL_INSTANCE\020\002\022\024\n\020" +
+      "LOC_RIB_INSTANCE\020\003B\007\n\005flags\"\215\001\n\020Initiati" +
+      "onPacket\022\020\n\010sys_name\030\001 \001(\t\022\020\n\010sys_desc\030\002" +
+      " \003(\t\022\017\n\007message\030\003 \003(\t\022\023\n\013admin_label\030\004 \003" +
+      "(\t\022\033\n\005bgpId\030\373\377\003 \001(\0132\n.IpAddress\022\022\n\010hostn" +
+      "ame\030\377\377\003 \001(\t\"]\n\021TerminationPacket\022\017\n\007mess" +
+      "age\030\001 \003(\t\022\016\n\006reason\030\002 \001(\r\022\'\n\007unknown\030\003 \001" +
+      "(\0132\026.google.protobuf.Empty\"\231\004\n\014PeerUpPac" +
+      "ket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022!\n\rlocal_addres" +
+      "s\030\002 \001(\0132\n.IpAddress\022\022\n\nlocal_port\030\003 \001(\r\022" +
+      "\023\n\013remote_port\030\004 \001(\r\022+\n\010send_msg\030\005 \001(\0132\031" +
+      ".PeerUpPacket.OpenMessage\022+\n\010recv_msg\030\006 " +
+      "\001(\0132\031.PeerUpPacket.OpenMessage\022\020\n\010sys_na" +
+      "me\030\007 \001(\t\022\020\n\010sys_desc\030\010 \001(\t\022\017\n\007message\030\t " +
+      "\001(\t\022\022\n\ntable_name\030\n \001(\t\0329\n\nCapability\022\014\n" +
+      "\004code\030\001 \001(\r\022\016\n\006length\030\002 \001(\r\022\r\n\005value\030\003 \001" +
+      "(\014\032>\n\016CapabilityList\022,\n\ncapability\030\001 \003(\013" +
+      "2\030.PeerUpPacket.Capability\032\211\001\n\013OpenMessa" +
+      "ge\022\017\n\007version\030\001 \001(\r\022\n\n\002as\030\002 \001(\007\022\021\n\thold_" +
+      "time\030\003 \001(\r\022\026\n\002id\030\004 \001(\0132\n.IpAddress\0222\n\014ca" +
+      "pabilities\030\005 \001(\0132\034.PeerUpPacket.Capabili" +
+      "tyList\"\315\002\n\016PeerDownPacket\022\023\n\004peer\030\001 \001(\0132" +
+      "\005.Peer\0226\n\026local_bgp_notification\030\002 \001(\0132\024" +
+      ".PeerDownPacket.CodeH\000\022\037\n\025local_no_notif" +
+      "ication\030\003 \001(\rH\000\0227\n\027remote_bgp_notificati" +
+      "on\030\004 \001(\0132\024.PeerDownPacket.CodeH\000\0228\n\026remo" +
+      "te_no_notification\030\005 \001(\0132\026.google.protob" +
+      "uf.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.pro" +
+      "tobuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007s" +
+      "ubcode\030\002 \001(\rB\010\n\006reason\"\317\026\n\025RouteMonitori" +
+      "ngPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdra" +
+      "ws\030\002 \003(\0132\034.RouteMonitoringPacket.Route\0220" +
+      "\n\nreachables\030\003 \003(\0132\034.RouteMonitoringPack" +
+      "et.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMoni" +
+      "toringPacket.PathAttribute\032S\n\005Route\022\032\n\006p" +
+      "refix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\022" +
+      "\016\n\006pathId\030\003 \001(\004\022\016\n\006labels\030\004 \001(\t\032\256\024\n\rPath" +
+      "Attribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntransitiv" +
+      "e\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010extended\030\004 \001" +
+      "(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitoringPack" +
+      "et.PathAttribute.OriginH\000\022>\n\007as_path\030\006 \001" +
+      "(\0132+.RouteMonitoringPacket.PathAttribute" +
+      ".AsPathH\000\022@\n\010next_hop\030\007 \001(\0132,.RouteMonit" +
+      "oringPacket.PathAttribute.NextHopH\000\022M\n\017m" +
+      "ulti_exit_disc\030\010 \001(\01322.RouteMonitoringPa" +
+      "cket.PathAttribute.MultiExitDiscH\000\022D\n\nlo" +
+      "cal_pref\030\t \001(\0132..RouteMonitoringPacket.P" +
+      "athAttribute.LocalPrefH\000\022P\n\020atomic_aggre" +
+      "gate\030\n \001(\01324.RouteMonitoringPacket.PathA" +
+      "ttribute.AtomicAggregateH\000\022E\n\naggregator" +
+      "\030\013 \001(\0132/.RouteMonitoringPacket.PathAttri" +
+      "bute.AggregatorH\000\022\023\n\tcommunity\030\014 \001(\rH\000\022\027" +
+      "\n\roriginator_id\030\r \001(\rH\000\022H\n\014cluster_list\030" +
+      "\016 \001(\01320.RouteMonitoringPacket.PathAttrib" +
+      "ute.ClusterListH\000\022X\n\024extended_communitie" +
+      "s\030\017 \001(\01328.RouteMonitoringPacket.PathAttr" +
+      "ibute.ExtendedCommunitiesH\000\022\023\n\tconnector" +
+      "\030\020 \001(\007H\000\022I\n\ras_path_limit\030\021 \001(\01320.RouteM" +
+      "onitoringPacket.PathAttribute.AsPathLimi" +
+      "tH\000\022R\n\021large_communities\030\022 \001(\01325.RouteMo" +
+      "nitoringPacket.PathAttribute.LargeCommun" +
+      "itiesH\000\022@\n\010attr_set\030\023 \001(\0132,.RouteMonitor" +
+      "ingPacket.PathAttribute.AttrSetH\000\022V\n\013mpR" +
+      "eachNrli\030\024 \001(\0132?.RouteMonitoringPacket.P" +
+      "athAttribute.MultiprotocolReachableNrliH" +
+      "\000\022Z\n\rmpUnreachNrli\030\025 \001(\0132A.RouteMonitori" +
+      "ngPacket.PathAttribute.MultiprotocolUnre" +
+      "achableNrliH\000\032\327\001\n\006AsPath\022E\n\010segments\030\001 \003" +
+      "(\01323.RouteMonitoringPacket.PathAttribute" +
+      ".AsPath.Segment\032\205\001\n\007Segment\022F\n\004type\030\001 \001(" +
+      "\01628.RouteMonitoringPacket.PathAttribute." +
+      "AsPath.Segment.Type\022\r\n\005paths\030\002 \003(\007\"#\n\004Ty" +
+      "pe\022\n\n\006AS_SET\020\000\022\017\n\013AS_SEQUENCE\020\001\032&\n\007NextH" +
+      "op\022\033\n\007address\030\001 \001(\0132\n.IpAddress\032&\n\rMulti" +
+      "ExitDisc\022\025\n\rdiscriminator\030\001 \001(\r\032\037\n\tLocal" +
+      "Pref\022\022\n\npreference\030\001 \001(\r\032\021\n\017AtomicAggreg" +
+      "ate\0325\n\nAggregator\022\n\n\002as\030\001 \001(\007\022\033\n\007address" +
+      "\030\002 \001(\0132\n.IpAddress\032-\n\013ClusterList\022\036\n\nclu" +
+      "ster_id\030\001 \003(\0132\n.IpAddress\032k\n\023ExtendedCom" +
+      "munities\022T\n\024extended_communities\030\001 \003(\01326" +
+      ".RouteMonitoringPacket.PathAttribute.Ext" +
+      "endedCommunity\0320\n\021ExtendedCommunity\022\014\n\004t" +
+      "ype\030\001 \001(\007\022\r\n\005value\030\002 \001(\014\032.\n\013AsPathLimit\022" +
+      "\023\n\013upper_bound\030\001 \001(\007\022\n\n\002as\030\002 \001(\r\032b\n\020Larg" +
+      "eCommunities\022N\n\021large_communities\030\001 \003(\0132" +
+      "3.RouteMonitoringPacket.PathAttribute.La" +
+      "rgeCommunity\032d\n\016LargeCommunity\022\034\n\024global" +
+      "_administrator\030\001 \001(\r\022\031\n\021local_data_part_" +
+      "1\030\002 \001(\r\022\031\n\021local_data_part_2\030\003 \001(\r\032[\n\007At" +
+      "trSet\022\021\n\torigin_as\030\001 \001(\r\022=\n\017path_attribu" +
+      "tes\030\002 \003(\0132$.RouteMonitoringPacket.PathAt" +
+      "tribute\032\273\001\n\032MultiprotocolReachableNrli\022\013" +
+      "\n\003afi\030\001 \001(\r\022\014\n\004safi\030\002 \001(\r\022\033\n\007nextHop\030\003 \001" +
+      "(\0132\n.IpAddress\0220\n\nadvertised\030\004 \003(\0132\034.Rou" +
+      "teMonitoringPacket.Route\0223\n\rvpnAdvertise" +
+      "d\030\005 \003(\0132\034.RouteMonitoringPacket.Route\032\273\001" +
+      "\n\034MultiprotocolUnreachableNrli\022\013\n\003afi\030\001 " +
+      "\001(\r\022\014\n\004safi\030\002 \001(\r\022\033\n\007nextHop\030\003 \001(\0132\n.IpA" +
+      "ddress\022/\n\twithdrawn\030\004 \003(\0132\034.RouteMonitor" +
+      "ingPacket.Route\0222\n\014vpnWithdrawn\030\005 \003(\0132\034." +
+      "RouteMonitoringPacket.Route\"*\n\006Origin\022\007\n" +
+      "\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007\n\005value" +
+      "\"\323\014\n\026StatisticsReportPacket\022\023\n\004peer\030\001 \001(" +
+      "\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.StatisticsR" +
+      "eportPacket.Counter\0229\n\020duplicate_prefix\030" +
+      "e \001(\0132\037.StatisticsReportPacket.Counter\022;" +
+      "\n\022duplicate_withdraw\030f \001(\0132\037.StatisticsR" +
+      "eportPacket.Counter\022M\n$invalid_update_du" +
+      "e_to_as_confed_loop\030g \001(\0132\037.StatisticsRe" +
+      "portPacket.Counter\022K\n\"invalid_update_due" +
+      "_to_as_path_loop\030h \001(\0132\037.StatisticsRepor" +
+      "tPacket.Counter\022P\n\'invalid_update_due_to" +
+      "_cluster_list_loop\030i \001(\0132\037.StatisticsRep" +
+      "ortPacket.Counter\022L\n#invalid_update_due_" +
+      "to_originator_id\030j \001(\0132\037.StatisticsRepor" +
+      "tPacket.Counter\0221\n\nadj_rib_in\030k \001(\0132\035.St" +
+      "atisticsReportPacket.Gauge\0222\n\013adj_rib_ou" +
+      "t\030l \001(\0132\035.StatisticsReportPacket.Gauge\022G" +
+      "\n\022per_afi_adj_rib_in\030m \003(\0132+.StatisticsR" +
+      "eportPacket.PerAfiAdjRibInEntry\022F\n\021per_a" +
+      "fi_local_rib\030n \003(\0132+.StatisticsReportPac" +
+      "ket.PerAfiLocalRibEntry\022A\n\030update_treat_" +
+      "as_withdraw\030o \001(\0132\037.StatisticsReportPack" +
+      "et.Counter\022A\n\030prefix_treat_as_withdraw\030p" +
+      " \001(\0132\037.StatisticsReportPacket.Counter\0229\n" +
+      "\020duplicate_update\030q \001(\0132\037.StatisticsRepo" +
+      "rtPacket.Counter\0220\n\tlocal_rib\030r \001(\0132\035.St" +
+      "atisticsReportPacket.Gauge\0221\n\nexport_rib" +
+      "\030s \001(\0132\035.StatisticsReportPacket.Gauge\022I\n" +
+      "\023per_afi_adj_rib_out\030t \003(\0132,.StatisticsR" +
+      "eportPacket.PerAfiAdjRibOutEntry\022H\n\022per_" +
+      "afi_export_rib\030u \003(\0132,.StatisticsReportP" +
+      "acket.PerAfiExportRibEntry\032\026\n\005Gauge\022\r\n\005v" +
+      "alue\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 \001(\r\032T\n\023" +
+      "PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022,\n\005valu" +
+      "e\030\002 \001(\0132\035.StatisticsReportPacket.Gauge:\002" +
+      "8\001\032T\n\023PerAfiLocalRibEntry\022\013\n\003key\030\001 \001(\t\022," +
+      "\n\005value\030\002 \001(\0132\035.StatisticsReportPacket.G" +
+      "auge:\0028\001\032U\n\024PerAfiAdjRibOutEntry\022\013\n\003key\030" +
+      "\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportP" +
+      "acket.Gauge:\0028\001\032U\n\024PerAfiExportRibEntry\022" +
+      "\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Statistics" +
+      "ReportPacket.Gauge:\0028\001\"\203\001\n\tHeartbeat\022\035\n\004" +
+      "mode\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007routers\030\002" +
+      " \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007STARTED\020\000\022\n\n" +
+      "\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPED\020\003\"\212\003\n" +
+      "\007Message\022\017\n\007version\030\001 \001(\r\022\031\n\005bgpId\030\002 \001(\013" +
+      "2\n.IpAddress\022\'\n\ninitiation\030\005 \001(\0132\021.Initi" +
+      "ationPacketH\000\022)\n\013termination\030\006 \001(\0132\022.Ter" +
+      "minationPacketH\000\022 \n\007peer_up\030\007 \001(\0132\r.Peer" +
+      "UpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.PeerDown" +
+      "PacketH\000\0222\n\020route_monitoring\030\t \001(\0132\026.Rou" +
+      "teMonitoringPacketH\000\0224\n\021statistics_repor" +
+      "t\030\n \001(\0132\027.StatisticsReportPacketH\000\022\037\n\the" +
+      "artbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006packetJ\004\010" +
+      "\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017BA\n4org" +
+      ".opennms.netmgt.telemetry.protocols.bmp." +
+      "transportB\tTransportP\000P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -41277,7 +41574,7 @@ public final class Transport {
     internal_static_Peer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Peer_descriptor,
-        new java.lang.String[] { "Type", "PeerFlags", "LocRibFlags", "Distinguisher", "Address", "As", "Id", "Timestamp", "Flags", });
+        new java.lang.String[] { "Type", "PeerFlags", "LocRibFlags", "Distinguisher", "Address", "As", "Id", "Timestamp", "Hostname", "Flags", });
     internal_static_Peer_LocRibFlags_descriptor =
       internal_static_Peer_descriptor.getNestedTypes().get(0);
     internal_static_Peer_LocRibFlags_fieldAccessorTable = new
@@ -41295,7 +41592,7 @@ public final class Transport {
     internal_static_InitiationPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_InitiationPacket_descriptor,
-        new java.lang.String[] { "SysName", "SysDesc", "Message", "AdminLabel", "BgpId", });
+        new java.lang.String[] { "SysName", "SysDesc", "Message", "AdminLabel", "BgpId", "Hostname", });
     internal_static_TerminationPacket_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_TerminationPacket_fieldAccessorTable = new

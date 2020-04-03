@@ -80,6 +80,11 @@ public class PeerUpPacket implements Packet {
     }
 
     @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("header", this.header)

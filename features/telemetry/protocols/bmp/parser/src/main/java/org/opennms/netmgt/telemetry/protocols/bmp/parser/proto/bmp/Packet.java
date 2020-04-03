@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
@@ -41,55 +44,95 @@ import io.netty.buffer.ByteBuf;
 
 public interface Packet {
     void accept(final Visitor visitor);
+    <R> R map(final Mapper<R> mapper);
 
     interface Parser {
         Packet parse(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException;
     }
 
     interface Visitor {
-        void visit(final RouteMonitoringPacket packet);
-        void visit(final StatisticsReportPacket packet);
-        void visit(final PeerDownPacket packet);
-        void visit(final PeerUpPacket packet);
         void visit(final InitiationPacket packet);
         void visit(final TerminationPacket packet);
+        void visit(final PeerUpPacket packet);
+        void visit(final PeerDownPacket packet);
+        void visit(final StatisticsReportPacket packet);
+        void visit(final RouteMonitoringPacket packet);
         void visit(final RouteMirroringPacket packet);
 
         class Adapter implements Visitor {
-            @Override
-            public void visit(RouteMonitoringPacket packet) {
-
-            }
-
-            @Override
-            public void visit(StatisticsReportPacket packet) {
-
-            }
-
-            @Override
-            public void visit(PeerDownPacket packet) {
-
-            }
-
-            @Override
-            public void visit(PeerUpPacket packet) {
-
-            }
-
-            @Override
-            public void visit(InitiationPacket packet) {
-
-            }
-
-            @Override
-            public void visit(TerminationPacket packet) {
-
-            }
-
-            @Override
-            public void visit(RouteMirroringPacket packet) {
-
-            }
+            public void visit(RouteMonitoringPacket packet) {}
+            public void visit(StatisticsReportPacket packet) {}
+            public void visit(PeerDownPacket packet) {}
+            public void visit(PeerUpPacket packet) {}
+            public void visit(InitiationPacket packet) {}
+            public void visit(TerminationPacket packet) {}
+            public void visit(RouteMirroringPacket packet) {}
         }
+    }
+
+    interface Mapper<R> {
+        R map(final InitiationPacket packet);
+        R map(final TerminationPacket packet);
+        R map(final PeerUpPacket packet);
+        R map(final PeerDownPacket packet);
+        R map(final StatisticsReportPacket packet);
+        R map(final RouteMonitoringPacket packet);
+        R map(final RouteMirroringPacket packet);
+
+        class Adapter<R> implements Mapper<R> {
+            private final R defaultValue;
+
+            public Adapter(final R defaultValue) {
+                this.defaultValue = Objects.requireNonNull(defaultValue);
+            }
+
+            public R map(final InitiationPacket packet) { return this.defaultValue; }
+            public R map(final TerminationPacket packet) { return this.defaultValue; }
+            public R map(final PeerUpPacket packet) { return this.defaultValue; }
+            public R map(final PeerDownPacket packet) { return this.defaultValue; }
+            public R map(final StatisticsReportPacket packet) { return this.defaultValue; }
+            public R map(final RouteMonitoringPacket packet) { return this.defaultValue; }
+            public R map(final RouteMirroringPacket packet) { return this.defaultValue; }
+        }
+    }
+
+    default Optional<PeerHeader> getPeerHeader() {
+        return this.map(new Mapper<Optional<PeerHeader>>() {
+
+            @Override
+            public Optional<PeerHeader> map(final InitiationPacket packet) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final TerminationPacket packet) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final PeerUpPacket packet) {
+                return Optional.of(packet.peerHeader);
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final PeerDownPacket packet) {
+                return Optional.of(packet.peerHeader);
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final StatisticsReportPacket packet) {
+                return Optional.of(packet.peerHeader);
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final RouteMonitoringPacket packet) {
+                return Optional.of(packet.peerHeader);
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final RouteMirroringPacket packet) {
+                return Optional.of(packet.peerHeader);
+            }
+        });
     }
 }
