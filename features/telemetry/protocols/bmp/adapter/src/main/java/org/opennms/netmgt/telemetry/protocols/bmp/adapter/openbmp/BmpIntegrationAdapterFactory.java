@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
@@ -60,11 +61,11 @@ public class BmpIntegrationAdapterFactory extends AbstractAdapterFactory {
 
         // Extract kafka producer config
         final Map<String, Object> kafkaConfig = Maps.newHashMap();
-        for (final String key : adapterConfig.getParameterMap().keySet()) {
-            StringUtils.truncatePrefix(key, "kafka.").ifPresent(k -> {
-                kafkaConfig.put(k, adapterConfig.getParameterMap().remove(key));
-            });
-        }
+        adapterConfig.getParameterMap().entrySet().removeIf(e -> {
+            final Optional<String> prefix = StringUtils.truncatePrefix(e.getKey(), "kafka.");
+            prefix.ifPresent(k -> kafkaConfig.put(k, e.getValue()));
+            return prefix.isPresent();
+        });
 
         return new BmpIntegrationAdapter(adapterConfig,
                                          this.getTelemetryRegistry().getMetricRegistry(),
