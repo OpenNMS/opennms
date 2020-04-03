@@ -33,11 +33,13 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -47,7 +49,7 @@ public class NotificationPacket implements Packet {
     public final Header header;
     public final int code, subcode;
 
-    public NotificationPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
+    public NotificationPacket(final Header header, final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
         this.header = Objects.requireNonNull(header);
 
         this.code = uint8(buffer);
@@ -63,13 +65,13 @@ public class NotificationPacket implements Packet {
         visitor.visit(this);
     }
 
-    public static NotificationPacket parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+    public static NotificationPacket parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.NOTIFICATION) {
             throw new InvalidPacketException(buffer, "Expected Notification Message, got: {}", header.type);
         }
 
-        return new NotificationPacket(header, slice(buffer, header.length - Header.SIZE), flags);
+        return new NotificationPacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo);
     }
 
     @Override

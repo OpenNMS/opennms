@@ -47,7 +47,7 @@ public interface Packet {
     <R> R map(final Mapper<R> mapper);
 
     interface Parser {
-        Packet parse(final Header header, final ByteBuf buffer) throws InvalidPacketException;
+        Packet parse(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException;
     }
 
     interface Visitor {

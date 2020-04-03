@@ -49,6 +49,7 @@ public class PeerHeader {
     public final Type type;   // uint8
 
     public final PeerFlags flags; // uint8
+    public final LocRibFlags locRibFlags; // unint8
 
     public final UnsignedLong distinguisher; // uint64
 
@@ -62,7 +63,13 @@ public class PeerHeader {
     public PeerHeader(final ByteBuf buffer) throws InvalidPacketException {
         this.type = Type.from(buffer);
 
-        this.flags = new PeerFlags(uint8(buffer));
+        if (this.type == Type.LOC_RIB_INSTANCE) {
+            this.flags = null;
+            this.locRibFlags = new LocRibFlags(uint8(buffer));
+        } else {
+            this.flags = new PeerFlags(uint8(buffer));
+            this.locRibFlags = null;
+        }
 
         this.distinguisher = uint64(buffer);
 
@@ -77,7 +84,8 @@ public class PeerHeader {
     public enum Type {
         GLOBAL_INSTANCE,
         RD_INSTANCE,
-        LOCAL_INSTANCE;
+        LOCAL_INSTANCE,
+        LOC_RIB_INSTANCE;
 
         private static Type from(final ByteBuf buffer) throws InvalidPacketException {
             final int type = uint8(buffer);
@@ -88,6 +96,8 @@ public class PeerHeader {
                     return RD_INSTANCE;
                 case 2:
                     return LOCAL_INSTANCE;
+                case 3:
+                    return LOC_RIB_INSTANCE;
                 default:
                     throw new InvalidPacketException(buffer, "Unknown peer type: %d", type);
             }

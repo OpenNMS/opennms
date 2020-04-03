@@ -185,10 +185,10 @@ public class BmpAdapterIT {
         final Transport.PeerUpPacket.Builder peerUpPacket = Transport.PeerUpPacket.newBuilder();
         peerUpPacket.getPeerBuilder()
                 .setType(Transport.Peer.Type.GLOBAL_INSTANCE)
-                .setFlags(Transport.Peer.Flags.newBuilder()
-                        .setIpVersion(Transport.Peer.Flags.IpVersion.IP_V4)
+                .setPeerFlags(Transport.Peer.PeerFlags.newBuilder()
+                        .setIpVersion(Transport.Peer.PeerFlags.IpVersion.IP_V4)
                         .setLegacyAsPath(false)
-                        .setPolicy(Transport.Peer.Flags.Policy.PRE_POLICY)
+                        .setPolicy(Transport.Peer.PeerFlags.Policy.PRE_POLICY)
                         .build())
                 .setDistinguisher(0)
                 .setAddress(Transport.IpAddress.newBuilder()

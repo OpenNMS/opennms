@@ -8,6 +8,9 @@ case "${CIRCLE_BRANCH}" in
   develop)
     VERSION="bleeding"
     ;;
+  "release-"*)
+    VERSION="release-candidate"
+    ;;
   *)
     # Replace / in branch names which is not allowed in OCI tags
     VERSION="${CIRCLE_BRANCH//\//-}"

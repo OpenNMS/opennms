@@ -1,0 +1,3 @@
+{{if (and (exists "/ipc/rpc/kafka/bootstrap.servers") (exists "/ipc/sink/kafka/bootstrap.servers")) -}}
+!minion-jms
+{{end -}}

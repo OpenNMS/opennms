@@ -199,8 +199,13 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         Optional.ofNullable(stats.getAdjRibIn()).ifPresent(addGauge.apply("adj_rib_in"));
         Optional.ofNullable(stats.getAdjRibOut()).ifPresent(addGauge.apply("adj_rib_out"));
 
-        // TODO fooker: Add per AFI counters (perAfiAdjRibIn and perAfiLocalRib)
-        // See https://issues.opennms.org/browse/NMS-12553
+        Optional.ofNullable(stats.getPerAfiAdjRibInMap()).ifPresent(m -> m.entrySet().stream()
+                .forEach(
+                    e -> {
+                        addGauge.apply("adj_r_in_" + e.getKey().replace(":","_"));
+                    }
+                )
+        );
 
         Optional.ofNullable(stats.getUpdateTreatAsWithdraw()).ifPresent(addCounter.apply("update_withdraw"));
         Optional.ofNullable(stats.getPrefixTreatAsWithdraw()).ifPresent(addCounter.apply("prefix_withdraw"));
@@ -208,8 +213,13 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
         Optional.ofNullable(stats.getLocalRib()).ifPresent(addGauge.apply("local_rib"));
         Optional.ofNullable(stats.getExportRib()).ifPresent(addGauge.apply("export_rib"));
 
-        // TODO fooker: Add per AFI counters (perAfiAdjRibOut and perAfiExportRib)
-        // See https://issues.opennms.org/browse/NMS-12553
+        Optional.ofNullable(stats.getPerAfiExportRibMap()).ifPresent(m -> m.entrySet().stream()
+                .forEach(
+                    e -> {
+                        addGauge.apply("exp_r_" + e.getKey().replace(":","_"));
+                    }
+                )
+        );
 
         return Stream.of(new CollectionSetWithAgent(agent, builder.build()));
     }

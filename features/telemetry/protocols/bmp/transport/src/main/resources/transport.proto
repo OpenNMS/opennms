@@ -18,9 +18,14 @@ message Peer {
         GLOBAL_INSTANCE = 0;
         RD_INSTANCE = 1;
         LOCAL_INSTANCE = 2;
+        LOC_RIB_INSTANCE = 3;
     }
 
-    message Flags {
+    message LocRibFlags {
+        bool filtered = 1;
+    }
+
+    message PeerFlags {
         enum IpVersion {
             IP_V4 = 0;
             IP_V6 = 1;
@@ -38,14 +43,17 @@ message Peer {
     }
 
     Type type = 1;
-    Flags flags = 2;
 
-    fixed64 distinguisher = 3;
-    IpAddress address = 4;
-    fixed32 as = 5;
-    IpAddress id = 6;
+    oneof flags {
+        PeerFlags peerFlags = 2;
+        LocRibFlags locRibFlags = 3;
+    }
 
-    google.protobuf.Timestamp timestamp = 7;
+    fixed64 distinguisher = 4;
+    IpAddress address = 5;
+    fixed32 as = 6;
+    IpAddress id = 7;
+    google.protobuf.Timestamp timestamp = 8;
 
     string hostname = 15;
 }
@@ -66,12 +74,25 @@ message TerminationPacket {
     google.protobuf.Empty unknown = 3;
 }
 
+
+
 message PeerUpPacket {
+    message Capability {
+        uint32 code = 1;
+        uint32 length = 2;
+        bytes value = 3;
+    }
+
+    message CapabilityList {
+        repeated Capability capability = 1;
+    }
+
     message OpenMessage {
         uint32 version = 1;
         fixed32 as = 2;
         uint32 hold_time = 3;
         IpAddress id = 4;
+        CapabilityList capabilities = 5;
     }
 
     Peer peer = 1;
@@ -86,6 +107,7 @@ message PeerUpPacket {
     string sys_name = 7;
     string sys_desc = 8;
     string message = 9;
+    string table_name = 10;
 }
 
 message PeerDownPacket {
@@ -109,6 +131,8 @@ message RouteMonitoringPacket {
     message Route {
         IpAddress prefix = 1;
         uint32 length = 2;
+        uint64 pathId = 3;
+        string labels = 4;
     }
 
     message PathAttribute {
@@ -185,6 +209,22 @@ message RouteMonitoringPacket {
             repeated PathAttribute path_attributes = 2;
         }
 
+        message MultiprotocolReachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route advertised = 4;
+            repeated Route vpnAdvertised = 5;
+        }
+
+        message MultiprotocolUnreachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route withdrawn = 4;
+            repeated Route vpnWithdrawn = 5;
+        }
+
         bool optional = 1;
         bool transitive = 2;
         bool partial = 3;
@@ -206,6 +246,8 @@ message RouteMonitoringPacket {
             AsPathLimit as_path_limit = 17;
             LargeCommunities large_communities = 18;
             AttrSet attr_set = 19;
+            MultiprotocolReachableNrli mpReachNrli = 20;
+            MultiprotocolUnreachableNrli mpUnreachNrli = 21;
         }
     }
 

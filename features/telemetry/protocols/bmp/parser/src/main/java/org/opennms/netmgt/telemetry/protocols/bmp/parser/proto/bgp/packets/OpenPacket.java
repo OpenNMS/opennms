@@ -29,20 +29,23 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -55,8 +58,33 @@ public class OpenPacket implements Packet {
     public final int as;         // uint16
     public final int holdTime;   // uint16
     public final InetAddress id; // uint32
+    public final List<Parameter> parameters;
+    public final List<Capability> capabilities;
 
-    public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags) {
+    public static class Parameter {
+        final int type, length;
+        final ByteBuf value;
+
+        private Parameter(final ByteBuf buffer) {
+            this.type = uint8(buffer);
+            this.length = uint8(buffer);
+            this.value = slice(buffer, length);
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public int getLength() {
+            return length;
+        }
+
+        public ByteBuf getValue() {
+            return value;
+        }
+    }
+
+    public OpenPacket(final Header header, final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
         this.header = Objects.requireNonNull(header);
 
         this.version = uint8(buffer);
@@ -66,8 +94,10 @@ public class OpenPacket implements Packet {
 
         final int parametersLength = uint8(buffer);
 
-        // Skip the parameters (see https://tools.ietf.org/html/rfc4271#section-4.2)
-        skip(buffer, parametersLength);
+        // see https://tools.ietf.org/html/rfc4271#section-4.2
+        this.parameters = repeatRemaining(slice(buffer, parametersLength), Parameter::new);
+        // see https://tools.ietf.org/html/rfc3392
+        this.capabilities = this.parameters.stream().filter(p -> p.type == 2).flatMap(p -> repeatRemaining(slice(p.value, p.length), Capability::new).stream()).collect(Collectors.toList());
     }
 
     @Override
@@ -75,13 +105,13 @@ public class OpenPacket implements Packet {
         visitor.visit(this);
     }
 
-    public static OpenPacket parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+    public static OpenPacket parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.OPEN) {
             throw new InvalidPacketException(buffer, "Expected Open Message, got: {}", header.type);
         }
 
-        return new OpenPacket(header, slice(buffer, header.length - Header.SIZE), flags);
+        return new OpenPacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo);
     }
 
     @Override
