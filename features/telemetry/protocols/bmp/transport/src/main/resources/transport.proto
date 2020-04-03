@@ -53,6 +53,7 @@ message Peer {
     IpAddress address = 5;
     fixed32 as = 6;
     IpAddress id = 7;
+
     google.protobuf.Timestamp timestamp = 8;
 
     string hostname = 15;

@@ -152,7 +152,7 @@ public class BmpParser implements TcpParser {
     private Set<InetAddress> connections = Sets.newConcurrentHashSet();
 
     private final DnsResolver dnsResolver;
-    private boolean dnsLookupsEnabled;
+    private boolean dnsLookupsEnabled = true;
 
     private final Bulkhead bulkhead;
 
