@@ -715,7 +715,7 @@ jobs:
   horizon-deb-build:
     executor: debian-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
