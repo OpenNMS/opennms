@@ -150,7 +150,7 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 
 | Triggered UEI| leave blank | See the table in xref:threshold-create[Create a Threshold] for details. 
 
-| Re-armed UEI | leave blank | ee the table in xref:threshold-create[Create a Threshold] for details. 
+| Re-armed UEI | leave blank | See the table in xref:threshold-create[Create a Threshold] for details. 
 
 |===
 
