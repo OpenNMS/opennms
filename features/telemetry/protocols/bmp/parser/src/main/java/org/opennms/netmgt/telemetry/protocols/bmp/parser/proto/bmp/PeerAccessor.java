@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down;
+package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
-
-import com.google.common.base.MoreObjects;
-
-import io.netty.buffer.ByteBuf;
-
-public class RemoteNoNotification implements Reason {
-    public RemoteNoNotification(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
-    }
-
-    @Override
-    public void accept(final Visitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .toString();
-    }
+public interface PeerAccessor {
+    Optional<PeerInfo> getPeerInfo(PeerHeader peerHeader);
 }

@@ -993,6 +993,8 @@
     <feature name="opennms-telemetry-bmp" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
+        <feature>rate-limited-logger</feature>
+        <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
@@ -1445,8 +1447,7 @@
         <details>OpenNMS :: Features :: ElasticSearch Rest</details>
         <feature>opennms-jest</feature>
         <feature>dropwizard-metrics</feature>
-        <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
-        <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}</bundle>
+        <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>

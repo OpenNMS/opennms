@@ -4,7 +4,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.0.0.b38"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.0.0.b39"
 
 FROM ${BASE_IMAGE} as minion-base
 
@@ -29,6 +29,12 @@ FROM ${BASE_IMAGE}
 # Create user to be able to run as non root with a known user and group id.
 RUN groupadd --gid 10001 minion && \
     useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion
+
+# https://issues.opennms.org/browse/NMS-12635
+# It is possible to set sysctls: net.ipv4.ping_group_range=0 10001 which allows the container using sockets. If we run on
+# infrastructure which doesn't allow whitelisting net.ipv4.ping_group_range as a safe sysctl (Kubernetes < 1.18) the
+# minimal solution is giving the Java binary the cap_net_raw+ep capabilities.
+RUN setcap cap_net_raw+ep $(readlink -f /usr/bin/java)
 
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /

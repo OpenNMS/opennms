@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.KeepalivePacket;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.Notif
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.OpenPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -64,8 +66,8 @@ public class Header {
         this.type = Type.from(buffer);
     }
 
-    public Packet parsePayload(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-        return this.type.parse(this, buffer, flags);
+    public Packet parsePayload(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+        return this.type.parse(this, buffer, flags, peerInfo);
     }
 
     public enum Type {
@@ -97,8 +99,8 @@ public class Header {
             }
         }
 
-        private Packet parse(final Header header, final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-            return this.parser.parse(header, buffer, flags);
+        private Packet parse(final Header header, final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+            return this.parser.parse(header, buffer, flags, peerInfo);
         }
     }
 

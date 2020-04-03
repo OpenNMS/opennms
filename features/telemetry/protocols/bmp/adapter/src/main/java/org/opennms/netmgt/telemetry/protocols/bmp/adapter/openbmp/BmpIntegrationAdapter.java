@@ -232,7 +232,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
-        router.name = initiation.getSysName(); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569) - resolved name has precedence over sys_name
+        router.name = initiation.getSysName() != null
+            ? initiation.getSysName()
+            : initiation.getHostname();
         router.hash = context.routerHashId;
         router.ipAddress = context.sourceAddress;
         router.description = Joiner.on('\n').join(initiation.getSysDescList());
@@ -294,7 +296,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = addressAsStr(bgpPeer.getAddress()); // TODO: Resolve Ip via DNS (see https://issues.opennms.org/browse/NMS-12569)
+        peer.name = !Strings.isNullOrEmpty(bgpPeer.getHostname())
+                ? bgpPeer.getHostname()
+                : addressAsStr(bgpPeer.getAddress());
         peer.hash = Record.hash(bgpPeer.getAddress(),
                                 bgpPeer.getDistinguisher(),
                                 context.routerHashId);
@@ -337,7 +341,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = InetAddressUtils.str(address(bgpPeer.getAddress())); // TODO: resolve Ip via DNS?
+        peer.name = !Strings.isNullOrEmpty(bgpPeer.getHostname())
+                    ? bgpPeer.getHostname()
+                    : addressAsStr(bgpPeer.getAddress());
         peer.hash = Record.hash(bgpPeer.getAddress(),
                 bgpPeer.getDistinguisher(),
                 context.routerHashId);
@@ -570,9 +576,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.prefix = address(route.getPrefix());
         unicastPrefix.length = route.getLength();
         unicastPrefix.ipv4 = isV4(route.getPrefix());
-        // TODO: Populate path id and labels attributes - see NMS-12560
-        unicastPrefix.pathId = 0;
-        unicastPrefix.labels = null;
+
+        unicastPrefix.pathId = route.getPathId();
+        unicastPrefix.labels = route.getLabels();
         unicastPrefix.prePolicy = peer.hasPeerFlags() && peer.getPeerFlags().getPolicy() == Transport.Peer.PeerFlags.Policy.PRE_POLICY;
         unicastPrefix.adjIn = peer.hasPeerFlags() && peer.getPeerFlags().getAdjIn();
 
@@ -600,7 +606,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         unicastPrefix.hash = Record.hash(InetAddressUtils.str(unicastPrefix.prefix),
                                          Integer.toString(unicastPrefix.length),
                                          unicastPrefix.peerHash,
-                                         Integer.toString(unicastPrefix.pathId),
+                                         Long.toString(unicastPrefix.pathId),
                                          Strings.isNullOrEmpty(unicastPrefix.labels) ? "0" : "1");
 
         return unicastPrefix;
@@ -619,16 +625,34 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             unicastPrefixRecords.add(unicastPrefix);
         }
 
-        final BaseAttribute baseAttr;
+        final BaseAttribute baseAttr ;
         if (routeMonitoring.getReachablesCount() > 0) {
             // Generate base attribute record - the same attributes apply to all reachables in the packet
             baseAttr = toBaseAttributeRecord(routeMonitoring, context);
 
             // Handle reachables
-            for (org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : routeMonitoring.getReachablesList()) {
+            for (final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : routeMonitoring.getReachablesList()) {
                 final UnicastPrefix unicastPrefix = toUnicastPrefixRecord(routeMonitoring, route, baseAttr, context);
                 unicastPrefix.action = UnicastPrefix.Action.ADD;
                 unicastPrefixRecords.add(unicastPrefix);
+            }
+
+            final List<Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli> mpReachNlriList = routeMonitoring.getAttributesList().stream()
+                    .filter(a -> a.hasMpReachNrli())
+                    .map(a -> a.getMpReachNrli())
+                    .collect(Collectors.toList());
+
+            for(final Transport.RouteMonitoringPacket.PathAttribute.MultiprotocolReachableNrli multiprotocolReachableNrli : mpReachNlriList) {
+                for (final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : multiprotocolReachableNrli.getAdvertisedList()) {
+                    final UnicastPrefix unicastPrefix = toUnicastPrefixRecord(routeMonitoring, route, baseAttr, context);
+                    unicastPrefix.action = UnicastPrefix.Action.ADD;
+                    unicastPrefixRecords.add(unicastPrefix);
+                }
+                for (final org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route route : multiprotocolReachableNrli.getVpnAdvertisedList()) {
+                    final UnicastPrefix unicastPrefix = toUnicastPrefixRecord(routeMonitoring, route, baseAttr, context);
+                    unicastPrefix.action = UnicastPrefix.Action.ADD;
+                    unicastPrefixRecords.add(unicastPrefix);
+                }
             }
         } else {
             baseAttr = null;
