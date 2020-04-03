@@ -20,19 +20,27 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
-    from_branch:
-      description: the auto-merge source branch
+    previous_branch:
+      description: the previous branch, if any
+      type: string
+      default: foundation-2019
+    previous_branch_label:
+      description: the previous branch, if any (escaped, no slashes)
+      type: string
+      default: foundation-2019
+    main_branch:
+      description: the auto-merge main branch
       type: string
       default: release-26.0.0
-    from_branch_label:
-      description: the auto-merge source branch (escaped, no slashes)
+    main_branch_label:
+      description: the auto-merge main branch (escaped, no slashes)
       type: string
       default: release-26.0.0
-    to_branch:
+    next_branch:
       description: the auto-merge target branch
       type: string
       default: develop
-    to_branch_label:
+    next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
       default: develop
@@ -450,7 +458,7 @@ workflows:
             - integration-test
           filters:
             branches:
-              only: << parameters.from_branch >>
+              only: << parameters.main_branch >>
       - merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -458,11 +466,12 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - smoke-test-minimal
             - smoke-test-full
             - integration-test
           filters:
             branches:
-              only: merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -471,7 +480,6 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-full
-            - integration-test
           filters:
             branches:
               only:
@@ -706,7 +714,7 @@ jobs:
   horizon-deb-build:
     executor: debian-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -882,47 +890,69 @@ jobs:
     <<: *defaults
     <<: *docker_container_config
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
-      - checkout
       - run:
-          name: Create git identity
+          name: "Branch Merge Parameters"
           command: |
-            git config user.email "cicd-system@opennms.com"
-            git config user.name "CI/CD System"
-      - run:
-          name: Checkout target branch and merge from source
-          command: |
-            export GIT_MERGE_AUTOEDIT=no
-            git checkout << parameters.to_branch >>
-            git merge origin/<< parameters.from_branch >>
-      - run:
-          name: Push to github
-          command: git push -f origin << parameters.to_branch >>:merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.next_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - cached-checkout
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.next_branch >>
+                  git reset --hard origin/<< parameters.next_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to github
+                command: git push -f origin << parameters.next_branch >>:merge-foundation/<< parameters.main_branch_label >>-to-<< parameters.next_branch_label >>
 
+  # note, this is always run as part of the _next_ branch
+  # for example, if main_branch is `foundation-2016` and next_branch is `foundation-2017`,
+  # it will include the contents of the `foundation-2017` branch, thus we need to actually
+  # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
   merge-foundation-branch:
     <<: *defaults
     <<: *docker_container_config
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
-      - checkout
       - run:
-          name: Create git identity
+          name: "Branch Merge Parameters"
           command: |
-            git config user.email "cicd-system@opennms.com"
-            git config user.name "CI/CD System"
-      - run:
-          name: Checkout target and merge with merge branch
-          command: |
-            export GIT_MERGE_AUTOEDIT=no
-            git checkout << parameters.to_branch >>
-            git merge origin/merge-foundation/<< parameters.from_branch_label >>-to-<< parameters.to_branch_label >>
-      - run:
-          name: Push to github
-          command: git push origin << parameters.to_branch >>:<< parameters.to_branch >>
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.previous_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - cached-checkout
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target and merge with merge branch
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.main_branch >>
+                  git reset --hard origin/<< parameters.main_branch >>
+                  git merge origin/merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+            - run:
+                name: Push to github
+                command: git push origin << parameters.main_branch >>:<< parameters.main_branch >>
 
   publish-cloudsmith:
     executor: cloudsmith/default
