@@ -124,4 +124,23 @@
             </package>
         </adapter>
     </queue>
+
+    <!-- BMP listener & adapters -->
+    <listener name="BMP-TCP-5000" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="false">
+        <parameter key="port" value="5000"/>
+
+        <parser name="BMP-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser" queue="BMP" />
+    </listener>
+
+    <queue name="BMP">
+        <adapter name="BMP-Peer-Status-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter" enabled="false">
+        </adapter>
+
+        <adapter name="BMP-Telemetry-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapter" enabled="false">
+        </adapter>
+
+        <adapter name="BMP-OpenBMP-Integration-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter" enabled="false">
+            <parameter key="kafka.bootstrap.servers" value="localhost:9092" />
+        </adapter>
+    </queue>
 </telemetryd-config>
