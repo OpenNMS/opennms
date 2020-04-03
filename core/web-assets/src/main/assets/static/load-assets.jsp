@@ -20,10 +20,10 @@ if (locator == null) {
     LOG.warn("load-assets.jsp is missing the locator");
 } else {
     final String media = request.getParameter("asset-media");
-    final String mediaString = WHITELIST_ASSET_MEDIA.contains(media) ? "" : " media=\"" + media + "\"";
+    final String mediaString = WHITELIST_ASSET_MEDIA.contains(media) ? " media=\"" + media + "\"" : "";
     final String type = request.getParameter("asset-type");
     final boolean defer = Boolean.valueOf(request.getParameter("asset-defer"));
-    final String async = WHITELIST_ASSET_ASYNC.contains(request.getParameter("asset-async"))?request.getParameter("asset-async"):null;
+    final String async = WHITELIST_ASSET_ASYNC.contains(request.getParameter("asset-async")) ? request.getParameter("asset-async") : null;
 
     Boolean minified = null;
     final String minifiedString = request.getParameter("minified");
@@ -53,7 +53,7 @@ if (locator == null) {
                         sb.append("defer ");
                     }
                     if (async != null) {
-                        sb.append("async=\"").append(Encode.forJavaScript(async)).append("\"");
+                        sb.append("async=\"").append(async).append("\"");
                     }
                     sb.append("src=\"assets/")
                         .append(resource.getPath())
