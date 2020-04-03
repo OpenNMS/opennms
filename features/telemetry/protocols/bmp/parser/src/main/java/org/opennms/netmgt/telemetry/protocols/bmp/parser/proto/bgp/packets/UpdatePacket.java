@@ -54,6 +54,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedV6Communities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
@@ -240,6 +241,12 @@ public class UpdatePacket implements Packet {
                     return new AsPathLimit(buffer, flags);
                 }
             },
+            EXTENDED_V6_COMMUNITIES {
+                @Override
+                public Attribute parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                    return new ExtendedV6Communities(buffer, flags);
+                }
+            },
             LARGE_COMMUNITIES {
                 @Override
                 public Attribute parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
@@ -292,6 +299,7 @@ public class UpdatePacket implements Packet {
                     case 16: return EXTENDED_COMMUNITIES; // See RFC4360
                     case 20: return CONNECTOR_ATTRIBUTE; // See RFC6037
                     case 21: return AS_PATH_LIMIT; // See [draft-ietf-idr-as-pathlimit]
+                    case 25: return EXTENDED_V6_COMMUNITIES; // See RFC5701
                     case 32: return LARGE_COMMUNITIES; // See RFC8092
                     case 128: return ATTR_SET; // See RFC6368
                     default:

@@ -61,6 +61,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedV6Communities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
@@ -170,6 +171,11 @@ public class BlackboxTest implements Packet.Visitor {
         @Override
         public void visit(ExtendedCommunities extendedCommunities) {
             fail("Wrong Attribute ExtendedCommunities");
+        }
+
+        @Override
+        public void visit(ExtendedV6Communities extendedV6Communities) {
+            fail("Wrong Attribute ExtendedV6Communities");
         }
 
         @Override
