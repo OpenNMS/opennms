@@ -296,7 +296,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.UP;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = bgpPeer.getHostname() != null
+        peer.name = !Strings.isNullOrEmpty(bgpPeer.getHostname())
                 ? bgpPeer.getHostname()
                 : addressAsStr(bgpPeer.getAddress());
         peer.hash = Record.hash(bgpPeer.getAddress(),
@@ -341,7 +341,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Peer peer = new Peer();
         peer.action = Peer.Action.DOWN;
         peer.sequence = sequence.getAndIncrement();
-        peer.name = bgpPeer.getHostname() != null
+        peer.name = !Strings.isNullOrEmpty(bgpPeer.getHostname())
                     ? bgpPeer.getHostname()
                     : addressAsStr(bgpPeer.getAddress());
         peer.hash = Record.hash(bgpPeer.getAddress(),

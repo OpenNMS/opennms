@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.joda.time.Duration;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
@@ -123,12 +124,20 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.standardSeconds(30))
+            .build();
 
     public final static long HEARTBEAT_INTERVAL = 4 * 60 * 60 * 1000;
 
@@ -145,13 +154,17 @@ public class BmpParser implements TcpParser {
     private final DnsResolver dnsResolver;
     private boolean dnsLookupsEnabled;
 
+    private final Bulkhead bulkhead;
+
     public BmpParser(final String name,
                      final AsyncDispatcher<TelemetryMessage> dispatcher,
                      final DnsResolver dnsResolver,
+                     final Bulkhead bulkhead,
                      final MetricRegistry metricRegistry) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.bulkhead = Objects.requireNonNull(bulkhead);
 
         this.recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsDispatched"));
     }
@@ -256,8 +269,17 @@ public class BmpParser implements TcpParser {
                 // Enrich the message with resolved hostnames
                 CompletableFuture<Transport.Message.Builder> enriched = CompletableFuture.completedFuture(message);
                 if (BmpParser.this.dnsLookupsEnabled) {
-                    enriched = enriched.thenCompose(BmpParser.this.resolvePeer(packet))
-                            .thenCompose(BmpParser.this.resolveSysName(packet, remoteAddress.getAddress()));
+                    // Limit number of outstanding requests with a bulk-head and put backpressure on the socket
+                    try {
+                        bulkhead.acquirePermission();
+                        // We got permission, let's issue the async lookups
+                        enriched = enriched.thenCompose(BmpParser.this.resolvePeer(packet))
+                                .thenCompose(BmpParser.this.resolveSysName(packet, remoteAddress.getAddress()));
+                        // Release permission when these complete, successfully or not
+                        enriched.whenComplete((v,e) -> bulkhead.releasePermission());
+                    } catch (BulkheadFullException bfe) {
+                        RATE_LIMITED_LOG.warn("Skipping enrichment. Too many requests already in flight (bulk-head is full).");
+                    }
                 }
 
                 // Dispatch the final message
