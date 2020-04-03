@@ -68,6 +68,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.patha
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Community;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.Connector;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedCommunities;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.ExtendedV6Communities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LargeCommunities;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.LocalPref;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr.MultiExistDisc;
@@ -837,10 +838,29 @@ public class BmpParser implements TcpParser {
                 Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.Builder extendedCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.newBuilder();
                 for (ExtendedCommunities.ExtendedCommunity extendedCommunity : extendedCommunities.extendedCommunities) {
                     extendedCommunitiesBuilder.addExtendedCommunitiesBuilder()
-                            .setType(extendedCommunity.type)
-                            .setValue(ByteString.copyFrom(extendedCommunity.value));
+                            .setHighType(extendedCommunity.highType)
+                            .setLowType(extendedCommunity.lowType)
+                            .setAuthoritative(extendedCommunity.authoritative)
+                            .setTransitive(extendedCommunity.transitive)
+                            .setType(extendedCommunity.value.type)
+                            .setValue(extendedCommunity.value.value);
                 }
                 attributesBuilder.setExtendedCommunities(extendedCommunitiesBuilder);
+            }
+
+            @Override
+            public void visit(ExtendedV6Communities extendedV6Communities) {
+                Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.Builder extendedV6CommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.ExtendedV6Communities.newBuilder();
+                for (ExtendedV6Communities.ExtendedV6Community extendedCommunity : extendedV6Communities.extendedCommunities) {
+                    extendedV6CommunitiesBuilder.addExtendedCommunitiesBuilder()
+                                                .setHighType(extendedCommunity.highType)
+                                                .setLowType(extendedCommunity.lowType)
+                                                .setAuthoritative(extendedCommunity.authoritative)
+                                                .setTransitive(extendedCommunity.transitive)
+                                                .setType(extendedCommunity.value.type)
+                                                .setValue(extendedCommunity.value.value);
+                }
+                attributesBuilder.setExtendedV6Communities(extendedV6CommunitiesBuilder);
             }
 
             @Override
