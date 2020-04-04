@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -837,13 +836,16 @@ public class BmpParser implements TcpParser {
             public void visit(ExtendedCommunities extendedCommunities) {
                 Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.Builder extendedCommunitiesBuilder = Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunities.newBuilder();
                 for (ExtendedCommunities.ExtendedCommunity extendedCommunity : extendedCommunities.extendedCommunities) {
-                    extendedCommunitiesBuilder.addExtendedCommunitiesBuilder()
+                    final Transport.RouteMonitoringPacket.PathAttribute.ExtendedCommunity.Builder builder = extendedCommunitiesBuilder.addExtendedCommunitiesBuilder()
                             .setHighType(extendedCommunity.highType)
                             .setLowType(extendedCommunity.lowType)
                             .setAuthoritative(extendedCommunity.authoritative)
-                            .setTransitive(extendedCommunity.transitive)
-                            .setType(extendedCommunity.value.type)
-                            .setValue(extendedCommunity.value.value);
+                            .setTransitive(extendedCommunity.transitive);
+                    // Value will be null for unkown types - guard against this
+                    if (extendedCommunity.value != null) {
+                        builder.setType(extendedCommunity.value.type)
+                                .setValue(extendedCommunity.value.value);
+                    }
                 }
                 attributesBuilder.setExtendedCommunities(extendedCommunitiesBuilder);
             }
