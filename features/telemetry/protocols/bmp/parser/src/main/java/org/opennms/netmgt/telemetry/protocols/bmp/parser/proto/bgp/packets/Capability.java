@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.UnsafeByteOperations;
 
 import io.netty.buffer.ByteBuf;
 
@@ -56,6 +57,6 @@ public class Capability {
     }
 
     public ByteString getValue() {
-        return ByteString.copyFrom(value.array());
+        return UnsafeByteOperations.unsafeWrap(value.nioBuffer());
     }
 }
