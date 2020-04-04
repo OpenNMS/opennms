@@ -62,7 +62,6 @@ public class BmpKafkaProducer implements BmpMessageHandler {
     private static KafkaProducer<String, String> buildProducer(final Map<String, Object> kafkaConfig) {
         // Apply some defaults
         kafkaConfig.putIfAbsent(ProducerConfig.BATCH_SIZE_CONFIG, 100);
-        kafkaConfig.putIfAbsent(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
         kafkaConfig.putIfAbsent(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 1000000);
         kafkaConfig.putIfAbsent(ProducerConfig.RETRIES_CONFIG, 2);
         kafkaConfig.putIfAbsent(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 100);
