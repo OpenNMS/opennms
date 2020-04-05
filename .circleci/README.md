@@ -6,6 +6,7 @@ Download .oci artifacts
 
 Load:
 ```
+docker image load -i minion.oci
 docker image load -i sentinel.oci
 ```
 
