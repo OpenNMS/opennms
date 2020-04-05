@@ -569,7 +569,6 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
     )
     @XmlElementWrapper(name="applications")
     @XmlElement(name="application")
-    // @JsonManagedReference
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }
