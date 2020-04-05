@@ -82,3 +82,30 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 | Parameter            | Description                                                                    | Required | Default value
 | `metaDataNodeLookup` | Enables lookup using BGP IDs.                                                  | no       |
 |===
+
+
+[[telemetryd-openbmp-integration-adapter]]
+===== OpenBMP Integration Adapter
+
+The OpenBMP Integration Adapter is used to integrate with an existing http://www.openbmp.org[OpenBMP] installation.
+It handles _BMP_ messages received and parsed by the <<telemetryd-bmp-parser, BMP Parser>> and creates _OpenBMP_ compatible messages which are then passed to the _OpenBMP_ kafka cluster.
+
+This setup replaces the _Collector_ component of _OpenBMP_.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter`
+|===
+
+====== Parameters
+
+.Parameters for the OpenBMP Integration Adapter
+[options="header, autowidth"]
+|===
+| Parameter            | Description                                                                    | Required | Default value
+| `kafka.*`            | Options used to create OpenBMP kafka producer. All known kafka settings are allowed but prefixed with `kafka.`. | no       |
+| `topicPrefix`        | Prefix used before each kafka topic                                            | no       |
+|===
+
