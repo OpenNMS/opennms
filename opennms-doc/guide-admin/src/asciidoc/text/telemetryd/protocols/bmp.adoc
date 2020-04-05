@@ -1,0 +1,84 @@
+
+==== BGP Monitoring Protocol
+
+_BGP Monitoring Protocol (BMP)_ provides a convenient interface for obtaining route views.
+The integration in _{opennms-product-name}_ allows to utilize these route views, status updates and statistics for monitoring and management purposes.
+
+
+[[telemetryd-bmp-parser]]
+===== BMP TCP Parser
+
+The BMP Parser accepts BMP connections from routers packets using a <<telemetryd-listener-tcp, TCP Listener>>.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser`
+|===
+
+====== Parameters
+
+.Parameters for the BMP Parser
+[options="header, autowidth"]
+|===
+| Parameter             | Description                                                                    | Required | Default value
+| `dnsLookupsEnabled`   | Used to enable or disable DNS resolution of router and peer hostnames.         | no       | true
+|===
+
+
+[[telemetryd-bmp-statistics-adapter]]
+===== BMP Telemetry Adapter
+
+The BMP Telemetry Adapter is used to handle _BMP_ statistic data received and parsed by the <<telemetryd-bmp-parser, BMP Parser>>.
+Received statistics are associated as performance data to the router sending the statistics (which must exists as regular Node in _{opennms-product-name}_).
+
+To associate a router with the according _{opennms-product-name}_ Node, the IP address exporting BMP messages is used.
+In addition, the Nodes Meta Data can be used to specify a BGP ID which will then be used to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` meta data name which will be used to lookup a Node which has stored the queried BGP ID as value in exactly this key.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapter`
+|===
+
+====== Parameters
+
+.Parameters for the BMP Telemetry Adapter
+[options="header, autowidth"]
+|===
+| Parameter            | Description                                                                    | Required | Default value
+| `metaDataNodeLookup` | Enables lookup using BGP IDs.                                                  | no       |
+|===
+
+
+[[telemetryd-bmp-peer-status-adapter]]
+===== BMP Peer Status Adapter
+
+The BMP Peer Status Adapter is used to create events for peer status changes.
+It handles _BMP_ Peer Up and Down messages received and parsed by the <<telemetryd-bmp-parser, BMP Parser>> and converts them to _{opennms-product-name}_ Events.
+The created events are associated to the router sending the messages (which must exists as regular Node in _{opennms-product-name}_).
+
+The events are called `uei.opennms.org/bmp/peerUp` and `uei.opennms.org/bmp/peerDown`.
+
+To associate a router with the according _{opennms-product-name}_ Node, the IP address exporting BMP messages is used.
+In addition, the Nodes Meta Data can be used to specify a BGP ID which will then be used to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` meta data name which will be used to lookup a Node which has stored the queried BGP ID as value in exactly this key.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter`
+|===
+
+====== Parameters
+
+.Parameters for the BMP Telemetry Adapter
+[options="header, autowidth"]
+|===
+| Parameter            | Description                                                                    | Required | Default value
+| `metaDataNodeLookup` | Enables lookup using BGP IDs.                                                  | no       |
+|===
