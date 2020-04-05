@@ -43,6 +43,7 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
