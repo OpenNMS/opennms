@@ -22,8 +22,10 @@ The BMP Parser accepts BMP connections from routers packets using a <<telemetryd
 .Parameters for the BMP Parser
 [options="header, autowidth"]
 |===
-| Parameter             | Description                                                                    | Required | Default value
-| `dnsLookupsEnabled`   | Used to enable or disable DNS resolution of router and peer hostnames.         | no       | true
+| Parameter             | Description                                                                           | Required | Default value
+| `dnsLookupsEnabled`   | Used to enable or disable DNS resolution of router and peer hostnames.                | no       | true
+| `bulkhead.maxConcurrentCalls` | Limits the number of parallel parsing operations.                             | no       | 1000
+| `bulkhead.maxWaitDurationMs`  | Limits the amount of time to wait for a saturated bulkhead (in milliseconds). | no       | 5 Minutes
 |===
 
 
