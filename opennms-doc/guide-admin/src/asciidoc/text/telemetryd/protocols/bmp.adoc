@@ -65,7 +65,9 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 The BMP Peer Status Adapter is used to create events for peer status changes.
 It handles _BMP_ Peer Up and Down messages that the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and converts to _{opennms-product-name}_ events.
-The created events are associated to the router sending the messages (which must exists as regular Node in _{opennms-product-name}_).
+_{opennms-product-name}_ associates the created events with the router sending the messages.
+This router must exist as regular node in _{opennms-product-name}_.
+``
 
 The events are called `uei.opennms.org/bmp/peerUp` and `uei.opennms.org/bmp/peerDown`.
 
