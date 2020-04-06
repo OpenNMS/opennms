@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -48,9 +49,9 @@ import io.github.resilience4j.bulkhead.BulkheadConfig;
 public class BmpParserFactory implements ParserFactory {
     public static final String MAX_CONCURRENT_CALLS_KEY = "bulkhead.maxConcurrentCalls";
     public static final long DEFAULT_MAX_CONCURRENT_CALLS = 1000;
+
     public static final String MAX_WAIT_DURATION_MS_KEY = "bulkhead.maxWaitDurationMs";
     public static final long DEFAULT_MAX_WAIT_DURATION_MS = TimeUnit.MINUTES.toMillis(5);
-
 
     private final TelemetryRegistry telemetryRegistry;
 
@@ -81,13 +82,16 @@ public class BmpParserFactory implements ParserFactory {
 
     private static Bulkhead createBulkhead(ParserDefinition parserDefinition) {
         // Build the bulkhead configuration from the parameter map
-        final Map<String, String> parmMap = parserDefinition.getParameterMap();
-        final long maxConcurrentCalls = ParameterMap.getKeyedLongImmutable(parmMap,
-                MAX_CONCURRENT_CALLS_KEY, DEFAULT_MAX_CONCURRENT_CALLS);
-        final long maxWaitDurationMs = ParameterMap.getKeyedLongImmutable(parmMap,
-                MAX_WAIT_DURATION_MS_KEY, DEFAULT_MAX_WAIT_DURATION_MS);
+        final Map<String, String> parameters = parserDefinition.getParameterMap();
+        final long maxConcurrentCalls = Optional.ofNullable(parameters.remove(MAX_CONCURRENT_CALLS_KEY))
+                                                .map(Long::parseLong)
+                                                .orElse(DEFAULT_MAX_CONCURRENT_CALLS);
+        final long maxWaitDurationMs = Optional.ofNullable(parameters.remove(MAX_WAIT_DURATION_MS_KEY))
+                                                .map(Long::parseLong)
+                                                .orElse(DEFAULT_MAX_WAIT_DURATION_MS);
+
         final BulkheadConfig bulkheadConfig = BulkheadConfig.custom()
-                .maxConcurrentCalls((int)maxConcurrentCalls)
+                .maxConcurrentCalls((int) maxConcurrentCalls)
                 .maxWaitDuration(Duration.ofMillis(maxWaitDurationMs))
                 .build();
 
