@@ -17,7 +17,7 @@ ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CON
 SHELL ["/bin/bash", "-c"]
 
 # Collect generic steps in a layer for caching
-RUN curl -L ${CONFD_URL} -o /usr/bin/confd && \
+RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
     chmod +x /usr/bin/confd
 
 RUN dnf -y install dnf-plugins-core && \
