@@ -58,7 +58,7 @@ public class TLV<T extends TLV.Type<V, P>, V, P> {
         if (this.type != null) {
             this.value = this.type.parse(slice(buffer, this.length), parameter, peerInfo);
         } else {
-            BmpParser.LOG.debug("Unknown type: {}", type);
+            BmpParser.RATE_LIMITED_LOG.debug("Unknown type: {}", type);
             this.value = null;
             skip(buffer, this.length);
         }

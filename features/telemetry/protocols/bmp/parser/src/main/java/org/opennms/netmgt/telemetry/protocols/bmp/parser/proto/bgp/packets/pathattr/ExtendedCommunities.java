@@ -119,7 +119,7 @@ public class ExtendedCommunities implements Attribute {
                     return parseGeneric(buffer, lowType, true, false);
 
                 default:
-                    BmpParser.LOG.warn("Unknown Extended Community Attribute: {}", highType);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: {}", highType);
                     return null;
             }
         }
@@ -167,7 +167,7 @@ public class ExtendedCommunities implements Attribute {
                     return new Value("rtr", value);
 
                 default:
-                    BmpParser.LOG.warn("Unknown Extended Community Attribute: Common: {}", lowType);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: Common: {}", lowType);
                     return null;
             }
         }
@@ -188,7 +188,7 @@ public class ExtendedCommunities implements Attribute {
                             return new Value("valid", "invalid");
 
                         default:
-                            BmpParser.LOG.warn("Unknown Extended Community Attribute: Opaque: Origin Validation State: {}", state);
+                            BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: Opaque: Origin Validation State: {}", state);
                             return null;
                     }
                 }
@@ -215,7 +215,7 @@ public class ExtendedCommunities implements Attribute {
                             break;
 
                         default:
-                            BmpParser.LOG.warn("Unknown Extended Community Attribute: Opaque: Point of Insertion: {}", poi);
+                            BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: Opaque: Point of Insertion: {}", poi);
                             return null;
                     }
 
@@ -227,32 +227,7 @@ public class ExtendedCommunities implements Attribute {
                 }
 
                 case 0x06: { // OSPF Route Type [RFC4577]
-                    final long area = uint32(buffer);
-                    final int type = uint8(buffer);
-                    final int options = uint8(buffer);
-
-                    final String value;
-                    switch (type) {
-                        case 1:
-                        case 2: // Intra-Area routes (LSA)
-                            value = String.format("%s:O", area);
-                            break;
-                        case 3: // Intra-Area routes
-                            value = String.format("%s:IA", area);
-                            break;
-                        case 5: // External routes
-                            value = String.format("0:E:%s", options);
-                            break;
-                        case 7: // NSSA routes
-                            value = String.format("%s:N:%s", options);
-                            break;
-
-                        default:
-                            BmpParser.LOG.warn("Unknown Extended Community Attribute: Opaque: OSPF Route Type: {}", type);
-                            return null;
-                    }
-
-                    return new Value("ospf-rt", value);
+                    return parseOspfRouteType(buffer);
                 }
 
                 case 0x0b: { // Color Extended Community [RFC5512]
@@ -274,9 +249,38 @@ public class ExtendedCommunities implements Attribute {
                 }
 
                 default:
-                    BmpParser.LOG.warn("Unknown Extended Community Attribute: Opaque: {}", lowType);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: Opaque: {}", lowType);
                     return null;
             }
+        }
+
+        private static Value parseOspfRouteType(final ByteBuf buffer) {
+            final long area = uint32(buffer);
+            final int type = uint8(buffer);
+            final int options = uint8(buffer);
+
+            final String value;
+            switch (type) {
+                case 1:
+                case 2: // Intra-Area routes (LSA)
+                    value = String.format("%s:O", area);
+                    break;
+                case 3: // Intra-Area routes
+                    value = String.format("%s:IA", area);
+                    break;
+                case 5: // External routes
+                    value = String.format("0:E:%s", options);
+                    break;
+                case 7: // NSSA routes
+                    value = String.format("%s:N:%s", options);
+                    break;
+
+                default:
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: Opaque: OSPF Route Type: {}", type);
+                    return null;
+            }
+
+            return new Value("ospf-rt", value);
         }
 
         private static Value parseGeneric(final ByteBuf buffer,
@@ -284,6 +288,15 @@ public class ExtendedCommunities implements Attribute {
                                           final boolean globalLarge,
                                           final boolean globalAddress) {
             switch (lowType) {
+                case 0x00: { // OSPF Route Type (deprecated) [RFC4577]
+                    return parseOspfRouteType(buffer);
+                }
+
+                case 0x01: { // OSPF Router ID (deprecated) [RFC4577]
+                    final long id = uint32(buffer);
+                    return new Value("ospf-ri", String.format("%s", id));
+                }
+
                 case 0x06: { // Flow spec traffic-rate [RFC5575]
                     final int global = uint16(buffer);
                     final long local = uint32(buffer);
@@ -332,7 +345,7 @@ public class ExtendedCommunities implements Attribute {
                 }
 
                 default:
-                    BmpParser.LOG.warn("Unknown Extended Community Attribute: Generic: {}", lowType);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute: Generic: {}", lowType);
                     return null;
             }
         }

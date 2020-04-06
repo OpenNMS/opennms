@@ -134,7 +134,7 @@ import io.netty.buffer.Unpooled;
 public class BmpParser implements TcpParser {
     public static final Logger LOG = LoggerFactory.getLogger(BmpParser.class);
 
-    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+    public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5).every(Duration.standardSeconds(30))
             .build();
@@ -952,7 +952,6 @@ public class BmpParser implements TcpParser {
                         }).collect(Collectors.toList()))
                         .setAfi(multiprotocolUnreachableNlri.afi)
                         .setSafi(multiprotocolUnreachableNlri.safi)
-                        .setNextHop(address(multiprotocolUnreachableNlri.nextHop))
                         .build();
 
                 attributesBuilder.setMpUnreachNrli(mpReachNrli);

@@ -146,7 +146,7 @@ public class StatisticsReportPacket implements Packet {
                     case 16: return PER_AFI_ADJ_RIB_OUT;
                     case 17: return PER_AFI_EXPORT_RIB;
                     default:
-                        BmpParser.LOG.warn("Unknown Statistic Report Type: {}", type);
+                        BmpParser.RATE_LIMITED_LOG.debug("Unknown Statistic Report Type: {}", type);
                         return UNKNOWN;
                 }
             }

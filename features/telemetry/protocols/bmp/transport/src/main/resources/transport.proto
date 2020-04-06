@@ -231,9 +231,8 @@ message RouteMonitoringPacket {
         message MultiprotocolUnreachableNrli {
             uint32 afi = 1;
             uint32 safi = 2;
-            IpAddress nextHop = 3;
-            repeated Route withdrawn = 4;
-            repeated Route vpnWithdrawn = 5;
+            repeated Route withdrawn = 3;
+            repeated Route vpnWithdrawn = 4;
         }
 
         bool optional = 1;
