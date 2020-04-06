@@ -17,7 +17,7 @@ This is the data against which {opennms-product-name} applies thresholds.
 Thresholds trigger events when a specified threshold value is met. 
 You can further create notifications and alarms for threshold events. 
 
-image:thresholding/thresholding-flow.png[thresholding, 400]
+image::thresholding/thresholding-flow.png[thresholding, 400]
 
 === What Triggers a Thresholding Event?
 
@@ -131,16 +131,19 @@ NOTE: Expression-based thresholds work only if the data sources in question lie 
 
 | Type | high | Triggers an event when the datasource value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value
 
-| Expression | ((loadavg5 / 100) / CpuNumCpus)| Divides the five-minute CPU load average by the number of CPUs. 
+| Expression | ((loadavg5 / 100) / CpuNumCpus) * 100| Divides the five-minute CPU load average by 100 (to obtain the effective load average^*^), which is then divided by the number of CPUs. 
+This value is then multiplied by 100 to provide a percentage. 
+
+(* SNMP does not report in decimals, which is why the expression divides the loadavg5 by 100.) 
 
 | Datasource type | node | The type of datasource from which you are collecting data. 
 
 | Datasource label| leave blank | Optional text label. 
 Not required for this tutorial.
 
-| Value| 7 | Trigger an event when the five-minute CPU load average goes above 70%. 
+| Value| 70 | Trigger an event when the five-minute CPU load average goes above 70%. 
 
-| Re-arm | 5 | Re-arm the system when the five-minute CPU load average drops below 50%
+| Re-arm | 50 | Re-arm the system when the five-minute CPU load average drops below 50%
 
 | Trigger | 2 | The number of consecutive times the threshold value can occur before the system triggers an event. 
 In this case, when the five-minute CPU load average goes above 70% for two consecutive polling periods. 
@@ -155,24 +158,10 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 
 . Click `Save`.
 
-[[thresh-resource]]
-=== Creating a Resource Filter for a Threshold
-Resource filters allow you to define conditions where you apply a threshold (e.g., you have a file system that is read only, it will always be at 100% utilization, so you don't necessarily want to trigger on it).
-These filters can be as simple or as complex as required, by using and/or operators for multiple filters. 
-
-Building on the previous procedure (xref:thresh-cpu[Creating a Threshold for CPU Usage]), we will create a resource filter so that our threshold excludes nodes #TODO: what could we filter on that would build on the previous procedure?#
-
-. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
-. Under `Performance Measurement`, choose `Configure Thresholds`.
-. Click `Edit` beside the `netsnmp` group. 
-. Select `Create New Threshold`.
-
 [[datasource-determine]]
 === Determining the Datasource
 Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
 Datasource names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
-
-NOTE: #TODO: To determine datasources for other protocols, refer to#
 
 . To determine the name of the datasource, navigate to the `Resource Graphs` screen.
 For example,
@@ -184,10 +173,7 @@ For example, "Number of Processes" or "System Uptime":
 +
 image:thresholding/thresholding/graphs.png[Thresholding graph, 200]
 
-. Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime"): #TODO: This doesn't actually work#
-
-+
-capture image 
+. Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
 
 . Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
 
@@ -242,7 +228,7 @@ The following is a sample of how the threshold appears in the _thresholds.xml_ f
 </group>
 
 -----
-<1> The name of the group and the directory of the stored data. #TODO: please verify#  
+<1> The name of the group and the directory of the stored data.  
 <2>  The details of the threshold including type, datasource type, threshold value, rearm value, etc. 
 
 [[threshold-notification]]
