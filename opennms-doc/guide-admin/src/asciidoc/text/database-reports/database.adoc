@@ -279,27 +279,28 @@ WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`
  * Only a _JDBC Datasource_ to the _{opennms-product-name} Database connection_ can be passed to a report, or no datasource at all.
    One does not have to use the datasource, though.
 
-=== Creating PDF Reports from Grafana Dashboards Using OpenNMS
+=== Creating PDF Reports from Grafana Dashboards Using {opennms-product-name}
 
-OpenNMS provides three templates to create a PDF report from an existing Grafana dashboard. You can also schedule and email these PDF reports to anyone:
+{opennms-product-name} provides three templates to create a PDF report from an existing Grafana dashboard. 
+You can also schedule and email these PDF reports to anyone:
 
-* Keep staff without access to OpenNMS informed about network performance for improved capacity planning
+* Keep staff without access to {opennms-product-name} informed about network performance for improved capacity planning
 * Create a permanent record of strategic information and progress over a long period of time
 
 The PDF report displays each of the panels from the specified dashboard, with one, two, or four panels per page, depending on the selected template. 
 
-NOTE: This feature requires OpenNMS and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+NOTE: This feature requires {opennms-product-name} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
 
 To create a PDF from a dashboard, follow these steps:
 
-. In the OpenNMS UI, choose `Reports>Database Reports`.
+. In the {opennms-product-name} UI, choose `Reports>Database Reports`.
 . In the `Report Templates` area, click `Grafana Dashboard Report <Xppp>`, where `<Xppp>` represents the number of panels per page you want to display. 
 . In the `Report Parameters` area, specify the appropriate information.
 .. Note that `Grafana Endpoint` is the datasource. Select a Grafana dashboard from the drop-down list. 
 .. You can also specify CSV for report type. 
 . Click `Create Report`. 
 .. You are prompted to save the report locally or open it.
-The file is saved to a folder on the OpenNMS Server [what folder?]. 
+The file is saved to a folder on the {opennms-product-name} Server. 
 It also appears in the UI in the `Persisted Reports` tab. 
 . To send the report to someone, click `Deliver this report`.
 . Fill out the `Report Delivery Options`.
@@ -309,12 +310,11 @@ Separate multiple recipient emails with a comma.
 . Click `Deliver Report`.
 . To schedule the report for regular delivery, click `Schedule this report`.
 . Specify the report frequency (daily, days per week, etc.) and interval of the report.
-.. Note: The interval is [what is the interval in this case?] 
 . Click `Schedule Report`.
 
 Scheduled reports appear in the `Report Schedules` tab, where you can edit or delete them:
 
-image::database-reports/PDF-Report.png[]
+image::database-reports/PDF-Report.png[pdf report, 600]
 
 
 
