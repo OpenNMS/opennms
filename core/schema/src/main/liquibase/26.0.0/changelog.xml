@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <changeSet runOnChange="false" author="mvrueden" id="26.0.0-graphnxtid">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+                WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'graphnxtid'
+            </sqlCheck>
+        </preConditions>
+        <createSequence sequenceName="graphnxtid" />
+        <rollback>
+            <dropSequence sequenceName="graphnxtid" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="mvrueden" id="26.0.0-graph-tables">
+        <createTable tableName="graph_focus" remarks="focus for graph elements">
+            <column name="id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="selection" type="text" remarks="optional list of vertex ids defining the (custom) focus" />
+        </createTable>
+        <addPrimaryKey tableName="graph_focus" columnNames="id" constraintName="graph_focus_pkey" />
+
+        <createTable tableName="graph_elements" remarks="contains vertices, edges, graphs and containers">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(25)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="namespace" type="varchar(200)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_vertex_namespace" type="varchar(200)"></column>
+            <column name="source_vertex_id" type="text"></column>
+            <column name="target_vertex_namespace" type="varchar(200)"></column>
+            <column name="target_vertex_id" type="text"></column>
+            <column name="focus_id" type="bigint"></column>
+        </createTable>
+        <addPrimaryKey tableName="graph_elements" columnNames="id" constraintName="graph_elements_pkey" />
+        <addForeignKeyConstraint constraintName="fk_graph_focus_graph_id"
+                                 baseTableName="graph_elements" baseColumnNames="focus_id"
+                                 referencedTableName="graph_focus" referencedColumnNames="id" onDelete="CASCADE"/>
+
+        <createTable tableName="graph_attributes" remarks="attributes for each graph_element">
+            <column name="id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="text" remarks="the property name" >
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="text" remarks="the property's type" >
+                <constraints nullable="false" />
+            </column>
+            <column name="value" type="text" remarks="the text representation of the property's value" />
+            <column name="element_id" type="bigint" remarks="the element this property is associated with" />
+        </createTable>
+        <addPrimaryKey tableName="graph_attributes" columnNames="id" constraintName="graph_attributes_pkey" />
+        <addForeignKeyConstraint constraintName="fk_graph_attributes_element_id"
+                                 baseTableName="graph_attributes" baseColumnNames="element_id"
+                                 referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
+        <!-- attributes are (key,value)-pairs. This means the attribute name is unique for each element_id. -->
+        <addUniqueConstraint tableName="graph_attributes" columnNames="name,element_id" />
+
+        <createTable tableName="graph_element_relations" remarks="Association for graph -> vertices/edge and container -> graph relation">
+            <column name="parent_id" type="bigint" remarks="the owning side of the relation (e.g. graph or container)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="child_id" type="bigint" remarks="the 'child' side of the relation (e.g. vertex/edge or graph)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="graph_element_relations" columnNames="parent_id, child_id" constraintName="graph_element_relations_pkey" />
+        <addForeignKeyConstraint constraintName="fk_graph_element_relations_parent_id"
+                                 baseTableName="graph_element_relations" baseColumnNames="parent_id"
+                                 referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_graph_element_relations_child_id"
+                                 baseTableName="graph_element_relations" baseColumnNames="child_id"
+                                 referencedTableName="graph_elements" referencedColumnNames="id" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="pschweizer" id="26.0.0-create-timeseries_meta-table">
+        <createTable tableName="timeseries_meta">
+            <column name="resourceid" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="timeseries_meta" columnNames="resourceid,name" />
+        <createIndex tableName="timeseries_meta"
+                     indexName="timeseries_meta_resourceid_idx" unique="false">
+            <column name="resourceid" />
+        </createIndex>
+        <rollback>
+            <dropTable tableName="timeseries_meta"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

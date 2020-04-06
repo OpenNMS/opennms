@@ -35,9 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
+import javax.script.ScriptEngineManager;
+
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,6 +55,7 @@ import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.internal.AlarmSummaryWrapper;
 import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
 import org.opennms.features.topology.plugins.topo.graphml.status.GraphMLDefaultVertexStatusProvider;
@@ -68,9 +68,6 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -78,7 +75,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionOperations;
 
-import javax.script.ScriptEngineManager;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -137,16 +138,16 @@ public class GraphMLVertexStatusProviderIT {
     @Test
     public void testDefaultStatusProvider() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graphML.getGraphs().get(0), new GraphMLServiceAccessor());
-        GraphMLDefaultVertexStatusProvider statusProvider = new GraphMLDefaultVertexStatusProvider(topologyProvider.getNamespace(),
-                                                                                                   this.alarmSummaryWrapper);
+        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graphML.getGraphs().get(0), new GraphMLServiceAccessor());
+        GraphMLDefaultVertexStatusProvider statusProvider = new GraphMLDefaultVertexStatusProvider(topologyProvider.getNamespace(), this.alarmSummaryWrapper);
+        BackendGraph graph = topologyProvider.getCurrentGraph();
 
-        List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
+        List<VertexRef> vertices = graph.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
         Assert.assertEquals(topologyProvider.getNamespace(), statusProvider.getNamespace());
         Assert.assertTrue(statusProvider.contributesTo(topologyProvider.getNamespace()));
 
-        Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider, vertices, new Criteria[0]);
+        Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(graph, vertices, new Criteria[0]);
         Assert.assertEquals(4, statusForVertices.size());
         Assert.assertEquals(ImmutableMap.of(
                 createVertexRef(topologyProvider.getNamespace(), "north"), createStatus(OnmsSeverity.WARNING, 1),
@@ -164,9 +165,8 @@ public class GraphMLVertexStatusProviderIT {
         metaTopoProvider.setTopologyLocation(graphXml.getAbsolutePath());
         metaTopoProvider.reload();
 
-        final GraphMLTopologyProvider childTopologyProvider = metaTopoProvider.getRawTopologyProvider("acme:markets");
-        final GraphMLDefaultVertexStatusProvider childStatusProvider = new GraphMLDefaultVertexStatusProvider(childTopologyProvider.getNamespace(),
-                                                                                                         this.alarmSummaryWrapper);
+        final GraphMLTopologyProvider childTopologyProvider = metaTopoProvider.getGraphProvider("acme:markets");
+        final GraphMLDefaultVertexStatusProvider childStatusProvider = new GraphMLDefaultVertexStatusProvider(childTopologyProvider.getNamespace(), this.alarmSummaryWrapper);
 
         final ServiceReference<StatusProvider> statusProviderReference = EasyMock.niceMock(ServiceReference.class);
 
@@ -175,17 +175,17 @@ public class GraphMLVertexStatusProviderIT {
         EasyMock.expect(bundleContext.getService(statusProviderReference)).andReturn(childStatusProvider);
         EasyMock.replay(statusProviderReference, bundleContext);
 
-        final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getRawTopologyProvider("acme:regions");
+        final GraphMLTopologyProvider topologyProvider = metaTopoProvider.getGraphProvider("acme:regions");
         final GraphMLPropagateVertexStatusProvider statusProvider = new GraphMLPropagateVertexStatusProvider(topologyProvider.getNamespace(),
                                                                                                              metaTopoProvider,
                                                                                                              bundleContext);
 
-        List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
+        List<VertexRef> vertices = topologyProvider.getCurrentGraph().getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
         Assert.assertEquals(topologyProvider.getNamespace(), statusProvider.getNamespace());
         Assert.assertTrue(statusProvider.contributesTo(topologyProvider.getNamespace()));
 
-        Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider, vertices, new Criteria[0]);
+        Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider.getCurrentGraph(), vertices, new Criteria[0]);
         Assert.assertEquals(4, statusForVertices.size());
         Assert.assertEquals(ImmutableMap.of(
                 createVertexRef(topologyProvider.getNamespace(), "north"), createStatus(OnmsSeverity.NORMAL, 0),
@@ -197,19 +197,19 @@ public class GraphMLVertexStatusProviderIT {
     @Test
     public void testScriptStatusProvider() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graphML.getGraphs().get(0), new GraphMLServiceAccessor());
+        GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graphML.getGraphs().get(0), new GraphMLServiceAccessor());
         GraphMLScriptVertexStatusProvider statusProvider = new GraphMLScriptVertexStatusProvider(topologyProvider.getNamespace(),
                                                                                                  this.alarmSummaryWrapper,
                                                                                                  new ScriptEngineManager(),
                                                                                                  this.serviceAccessor,
                                                                                                  Paths.get("src", "test", "opennms-home", "etc", "graphml-vertex-status"));
 
-        List<VertexRef> vertices = topologyProvider.getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
+        List<VertexRef> vertices = topologyProvider.getCurrentGraph().getVertices().stream().map(eachVertex -> (VertexRef) eachVertex).collect(Collectors.toList());
         Assert.assertEquals(4, vertices.size());
         Assert.assertEquals(topologyProvider.getNamespace(), statusProvider.getNamespace());
         Assert.assertTrue(statusProvider.contributesTo(topologyProvider.getNamespace()));
 
-        Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider, vertices, new Criteria[0]);
+        Map<? extends VertexRef, ? extends Status> statusForVertices = statusProvider.getStatusForVertices(topologyProvider.getCurrentGraph(), vertices, new Criteria[0]);
         Assert.assertEquals(4, statusForVertices.size());
         Assert.assertEquals(ImmutableMap.of(
                 createVertexRef(topologyProvider.getNamespace(), "north"), createStatus(OnmsSeverity.NORMAL, 0),

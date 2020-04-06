@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,6 +60,7 @@ import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -79,6 +80,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import com.google.common.primitives.Longs;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener, OnmsTopologyConsumer {
@@ -251,7 +253,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(() -> {
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
             LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
-            return new ProducerRecord<>(eventTopic, mappedEvent.getUei().getBytes(encoding), mappedEvent.toByteArray());
+            return new ProducerRecord<>(eventTopic, Longs.toByteArray(mappedEvent.getId()), mappedEvent.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
             // Let other threads know when we've successfully forwarded an event
@@ -472,8 +474,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void onEvent(Event event) {
-        forwardEvent(event);
+    public void onEvent(IEvent event) {
+        forwardEvent(Event.copyFrom(event));
     }
 
     @Override

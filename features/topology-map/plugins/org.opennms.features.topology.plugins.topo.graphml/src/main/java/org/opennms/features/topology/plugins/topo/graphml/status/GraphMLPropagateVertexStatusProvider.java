@@ -28,16 +28,18 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -45,12 +47,11 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
 
@@ -122,7 +123,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
     }
 
     @Override
-    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final VertexProvider vertexProvider,
+    public Map<? extends VertexRef, ? extends Status> getStatusForVertices(final BackendGraph graph,
                                                                            final Collection<VertexRef> vertices,
                                                                            final Criteria[] criteria) {
         final List<Criteria> criteriaList = Lists.newArrayList(criteria);
@@ -161,7 +162,7 @@ public class GraphMLPropagateVertexStatusProvider implements StatusProvider {
                     for (final Map.Entry<String, Collection<VertexRef>> e : oppositeVertices.asMap().entrySet()) {
                         if (statusProvider.contributesTo(e.getKey())) {
                             targetStatuses.putAll(statusProvider.getStatusForVertices(
-                                                  this.provider.getGraphProviderBy(e.getKey()),
+                                                  this.provider.getGraphProviderBy(e.getKey()).getCurrentGraph(),
                                                   e.getValue(),
                                                   criteriaList.toArray(new Criteria[0])));
                         }

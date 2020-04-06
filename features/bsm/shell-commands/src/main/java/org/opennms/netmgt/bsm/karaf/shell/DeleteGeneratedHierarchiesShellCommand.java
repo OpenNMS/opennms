@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 
-@Command(scope = "bsm", name = "delete-generated-hierarchies", description="Deletes generated hierarchies.")
+@Command(scope = "opennms", name = "bsm-delete-generated-hierarchies", description="Deletes generated hierarchies.")
 @Service
 public class DeleteGeneratedHierarchiesShellCommand implements Action {
 
@@ -47,6 +47,7 @@ public class DeleteGeneratedHierarchiesShellCommand implements Action {
         businessServiceManager.getAllBusinessServices().stream()
             .filter(b -> "true".equals(b.getAttributes().get("generated")))
             .forEach(b -> businessServiceManager.deleteBusinessService(b));
+        businessServiceManager.triggerDaemonReload();
         return null;
     }
 }

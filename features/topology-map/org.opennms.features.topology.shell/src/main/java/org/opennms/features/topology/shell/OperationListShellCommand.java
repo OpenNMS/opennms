@@ -45,7 +45,7 @@ import org.osgi.framework.ServiceReference;
 
 import com.google.common.collect.Lists;
 
-@Command(scope = "topo", name = "listoperations", description="Lists the available OpenNMS topology operations.")
+@Command(scope = "opennms", name = "topo-list-operations", description="Lists the available OpenNMS topology operations.")
 @Service
 public class OperationListShellCommand implements Action {
 

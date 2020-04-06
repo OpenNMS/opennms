@@ -47,7 +47,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 
-@Command(scope = "provision", name = "detect", description = "Detect the service on a host at specified location")
+@Command(scope = "opennms", name = "detect", description = "Detect the service on a host at specified location")
 @Service
 public class Detect implements Action {
 

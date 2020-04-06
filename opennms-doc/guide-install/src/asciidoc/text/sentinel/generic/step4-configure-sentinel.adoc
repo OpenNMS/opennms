@@ -28,8 +28,8 @@ NOTE:   Even if the id, location and http-url must be set the same ways as for _
 .Configure the credentials to use when communicating with {opennms-product-name}
 [source]
 ----
-admin@sentinel()> scv:set opennms.http minion minion
-admin@sentinel()> scv:set opennms.broker minion minion
+admin@sentinel()> opennms:scv-set opennms.http minion minion
+admin@sentinel()> opennms:scv-set opennms.broker minion minion
 ----
 Username and password is explicitly set to `minion` as it is assumed that they share the same credentials and roles.
 

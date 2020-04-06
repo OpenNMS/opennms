@@ -50,8 +50,8 @@ import com.google.common.collect.Lists;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "jira", name = "list-issue-types", description="Uses the JIRA ReST API to list all issue types")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-issue-types", description="Uses the JIRA ReST API to list all issue types")
+@Command(scope = "opennms", name = "jira-list-issue-types", description="Uses the JIRA ReST API to list all issue types")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-list-issue-types", description="Uses the JIRA ReST API to list all issue types")
 @Service
 public class ListIssueTypesCommand extends AbstractJiraCommand implements Action {
 

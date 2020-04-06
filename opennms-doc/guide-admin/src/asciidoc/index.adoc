@@ -290,6 +290,7 @@ include::text/operation/ssl/ssl.adoc[]
 include::text/operation/request-logging.adoc[]
 include::text/operation/geocoder.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
+include::text/operation/config-tester.adoc[]
 
 [[ga-opennms-operation-newts]]
 === Newts
@@ -297,6 +298,11 @@ include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
+
+[[ga-opennms-operation-timeseries]]
+=== Timeseries Integration Layer
+include::text/operation/timeseries/introduction.adoc[]
+include::text/operation/timeseries/configuration.adoc[]
 
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
@@ -365,6 +371,7 @@ include::text/telemetryd/listener/udp.adoc[]
 
 [[ga-telemetryd-protocols]]
 === Protocol Reference
+include::text/telemetryd/protocols/bmp.adoc[]
 include::text/telemetryd/protocols/ipfix.adoc[]
 include::text/telemetryd/protocols/jti.adoc[]
 include::text/telemetryd/protocols/netflow5.adoc[]

@@ -49,6 +49,8 @@ import org.opennms.distributed.core.api.Identity;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.util.GlobalTracer;
@@ -72,6 +74,8 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     private TracerRegistry tracerRegistry;
 
     private Identity identity;
+
+    private MetricRegistry metrics;
 
     public <S extends Message, T extends Message> Map<String, Object> getModuleMetadata(SinkModule<S, T> module) {
         // Pre-compute the JMS headers instead of recomputing them every dispatch
@@ -142,6 +146,18 @@ public class CamelRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             return getTracerRegistry().getTracer();
         }
         return GlobalTracer.get();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 
     public void setTracerRegistry(TracerRegistry tracerRegistry) {

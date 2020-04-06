@@ -49,7 +49,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-@Command(scope = "health", name = "check", description="Verifies that the container is healthy.")
+@Command(scope = "opennms", name = "health-check", description="Verifies that the container is healthy.")
 @Service
 public class HealthCheckCommand implements Action {
 

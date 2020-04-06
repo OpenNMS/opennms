@@ -38,7 +38,7 @@ import java.util.stream.Collectors
 // Not in transaction indicates that the node is in initial stage of scanning phase and  may not be persisted yet.
 // Only use this to add assets/metadata or return invalid node (returning null) to abort the scan.
 
-if (!transaction) {
+if (! this.binding.variables.containsKey("transaction") || ! transaction) {
     LOG.debug("customscript: not in transaction");
     OnmsAssetRecord assetRecord = new OnmsAssetRecord();
     assetRecord.setAssetNumber("12345");

@@ -37,7 +37,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.activemq.broker.api.ManagedBroker;
 import org.opennms.features.activemq.broker.api.ManagedDestination;
 
-@Command(scope = "opennms-activemq", name = "purge-queue", description = "Purge the content of an ActiveMQ queue.")
+@Command(scope = "opennms", name = "activemq-purge-queue", description = "Purge the content of an ActiveMQ queue.")
 @Service
 public class PurgeQueue implements Action {
 

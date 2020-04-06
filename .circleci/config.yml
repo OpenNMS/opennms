@@ -1,6 +1,5 @@
 version: 2.1
 
-
 executors:
   centos-build-executor:
     docker:
@@ -8,15 +7,50 @@ executors:
   debian-build-executor:
     docker:
       - image: opennms/build-env:debian-jdk8-b3572
+  docker-executor:
+    docker:
+      - image: docker:19.03.0-git
   integration-test-executor:
     machine: true
   smoke-test-executor:
     machine:
       image: ubuntu-1604:201903-01
 
+# NOTE: the "_label" versions of these are for the case when your source or target
+# branches have slashes in them, that way the merge branch gets created properly
+defaults: &defaults
+  parameters:
+    previous_branch:
+      description: the previous branch, if any
+      type: string
+      default: foundation-2019
+    previous_branch_label:
+      description: the previous branch, if any (escaped, no slashes)
+      type: string
+      default: foundation-2019
+    main_branch:
+      description: the auto-merge main branch
+      type: string
+      default: release-26.0.0
+    main_branch_label:
+      description: the auto-merge main branch (escaped, no slashes)
+      type: string
+      default: release-26.0.0
+    next_branch:
+      description: the auto-merge target branch
+      type: string
+      default: develop
+    next_branch_label:
+      description: the auto-merge target branch (escaped, no slashes)
+      type: string
+      default: develop
+
+docker_container_config: &docker_container_config
+  executor: docker-executor
+
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
-  sign-packages: opennms/sign-packages@2.0.0
+  sign-packages: opennms/sign-packages@2.1.1
 
 commands:
   cached-checkout:
@@ -122,7 +156,7 @@ commands:
           name: Load Minion OCI image
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i images/minion.oci
       - run:
           name: Load Sentinel OCI image
           command: |
@@ -197,7 +231,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               install --builder smart --threads << parameters.number-vcpu >>
@@ -305,8 +339,12 @@ workflows:
           requires:
             - integration-test-with-coverage
   build-deploy:
+    <<: *defaults
     jobs:
       - build
+      - tarball-assembly:
+          requires:
+            - build
       - horizon-rpm-build:
           requires:
             - build
@@ -322,7 +360,7 @@ workflows:
       - smoke-test-full:
           requires:
             - horizon-rpm-build
-            - minion-rpm-build
+            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
@@ -332,11 +370,12 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
-            - minion-rpm-build
+            - tarball-assembly
             - sentinel-rpm-build
           filters:
             branches:
@@ -346,6 +385,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
@@ -355,14 +395,7 @@ workflows:
               only:
                 - master
                 - develop
-      - minion-publish-oci:
-          requires:
-            - minion-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
+                - /^release-.*/
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
@@ -371,6 +404,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /^release-.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -384,6 +418,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
           requires:
@@ -396,6 +431,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
           requires:
@@ -408,7 +444,34 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
+      - create-merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: << parameters.main_branch >>
+      - merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -417,7 +480,6 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-full
-            - integration-test
           filters:
             branches:
               only:
@@ -435,6 +497,104 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
+
+  tarball-assembly:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    parameters:
+      number-vcpu:
+        default: 2
+        type: integer
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+      - dockerhub-login
+      - run:
+          name: Assemble tarballs
+          # Install fake makensis to satisfy the assemble dependency
+          command: |
+            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
+            ./assemble.pl -Dopennms.home=/opt/opennms \
+                          -DskipTests \
+                          -DupdatePolicy=never
+      - run:
+          name: Collect tarball artifacts
+          command: |
+            mkdir target/tarballs
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/opennms.tar.gz \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/minion.tar.gz \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/sentinel.tar.gz \;
+      - run:
+          name: Build Minion OCI
+          command: |
+            cd opennms-container/minion
+
+            # Create always a downloadable single OCI artifact for AMD architecture.
+            # This image is used in our integration test suite which relies on the tag "minion:latest".
+            make VERSION="$(../pom2version.py ../../pom.xml)" \
+                 DOCKER_TAG="minion:latest" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}"
+
+            # Build for multiple architectures only in release branches and push images with manifest to a registry
+            # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
+            case "${CIRCLE_BRANCH}" in
+              "master")
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="$(../pom2version.py ../../pom.xml)" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
+              "release-"*)
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="release-candidate" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
+              "develop")
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="bleeding" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
+              *)
+                echo "No branch to push to registry."
+                ;;
+            esac
+      - store_artifacts:
+          path: ~/project/target/tarballs
+          destination: tarballs
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/minion.oci
+          destination: minion.oci
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/tarballs
+            - project/opennms-container/minion/images
+
   horizon-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -442,8 +602,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -452,6 +614,7 @@ jobs:
             export CCI_MAXCPU=4
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -481,8 +644,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -492,19 +657,10 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch RPM artifacts and build Minion container image
-          command: |
-            cd opennms-container/minion
-            ./build_container_image.sh
-      - store_artifacts:
-          path: ~/project/opennms-container/minion/images/container.oci
-          destination: minion.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -512,7 +668,6 @@ jobs:
           root: ~/
           paths:
             - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/minion/images/
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -521,8 +676,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -532,6 +689,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -556,12 +714,14 @@ jobs:
   horizon-deb-build:
     executor: debian-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -570,6 +730,7 @@ jobs:
             export CCI_MAXCPU=4
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -586,8 +747,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -597,6 +760,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh minion
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -613,8 +777,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -624,6 +790,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh sentinel
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -646,21 +813,6 @@ jobs:
           name: Load Horizon OCI image, tag it and publish to registry
           command: |
             cd opennms-container/horizon
-            docker image load -i images/container.oci
-            ./tag.sh
-            ./publish.sh
-  minion-publish-oci:
-    executor: centos-build-executor
-    steps:
-      - attach_workspace:
-          at: ~/
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - dockerhub-login
-      - run:
-          name: Load Minion OCI image, tag it and publish to registry
-          command: |
-            cd opennms-container/minion
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
@@ -734,6 +886,74 @@ jobs:
           at: ~/
       - run-smoke-tests:
           minimal: true
+  create-merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.next_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - cached-checkout
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.next_branch >>
+                  git reset --hard origin/<< parameters.next_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to github
+                command: git push -f origin << parameters.next_branch >>:merge-foundation/<< parameters.main_branch_label >>-to-<< parameters.next_branch_label >>
+
+  # note, this is always run as part of the _next_ branch
+  # for example, if main_branch is `foundation-2016` and next_branch is `foundation-2017`,
+  # it will include the contents of the `foundation-2017` branch, thus we need to actually
+  # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
+  merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.previous_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - cached-checkout
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target and merge with merge branch
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.main_branch >>
+                  git reset --hard origin/<< parameters.main_branch >>
+                  git merge origin/merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+            - run:
+                name: Push to github
+                command: git push origin << parameters.main_branch >>:<< parameters.main_branch >>
+
   publish-cloudsmith:
     executor: cloudsmith/default
     resource_class: small

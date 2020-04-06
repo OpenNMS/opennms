@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -13,6 +13,9 @@
 
     <!-- Enlinkd -->
     <module>enlinkd</module>
+
+    <!-- Graphs -->
+    <module>graph</module>
 
     <!-- Topologies -->
     <module>topologies</module>
@@ -110,6 +113,9 @@
     <module>newts</module>
     <module>newts-repository-converter</module>
 
+    <!-- timeseries -->
+    <module>timeseries</module>
+
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
@@ -139,6 +145,7 @@
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
+    <module>search</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>

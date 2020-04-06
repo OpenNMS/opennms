@@ -25,8 +25,8 @@ TIP: Include the `failover:` portion of the broker URL to allow the _Minion_ to 
 .Configure the credentials to use when communicating with {opennms-product-name}
 [source]
 ----
-admin@minion()> scv:set opennms.http minion minion
-admin@minion()> scv:set opennms.broker minion minion
+admin@minion()> opennms:scv-set opennms.http minion minion
+admin@minion()> opennms:scv-set opennms.broker minion minion
 ----
 
 TIP: Another way to configure credentials is to use the `scvcli` utility in your _Minion_ `bin` directory.

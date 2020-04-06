@@ -77,7 +77,7 @@ The following example sends historic events to _Elasticsearch_ using the _karaf_
 ----
 # open karaf command prompt using
 # ssh -p 8101 admin@localhost
-karaf> elasticsearch:send-historic-events --username admin --password admin --url http://localhost:8980 --limit 10 --offset 0
+karaf> opennms:send-events-to-elasticsearch --username admin --password admin --url http://localhost:8980 --limit 10 --offset 0
 ----
 
 NOTE: For more details, consolidate the `--help` option of the command.

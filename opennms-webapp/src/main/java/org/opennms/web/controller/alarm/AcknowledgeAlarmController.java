@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.web.alarm.AcknowledgeType;
+import org.opennms.web.controller.RedirectRestricter;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -57,7 +58,11 @@ public class AcknowledgeAlarmController extends AbstractController implements In
     private AlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
-    
+
+    private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
+            .allowRedirect("detail.htm")
+            .build();
+
     /**
      * <p>setRedirectView</p>
      *
@@ -123,15 +128,13 @@ public class AcknowledgeAlarmController extends AbstractController implements In
             throw new ServletException("Unknown acknowledge action: " + action);
         }
 
-        
-        
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
+        String redirect = redirectRestricter.getRedirectOrNull(request.getParameter("redirect"));
         String viewName;
         if (redirect != null) {
             viewName = redirect;
         } else {
-            viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? m_redirectView : m_redirectView + "?" + redirectParms);
+            viewName = (redirectParms == null || "".equals(redirectParms) || "null".equals(redirectParms) ? m_redirectView : m_redirectView + "?" + redirectParms);
         }
         RedirectView view = new RedirectView(viewName, true);
         return new ModelAndView(view);

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>26.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -539,6 +539,9 @@
                 <feature>opennms-amqp-event-forwarder</feature>
                 <feature>opennms-amqp-event-receiver</feature>
                 <feature>opennms-amqp-alarm-northbounder</feature>
+                <feature>opennms-graphml</feature>
+                <feature>opennms-graphs</feature>
+                <feature>opennms-graph-provider-persistence-test</feature>
                 <feature>opennms-topology-runtime-base</feature>
                 <feature>opennms-topology-runtime-browsers</feature>
                 <feature>opennms-topology-runtime-linkd</feature>
@@ -561,6 +564,7 @@
                 <feature>datachoices</feature>
                 <feature>eif-adapter</feature>
                 <feature>opennms-telemetry-collection</feature>
+                <feature>opennms-telemetry-bmp</feature>
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
@@ -579,6 +583,7 @@
                 <feature>opennms-endpoints-grafana</feature>
                 <feature>opennms-reporting</feature>
                 <feature>opennms-send-event-command</feature>
+                <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
                 <feature>opennms-blobstore-noop</feature>
@@ -588,7 +593,7 @@
                 <feature>opennms-threshold-states-shell</feature>
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
-
+                <feature>opennms-core-ipc-grpc-server</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
@@ -1031,6 +1036,34 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.karaf-health</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- GraphML dependencies -->
+    <dependency>
+      <groupId>org.opennms.features.graphml</groupId>
+      <artifactId>org.opennms.features.graphml.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graphml</groupId>
+      <artifactId>org.opennms.features.graphml.service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graphml</groupId>
+      <artifactId>org.opennms.features.graphml.rest</artifactId>
       <version>${project.version}</version>
     </dependency>
 

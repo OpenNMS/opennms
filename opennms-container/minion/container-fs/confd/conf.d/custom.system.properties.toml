@@ -1,0 +1,6 @@
+[template]
+src = "custom.system.properties.tmpl"
+dest = "/opt/minion/etc/custom.system.properties"
+keys = [
+    "/system/properties"
+]

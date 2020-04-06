@@ -41,13 +41,13 @@ This commmand allows you to verify the connection and _SNMP community_ configura
 .Show all available monitors
 [source]
 ----
-poller:list-monitors
+opennms:list-monitors
 ----
 
 .Run an ICMP monitor through a _Minion_
 [source]
 ----
-poller:poll -l MyLocation -t Time-To-Live-in-ms org.opennms.netmgt.poller.monitors.IcmpMonitor myIpAddress
+opennms:poll -l MyLocation -t Time-To-Live-in-ms org.opennms.netmgt.poller.monitors.IcmpMonitor myIpAddress
 ----
 
 The _Time To Live (TTL)_ is only related to messages in the _ActiveMQ_ communication.

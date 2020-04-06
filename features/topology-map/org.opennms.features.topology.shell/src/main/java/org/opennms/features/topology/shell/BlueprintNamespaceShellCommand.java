@@ -40,7 +40,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-@Command(scope = "onms", name = "listnamespaces", description="Lists the available blueprint namespaces and their providers.")
+@Command(scope = "opennms", name = "list-namespaces", description="Lists the available blueprint namespaces and their providers.")
 @Service
 public class BlueprintNamespaceShellCommand implements Action {
 

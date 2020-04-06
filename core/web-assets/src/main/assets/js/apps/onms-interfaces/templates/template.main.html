@@ -81,7 +81,11 @@
             <td>{{ intf.ifName  || 'N/A' }}</td>
             <td>{{ intf.ifAlias || 'N/A' }}</td>
             <td>{{ intf.ifSpeed || 'N/A' }}</td>
-            <td><a ng-if="intf.hasFlows" ng-href="{{intf.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: flow data available"><i class="fa fa-exchange"></i></span></a></td>
+            <td>
+              <a ng-if="intf.hasIngressFlows && intf.hasEgressFlows" ng-href="{{intf.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress/egress flow data available"><i class="fa fa-exchange"></i></span></a>
+              <a ng-if="intf.hasIngressFlows && !intf.hasEgressFlows" ng-href="{{intf.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress flow data available"><i class="fa fa-long-arrow-left"></i></span></a>
+              <a ng-if="!intf.hasIngressFlows && intf.hasEgressFlows" ng-href="{{intf.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: egress flow data available"><i class="fa fa-long-arrow-right"></i></span></a>
+            </td>
           </tr>
        </tbody>
       </table>

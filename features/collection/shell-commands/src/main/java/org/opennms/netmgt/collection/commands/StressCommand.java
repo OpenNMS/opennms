@@ -77,7 +77,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  *
  * @author jwhite
  */
-@Command(scope = "metrics", name = "stress", description="Stress the current persistence strategy with generated collection sets.")
+@Command(scope = "opennms", name = "stress-metrics", description="Stress the current persistence strategy with generated collection sets.")
 @Service
 public class StressCommand implements Action {
 

@@ -66,6 +66,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.math.IntMath;
 import com.google.protobuf.ByteString;
 
@@ -87,6 +88,8 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     private KafkaProducer<String, byte[]> producer;
 
     private TracerRegistry tracerRegistry;
+
+    private MetricRegistry metrics;
 
     private Identity identity;
 
@@ -299,5 +302,17 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public void setIdentity(Identity identity) {
         this.identity = identity;
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 }

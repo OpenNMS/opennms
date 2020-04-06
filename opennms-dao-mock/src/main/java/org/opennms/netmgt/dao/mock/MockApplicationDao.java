@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatus;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
+import org.opennms.netmgt.dao.api.MonitoredServiceStatusEntity;
 import org.opennms.netmgt.model.OnmsApplication;
 
 public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer> implements ApplicationDao {
@@ -71,7 +71,12 @@ public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer
     }
 
     @Override
-    public List<ApplicationStatusEntity> getAlarmStatus() {
+    public List<MonitoredServiceStatusEntity> getAlarmStatus() {
+        return null;
+    }
+
+    @Override
+    public List<MonitoredServiceStatusEntity> getAlarmStatus(List<OnmsApplication> applications) {
         return null;
     }
 

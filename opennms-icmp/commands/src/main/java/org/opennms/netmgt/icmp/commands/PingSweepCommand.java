@@ -44,7 +44,7 @@ import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingSweepSummary;
 
-@Command(scope = "ping", name = "sweep", description = "Ping-Sweep")
+@Command(scope = "opennms", name = "ping-sweep", description = "ICMP Ping Sweep")
 @Service
 public class PingSweepCommand implements Action {
 

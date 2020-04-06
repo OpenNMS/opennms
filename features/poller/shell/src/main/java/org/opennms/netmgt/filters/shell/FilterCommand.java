@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-@Command(scope = "filters", name = "filter", description = "Enumerates nodes/interfaces that match a give filter")
+@Command(scope = "opennms", name = "filter", description = "Enumerates nodes/interfaces that match a give filter")
 @Service
 public class FilterCommand implements Action {
 

@@ -44,8 +44,8 @@ import com.atlassian.jira.rest.client.api.domain.Priority;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "jira", name = "list-priorities", description="Uses the JIRA ReST API to list all priorities")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-priorities", description="Uses the JIRA ReST API to list all priorities")
+@Command(scope = "opennms", name = "jira-list-priorities", description="Uses the JIRA ReST API to list all priorities")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-list-priorities", description="Uses the JIRA ReST API to list all priorities")
 @Service
 public class ListPrioritiesCommand extends AbstractJiraCommand implements Action {
 

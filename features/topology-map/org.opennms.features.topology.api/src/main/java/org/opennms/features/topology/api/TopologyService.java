@@ -32,7 +32,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 
-public interface TopologyService {
+public interface TopologyService extends TopologyCache {
 
     Graph getGraph(String metaTopologyId, String namespace, Criteria[] criteria, int semanticZoomLevel);
 

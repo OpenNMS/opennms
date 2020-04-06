@@ -36,22 +36,22 @@ import org.opennms.core.sysprops.SystemProperties;
  * This handles all the configuration specific to RPC and some utils common to OpenNMS/Minion.
  */
 public interface KafkaRpcConstants {
-    
-    public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
-    public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+
+    public static final String KAFKA_RPC_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
+    public static final String KAFKA_RPC_CONFIG_SYS_PROP_PREFIX = KAFKA_RPC_CONFIG_PID + ".";
     public static final String RPC_TOPIC_PREFIX = "rpc";
     public static final String RPC_REQUEST_TOPIC_NAME = "rpc-request";
     public static final String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
+    public static final String SINGLE_TOPIC_FOR_ALL_MODULES = "single-topic";
     //By default, kafka allows 1MB buffer sizes, here rpcContent (refer to proto/rpc.proto) is limited to 900KB to allow space for other parameters in proto file.
     public static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
     public static final String MAX_BUFFER_SIZE_PROPERTY = "max.buffer.size";
     //Configurable buffer size in system properties but it should always be less than MAX_BUFFER_SIZE_CONFIGURED
-    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, SystemProperties.getInteger(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
+    public static final Integer MAX_BUFFER_SIZE = Math.min(MAX_BUFFER_SIZE_CONFIGURED, SystemProperties.getInteger(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, MAX_BUFFER_SIZE_PROPERTY), MAX_BUFFER_SIZE_CONFIGURED));
     public static final long DEFAULT_TTL_CONFIGURED = 20000;
     public static final String DEFAULT_TTL_PROPERTY = "ttl";
-    public static final long DEFAULT_TTL = SystemProperties.getLong(String.format("%s%s", KAFKA_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
+    public static final long DEFAULT_TTL = SystemProperties.getLong(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, DEFAULT_TTL_PROPERTY),
             DEFAULT_TTL_CONFIGURED);
-
 
     // Calculate remaining buffer size for each chunk.
     static int getBufferSize(int messageSize, int maxBufferSize, int chunk) {
@@ -73,4 +73,5 @@ public interface KafkaRpcConstants {
         }
         return maxBufferSize;
     }
+
 }

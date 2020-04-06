@@ -486,7 +486,8 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 	location        text not null,
-	hasFlows        boolean not null default false,
+	last_ingress_flow timestamp with time zone,
+	last_egress_flow timestamp with time zone,
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
@@ -555,7 +556,8 @@ create table snmpInterface (
     snmpCollect     varchar(2) default 'N',
     snmpPoll     varchar(1) default 'N',
     snmpLastSnmpPoll timestamp with time zone,
-	hasFlows        boolean not null default false,
+	last_ingress_flow timestamp with time zone,
+	last_egress_flow timestamp with time zone,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
@@ -2714,6 +2716,55 @@ ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_defi
 create sequence rulenxtid minvalue 1;
 
 --##################################################################
+--# Graph tables
+--##################################################################
+CREATE TABLE graph_focus (
+    id bigint not null,
+    type text not null,
+    selection text,
+    CONSTRAINT graph_focus_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE graph_elements (
+  id bigint NOT NULL,
+  type varchar(25) NOT NULL,
+  namespace varchar(200) NOT NULL,
+  source_vertex_namespace varchar(200),
+  source_vertex_id text,
+  target_vertex_namespace varchar(200),
+  target_vertex_id text,
+  focus_id bigint,
+  CONSTRAINT graph_elements_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_graph_elements_focus_id FOREIGN KEY (focus_id) REFERENCES graph_focus (id) ON DELETE CASCADE
+);
+
+CREATE TABLE graph_attributes (
+  id bigint NOT NULL,
+  name text NOT NULL,
+  type text NOT NULL,
+  value text,
+  element_id bigint,
+  CONSTRAINT graph_attributes_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_graph_attributes_element_id FOREIGN KEY (element_id) REFERENCES graph_elements (id) ON DELETE CASCADE
+);
+ALTER TABLE graph_attributes ADD CONSTRAINT graph_attributes_unique_name_element_id_key UNIQUE (name, element_id);
+
+CREATE TABLE graph_element_relations (
+  parent_id bigint NOT NULL,
+  child_id bigint NOT NULL,
+  CONSTRAINT fk_graph_element_relations_parent_id FOREIGN KEY (parent_id) REFERENCES graph_elements (id) ON DELETE CASCADE,
+  CONSTRAINT fk_graph_element_relations_child_id FOREIGN KEY (child_id) REFERENCES graph_elements (id) ON DELETE CASCADE,
+  CONSTRAINT graph_element_relations_pkey PRIMARY KEY (parent_id, child_id)
+);
+
+--# Sequence for the id column in graph_elements table
+--#          sequence, column, table
+--# install: graphnxtid id graph_elements
+--# install: graphnxtid id graph_focus
+--# install: graphnxtid id graph_attributes
+create sequence graphnxtid minvalue 1;
+
+--##################################################################
 --# User defined links
 --##################################################################
 CREATE TABLE user_defined_links (
@@ -2770,4 +2821,11 @@ CREATE TABLE kvstore_bytea (
     expires_at timestamp,
     value bytea NOT NULL,
     CONSTRAINT pk_kvstore_bytea PRIMARY KEY (key, context)
+);
+
+CREATE TABLE timeseries_meta (
+    resourceid TEXT NOT NULL,
+    name TEXT NOT NULL,
+    value TEXT NOT NULL,
+    CONSTRAINT pk_timeseries_meta PRIMARY KEY (resourceid, name)
 );

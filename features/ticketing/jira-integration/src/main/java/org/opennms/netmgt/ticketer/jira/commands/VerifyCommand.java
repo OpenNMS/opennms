@@ -51,14 +51,14 @@ import com.atlassian.jira.rest.client.api.domain.CimFieldInfo;
 import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.atlassian.jira.rest.client.api.domain.ServerInfo;
 
-@Command(scope = "jira", name = "verify", description="Verifies the current configuration")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "verify", description="Verifies the current configuration")
+@Command(scope = "opennms", name = "jira-verify", description="Verifies the current configuration")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-verify", description="Verifies the current configuration")
 @Service
 public class VerifyCommand extends OsgiCommandSupport implements Action {
 
     private Config config = JiraTicketerPlugin.getConfig();
 
-    @Option(name="-f", aliases="--field", description="Verifies the existance of the defined field(s).", required = false, multiValued = true)
+    @Option(name="-f", aliases="--field", description="Verifies the existence of the defined field(s).", required = false, multiValued = true)
     String[] field;
 
     @Override
@@ -66,7 +66,7 @@ public class VerifyCommand extends OsgiCommandSupport implements Action {
         JiraRestClient connection = null;
         // Validate all settings
         try {
-            System.out.println("Verifiing Jira Ticketer Plugin...");
+            System.out.println("Verifing Jira Ticketer Plugin...");
             validateConfiguration();
             connection = verifyConnection();
             validateProjectKey(connection, config.getProjectKey());

@@ -64,6 +64,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -87,6 +88,8 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.utils.DnsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -353,6 +356,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 if (m_parms.size() > 0) {
                     method.setQueryParameters(expandParms(svc));
+                }
+
+                for(final org.opennms.netmgt.config.pagesequence.Header header : m_page.getHeaders()) {
+                    if (Strings.isNullOrEmpty(header.getName())) {
+                        LOG.debug("Ignoring header with empty name (value='{}')", header.getValue());
+                        continue;
+                    }
+                    method.setHeader(new BasicHeader(header.getName(), header.getValue()));
+                    LOG.debug("Using header '{}'", header.getName() + ": " + header.getValue());
                 }
 
                 if (getUserInfo() != null) {

@@ -42,7 +42,7 @@ import io.searchbox.client.JestClient;
 /**
  * {@link ElasticHealthCheck} that requires configuration to be present in order to actually verify the connection.
  * This is required as some features may be installed but the connection to Elasticsearch may not be configured yet,
- * meaning the <code>health:check</code> would always fail, which may not be the desired behaviour.
+ * meaning the <code>opennms:health-check</code> would always fail, which may not be the desired behaviour.
  *
  * @author mvrueden
  */

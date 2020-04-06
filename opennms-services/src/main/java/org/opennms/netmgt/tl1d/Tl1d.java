@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,9 +43,9 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +86,7 @@ public class Tl1d extends AbstractServiceDaemon {
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleRelooadConfigurationEvent(Event e) {
+    public void handleRelooadConfigurationEvent(IEvent e) {
         
 
         if (isReloadConfigEventTarget(e)) {
@@ -128,12 +128,12 @@ public class Tl1d extends AbstractServiceDaemon {
         }
     }
     
-    private boolean isReloadConfigEventTarget(Event event) {
+    private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
         
-        List<Parm> parmCollection = event.getParmCollection();
+        List<IParm> parmCollection = event.getParmCollection();
 
-        for (Parm parm : parmCollection) {
+        for (IParm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Tl1d".equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;

@@ -287,10 +287,14 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
 
     Integer getPreviousNodeId (Integer nodeId);
 
-    void markHavingFlows(final Collection<Integer> nodeIds);
+    void markHavingFlows(final Collection<Integer> ingressIds, final Collection<Integer> egressIds);
 
     List<OnmsNode> findAllHavingFlows();
-    
+
+    List<OnmsNode> findAllHavingIngressFlows();
+
+    List<OnmsNode> findAllHavingEgressFlows();
+
     OnmsNode getDefaultFocusPoint();
 
     List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value);

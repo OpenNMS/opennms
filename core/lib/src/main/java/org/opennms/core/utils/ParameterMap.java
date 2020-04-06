@@ -78,6 +78,30 @@ public abstract class ParameterMap {
         }
         return value;
     }
+
+    /**
+     * Same as getKeyedLong, but does not mutate the map
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static long getKeyedLongImmutable(final Map map, final String key, final long defValue) {
+
+        if (map == null) return defValue;
+
+        long value = defValue;
+        Object oValue = map.get(key);
+
+        if (oValue != null && oValue instanceof String) {
+            try {
+                value = Long.parseLong((String) oValue);
+            } catch (NumberFormatException ne) {
+                value = defValue;
+                LOG.info("getKeyedLong: Failed to convert value {} for key {}", oValue , key, ne);
+            }
+        } else if (oValue != null) {
+            value = ((Number) oValue).longValue();
+        }
+        return value;
+    }
 	
     /**
      * This method is used to lookup a specific key in the map. If the mapped

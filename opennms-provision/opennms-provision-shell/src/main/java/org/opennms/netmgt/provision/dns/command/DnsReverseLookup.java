@@ -42,7 +42,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 
-@Command(scope = "dns", name = "reverse-lookup", description = "DNS reverse lookup for the specified ipaddress")
+@Command(scope = "opennms", name = "dns-reverse-lookup", description = "DNS reverse lookup for the specified ipaddress")
 @Service
 public class DnsReverseLookup implements Action {
 

@@ -204,6 +204,11 @@ public class ModelMappers {
                 .withUser(feedback.getUser())
                 .build();
     }
+
+    public static OnmsSeverity fromSeverity(Severity severity) {
+        Objects.requireNonNull(severity);
+        return OnmsSeverity.get(severity.getId());
+    }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
         return OnmsTopologyProtocol.create(protocol.name());

@@ -1,4 +1,4 @@
-==== Nodes
+==== anchor:rest-nodes[]Nodes
 
 Note: the default offset is 0, the default limit is 10 results.  To get all results, use limit=0 as a parameter on the URL (ie, GET /nodes?limit=0).
 
