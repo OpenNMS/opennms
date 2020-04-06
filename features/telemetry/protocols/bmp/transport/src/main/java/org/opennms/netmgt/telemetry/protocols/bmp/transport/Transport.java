@@ -27087,64 +27087,49 @@ public final class Transport {
         int getSafi();
 
         /**
-         * <code>.IpAddress nextHop = 3;</code>
-         * @return Whether the nextHop field is set.
-         */
-        boolean hasNextHop();
-        /**
-         * <code>.IpAddress nextHop = 3;</code>
-         * @return The nextHop.
-         */
-        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getNextHop();
-        /**
-         * <code>.IpAddress nextHop = 3;</code>
-         */
-        org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getNextHopOrBuilder();
-
-        /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> 
             getWithdrawnList();
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route getWithdrawn(int index);
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         int getWithdrawnCount();
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> 
             getWithdrawnOrBuilderList();
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder getWithdrawnOrBuilder(
             int index);
 
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> 
             getVpnWithdrawnList();
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route getVpnWithdrawn(int index);
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         int getVpnWithdrawnCount();
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> 
             getVpnWithdrawnOrBuilderList();
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder getVpnWithdrawnOrBuilder(
             int index);
@@ -27208,19 +27193,6 @@ public final class Transport {
                   break;
                 }
                 case 26: {
-                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder subBuilder = null;
-                  if (nextHop_ != null) {
-                    subBuilder = nextHop_.toBuilder();
-                  }
-                  nextHop_ = input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.parser(), extensionRegistry);
-                  if (subBuilder != null) {
-                    subBuilder.mergeFrom(nextHop_);
-                    nextHop_ = subBuilder.buildPartial();
-                  }
-
-                  break;
-                }
-                case 34: {
                   if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                     withdrawn_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route>();
                     mutable_bitField0_ |= 0x00000001;
@@ -27229,7 +27201,7 @@ public final class Transport {
                       input.readMessage(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.parser(), extensionRegistry));
                   break;
                 }
-                case 42: {
+                case 34: {
                   if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                     vpnWithdrawn_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route>();
                     mutable_bitField0_ |= 0x00000002;
@@ -27296,93 +27268,70 @@ public final class Transport {
           return safi_;
         }
 
-        public static final int NEXTHOP_FIELD_NUMBER = 3;
-        private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress nextHop_;
-        /**
-         * <code>.IpAddress nextHop = 3;</code>
-         * @return Whether the nextHop field is set.
-         */
-        public boolean hasNextHop() {
-          return nextHop_ != null;
-        }
-        /**
-         * <code>.IpAddress nextHop = 3;</code>
-         * @return The nextHop.
-         */
-        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getNextHop() {
-          return nextHop_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : nextHop_;
-        }
-        /**
-         * <code>.IpAddress nextHop = 3;</code>
-         */
-        public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getNextHopOrBuilder() {
-          return getNextHop();
-        }
-
-        public static final int WITHDRAWN_FIELD_NUMBER = 4;
+        public static final int WITHDRAWN_FIELD_NUMBER = 3;
         private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> withdrawn_;
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> getWithdrawnList() {
           return withdrawn_;
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> 
             getWithdrawnOrBuilderList() {
           return withdrawn_;
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         public int getWithdrawnCount() {
           return withdrawn_.size();
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route getWithdrawn(int index) {
           return withdrawn_.get(index);
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+         * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
          */
         public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder getWithdrawnOrBuilder(
             int index) {
           return withdrawn_.get(index);
         }
 
-        public static final int VPNWITHDRAWN_FIELD_NUMBER = 5;
+        public static final int VPNWITHDRAWN_FIELD_NUMBER = 4;
         private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> vpnWithdrawn_;
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> getVpnWithdrawnList() {
           return vpnWithdrawn_;
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> 
             getVpnWithdrawnOrBuilderList() {
           return vpnWithdrawn_;
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         public int getVpnWithdrawnCount() {
           return vpnWithdrawn_.size();
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route getVpnWithdrawn(int index) {
           return vpnWithdrawn_.get(index);
         }
         /**
-         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+         * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
          */
         public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder getVpnWithdrawnOrBuilder(
             int index) {
@@ -27409,14 +27358,11 @@ public final class Transport {
           if (safi_ != 0) {
             output.writeUInt32(2, safi_);
           }
-          if (nextHop_ != null) {
-            output.writeMessage(3, getNextHop());
-          }
           for (int i = 0; i < withdrawn_.size(); i++) {
-            output.writeMessage(4, withdrawn_.get(i));
+            output.writeMessage(3, withdrawn_.get(i));
           }
           for (int i = 0; i < vpnWithdrawn_.size(); i++) {
-            output.writeMessage(5, vpnWithdrawn_.get(i));
+            output.writeMessage(4, vpnWithdrawn_.get(i));
           }
           unknownFields.writeTo(output);
         }
@@ -27435,17 +27381,13 @@ public final class Transport {
             size += com.google.protobuf.CodedOutputStream
               .computeUInt32Size(2, safi_);
           }
-          if (nextHop_ != null) {
-            size += com.google.protobuf.CodedOutputStream
-              .computeMessageSize(3, getNextHop());
-          }
           for (int i = 0; i < withdrawn_.size(); i++) {
             size += com.google.protobuf.CodedOutputStream
-              .computeMessageSize(4, withdrawn_.get(i));
+              .computeMessageSize(3, withdrawn_.get(i));
           }
           for (int i = 0; i < vpnWithdrawn_.size(); i++) {
             size += com.google.protobuf.CodedOutputStream
-              .computeMessageSize(5, vpnWithdrawn_.get(i));
+              .computeMessageSize(4, vpnWithdrawn_.get(i));
           }
           size += unknownFields.getSerializedSize();
           memoizedSize = size;
@@ -27466,11 +27408,6 @@ public final class Transport {
               != other.getAfi()) return false;
           if (getSafi()
               != other.getSafi()) return false;
-          if (hasNextHop() != other.hasNextHop()) return false;
-          if (hasNextHop()) {
-            if (!getNextHop()
-                .equals(other.getNextHop())) return false;
-          }
           if (!getWithdrawnList()
               .equals(other.getWithdrawnList())) return false;
           if (!getVpnWithdrawnList()
@@ -27490,10 +27427,6 @@ public final class Transport {
           hash = (53 * hash) + getAfi();
           hash = (37 * hash) + SAFI_FIELD_NUMBER;
           hash = (53 * hash) + getSafi();
-          if (hasNextHop()) {
-            hash = (37 * hash) + NEXTHOP_FIELD_NUMBER;
-            hash = (53 * hash) + getNextHop().hashCode();
-          }
           if (getWithdrawnCount() > 0) {
             hash = (37 * hash) + WITHDRAWN_FIELD_NUMBER;
             hash = (53 * hash) + getWithdrawnList().hashCode();
@@ -27641,12 +27574,6 @@ public final class Transport {
 
             safi_ = 0;
 
-            if (nextHopBuilder_ == null) {
-              nextHop_ = null;
-            } else {
-              nextHop_ = null;
-              nextHopBuilder_ = null;
-            }
             if (withdrawnBuilder_ == null) {
               withdrawn_ = java.util.Collections.emptyList();
               bitField0_ = (bitField0_ & ~0x00000001);
@@ -27688,11 +27615,6 @@ public final class Transport {
             int from_bitField0_ = bitField0_;
             result.afi_ = afi_;
             result.safi_ = safi_;
-            if (nextHopBuilder_ == null) {
-              result.nextHop_ = nextHop_;
-            } else {
-              result.nextHop_ = nextHopBuilder_.build();
-            }
             if (withdrawnBuilder_ == null) {
               if (((bitField0_ & 0x00000001) != 0)) {
                 withdrawn_ = java.util.Collections.unmodifiableList(withdrawn_);
@@ -27764,9 +27686,6 @@ public final class Transport {
             }
             if (other.getSafi() != 0) {
               setSafi(other.getSafi());
-            }
-            if (other.hasNextHop()) {
-              mergeNextHop(other.getNextHop());
             }
             if (withdrawnBuilder_ == null) {
               if (!other.withdrawn_.isEmpty()) {
@@ -27910,125 +27829,6 @@ public final class Transport {
             return this;
           }
 
-          private org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress nextHop_;
-          private com.google.protobuf.SingleFieldBuilderV3<
-              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> nextHopBuilder_;
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           * @return Whether the nextHop field is set.
-           */
-          public boolean hasNextHop() {
-            return nextHopBuilder_ != null || nextHop_ != null;
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           * @return The nextHop.
-           */
-          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress getNextHop() {
-            if (nextHopBuilder_ == null) {
-              return nextHop_ == null ? org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : nextHop_;
-            } else {
-              return nextHopBuilder_.getMessage();
-            }
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          public Builder setNextHop(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
-            if (nextHopBuilder_ == null) {
-              if (value == null) {
-                throw new NullPointerException();
-              }
-              nextHop_ = value;
-              onChanged();
-            } else {
-              nextHopBuilder_.setMessage(value);
-            }
-
-            return this;
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          public Builder setNextHop(
-              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder builderForValue) {
-            if (nextHopBuilder_ == null) {
-              nextHop_ = builderForValue.build();
-              onChanged();
-            } else {
-              nextHopBuilder_.setMessage(builderForValue.build());
-            }
-
-            return this;
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          public Builder mergeNextHop(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress value) {
-            if (nextHopBuilder_ == null) {
-              if (nextHop_ != null) {
-                nextHop_ =
-                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.newBuilder(nextHop_).mergeFrom(value).buildPartial();
-              } else {
-                nextHop_ = value;
-              }
-              onChanged();
-            } else {
-              nextHopBuilder_.mergeFrom(value);
-            }
-
-            return this;
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          public Builder clearNextHop() {
-            if (nextHopBuilder_ == null) {
-              nextHop_ = null;
-              onChanged();
-            } else {
-              nextHop_ = null;
-              nextHopBuilder_ = null;
-            }
-
-            return this;
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder getNextHopBuilder() {
-            
-            onChanged();
-            return getNextHopFieldBuilder().getBuilder();
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder getNextHopOrBuilder() {
-            if (nextHopBuilder_ != null) {
-              return nextHopBuilder_.getMessageOrBuilder();
-            } else {
-              return nextHop_ == null ?
-                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.getDefaultInstance() : nextHop_;
-            }
-          }
-          /**
-           * <code>.IpAddress nextHop = 3;</code>
-           */
-          private com.google.protobuf.SingleFieldBuilderV3<
-              org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder> 
-              getNextHopFieldBuilder() {
-            if (nextHopBuilder_ == null) {
-              nextHopBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-                  org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddress.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.IpAddressOrBuilder>(
-                      getNextHop(),
-                      getParentForChildren(),
-                      isClean());
-              nextHop_ = null;
-            }
-            return nextHopBuilder_;
-          }
-
           private java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> withdrawn_ =
             java.util.Collections.emptyList();
           private void ensureWithdrawnIsMutable() {
@@ -28042,7 +27842,7 @@ public final class Transport {
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> withdrawnBuilder_;
 
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> getWithdrawnList() {
             if (withdrawnBuilder_ == null) {
@@ -28052,7 +27852,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public int getWithdrawnCount() {
             if (withdrawnBuilder_ == null) {
@@ -28062,7 +27862,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route getWithdrawn(int index) {
             if (withdrawnBuilder_ == null) {
@@ -28072,7 +27872,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder setWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route value) {
@@ -28089,7 +27889,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder setWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder builderForValue) {
@@ -28103,7 +27903,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder addWithdrawn(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route value) {
             if (withdrawnBuilder_ == null) {
@@ -28119,7 +27919,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder addWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route value) {
@@ -28136,7 +27936,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder addWithdrawn(
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder builderForValue) {
@@ -28150,7 +27950,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder addWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder builderForValue) {
@@ -28164,7 +27964,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder addAllWithdrawn(
               java.lang.Iterable<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> values) {
@@ -28179,7 +27979,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder clearWithdrawn() {
             if (withdrawnBuilder_ == null) {
@@ -28192,7 +27992,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public Builder removeWithdrawn(int index) {
             if (withdrawnBuilder_ == null) {
@@ -28205,14 +28005,14 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder getWithdrawnBuilder(
               int index) {
             return getWithdrawnFieldBuilder().getBuilder(index);
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder getWithdrawnOrBuilder(
               int index) {
@@ -28222,7 +28022,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> 
                getWithdrawnOrBuilderList() {
@@ -28233,14 +28033,14 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder addWithdrawnBuilder() {
             return getWithdrawnFieldBuilder().addBuilder(
                 org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.getDefaultInstance());
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder addWithdrawnBuilder(
               int index) {
@@ -28248,7 +28048,7 @@ public final class Transport {
                 index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.getDefaultInstance());
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 4;</code>
+           * <code>repeated .RouteMonitoringPacket.Route withdrawn = 3;</code>
            */
           public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder> 
                getWithdrawnBuilderList() {
@@ -28282,7 +28082,7 @@ public final class Transport {
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> vpnWithdrawnBuilder_;
 
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> getVpnWithdrawnList() {
             if (vpnWithdrawnBuilder_ == null) {
@@ -28292,7 +28092,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public int getVpnWithdrawnCount() {
             if (vpnWithdrawnBuilder_ == null) {
@@ -28302,7 +28102,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route getVpnWithdrawn(int index) {
             if (vpnWithdrawnBuilder_ == null) {
@@ -28312,7 +28112,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder setVpnWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route value) {
@@ -28329,7 +28129,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder setVpnWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder builderForValue) {
@@ -28343,7 +28143,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder addVpnWithdrawn(org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route value) {
             if (vpnWithdrawnBuilder_ == null) {
@@ -28359,7 +28159,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder addVpnWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route value) {
@@ -28376,7 +28176,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder addVpnWithdrawn(
               org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder builderForValue) {
@@ -28390,7 +28190,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder addVpnWithdrawn(
               int index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder builderForValue) {
@@ -28404,7 +28204,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder addAllVpnWithdrawn(
               java.lang.Iterable<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route> values) {
@@ -28419,7 +28219,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder clearVpnWithdrawn() {
             if (vpnWithdrawnBuilder_ == null) {
@@ -28432,7 +28232,7 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public Builder removeVpnWithdrawn(int index) {
             if (vpnWithdrawnBuilder_ == null) {
@@ -28445,14 +28245,14 @@ public final class Transport {
             return this;
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder getVpnWithdrawnBuilder(
               int index) {
             return getVpnWithdrawnFieldBuilder().getBuilder(index);
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder getVpnWithdrawnOrBuilder(
               int index) {
@@ -28462,7 +28262,7 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.RouteOrBuilder> 
                getVpnWithdrawnOrBuilderList() {
@@ -28473,14 +28273,14 @@ public final class Transport {
             }
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder addVpnWithdrawnBuilder() {
             return getVpnWithdrawnFieldBuilder().addBuilder(
                 org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.getDefaultInstance());
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder addVpnWithdrawnBuilder(
               int index) {
@@ -28488,7 +28288,7 @@ public final class Transport {
                 index, org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.getDefaultInstance());
           }
           /**
-           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 5;</code>
+           * <code>repeated .RouteMonitoringPacket.Route vpnWithdrawn = 4;</code>
            */
           public java.util.List<org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport.RouteMonitoringPacket.Route.Builder> 
                getVpnWithdrawnBuilderList() {
@@ -42873,14 +42673,14 @@ public final class Transport {
       "te_no_notification\030\005 \001(\0132\026.google.protob" +
       "uf.EmptyH\000\022)\n\007unknown\030\006 \001(\0132\026.google.pro" +
       "tobuf.EmptyH\000\032%\n\004Code\022\014\n\004code\030\001 \001(\r\022\017\n\007s" +
-      "ubcode\030\002 \001(\rB\010\n\006reason\"\356\030\n\025RouteMonitori" +
+      "ubcode\030\002 \001(\rB\010\n\006reason\"\321\030\n\025RouteMonitori" +
       "ngPacket\022\023\n\004peer\030\001 \001(\0132\005.Peer\022/\n\twithdra" +
       "ws\030\002 \003(\0132\034.RouteMonitoringPacket.Route\0220" +
       "\n\nreachables\030\003 \003(\0132\034.RouteMonitoringPack" +
       "et.Route\0228\n\nattributes\030\004 \003(\0132$.RouteMoni" +
       "toringPacket.PathAttribute\032S\n\005Route\022\032\n\006p" +
       "refix\030\001 \001(\0132\n.IpAddress\022\016\n\006length\030\002 \001(\r\022" +
-      "\016\n\006pathId\030\003 \001(\004\022\016\n\006labels\030\004 \001(\t\032\315\026\n\rPath" +
+      "\016\n\006pathId\030\003 \001(\004\022\016\n\006labels\030\004 \001(\t\032\260\026\n\rPath" +
       "Attribute\022\020\n\010optional\030\001 \001(\010\022\022\n\ntransitiv" +
       "e\030\002 \001(\010\022\017\n\007partial\030\003 \001(\010\022\020\n\010extended\030\004 \001" +
       "(\010\022=\n\006origin\030\005 \001(\0162+.RouteMonitoringPack" +
@@ -42947,68 +42747,68 @@ public final class Transport {
       "Hop\030\003 \001(\0132\n.IpAddress\0220\n\nadvertised\030\004 \003(" +
       "\0132\034.RouteMonitoringPacket.Route\0223\n\rvpnAd" +
       "vertised\030\005 \003(\0132\034.RouteMonitoringPacket.R" +
-      "oute\032\273\001\n\034MultiprotocolUnreachableNrli\022\013\n" +
-      "\003afi\030\001 \001(\r\022\014\n\004safi\030\002 \001(\r\022\033\n\007nextHop\030\003 \001(" +
-      "\0132\n.IpAddress\022/\n\twithdrawn\030\004 \003(\0132\034.Route" +
-      "MonitoringPacket.Route\0222\n\014vpnWithdrawn\030\005" +
-      " \003(\0132\034.RouteMonitoringPacket.Route\"*\n\006Or" +
-      "igin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINCOMPLETE\020\002B\007" +
-      "\n\005value\"\323\014\n\026StatisticsReportPacket\022\023\n\004pe" +
-      "er\030\001 \001(\0132\005.Peer\0221\n\010rejected\030d \001(\0132\037.Stat" +
-      "isticsReportPacket.Counter\0229\n\020duplicate_" +
-      "prefix\030e \001(\0132\037.StatisticsReportPacket.Co" +
-      "unter\022;\n\022duplicate_withdraw\030f \001(\0132\037.Stat" +
-      "isticsReportPacket.Counter\022M\n$invalid_up" +
-      "date_due_to_as_confed_loop\030g \001(\0132\037.Stati" +
-      "sticsReportPacket.Counter\022K\n\"invalid_upd" +
-      "ate_due_to_as_path_loop\030h \001(\0132\037.Statisti" +
-      "csReportPacket.Counter\022P\n\'invalid_update" +
-      "_due_to_cluster_list_loop\030i \001(\0132\037.Statis" +
-      "ticsReportPacket.Counter\022L\n#invalid_upda" +
-      "te_due_to_originator_id\030j \001(\0132\037.Statisti" +
-      "csReportPacket.Counter\0221\n\nadj_rib_in\030k \001" +
-      "(\0132\035.StatisticsReportPacket.Gauge\0222\n\013adj" +
-      "_rib_out\030l \001(\0132\035.StatisticsReportPacket." +
-      "Gauge\022G\n\022per_afi_adj_rib_in\030m \003(\0132+.Stat" +
-      "isticsReportPacket.PerAfiAdjRibInEntry\022F" +
-      "\n\021per_afi_local_rib\030n \003(\0132+.StatisticsRe" +
-      "portPacket.PerAfiLocalRibEntry\022A\n\030update" +
-      "_treat_as_withdraw\030o \001(\0132\037.StatisticsRep" +
-      "ortPacket.Counter\022A\n\030prefix_treat_as_wit" +
-      "hdraw\030p \001(\0132\037.StatisticsReportPacket.Cou" +
-      "nter\0229\n\020duplicate_update\030q \001(\0132\037.Statist" +
-      "icsReportPacket.Counter\0220\n\tlocal_rib\030r \001" +
-      "(\0132\035.StatisticsReportPacket.Gauge\0221\n\nexp" +
-      "ort_rib\030s \001(\0132\035.StatisticsReportPacket.G" +
-      "auge\022I\n\023per_afi_adj_rib_out\030t \003(\0132,.Stat" +
-      "isticsReportPacket.PerAfiAdjRibOutEntry\022" +
-      "H\n\022per_afi_export_rib\030u \003(\0132,.Statistics" +
-      "ReportPacket.PerAfiExportRibEntry\032\026\n\005Gau" +
-      "ge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022\r\n\005count\030\001 " +
-      "\001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n\003key\030\001 \001(\t\022" +
-      ",\n\005value\030\002 \001(\0132\035.StatisticsReportPacket." +
-      "Gauge:\0028\001\032T\n\023PerAfiLocalRibEntry\022\013\n\003key\030" +
-      "\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsReportP" +
-      "acket.Gauge:\0028\001\032U\n\024PerAfiAdjRibOutEntry\022" +
-      "\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Statistics" +
-      "ReportPacket.Gauge:\0028\001\032U\n\024PerAfiExportRi" +
-      "bEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Sta" +
-      "tisticsReportPacket.Gauge:\0028\001\"\203\001\n\tHeartb" +
-      "eat\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat.Mode\022\033\n\007ro" +
-      "uters\030\002 \003(\0132\n.IpAddress\":\n\004Mode\022\013\n\007START" +
-      "ED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020\002\022\013\n\007STOPPE" +
-      "D\020\003\"\212\003\n\007Message\022\017\n\007version\030\001 \001(\r\022\031\n\005bgpI" +
-      "d\030\002 \001(\0132\n.IpAddress\022\'\n\ninitiation\030\005 \001(\0132" +
-      "\021.InitiationPacketH\000\022)\n\013termination\030\006 \001(" +
-      "\0132\022.TerminationPacketH\000\022 \n\007peer_up\030\007 \001(\013" +
-      "2\r.PeerUpPacketH\000\022$\n\tpeer_down\030\010 \001(\0132\017.P" +
-      "eerDownPacketH\000\0222\n\020route_monitoring\030\t \001(" +
-      "\0132\026.RouteMonitoringPacketH\000\0224\n\021statistic" +
-      "s_report\030\n \001(\0132\027.StatisticsReportPacketH" +
-      "\000\022\037\n\theartbeat\030\017 \001(\0132\n.HeartbeatH\000B\010\n\006pa" +
-      "cketJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ\004\010\r\020\016J\004\010\016\020\017" +
-      "BA\n4org.opennms.netmgt.telemetry.protoco" +
-      "ls.bmp.transportB\tTransportP\000P\001b\006proto3"
+      "oute\032\236\001\n\034MultiprotocolUnreachableNrli\022\013\n" +
+      "\003afi\030\001 \001(\r\022\014\n\004safi\030\002 \001(\r\022/\n\twithdrawn\030\003 " +
+      "\003(\0132\034.RouteMonitoringPacket.Route\0222\n\014vpn" +
+      "Withdrawn\030\004 \003(\0132\034.RouteMonitoringPacket." +
+      "Route\"*\n\006Origin\022\007\n\003IGP\020\000\022\007\n\003EGP\020\001\022\016\n\nINC" +
+      "OMPLETE\020\002B\007\n\005value\"\323\014\n\026StatisticsReportP" +
+      "acket\022\023\n\004peer\030\001 \001(\0132\005.Peer\0221\n\010rejected\030d" +
+      " \001(\0132\037.StatisticsReportPacket.Counter\0229\n" +
+      "\020duplicate_prefix\030e \001(\0132\037.StatisticsRepo" +
+      "rtPacket.Counter\022;\n\022duplicate_withdraw\030f" +
+      " \001(\0132\037.StatisticsReportPacket.Counter\022M\n" +
+      "$invalid_update_due_to_as_confed_loop\030g " +
+      "\001(\0132\037.StatisticsReportPacket.Counter\022K\n\"" +
+      "invalid_update_due_to_as_path_loop\030h \001(\013" +
+      "2\037.StatisticsReportPacket.Counter\022P\n\'inv" +
+      "alid_update_due_to_cluster_list_loop\030i \001" +
+      "(\0132\037.StatisticsReportPacket.Counter\022L\n#i" +
+      "nvalid_update_due_to_originator_id\030j \001(\013" +
+      "2\037.StatisticsReportPacket.Counter\0221\n\nadj" +
+      "_rib_in\030k \001(\0132\035.StatisticsReportPacket.G" +
+      "auge\0222\n\013adj_rib_out\030l \001(\0132\035.StatisticsRe" +
+      "portPacket.Gauge\022G\n\022per_afi_adj_rib_in\030m" +
+      " \003(\0132+.StatisticsReportPacket.PerAfiAdjR" +
+      "ibInEntry\022F\n\021per_afi_local_rib\030n \003(\0132+.S" +
+      "tatisticsReportPacket.PerAfiLocalRibEntr" +
+      "y\022A\n\030update_treat_as_withdraw\030o \001(\0132\037.St" +
+      "atisticsReportPacket.Counter\022A\n\030prefix_t" +
+      "reat_as_withdraw\030p \001(\0132\037.StatisticsRepor" +
+      "tPacket.Counter\0229\n\020duplicate_update\030q \001(" +
+      "\0132\037.StatisticsReportPacket.Counter\0220\n\tlo" +
+      "cal_rib\030r \001(\0132\035.StatisticsReportPacket.G" +
+      "auge\0221\n\nexport_rib\030s \001(\0132\035.StatisticsRep" +
+      "ortPacket.Gauge\022I\n\023per_afi_adj_rib_out\030t" +
+      " \003(\0132,.StatisticsReportPacket.PerAfiAdjR" +
+      "ibOutEntry\022H\n\022per_afi_export_rib\030u \003(\0132," +
+      ".StatisticsReportPacket.PerAfiExportRibE" +
+      "ntry\032\026\n\005Gauge\022\r\n\005value\030\001 \001(\004\032\030\n\007Counter\022" +
+      "\r\n\005count\030\001 \001(\r\032T\n\023PerAfiAdjRibInEntry\022\013\n" +
+      "\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.StatisticsRe" +
+      "portPacket.Gauge:\0028\001\032T\n\023PerAfiLocalRibEn" +
+      "try\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035.Statis" +
+      "ticsReportPacket.Gauge:\0028\001\032U\n\024PerAfiAdjR" +
+      "ibOutEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030\002 \001(\0132\035" +
+      ".StatisticsReportPacket.Gauge:\0028\001\032U\n\024Per" +
+      "AfiExportRibEntry\022\013\n\003key\030\001 \001(\t\022,\n\005value\030" +
+      "\002 \001(\0132\035.StatisticsReportPacket.Gauge:\0028\001" +
+      "\"\203\001\n\tHeartbeat\022\035\n\004mode\030\001 \001(\0162\017.Heartbeat" +
+      ".Mode\022\033\n\007routers\030\002 \003(\0132\n.IpAddress\":\n\004Mo" +
+      "de\022\013\n\007STARTED\020\000\022\n\n\006CHANGE\020\001\022\014\n\010PERIODIC\020" +
+      "\002\022\013\n\007STOPPED\020\003\"\212\003\n\007Message\022\017\n\007version\030\001 " +
+      "\001(\r\022\031\n\005bgpId\030\002 \001(\0132\n.IpAddress\022\'\n\ninitia" +
+      "tion\030\005 \001(\0132\021.InitiationPacketH\000\022)\n\013termi" +
+      "nation\030\006 \001(\0132\022.TerminationPacketH\000\022 \n\007pe" +
+      "er_up\030\007 \001(\0132\r.PeerUpPacketH\000\022$\n\tpeer_dow" +
+      "n\030\010 \001(\0132\017.PeerDownPacketH\000\0222\n\020route_moni" +
+      "toring\030\t \001(\0132\026.RouteMonitoringPacketH\000\0224" +
+      "\n\021statistics_report\030\n \001(\0132\027.StatisticsRe" +
+      "portPacketH\000\022\037\n\theartbeat\030\017 \001(\0132\n.Heartb" +
+      "eatH\000B\010\n\006packetJ\004\010\003\020\004J\004\010\004\020\005J\004\010\013\020\014J\004\010\014\020\rJ" +
+      "\004\010\r\020\016J\004\010\016\020\017BA\n4org.opennms.netmgt.teleme" +
+      "try.protocols.bmp.transportB\tTransportP\000" +
+      "P\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -43207,7 +43007,7 @@ public final class Transport {
     internal_static_RouteMonitoringPacket_PathAttribute_MultiprotocolUnreachableNrli_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RouteMonitoringPacket_PathAttribute_MultiprotocolUnreachableNrli_descriptor,
-        new java.lang.String[] { "Afi", "Safi", "NextHop", "Withdrawn", "VpnWithdrawn", });
+        new java.lang.String[] { "Afi", "Safi", "Withdrawn", "VpnWithdrawn", });
     internal_static_StatisticsReportPacket_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_StatisticsReportPacket_fieldAccessorTable = new

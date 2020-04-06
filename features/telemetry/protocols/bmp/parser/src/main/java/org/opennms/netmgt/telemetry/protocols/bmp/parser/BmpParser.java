@@ -952,7 +952,6 @@ public class BmpParser implements TcpParser {
                         }).collect(Collectors.toList()))
                         .setAfi(multiprotocolUnreachableNlri.afi)
                         .setSafi(multiprotocolUnreachableNlri.safi)
-                        .setNextHop(address(multiprotocolUnreachableNlri.nextHop))
                         .build();
 
                 attributesBuilder.setMpUnreachNrli(mpReachNrli);
