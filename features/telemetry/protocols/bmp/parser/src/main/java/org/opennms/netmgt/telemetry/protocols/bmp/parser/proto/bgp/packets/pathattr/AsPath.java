@@ -69,7 +69,7 @@ public class AsPath implements Attribute {
                     case 1: return AS_SET;
                     case 2: return AS_SEQUENCE;
                     default:
-                        BmpParser.LOG.warn("Unknown AS Path Type: {}", type);
+                        BmpParser.RATE_LIMITED_LOG.debug("Unknown AS Path Type: {}", type);
                         return UNKNOWN;
                 }
             }

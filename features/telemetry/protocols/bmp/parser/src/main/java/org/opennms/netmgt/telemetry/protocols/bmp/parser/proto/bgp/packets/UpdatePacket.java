@@ -303,7 +303,7 @@ public class UpdatePacket implements Packet {
                     case 32: return LARGE_COMMUNITIES; // See RFC8092
                     case 128: return ATTR_SET; // See RFC6368
                     default:
-                        BmpParser.LOG.warn("Unknown Update Packet Type: {}", type);
+                        BmpParser.RATE_LIMITED_LOG.debug("Unknown Update Packet Type: {}", type);
                         return UNKNOWN;
                 }
             }

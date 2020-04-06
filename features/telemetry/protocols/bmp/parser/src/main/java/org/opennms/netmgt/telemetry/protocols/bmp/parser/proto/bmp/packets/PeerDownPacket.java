@@ -108,7 +108,7 @@ public class PeerDownPacket implements Packet {
                 case 3: return REMOTE_BGP_NOTIFICATION;
                 case 4: return REMOTE_NO_NOTIFICATION;
                 default:
-                    BmpParser.LOG.warn("Unknown Peer Down Type: {}", type);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Peer Down Type: {}", type);
                     return UNKNOWN;
             }
         }
