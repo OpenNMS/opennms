@@ -3,7 +3,7 @@
 ==== BGP Monitoring Protocol
 
 The _BGP Monitoring Protocol (BMP)_ provides a convenient interface for obtaining route views.
-The integration in _{opennms-product-name}_ allows to utilize these route views, status updates and statistics for monitoring and management purposes.
+The integration in _{opennms-product-name}_ allows you to use these route views, status updates and statistics for monitoring and management.
 
 [[ga-bmp-integration-overview]]
 .BMP Integration Overview
