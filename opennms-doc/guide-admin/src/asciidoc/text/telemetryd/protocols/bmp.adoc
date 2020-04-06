@@ -114,5 +114,5 @@ This setup replaces the _Collector_ component of _OpenBMP_.
 |===
 | Parameter            | Description                                                                    | Required | Default value
 | `kafka.*`            | Options used to create OpenBMP kafka producer. All known kafka settings are allowed but prefixed with `kafka.`. | no       |
-| `topicPrefix`        | Prefix used before each kafka topic                                            | no       |
+| `topicPrefix`        | Prefix used before each Kafka topic.                                            | no       |
 |===
