@@ -104,7 +104,7 @@ public class RouteMirroringPacket implements Packet {
                     case 0: return BGP_MESSAGE;
                     case 1: return INFORMATION;
                     default:
-                        BmpParser.LOG.warn("Unknown Route Mirroring Packet Type: {}", type);
+                        BmpParser.RATE_LIMITED_LOG.debug("Unknown Route Mirroring Packet Type: {}", type);
                         return UNKNOWN;
                 }
             }

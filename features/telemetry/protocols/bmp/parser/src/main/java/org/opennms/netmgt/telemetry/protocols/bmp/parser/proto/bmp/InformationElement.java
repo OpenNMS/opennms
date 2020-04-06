@@ -112,7 +112,7 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
                 case 65531:
                     return BGP_ID;
                 default:
-                    BmpParser.LOG.warn("Unknown Information Element Type: {}", type);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Information Element Type: {}", type);
                     return UNKNOWN;
             }
         }
