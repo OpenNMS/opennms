@@ -28,13 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
@@ -50,18 +47,12 @@ public class MultiprotocolUnreachableNlri implements Attribute {
 
     public final int afi;
     public final int safi;
-    public final int length;
-    public final byte[] nextHopBytes;
-    public InetAddress nextHop;
     public List<UpdatePacket.Prefix> withdrawn;
     public List<UpdatePacket.Prefix> vpnWithdrawn;
 
     public MultiprotocolUnreachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
         this.safi = BufferUtils.uint8(buffer);
-        this.length = BufferUtils.uint8(buffer);
-        this.nextHopBytes = BufferUtils.bytes(buffer, length);
-        BufferUtils.skip(buffer, 1);
         try {
             parseAfi(buffer, peerInfo);
         } catch (UnknownHostException ex) {
@@ -83,11 +74,6 @@ public class MultiprotocolUnreachableNlri implements Attribute {
                 LOG.info("MP_UNREACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
                 break;
             case MultiprotocolReachableNlri.BGP_AFI_L2VPN:
-                if (nextHopBytes.length > 16) {
-                    nextHop = InetAddressUtils.getInetAddress(Arrays.copyOf(nextHopBytes, 16));
-                } else {
-                    nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
-                }
                 LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI=%d is not implemented yet, skipping", safi);
                 break;
             default:
