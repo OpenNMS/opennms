@@ -28,8 +28,6 @@
 
 package org.opennms.smoketest;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
@@ -58,7 +56,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllFormsArePresent() throws Exception {
-        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 12);
+        assertEquals(11, countElementsMatchingCss("form"));
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",
                 "input[@id='byip_iplike']",

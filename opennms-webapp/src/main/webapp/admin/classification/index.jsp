@@ -32,7 +32,6 @@
     <jsp:param name="norequirejs" value="true" />
 
     <jsp:param name="title" value="Flow Classification" />
-    <jsp:param name="ngapp" value="onms.classifications" />
     <jsp:param name="headTitle" value="Flow Classification" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
     <jsp:param name="breadcrumb" value="Flow Classification" />
@@ -42,7 +41,7 @@
   <jsp:param name="asset" value="onms-classifications" />
 </jsp:include>
 
-<div ui-view>
+<div ng-app="onms.classifications" ui-view>
 
 </div>
 
