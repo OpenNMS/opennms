@@ -1,9 +1,13 @@
+:imagesdir: ../../../images
 
 ==== BGP Monitoring Protocol
 
 _BGP Monitoring Protocol (BMP)_ provides a convenient interface for obtaining route views.
 The integration in _{opennms-product-name}_ allows to utilize these route views, status updates and statistics for monitoring and management purposes.
 
+[[ga-bmp-integration-overview]]
+.BMP Integration Overview
+image:bmp/bmp_integration_overview.png[]
 
 [[telemetryd-bmp-parser]]
 ===== BMP TCP Parser
