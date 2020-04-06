@@ -136,6 +136,7 @@
     <intercept-url pattern="/svg/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/lib/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/assets/load-assets.jsp*" access="denyAll" /><!-- only used as include, shouldn't be accessible directly -->
     <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
@@ -158,7 +159,10 @@
     
     <!-- DO NOT ALLOW ACCESS TO /osgi -->
     <intercept-url pattern="/osgi/**" access="denyAll" />
-    
+
+    <!-- Exclude jsp includes, they shouldn't be accessible by themself -->
+    <intercept-url pattern="/includes/*.jsp" access="denyAll" />
+
     <intercept-url pattern="/**" access="hasAnyRole('ROLE_USER')" />
     
     <!-- NrtCollection -->
