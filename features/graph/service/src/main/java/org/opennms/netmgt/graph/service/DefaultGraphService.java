@@ -133,12 +133,13 @@ public class DefaultGraphService implements GraphService {
     }
 
     public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
-        if(graphContainerProvider != null) {
-            graphContainerProviders.remove(graphContainerProvider);
-            final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = serviceRegistrationMap.remove(graphContainerProvider);
-            if (serviceRegistration != null) {
-                serviceRegistration.unregister();
-            }
+        if(graphContainerProvider == null) {
+            return;
+        }
+        graphContainerProviders.remove(graphContainerProvider);
+        final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = serviceRegistrationMap.remove(graphContainerProvider);
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
         }
     }
 }
