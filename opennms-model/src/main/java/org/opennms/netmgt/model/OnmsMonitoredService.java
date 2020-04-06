@@ -73,7 +73,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.hibernate.annotations.Where;
 
 import com.google.common.base.MoreObjects;
@@ -570,7 +569,6 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
     )
     @XmlElementWrapper(name="applications")
     @XmlElement(name="application")
-    @JsonManagedReference
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }
