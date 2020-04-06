@@ -212,8 +212,6 @@ We will create a threshold group called "demo_group".
 
 . Click `Edit` to edit it. 
 
- #TODO: add information, then show how it looks in the _thresholds.xml_ file#
-
 The following is a sample of how the threshold appears in the _thresholds.xml_ file: 
 
 [source]
