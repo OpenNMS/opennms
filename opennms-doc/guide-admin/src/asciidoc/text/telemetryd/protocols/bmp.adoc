@@ -12,7 +12,7 @@ image:bmp/bmp_integration_overview.png[]
 [[telemetryd-bmp-parser]]
 ===== BMP TCP Parser
 
-The BMP Parser accepts BMP connections from routers packets using a <<telemetryd-listener-tcp, TCP Listener>>.
+The BMP Parser accepts BMP connections from router packets using a <<telemetryd-listener-tcp, TCP Listener>>.
 
 ====== Facts
 
