@@ -1,5 +1,5 @@
 OpenNMS is the creation of numerous people and organizations, operating under the umbrella of the OpenNMS project.
-The source code is published under the GNU Affero GPL, version 3 or later and is Copyright © 2002-2019 The OpenNMS Group, Inc.
+The source code is published under the GNU Affero GPL, version 3 or later and is Copyright © 2002-2020 The OpenNMS Group, Inc.
 
 The current corporate sponsor of OpenNMS is The OpenNMS Group, which also owns the OpenNMS trademark.
 
