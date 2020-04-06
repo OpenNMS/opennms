@@ -36,7 +36,7 @@ The BMP Parser accepts BMP connections from router packets using a <<telemetryd-
 [[telemetryd-bmp-statistics-adapter]]
 ===== BMP Telemetry Adapter
 
-The BMP Telemetry Adapter is used to handle _BMP_ statistic data received and parsed by the <<telemetryd-bmp-parser, BMP Parser>>.
+The BMP Telemetry Adapter handles _BMP_ statistic data received and parsed by the <<telemetryd-bmp-parser, BMP Parser>>.
 Received statistics are associated as performance data to the router sending the statistics (which must exists as regular Node in _{opennms-product-name}_).
 
 To associate a router with the according _{opennms-product-name}_ Node, the IP address exporting BMP messages is used.
