@@ -60,9 +60,7 @@ commands:
         - run:
             name: Extract Maven POM version
             command: |
-              if [ ! -e "pom-version-cache.key" ]; then
-                grep -E '<version>' pom.xml | head -n 1 | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' > pom-version-cache.key
-              fi
+              grep -E '<version>' pom.xml | head -n 1 | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -85,10 +83,7 @@ commands:
       steps:
         - run:
             name: Calculate cache key from pom files
-            command: |
-              if [ ! -e "maven-dependency-pom-cache.key" ]; then
-                find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
-              fi
+            command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
         - restore_cache:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
@@ -109,10 +104,7 @@ commands:
       steps:
         - run:
             name: Calculate cache key
-            command: |
-              if [ ! -e "nodejs-dependency-json-cache.key" ]; then
-                find opennms-webapp -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
-              fi
+            command: find opennms-webapp -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
               - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
