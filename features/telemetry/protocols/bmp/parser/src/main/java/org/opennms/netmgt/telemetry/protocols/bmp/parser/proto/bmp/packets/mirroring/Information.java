@@ -60,7 +60,7 @@ public class Information implements Mirroring {
                 case 0: return ERRORED_PDU;
                 case 1: return MESSAGES_LOST;
                 default:
-                    BmpParser.LOG.warn("Unknown Mirroring Information Code: {}", code);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Mirroring Information Code: {}", code);
                     return UNKNOWN;
             }
         }

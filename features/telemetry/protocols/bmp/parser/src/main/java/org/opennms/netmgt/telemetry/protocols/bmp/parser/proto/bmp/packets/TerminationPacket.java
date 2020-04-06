@@ -104,7 +104,7 @@ public class TerminationPacket implements Packet {
                     case 1:
                         return REASON;
                     default:
-                        BmpParser.LOG.warn("Unknown Termination Packet Type: {}", type);
+                        BmpParser.RATE_LIMITED_LOG.debug("Unknown Termination Packet Type: {}", type);
                         return UNKNOWN;
                 }
             }

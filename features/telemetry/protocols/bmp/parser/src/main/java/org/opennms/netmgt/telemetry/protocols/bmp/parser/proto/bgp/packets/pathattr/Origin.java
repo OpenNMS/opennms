@@ -58,7 +58,7 @@ public class Origin implements Attribute {
                 case 1: return EGP;
                 case 2: return INCOMPLETE;
                 default:
-                    BmpParser.LOG.warn("Unknown Originator Code: {}", code);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Originator Code: {}", code);
                     return UNKNOWN;
             }
         }

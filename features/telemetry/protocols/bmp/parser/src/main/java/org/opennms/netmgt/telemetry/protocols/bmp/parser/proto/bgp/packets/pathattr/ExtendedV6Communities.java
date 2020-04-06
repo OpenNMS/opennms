@@ -111,7 +111,7 @@ public class ExtendedV6Communities implements Attribute {
                     return parseSpecific(buffer, lowType);
 
                 default:
-                    BmpParser.LOG.warn("Unknown Extended IPv6 Community Attribute: {}", highType);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended IPv6 Community Attribute: {}", highType);
                     return null;
             }
         }
@@ -140,7 +140,7 @@ public class ExtendedV6Communities implements Attribute {
                     return new Value("p2mp-nh", value);
 
                 default:
-                    BmpParser.LOG.warn("Unknown Extended Community Attribute (IPv4): Common: {}", lowType);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Extended Community Attribute (IPv4): Common: {}", lowType);
                     return null;
             }
         }
