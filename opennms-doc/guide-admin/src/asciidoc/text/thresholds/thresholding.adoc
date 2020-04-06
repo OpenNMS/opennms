@@ -9,11 +9,11 @@ Thresholding allows you to define limits against network performance metrics of 
 
 == How Thresholding Works in {opennms-product-name} 
 
-OpenNMS uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
+{opennms-product-name} uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
 You can specify configuration for a particular collector in a _collection package_: essentially the set of instructions that drives the behavior of the collector. 
 
 The _collectd_ daemon gathers and stores performance data from these collectors. 
-This is the data against which OpenNMS applies thresholds. 
+This is the data against which {opennms-product-name} applies thresholds. 
 Thresholds trigger events when a specified threshold value is met. 
 You can further create notifications and alarms for threshold events. 
 
@@ -40,7 +40,7 @@ For information on setting and configuring collectors, collectd, and the  _colle
 == Basic Walk-through – Thresholding
 
 This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
-Our threshold will tell OpenNMS to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two. 
+Our threshold will tell {opennms-product-name} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two. 
 
 Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold. 
 
@@ -49,13 +49,11 @@ Before creating a threshold, you need to make sure you are collecting the metric
 In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
 We are also using data collected via SNMP. (For information on other collectors, see xref:xref:performance-data-collection/collectors[Collectors].)
 
-. In OpenNMS, choose `Reports>Resource Graphs`.
-. Select one of the listed resources. #TODO: how do they know which to choose?#
+. In the {opennms-product-name} UI, choose `Reports>Resource Graphs`.
+. Select one of the listed resources. 
 . Under `SNMP Node Data`, select `Node-level Performance Data` and choose `Graph Selection`.
 . Scroll to find the `Number of Users` graph. 
 .. You can click the binoculars icon to display only this graph. 
-
-TIP: If you are not collecting this metric, #TODO: Where do they go to set up to collect this metric?# 
 
 [[threshold-create]]
 ==== Create a Threshold
@@ -64,7 +62,7 @@ TIP: If you are not collecting this metric, #TODO: Where do they go to set up to
 . Under `Performance Measurement`, choose `Configure Thresholds`.
 .. A screen with a list of preconfigured threshold groups appears.
 We will work with `netsnmp`.
-For information on how to create a threshold group, see <<threshold-group, Creating a threshold group>>. 
+For information on how to create a threshold group, see <<threshold-group, Creating a Threshold Group>>. 
 . Click `Edit` beside the `netsnmp` group. 
 . Click `Create New Threshold` at the bottom of the `Basic Thresholds` area of the screen. 
 . Set the following information and click `Save`:
@@ -78,7 +76,7 @@ For information on how to create a threshold group, see <<threshold-group, Creat
 | Datasource | hrSystemNumUsers| Name of the datasource you want to threshold against.
 For this tutorial, we have provided the datasource for logged-in users.  
 
-For information on how to determine a metric's datasource, see <<datasource-determine, Determine the Datasource>>
+For information on how to determine a metric's datasource, see <<datasource-determine, Determine the Datasource>>.
 
 | Datasource label| leave blank | Optional text label. 
 Not required for this tutorial.
@@ -90,8 +88,7 @@ In this case, we want to trigger an event when the number of logged-in users exc
 In this case, once the number of logged-in users falls below two. 
 
 | Trigger | 3 | The number of consecutive times the threshold value can occur before the system triggers an event. 
-Since our default polling period is 5 minutes, a value of 3 means OpenNMS 
-would create a threshold event if there are more than 2 users for 15 minutes.
+Since our default polling period is 5 minutes, a value of 3 means {opennms-product-name} would create a threshold event if there are more than 2 users for 15 minutes.
 
 | Description | leave blank | Optional text to describe your threshold. 
 
@@ -108,7 +105,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 
 To test the threshold we just created, log a second person into the node you are monitoring. 
 Navigate to the `Events` page.
-You should see an event that indicates your threshold triggered, when more than one user logged in. 
+You should see an event that indicates your threshold triggered when more than one user logged in. 
 
 Log out the second user. 
 The `Events` page should indicate that the system has re-armed. 
@@ -117,6 +114,8 @@ The `Events` page should indicate that the system has re-armed.
 === Creating a Threshold for CPU Usage
 This procedure describes how to create an expression-based threshold when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 Expression-based thresholds are useful when you need to threshold on a percentage, not the actual value of the data collected. 
+
+NOTE: Expression-based thresholds work only if the data sources in question lie in the same directory.
 
 . Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
 . Under `Performance Measurement`, choose `Configure Thresholds`.
@@ -132,16 +131,16 @@ Expression-based thresholds are useful when you need to threshold on a percentag
 
 | Type | high | Triggers an event when the datasource value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value
 
-| Expression | ((loadavg5 / 100) / CpuNumCpus) * 100.0 | Divides the five-minute CPU load average by the number of CPUs, then multiplies it by 100 to give the result in percentage. 
+| Expression | ((loadavg5 / 100) / CpuNumCpus)| Divides the five-minute CPU load average by the number of CPUs. 
 
 | Datasource type | node | The type of datasource from which you are collecting data. 
 
 | Datasource label| leave blank | Optional text label. 
 Not required for this tutorial.
 
-| Value| 70 | Trigger an event when the five-minute CPU load average goes above 70%. 
+| Value| 7 | Trigger an event when the five-minute CPU load average goes above 70%. 
 
-| Re-arm | 50 | Re-arm the system when the five-minute CPU load average drops below 50%
+| Re-arm | 5 | Re-arm the system when the five-minute CPU load average drops below 50%
 
 | Trigger | 2 | The number of consecutive times the threshold value can occur before the system triggers an event. 
 In this case, when the five-minute CPU load average goes above 70% for two consecutive polling periods. 
@@ -171,7 +170,9 @@ Building on the previous procedure (xref:thresh-cpu[Creating a Threshold for CPU
 [[datasource-determine]]
 === Determining the Datasource
 Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
-Datasource names appear in `etc/snmp-graph.properties.d/`.
+Datasource names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
+
+NOTE: #TODO: To determine datasources for other protocols, refer to#
 
 . To determine the name of the datasource, navigate to the `Resource Graphs` screen.
 For example,
@@ -189,8 +190,6 @@ image:thresholding/thresholding/graphs.png[Thresholding graph, 200]
 capture image 
 
 . Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
-
-NOTE: To determine a datasource from a different management protocol #TODO: how do we do this?#
 
 [[threshold-group]]
 ==== Create a Threshold Group
