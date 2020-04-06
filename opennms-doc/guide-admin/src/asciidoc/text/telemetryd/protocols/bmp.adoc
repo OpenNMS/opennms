@@ -27,7 +27,7 @@ The BMP Parser accepts BMP connections from router packets using a <<telemetryd-
 [options="header, autowidth"]
 |===
 | Parameter             | Description                                                                           | Required | Default value
-| `dnsLookupsEnabled`   | Used to enable or disable DNS resolution of router and peer hostnames.                | no       | true
+| `dnsLookupsEnabled`   | Enable or disable DNS resolution of router and peer hostnames.                        | no       | true
 | `bulkhead.maxConcurrentCalls` | Limits the number of parallel parsing operations.                             | no       | 1000
 | `bulkhead.maxWaitDurationMs`  | Limits the amount of time to wait for a saturated bulkhead (in milliseconds). | no       | 5 Minutes
 |===
@@ -36,7 +36,7 @@ The BMP Parser accepts BMP connections from router packets using a <<telemetryd-
 [[telemetryd-bmp-statistics-adapter]]
 ===== BMP Telemetry Adapter
 
-The BMP Telemetry Adapter handles _BMP_ statistic data received and parsed by the <<telemetryd-bmp-parser, BMP Parser>>.
+The BMP Telemetry Adapter handles _BMP_ statistics received and parsed by the <<telemetryd-bmp-parser, BMP Parser>>.
 Received statistics are associated as performance data to the router sending the statistics (which must exists as regular Node in _{opennms-product-name}_).
 
 To associate a router with the according _{opennms-product-name}_ Node, the IP address exporting BMP messages is used.
