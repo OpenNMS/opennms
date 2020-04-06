@@ -28,6 +28,8 @@
 
 package org.opennms.web.navigate;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.web.api.Util;
 
@@ -43,11 +45,11 @@ public class SurveillanceViewNavBarEntry extends LocationBasedNavBarEntry {
 
     /** {@inheritDoc} */
     @Override
-    public DisplayStatus evaluate(MenuContext context) {
+    public DisplayStatus evaluate(HttpServletRequest request) {
         if (m_surveillanceViewConfigDao.getViews().size() > 0 && m_surveillanceViewConfigDao.getDefaultView() != null) {
             setUrl("surveillanceView.htm?viewName=" + Util.htmlify(m_surveillanceViewConfigDao.getDefaultView().getName()));
 
-            return super.evaluate(context);
+            return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
         }

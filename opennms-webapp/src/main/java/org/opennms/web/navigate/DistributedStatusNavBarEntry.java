@@ -28,6 +28,8 @@
 
 package org.opennms.web.navigate;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 
 /**
@@ -43,9 +45,9 @@ public class DistributedStatusNavBarEntry extends LocationBasedNavBarEntry {
 
     /** {@inheritDoc} */
     @Override
-    public DisplayStatus evaluate(final MenuContext context) {
+    public DisplayStatus evaluate(HttpServletRequest request) {
         if (m_monitoringLocationDao.findAll().size() > 0) {
-            return super.evaluate(context);
+            return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
         }

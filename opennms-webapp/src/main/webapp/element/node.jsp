@@ -272,7 +272,6 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="ngapp" value="onms-interfaces" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />

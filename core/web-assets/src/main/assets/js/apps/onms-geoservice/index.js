@@ -1,7 +1,6 @@
 const angular = require('vendor/angular-js');
 const elementList = require('../onms-elementList/lib/elementList');
 require('../../lib/onms-http');
-require('../onms-default-apps');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
 require('angular-ui-router');
@@ -26,7 +25,6 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
             'ui.router',
             'ui.toggle',
             'onms.http',
-            'onms.default.apps',
             'onms.elementList'
         ])
         .config(['$locationProvider', function ($locationProvider) {
