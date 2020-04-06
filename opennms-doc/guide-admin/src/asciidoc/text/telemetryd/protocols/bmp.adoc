@@ -96,7 +96,7 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 ===== OpenBMP Integration Adapter
 
 The OpenBMP Integration Adapter integrates with an existing http://www.openbmp.org[OpenBMP] installation.
-It handles _BMP_ messages received and parsed by the <<telemetryd-bmp-parser, BMP Parser>> and creates _OpenBMP_ compatible messages which are then passed to the _OpenBMP_ kafka cluster.
+It handles _BMP_ messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses and creates _OpenBMP_-compatible messages, which are then passed to the _OpenBMP_ Kafka cluster.
 
 This setup replaces the _Collector_ component of _OpenBMP_.
 
