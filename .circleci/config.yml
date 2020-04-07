@@ -59,8 +59,7 @@ commands:
       steps:
         - run:
             name: Extract Maven POM version
-            command: |
-              grep -E '<version>' pom.xml | head -n 1 | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' > pom-version-cache.key
+            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
