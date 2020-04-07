@@ -92,6 +92,34 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.5]
+
+==== Release Meridian-2019.1.5
+
+Release 2019.1.5 is the sixth release in the Meridian 2019 series.
+
+It fixes a few more security issues, as well as a number of other bugs
+and a couple of enhancements.
+Hat tip to Johannes Moritz for the security report.
+
+The codename for 2019.1.5 is _link:$$https://en.wikipedia.org/wiki/Saturn$$[Saturn]_
+
+===== Bug
+
+* SNMP Remove from definitions fails for definitions with profile label (Issue http://issues.opennms.org/browse/NMS-12413[NMS-12413])
+* persisted defaultCalendarReport database reports are broken (Issue http://issues.opennms.org/browse/NMS-12438[NMS-12438])
+* Security issue disclosures, 31 Jan 2020 (Issue http://issues.opennms.org/browse/NMS-12513[NMS-12513])
+* Selecting an Icon on Topology Map breaks the map (Issue http://issues.opennms.org/browse/NMS-12532[NMS-12532])
+* Description: Cannot create monitored-service with JSON via ReST (Issue http://issues.opennms.org/browse/NMS-12625[NMS-12625])
+* Confd download fails silently on Docker install (Issue http://issues.opennms.org/browse/NMS-12642[NMS-12642])
+
+===== Enhancement
+
+* Event documentation is missing tokens (Issue http://issues.opennms.org/browse/NMS-12228[NMS-12228])
+* Splitting Docker documentation in Horizon, Minion and Sentinel (Issue http://issues.opennms.org/browse/NMS-12529[NMS-12529])
+* Improve OIA performance when mapping alarms (Issue http://issues.opennms.org/browse/NMS-12581[NMS-12581])
+* Events not balanced across partitions when using opennms-kafka-producer (Issue http://issues.opennms.org/browse/NMS-12616[NMS-12616])
+
 [releasenotes-changelog-Meridian-2019.1.4]
 
 ==== Release Meridian-2019.1.4
