@@ -54,6 +54,7 @@
     
     if (document.newUserForm.pass1.value == document.newUserForm.pass2.value) 
     {
+      document.newUserForm.action="admin/userGroupView/users/addNewUser";
       return true;
     } 
     else
@@ -80,7 +81,7 @@
     <%}%>
   </div>
   <div class="card-body">
-    <form class="form" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();" action="admin/userGroupView/users/addNewUser">
+    <form class="form" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
       <div class="form-group">
         <label for="userID" class="">User ID</label>
         <input id="userID" type="text" name="userID" class="form-control">

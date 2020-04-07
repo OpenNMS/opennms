@@ -44,6 +44,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import io.netty.buffer.ByteBuf;
 
 public class MultiprotocolReachableNlri implements Attribute {
@@ -83,11 +85,11 @@ public class MultiprotocolReachableNlri implements Attribute {
 
     public final int afi;
     public final int safi;
-    public final int length;
-    public final byte[] nextHopBytes;
+    public int length;
+    public byte[] nextHopBytes;
     public InetAddress nextHop;
-    public List<UpdatePacket.Prefix> advertised;
-    public List<UpdatePacket.Prefix> vpnAdvertised;
+    public List<UpdatePacket.Prefix> advertised = Lists.newArrayList();
+    public List<UpdatePacket.Prefix> vpnAdvertised = Lists.newArrayList();
 
     public MultiprotocolReachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
@@ -150,9 +152,12 @@ public class MultiprotocolReachableNlri implements Attribute {
                 break;
             case BGP_SAFI_MPLS:
                 if (isIPv4) {
-                    BufferUtils.skip(buffer, 8);
+                    this.length -= 8;
+                    byte[] bytes = new byte[4];
+                    System.arraycopy(nextHopBytes, 8, bytes, 0, 4);
+                    nextHopBytes = bytes;
                 }
-                if (nextHopBytes.length > 16) {
+                if (nextHopBytes.length != 4) {
                     nextHop = InetAddressUtils.getInetAddress(Arrays.copyOf(nextHopBytes, 16));
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
@@ -189,23 +194,23 @@ public class MultiprotocolReachableNlri implements Attribute {
         return BufferUtils.repeatRemaining(buffer, b -> {
             final UpdatePacket.Prefix tuple = new UpdatePacket.Prefix();
 
-            if (addPathCapabilityEnabled && !isVPN) {
+            if (addPathCapabilityEnabled && !isVPN && b.readableBytes() >= 4) {
                 tuple.pathId = BufferUtils.uint32(b);
+            } else {
+                tuple.pathId = 0;
             }
 
             tuple.length = BufferUtils.uint8(b);
             int byteCount = tuple.length / 8 + (tuple.length % 8 > 0 ? 1 : 0);
 
-            final List<String> labels = decodeLabel(BufferUtils.slice(b, byteCount));
+            final List<String> labels = decodeLabel(b);
             tuple.labels = String.join(",", labels);
 
             byteCount = byteCount - (labels.size() * 3);
             tuple.length = tuple.length - (8 * 3 * labels.size());
 
             if (isVPN && byteCount >= 8) {
-                final UpdatePacket.Prefix vpnPrefixTuple = tuple;
                 final int type = BufferUtils.uint16(b);
-
                 switch (type) {
                     case 0:
                         // Administrator subfield: 2 bytes, ASN

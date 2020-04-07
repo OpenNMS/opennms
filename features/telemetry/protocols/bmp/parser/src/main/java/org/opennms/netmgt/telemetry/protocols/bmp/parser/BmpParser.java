@@ -283,11 +283,19 @@ public class BmpParser implements TcpParser {
                 }
 
                 // Dispatch the final message
-                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = enriched.thenCompose(msg -> {
+                final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatched = new CompletableFuture<>();
+                enriched.whenComplete((msg,e) -> {
                     final ByteBuffer payload = ByteBuffer.wrap(msg.build().toByteArray());
-                    final CompletableFuture<AsyncDispatcher.DispatchStatus> status = BmpParser.this.dispatcher.send(new TelemetryMessage(remoteAddress, payload));
+                    final CompletableFuture<AsyncDispatcher.DispatchStatus> dispatchFuture = BmpParser.this.dispatcher.send(new TelemetryMessage(remoteAddress, payload));
                     BmpParser.this.recordsDispatched.mark();
-                    return status;
+
+                    dispatchFuture.whenComplete((status, ex) -> {
+                        if (ex != null) {
+                            dispatched.completeExceptionally(ex);
+                        } else {
+                            dispatched.complete(status);
+                        }
+                    });
                 });
 
                 return Optional.of(dispatched);

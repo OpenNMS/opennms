@@ -53,6 +53,12 @@ orbs:
   sign-packages: opennms/sign-packages@2.1.1
 
 commands:
+  extract-pom-version:
+      description: "Extracting Maven POM version"
+      steps:
+        - run:
+            name: Extract Maven POM version
+            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -75,12 +81,11 @@ commands:
       steps:
         - run:
             name: Calculate cache key from pom files
-            command: |
-              find . -type f -name "pom.xml" -exec sha256sum "{}" \; | sort -nr >> maven-dependency-cache.key
+            command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
         - restore_cache:
             keys:
-              - maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
-              - maven-dependencies-v2-
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
         - run:
             name: Remove OpenNMS artifacts from cache
             command: |
@@ -89,7 +94,7 @@ commands:
     description: "Maven: Save cache"
     steps:
       - save_cache:
-          key: maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
+          key: maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
           paths:
             - ~/.m2
   restore-nodejs-cache:
@@ -97,18 +102,16 @@ commands:
       steps:
         - run:
             name: Calculate cache key
-            command: |
-              sha256sum core/web-assets/package.json > nodejs-dependency-cache.key
-              sha256sum core/web-assets/package-lock.json >> nodejs-dependency-cache.key
+            command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
-              - nodejs-dependencies-v1-
+              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
       - save_cache:
-          key: nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
+          key: nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
             - core/web-assets/node_modules
   restore-sonar-cache:
@@ -116,12 +119,12 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v1-
+              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v1-
+            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
             paths:
               - ~/.sonar
   dockerhub-login:
@@ -223,6 +226,7 @@ commands:
         type: string
     steps:
       - cached-checkout
+      - extract-pom-version
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
@@ -857,6 +861,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - extract-pom-version
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)

@@ -214,12 +214,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces", 200));
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10", 200)); // By IP Address
 
-        /*
-         * FIXME Doesn't work (the XML counterpart works without issues)
-         * Caused by: java.lang.IllegalArgumentException: Can not handle managed/back reference 'defaultReference':
-         * back reference type (java.util.Set) not compatible with managed type (org.opennms.netmgt.model.OnmsMonitoredService)
-         */
-        /*
         JSONObject serviceType = new JSONObject();
         serviceType.put("name", "ICMP");
         JSONObject service = new JSONObject();
@@ -228,7 +222,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/ipinterfaces/10.10.10.10/services", service.toString(), 201);
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services", 200));
         LOG.warn(sendRequest(GET, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP", 200)); // By Name
-        */
 
         JSONObject snmpInterface = new JSONObject();
         snmpInterface.put("ifIndex", 6);

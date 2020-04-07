@@ -28,6 +28,8 @@
 
 package org.opennms.web.navigate;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class MenuDropdownNavBarEntry extends LocationBasedNavBarEntry {
     private String m_contents = null;
 
@@ -64,12 +66,12 @@ public class MenuDropdownNavBarEntry extends LocationBasedNavBarEntry {
      * dropdown object, return DISPLAY_NO_LINK (since the
      * individual entries will handle their own)
      */
-    public DisplayStatus evaluate(final MenuContext context) {
+    public DisplayStatus evaluate(final HttpServletRequest request) {
         boolean display = false;
         if (hasEntries()) {
             final StringBuilder sb = new StringBuilder();
             for (final NavBarEntry entry : getEntries()) {
-                final DisplayStatus status = entry.evaluate(context);
+                final DisplayStatus status = entry.evaluate(request);
                 switch (status) {
                 case DISPLAY_LINK:
                     sb.append("<li><a href=\"" + entry.getUrl() + "\">" + entry.getName() + "</a></li>");
