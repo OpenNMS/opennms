@@ -441,6 +441,7 @@
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
+        <bundle dependency="true">mvn:com.github.luben/zstd-jni/1.4.3-1</bundle>
     </feature>
     <feature name="opennms-aws-sqs" version="${project.version}" description="OpenNMS :: Features :: AWS SQS">
         <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}</bundle>
@@ -935,6 +936,7 @@
         <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
         <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaVersion}$Bundle-Version=${kafkaVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaVersion}"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
+        <bundle dependency="true">mvn:com.github.luben/zstd-jni/1.4.3-1</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
         <bundle dependency="true">mvn:org.lz4/lz4-java/1.6.0</bundle>
