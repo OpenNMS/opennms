@@ -85,6 +85,25 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.17]
+
+==== Release Meridian-2018.1.17
+
+Release 2018.1.17 is a small update to 2018.1.16 that fixes another security issue that affects
+most current OpenNMS releases.  Hat tip to Johannes Moritz for reporting this.
+
+The codename for 2018.1.17 is _Pandemic_.
+
+===== Bug
+
+* Security issue disclosures, 31 Jan 2020 (Issue http://issues.opennms.org/browse/NMS-12513[NMS-12513])
+* Drools working memory facts are not restored properly on engine reload (Issue http://issues.opennms.org/browse/NMS-12586[NMS-12586])
+* Confd download fails silently on Docker install (Issue http://issues.opennms.org/browse/NMS-12642[NMS-12642])
+
+===== Story
+
+* Backport CircleCI pipeline to foundation-2018 (Issue http://issues.opennms.org/browse/NMS-12476[NMS-12476])
+
 [releasenotes-changelog-Meridian-2018.1.16]
 
 ==== Release Meridian-2018.1.16
