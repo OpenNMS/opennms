@@ -45,7 +45,7 @@ fi
 
 for RPM in ${RPMS_HORIZON[*]}; do
     echo "RPM: ${RPM}"
-    wget --no-clobber "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/${RPM}" -P horizon/rpms
+    wget --no-clobber "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/${RPM}" -P meridian/rpms
 done
 
 cat <<END
@@ -55,6 +55,6 @@ cat <<END
 Note that if you are trying to just build local versions of these images for
 running smoke tests, you don't need to use the "build_container_image.sh"
 scripts, you can just go into the individual projects and run
-"docker build -t horizon ." and so on...
+"docker build -t meridian ." and so on...
 
 END
