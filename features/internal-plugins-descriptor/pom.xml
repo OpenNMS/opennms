@@ -217,7 +217,20 @@
   </build>
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>alarm-change-notifier</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>opennms-es-rest</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
   </dependencies>
 
 
