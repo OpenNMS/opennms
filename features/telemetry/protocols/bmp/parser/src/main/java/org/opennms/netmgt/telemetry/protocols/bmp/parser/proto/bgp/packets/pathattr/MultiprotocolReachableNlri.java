@@ -44,6 +44,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 import io.netty.buffer.ByteBuf;
 
 public class MultiprotocolReachableNlri implements Attribute {
@@ -86,8 +88,8 @@ public class MultiprotocolReachableNlri implements Attribute {
     public int length;
     public byte[] nextHopBytes;
     public InetAddress nextHop;
-    public List<UpdatePacket.Prefix> advertised;
-    public List<UpdatePacket.Prefix> vpnAdvertised;
+    public List<UpdatePacket.Prefix> advertised = Lists.newArrayList();
+    public List<UpdatePacket.Prefix> vpnAdvertised = Lists.newArrayList();
 
     public MultiprotocolReachableNlri(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.afi = BufferUtils.uint16(buffer);
