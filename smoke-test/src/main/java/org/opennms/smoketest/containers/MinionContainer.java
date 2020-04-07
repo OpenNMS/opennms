@@ -154,7 +154,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "\t\t\t\"kafka\": {\n" +
                     "\t\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
                     "\t\t\t\t\"acks\": 1,\n" +
-                    "\t\t\t\t\"compression.type\": \"zstd\"\n" +
+                    "\t\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
                     "\t\t\t}\n" +
                     "\t\t}\n" +
                     "\t}\n" +
@@ -168,7 +168,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "\t\t\t\"kafka\": {\n" +
                     "\t\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
                     "\t\t\t\t\"acks\": 1,\n" +
-                    "\t\t\t\t\"compression.type\": \"zstd\"\n" +
+                    "\t\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
                     "\t\t\t}\n" +
                     "\t\t}\n" +
                     "\t}\n" +
