@@ -53,12 +53,12 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Termi
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-public class NMS12643_Test implements Packet.Visitor {
-    private final static Path FILE = Paths.get("src/test/resources/NMS-12643.raw");
+public class ParserTest implements Packet.Visitor {
+    private final static Path FILE_NMS_12643 = Paths.get("src/test/resources/NMS-12643.raw");
+    private final static Path FILE_NMS_12649 = Paths.get("src/test/resources/NMS-12649.raw");
 
-    @Test
-    public void testMpUnreachNlri() throws Exception {
-        try (final FileChannel channel = FileChannel.open(FILE)) {
+    private void checkFile(final Path file) throws Exception {
+        try (final FileChannel channel = FileChannel.open(file)) {
             final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
             channel.read(buffer);
             buffer.flip();
@@ -74,6 +74,16 @@ public class NMS12643_Test implements Packet.Visitor {
                 packet.accept(this);
             }
         }
+    }
+
+    @Test
+    public void testNMS12643() throws Exception {
+        checkFile(FILE_NMS_12643);
+    }
+
+    @Test
+    public void testNMS12649() throws Exception {
+        checkFile(FILE_NMS_12649);
     }
 
     @Override
