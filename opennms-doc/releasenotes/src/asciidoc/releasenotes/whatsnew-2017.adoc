@@ -174,6 +174,24 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.22]
+
+==== Release Meridian-2017.1.22
+
+Release 2017.1.22 is a small update to 2017.1.21 that fixes another security issue that affects
+most current OpenNMS releases.  Hat tip to Johannes Moritz for reporting this.
+
+The codename for 2017.1.22 is _meridianu(s) Budense_.
+
+===== Bug
+
+* Security issue disclosures, 31 Jan 2020 (Issue http://issues.opennms.org/browse/NMS-12513[NMS-12513])
+* Confd download fails silently on Docker install (Issue http://issues.opennms.org/browse/NMS-12642[NMS-12642])
+
+===== Enhancement
+
+*  Backport CircleCI pipeline to foundation-2017 (Issue http://issues.opennms.org/browse/NMS-12603[NMS-12603])
+
 [releasenotes-changelog-Meridian-2017.1.21]
 
 ==== Release Meridian-2017.1.21
