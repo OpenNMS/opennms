@@ -3,8 +3,8 @@
 This section describes how to build container images on your local system.
 Container images can be built with the following convenation:
 
-1. From a tarball in `horizon/tarball` when compiled and assembled from source
-2. From local RPM files in `horizon/rpms`, `minion/rpms`
+1. From a tarball in `meridian/tarball` when compiled and assembled from source
+2. From local RPM files in `meridian/rpms`, `minion/rpms`
 3. From RPMs downloaded from the offical repositories
 
 With running `docker build` the lookup for installation files is done in this order.
@@ -14,8 +14,8 @@ It is right now not possible to install _Minion_ from tarballs.
 ## Build Container Images
 
 ```bash
-cd horizon
-docker build -t myhorizon .
+cd meridian
+docker build -t mymeridian .
 ```
 
 ```bash
@@ -46,9 +46,9 @@ The build can be customized with `--build-arg key=value`.
 | `BUILD_BRANCH`       | Label for build branch from source repository                                 | optional | `-`
 
 
-The argument for REQUIRED_RPMS are different for Horizon and Minion
+The argument for REQUIRED_RPMS are different for Meridian and Minion
 
 | Argument        | Description                      | Default
 |:----------------|:---------------------------------|:----------
-| `REQUIRED_RPMS` | Dependency packages for Horizon  | `rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq`
+| `REQUIRED_RPMS` | Dependency packages for Meridian | `rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq`
 | `REQUIRED_RPMS` | Dependency packages for Minion   | `wget gettext jicmp jicmp6 openssh-clients`

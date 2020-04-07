@@ -13,7 +13,7 @@ The tests require Docker images to run. There are two alternatives to get them, 
 
 You can pull existing images down with:
 ```
-docker pull opennms/horizon-core-web:24.0.0-rc
+docker pull opennms/meridian-core-web:24.0.0-rc
 docker pull opennms/minion:24.0.0-rc
 docker pull opennms/sentinel:24.0.0-rc
 ```
@@ -22,7 +22,7 @@ docker pull opennms/sentinel:24.0.0-rc
 
 And then tag them for the tests:
 ```
-docker tag opennms/horizon-core-web:24.0.0-rc horizon
+docker tag opennms/meridian-core-web:24.0.0-rc meridian
 docker tag opennms/minion:24.0.0-rc minion
 docker tag opennms/sentinel:24.0.0-rc sentinel
 ```
@@ -31,7 +31,7 @@ docker tag opennms/sentinel:24.0.0-rc sentinel
 
 ```
 export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"
-wget $ARTIFACT_URL/horizon.oci
+wget $ARTIFACT_URL/meridian.oci
 wget $ARTIFACT_URL/minion.oci
 wget $ARTIFACT_URL/sentinel.oci
 ```
@@ -39,7 +39,7 @@ wget $ARTIFACT_URL/sentinel.oci
 > Login to CircleCI and locate the build for the actual artifact URLs
 
 ```
-docker image load -i horizon.oci
+docker image load -i meridian.oci
 docker image load -i minion.oci
 docker image load -i sentinel.oci
 ```
@@ -72,8 +72,8 @@ mvn -DskipITs=false integration-test -Djava.io.tmpdir=/tmp
 ### Run tests from local tarball
 
 If you have the code compiled and assembled locally, you can use the tarball build for container images, so you don't have to wait for the CI/CD to download the container image artifact.
-Drop the assembled OpenNMS-tar.gz file in `opennms-container/horizon/tarball` and run `docker build -t horizon .`
-Smoke tests will run the image named `horizon` in your local Docker image repo.
+Drop the assembled OpenNMS-tar.gz file in `opennms-container/meridian/tarball` and run `docker build -t meridian .`
+Smoke tests will run the image named `meridian` in your local Docker image repo.
 
 ## Writing system tests
 

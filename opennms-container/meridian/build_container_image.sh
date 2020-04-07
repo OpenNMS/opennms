@@ -12,14 +12,14 @@ source ../registry-config.sh
 # shellcheck source=opennms-container/version-n-tags.sh
 source ../version-tags.sh
 
-# OpenNMS Horizon packages
+# OpenNMS Meridian packages
 ONMS_PACKAGES="meridian-core meridian-webapp-jetty meridian-webapp-remoting"
 
-for PKG in ${ONMS_PACKAGES}; do 
+for PKG in ${ONMS_PACKAGES}; do
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
 done
 
-docker build -t horizon \
+docker build -t meridian \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${CIRCLE_REPOSITORY_URL}" \
@@ -34,4 +34,4 @@ if [ -n "${CIRCLE_BUILD_NUM}" ]; then
   IMAGE_VERSION+=("${BASE_IMAGE_VERSION}-b${CIRCLE_BUILD_NUM}")
 fi
 
-docker image save horizon -o images/container.oci
+docker image save meridian -o images/container.oci
