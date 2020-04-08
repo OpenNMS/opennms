@@ -383,6 +383,7 @@ function validateFormInput()
 	  return false;
   }
   document.newUserForm.action="admin/rancid/rancidClogin.htm?node=${model.db_id}";
+  document.newUserForm.submit();
   return true;
 }    
 function cancelUser()
@@ -392,6 +393,7 @@ function cancelUser()
 }
 function validateFormInputStatus() {
 	  document.newUserForm2.action="admin/rancid/rancidStatus.htm?node=${model.db_id}";
+	  document.newUserForm2.submit();
 	  return true;
 }
 
@@ -412,6 +414,7 @@ function validateFormCreate() {
 	  }
 	  
 	  document.createForm.action="admin/rancid/rancidCreate.htm?node=${model.db_id}";
+	  document.createForm.submit();
 	  return true;
 }
 
@@ -424,6 +427,7 @@ function validateFormDelete() {
 function validateFormUpdate() {
 
 	  document.updateForm.action="admin/rancid/rancidUpdate.htm?node=${model.db_id}";
+	  document.updateForm.submit();
 	  return true;
 }
 
