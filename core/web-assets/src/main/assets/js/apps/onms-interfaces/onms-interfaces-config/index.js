@@ -7,14 +7,12 @@
 
 const angular = require('vendor/angular-js');
 require('lib/onms-http');
-require('apps/onms-default-apps');
 
 const configTemplate = require('../templates/template.config.html');
 const sortTemplate = require('../templates/template.sort.html');
 
 angular.module('onms-interfaces-config', [
   'onms.http',
-  'onms.default.apps',
   'ui.bootstrap',
   'angular-growl'
 ])
@@ -144,3 +142,10 @@ angular.module('onms-interfaces-config', [
   $scope.loadSnmpInterfaces();
 
 }]);
+
+// Bootstrap to a an element with ID 'onms-interfaces-config'
+
+angular.element(document).ready(function () {
+  var el = document.getElementById('onms-interfaces-config');
+  angular.bootstrap(angular.element(el), ['onms-interfaces-config']);
+});

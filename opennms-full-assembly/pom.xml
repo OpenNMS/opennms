@@ -564,6 +564,7 @@
                 <feature>datachoices</feature>
                 <feature>eif-adapter</feature>
                 <feature>opennms-telemetry-collection</feature>
+                <feature>opennms-telemetry-bmp</feature>
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
@@ -582,7 +583,6 @@
                 <feature>opennms-endpoints-grafana</feature>
                 <feature>opennms-reporting</feature>
                 <feature>opennms-send-event-command</feature>
-                <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
                 <feature>opennms-blobstore-noop</feature>
@@ -1040,6 +1040,12 @@
     <dependency>
       <groupId>org.opennms.core.ipc.grpc</groupId>
       <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
       <version>${project.version}</version>
     </dependency>
 

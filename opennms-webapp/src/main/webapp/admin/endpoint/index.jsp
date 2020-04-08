@@ -32,7 +32,6 @@
     <jsp:param name="norequirejs" value="true" />
 
     <jsp:param name="title" value="Endpoint Configuration" />
-    <jsp:param name="ngapp" value="onms.endpoints" />
     <jsp:param name="headTitle" value="Endpoint Configuration" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
     <jsp:param name="breadcrumb" value="Endpoint Configuration" />
@@ -42,7 +41,7 @@
   <jsp:param name="asset" value="onms-endpoints" />
 </jsp:include>
 
-<div ui-view>
+<div ng-app="onms.endpoints" ui-view>
 
 </div>
 

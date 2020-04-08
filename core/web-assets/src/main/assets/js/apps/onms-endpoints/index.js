@@ -20,7 +20,6 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
         'ui.bootstrap',
         'ui.router',
         'onms.http',
-        'onms.default.apps',
         'mwl.confirm',
     ])
         .run(function(confirmationPopoverDefaults) {

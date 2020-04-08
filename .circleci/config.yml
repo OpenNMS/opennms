@@ -7,17 +7,58 @@ executors:
   debian-build-executor:
     docker:
       - image: opennms/build-env:debian-jdk8-b3572
+  docker-executor:
+    docker:
+      - image: docker:19.03.0-git
   integration-test-executor:
     machine: true
   smoke-test-executor:
     machine:
       image: ubuntu-1604:201903-01
 
+# NOTE: the "_label" versions of these are for the case when your source or target
+# branches have slashes in them, that way the merge branch gets created properly
+defaults: &defaults
+  parameters:
+    previous_branch:
+      description: the previous branch, if any
+      type: string
+      default: foundation-2019
+    previous_branch_label:
+      description: the previous branch, if any (escaped, no slashes)
+      type: string
+      default: foundation-2019
+    main_branch:
+      description: the auto-merge main branch
+      type: string
+      default: release-26.0.0
+    main_branch_label:
+      description: the auto-merge main branch (escaped, no slashes)
+      type: string
+      default: release-26.0.0
+    next_branch:
+      description: the auto-merge target branch
+      type: string
+      default: develop
+    next_branch_label:
+      description: the auto-merge target branch (escaped, no slashes)
+      type: string
+      default: develop
+
+docker_container_config: &docker_container_config
+  executor: docker-executor
+
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
-  sign-packages: opennms/sign-packages@2.0.0
+  sign-packages: opennms/sign-packages@2.1.1
 
 commands:
+  extract-pom-version:
+      description: "Extracting Maven POM version"
+      steps:
+        - run:
+            name: Extract Maven POM version
+            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -40,12 +81,11 @@ commands:
       steps:
         - run:
             name: Calculate cache key from pom files
-            command: |
-              find . -type f -name "pom.xml" -exec sha256sum "{}" \; | sort -nr >> maven-dependency-cache.key
+            command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
         - restore_cache:
             keys:
-              - maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
-              - maven-dependencies-v2-
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
         - run:
             name: Remove OpenNMS artifacts from cache
             command: |
@@ -54,7 +94,7 @@ commands:
     description: "Maven: Save cache"
     steps:
       - save_cache:
-          key: maven-dependencies-v2-{{ checksum "maven-dependency-cache.key" }}
+          key: maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
           paths:
             - ~/.m2
   restore-nodejs-cache:
@@ -62,18 +102,16 @@ commands:
       steps:
         - run:
             name: Calculate cache key
-            command: |
-              sha256sum core/web-assets/package.json > nodejs-dependency-cache.key
-              sha256sum core/web-assets/package-lock.json >> nodejs-dependency-cache.key
+            command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
-              - nodejs-dependencies-v1-
+              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
       - save_cache:
-          key: nodejs-dependencies-v1-{{ checksum "nodejs-dependency-cache.key" }}
+          key: nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
             - core/web-assets/node_modules
   restore-sonar-cache:
@@ -81,12 +119,12 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v1-
+              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v1-
+            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
             paths:
               - ~/.sonar
   dockerhub-login:
@@ -188,6 +226,7 @@ commands:
         type: string
     steps:
       - cached-checkout
+      - extract-pom-version
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
@@ -304,6 +343,7 @@ workflows:
           requires:
             - integration-test-with-coverage
   build-deploy:
+    <<: *defaults
     jobs:
       - build
       - tarball-assembly:
@@ -334,6 +374,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -348,6 +389,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
@@ -357,6 +399,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /^release-.*/
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
@@ -365,6 +408,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /^release-.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -378,6 +422,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
           requires:
@@ -390,6 +435,7 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
           requires:
@@ -402,7 +448,34 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
+                - /^merge-foundation\/.*/
                 - /.*smoke.*/
+      - create-merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: << parameters.main_branch >>
+      - merge-foundation-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -411,7 +484,6 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-full
-            - integration-test
           filters:
             branches:
               only:
@@ -448,7 +520,7 @@ jobs:
           at: ~/
       - run:
           name: multiarch/qemu-user-static
-          command: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
       - run:
           name: Install Docker buildx
           command: |
@@ -476,7 +548,8 @@ jobs:
           command: |
             cd opennms-container/minion
 
-            # Create always a downloadable single OCI artifact for AMD architecture
+            # Create always a downloadable single OCI artifact for AMD architecture.
+            # This image is used in our integration test suite which relies on the tag "minion:latest".
             make VERSION="$(../pom2version.py ../../pom.xml)" \
                  DOCKER_TAG="minion:latest" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
@@ -484,11 +557,28 @@ jobs:
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
 
             # Build for multiple architectures only in release branches and push images with manifest to a registry
+            # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
             case "${CIRCLE_BRANCH}" in
-              "master" | "develop")
+              "master")
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
                      DOCKER_FLAGS=--push \
                      VERSION="$(../pom2version.py ../../pom.xml)" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
+              "release-"*)
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="release-candidate" \
+                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+                ;;
+              "develop")
+                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
+                     VERSION="bleeding" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
                      BUILD_BRANCH="${CIRCLE_BRANCH}"
@@ -516,8 +606,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -526,6 +618,7 @@ jobs:
             export CCI_MAXCPU=4
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -555,8 +648,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -566,6 +661,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -584,8 +680,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build RPMs
@@ -595,6 +693,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/rpm/RPMS/noarch/*.rpm
@@ -619,12 +718,14 @@ jobs:
   horizon-deb-build:
     executor: debian-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -633,6 +734,7 @@ jobs:
             export CCI_MAXCPU=4
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -649,8 +751,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -660,6 +764,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh minion
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -676,8 +781,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
       - sign-packages/setup-env:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
           name: Build Debian Packages
@@ -687,6 +794,7 @@ jobs:
             export CCI_VAADINJAVAMAXMEM=768m
             .circleci/scripts/makedeb.sh sentinel
       - sign-packages/sign-debs:
+          skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
@@ -752,6 +860,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - extract-pom-version
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)
@@ -782,6 +891,74 @@ jobs:
           at: ~/
       - run-smoke-tests:
           minimal: true
+  create-merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.next_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - cached-checkout
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.next_branch >>
+                  git reset --hard origin/<< parameters.next_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to github
+                command: git push -f origin << parameters.next_branch >>:merge-foundation/<< parameters.main_branch_label >>-to-<< parameters.next_branch_label >>
+
+  # note, this is always run as part of the _next_ branch
+  # for example, if main_branch is `foundation-2016` and next_branch is `foundation-2017`,
+  # it will include the contents of the `foundation-2017` branch, thus we need to actually
+  # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
+  merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.previous_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - cached-checkout
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target and merge with merge branch
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.main_branch >>
+                  git reset --hard origin/<< parameters.main_branch >>
+                  git merge origin/merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+            - run:
+                name: Push to github
+                command: git push origin << parameters.main_branch >>:<< parameters.main_branch >>
+
   publish-cloudsmith:
     executor: cloudsmith/default
     resource_class: small

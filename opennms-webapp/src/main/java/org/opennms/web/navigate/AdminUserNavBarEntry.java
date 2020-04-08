@@ -28,6 +28,8 @@
 
 package org.opennms.web.navigate;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.opennms.web.api.Authentication;
 
 /**
@@ -40,9 +42,9 @@ import org.opennms.web.api.Authentication;
 public class AdminUserNavBarEntry extends LocationBasedNavBarEntry {
     /** {@inheritDoc} */
     @Override
-    public DisplayStatus evaluate(MenuContext context) {
-        if (context.isUserInRole(Authentication.ROLE_ADMIN)) {
-            return super.evaluate(context);
+    public DisplayStatus evaluate(HttpServletRequest request) {
+        if (request.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
         }

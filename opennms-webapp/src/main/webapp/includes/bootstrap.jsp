@@ -208,14 +208,9 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
-<c:choose>
-  <c:when test="${param.ngapp != null}">
-    ng-app="${param.ngapp}"
-  </c:when>
-  <c:otherwise>
-    ng-app="onms.default.apps"
-  </c:otherwise>
-</c:choose>
+<c:if test="${param.ngapp != null}">
+  ng-app="${param.ngapp}"
+</c:if>
 <c:if test="${param.scrollSpy != null}">
   data-spy="scroll" data-target="${param.scrollSpy}"
 </c:if>
@@ -246,9 +241,6 @@
 
   </c:when>
   <c:otherwise>
-    <jsp:include page="/assets/load-assets.jsp" flush="false">
-      <jsp:param name="asset" value="onms-default-apps" />
-    </jsp:include>
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
   </c:otherwise>
 </c:choose>

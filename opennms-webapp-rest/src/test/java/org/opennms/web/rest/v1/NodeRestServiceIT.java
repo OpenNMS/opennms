@@ -522,6 +522,44 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
+    public void testMonitoredServiceJson() throws Exception {
+        createIpInterface();
+
+        // CREATE
+        String service = "{\n" +
+                "  \"source\":\"P\",\n" +
+                "  \"status\":\"N\",\n" +
+                "  \"notify\":\"Y\",\n" +
+                "  \"serviceType\": {\n" +
+                "    \"name\":\"ICMP\"\n" +
+                "  }\n" +
+                "}";
+        String url = "/nodes/1/ipinterfaces/10.10.10.10/services";
+        MockHttpServletRequest req = createRequest(m_context, POST, url);
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
+        req.setContent(service.getBytes());
+        req.setContentType(MediaType.APPLICATION_JSON);
+        sendRequest(req, 201);
+
+
+        // READ
+        req = createRequest(m_context, GET, url);
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
+        req.addParameter("limit", "0");
+        final String json = sendRequest(req, 200);
+        assertNotNull(json);
+
+        JSONObject jo = new JSONObject(json);
+        final JSONArray ja = jo.getJSONArray("service");
+        assertEquals(1, ja.length());
+        jo = ja.getJSONObject(0);
+        assertEquals("P", jo.getString("source"));
+        assertEquals("N", jo.getString("status"));
+        assertEquals("Y", jo.getString("notify"));
+    }
+
+    @Test
     @Transactional
     @JUnitTemporaryDatabase
     public void testCategory() throws Exception {

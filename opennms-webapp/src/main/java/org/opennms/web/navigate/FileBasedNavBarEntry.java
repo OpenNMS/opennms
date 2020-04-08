@@ -30,6 +30,8 @@ package org.opennms.web.navigate;
 
 import java.io.File;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * <p>FileBasedNavBarEntry class.</p>
  *
@@ -42,9 +44,9 @@ public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
     
     /** {@inheritDoc} */
     @Override
-    public DisplayStatus evaluate(MenuContext context) {
+    public DisplayStatus evaluate(HttpServletRequest request) {
         if (m_file.exists()) {
-            return super.evaluate(context);
+            return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
         }

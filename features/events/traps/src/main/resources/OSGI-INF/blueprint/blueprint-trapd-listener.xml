@@ -15,7 +15,7 @@
 
 	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="reload">
 		<cm:default-properties>
-			<cm:property name="trapd.listen.interface" value="127.0.0.1" /> <!-- the interface the TrapListener listens for traps -->
+			<cm:property name="trapd.listen.interface" value="0.0.0.0" /> <!-- the interface the TrapListener listens for traps -->
 			<cm:property name="trapd.listen.port" value="1162" /> <!-- the port the TrapListener listens for traps -->
 			<cm:property name="trapd.threads" value="0"/> <!-- the number of threads for the producer -->
 			<cm:property name="trapd.includeRawMessage" value="false" />

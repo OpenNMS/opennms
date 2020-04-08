@@ -80,7 +80,7 @@ public class ElasticFlowRepositoryIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                    new MockIdentity(), new MockTracerRegistry(), new IndexSettings(),
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
                     3, 12000);
 
             // It does not matter what we persist here, as the response is fixed.

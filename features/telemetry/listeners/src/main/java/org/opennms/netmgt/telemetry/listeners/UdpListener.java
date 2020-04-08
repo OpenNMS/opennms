@@ -115,12 +115,18 @@ public class UdpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        this.socketFuture.channel().close().sync();
+        if (this.socketFuture != null) {
+            this.socketFuture.channel().close().sync();
+        }
 
-        this.parsers.forEach(Parser::stop);
+        if (this.parsers != null) {
+            this.parsers.forEach(Parser::stop);
+        }
 
         LOG.info("Closing boss group...");
-        this.bossGroup.shutdownGracefully().sync();
+        if (this.bossGroup != null) {
+            this.bossGroup.shutdownGracefully().sync();
+        }
     }
 
     public String getHost() {

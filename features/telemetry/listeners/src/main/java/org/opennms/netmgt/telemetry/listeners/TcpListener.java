@@ -116,6 +116,18 @@ public class TcpListener implements Listener {
                                         session.parse(in)
                                                .ifPresent(out::add);
                                     }
+
+                                    @Override
+                                    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                        super.channelActive(ctx);
+                                        session.active();
+                                    }
+
+                                    @Override
+                                    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+                                        super.channelInactive(ctx);
+                                        session.inactive();
+                                    }
                                 })
                                 .addLast(new SimpleChannelInboundHandler<CompletableFuture<?>>() {
                                     @Override
@@ -135,6 +147,8 @@ public class TcpListener implements Listener {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
 
+                                        session.inactive();
+
                                         ctx.close();
                                     }
                                 });
@@ -146,12 +160,18 @@ public class TcpListener implements Listener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        this.socketFuture.channel().close().sync();
+        if (this.socketFuture != null) {
+            this.socketFuture.channel().close().sync();
+        }
 
-        this.parser.stop();
+        if (this.parser != null) {
+            this.parser.stop();
+        }
 
         LOG.info("Closing boss group...");
-        this.bossGroup.shutdownGracefully().sync();
+        if (this.bossGroup != null) {
+            this.bossGroup.shutdownGracefully().sync();
+        }
     }
 
     @Override

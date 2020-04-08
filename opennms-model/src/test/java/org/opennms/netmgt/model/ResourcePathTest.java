@@ -40,4 +40,12 @@ public class ResourcePathTest {
         assertEquals("My_Path_", ResourcePath.sanitize("My Path!"));
         assertEquals("_________", ResourcePath.sanitize("¯\\_(ツ)_/¯"));
     }
+
+    @Test
+    public void verifyThatChildDepthIsCalculatedCorrectly() {
+        ResourcePath parent = ResourcePath.fromString("aa/bb/cc/dd");
+        assertEquals(0, parent.relativeDepth(ResourcePath.fromString("aa/bb/cc/dd")));
+        assertEquals(1, parent.relativeDepth(ResourcePath.fromString("aa/bb/cc/dd/ee")));
+        assertEquals(-1, parent.relativeDepth(ResourcePath.fromString("aa/xx/cc")));
+    }
 }

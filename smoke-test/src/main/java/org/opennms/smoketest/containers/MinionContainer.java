@@ -37,6 +37,8 @@ import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -79,6 +81,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private static final int MINION_TELEMETRY_IPFIX_TCP_PORT = 4730;
     private static final int MINION_TELEMETRY_JTI_PORT = 50001;
     private static final int MINION_TELEMETRY_NXOS_PORT = 50002;
+    private static final int MINION_JETTY_PORT = 8181;
 
     static final String ALIAS = "minion";
 
@@ -90,15 +93,11 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
 
-        GenericContainer container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT)
+        GenericContainer container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT);
-                    if (profile.isIcmpSupportEnabled()) {
-                        // Run as root when ICMP is enabled
-                        createCmd.withUser("root");
-                    }
                 })
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
@@ -198,6 +197,19 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     public SshClient ssh() {
         return new SshClient(getSshAddress(), OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
     }
+
+    public URL getWebUrl() {
+        try {
+            return new URL(String.format("http://%s:%d/", getContainerIpAddress(), getMappedPort(MINION_JETTY_PORT)));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getWebPort() {
+        return MINION_JETTY_PORT;
+    }
+
 
     public String getLocation() {
         return profile.getLocation();

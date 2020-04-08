@@ -144,7 +144,7 @@ Config specified will be written to `etc/org.opennms.netmgt.syslog.cfg`.
 --- 
 netmgt:
     traps:
-        trapd.listen.interface: "127.0.0.1"
+        trapd.listen.interface: "0.0.0.0"
         trapd.listen.port: 1162
         # Any other keys necessary can be specified here
 ```
