@@ -81,6 +81,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         // Test fails because of dependence on 'http' feature
         //installFeature("jolokia");
         installFeature("jrobin");
+        installFeature("jrrd2");
         installFeature("json-lib");
         installFeature("lmax-disruptor");
         //installFeature("opennms-activemq-config");
@@ -129,6 +130,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         //installFeature("opennms-reporting");
         installFeature("opennms-rrd-api");
         installFeature("opennms-rrd-jrobin");
+        installFeature("opennms-rrd-jrrd2");
         installFeature("opennms-snmp");
 
         installFeature("opennms-syslogd");

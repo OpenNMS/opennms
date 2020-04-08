@@ -301,6 +301,10 @@
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
     </feature>
 
+    <feature name="jrrd2" description="JRRD2" version="2.0.3">
+      <bundle>mvn:org.opennms/jrrd2-api/2.0.3</bundle>
+    </feature>
+
     <feature name="json-lib" description="json-lib" version="2.2.3">
       <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
       <!-- Use the jdk15 qualifier -->
@@ -843,6 +847,15 @@
       <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-rrd-jrrd2" description="OpenNMS :: RRD :: JRRD2" version="${project.version}">
+      <feature version="[4.2,4.3)">spring</feature>
+
+      <feature>jrrd2</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms/opennms-rrdtool-api/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
       <feature>org.json</feature>
 
@@ -949,6 +962,7 @@
       <feature>hibernate-validator41</feature>
       <feature>jfreechart</feature>
       <feature>jrobin</feature>
+      <feature>jrrd2</feature>
       <feature>json-lib</feature>
       <feature>quartz</feature>
       <feature>spring-webflow</feature>
