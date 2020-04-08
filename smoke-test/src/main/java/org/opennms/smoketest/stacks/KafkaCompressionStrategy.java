@@ -34,9 +34,9 @@ import java.util.Map;
 public enum KafkaCompressionStrategy {
     GZIP("gzip"),
     SNAPPY("snappy"),
-    Z4("lz4"),
+    LZ4("lz4"),
     ZSTD("zstd"),
-    UNCOMPRESSED("uncompressed");
+    NONE("none");
 
     private String codec;
 

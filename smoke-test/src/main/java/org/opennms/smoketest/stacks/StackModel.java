@@ -89,7 +89,7 @@ public class StackModel {
         
         private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
         private JsonStoreStrategy jsonStoreStrategy;
-        private KafkaCompressionStrategy kafkaCompressionStrategy = KafkaCompressionStrategy.UNCOMPRESSED;
+        private KafkaCompressionStrategy kafkaCompressionStrategy = KafkaCompressionStrategy.NONE;
 
         /**
          * Profile for the OpenNMS container.
@@ -183,7 +183,7 @@ public class StackModel {
         /**
          * Type of compression used with Kafka messages.
          *
-         * @param kafkaCompressionStrategy UNCOMPRESSED or ZSTD
+         * @param kafkaCompressionStrategy GZIP, SNAPPY, LZ4, ZSTD, or NONE
          * @return this builder
          */
         public Builder withKafkaCompressionStrategy(KafkaCompressionStrategy kafkaCompressionStrategy) {
