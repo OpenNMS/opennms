@@ -32,7 +32,6 @@
     <jsp:param name="norequirejs" value="true" />
 
     <jsp:param name="title" value="Geocoder Configuration" />
-    <jsp:param name="ngapp" value="onms.geoservice" />
     <jsp:param name="headTitle" value="Geocoder Configuration" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
     <jsp:param name="breadcrumb" value="Geocoder Configuration" />
@@ -42,7 +41,7 @@
     <jsp:param name="asset" value="onms-geoservice" />
 </jsp:include>
 
-<div ui-view>
+<div ng-app="onms.geoservice" ui-view>
 
 </div>
 

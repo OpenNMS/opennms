@@ -11,7 +11,6 @@
 
   angular.module('onms-requisitions', [
     'onms.http',
-    'onms.default.apps',
     'ngRoute',
     'ngAnimate',
     'ui.bootstrap',
