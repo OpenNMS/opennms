@@ -96,7 +96,7 @@ that will be included in the generated config.
 --- 
 telemetry:
     flows:
-        single-port-listner:
+        single-port-listener:
             # Set to true to add single port listener config, omit or set to false to disable
             enabled: true
             # Parameters can be optionally provided
