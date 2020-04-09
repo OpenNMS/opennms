@@ -75,22 +75,18 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
      */
     private final Histogram packetsPerLogHistogram;
 
-    public AbstractFlowAdapter(final String name,
+    public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
                                final FlowRepository flowRepository,
                                final Converter<P> converter) {
-        Objects.requireNonNull(name);
+        Objects.requireNonNull(adapterConfig);
         Objects.requireNonNull(metricRegistry);
+
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
-        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
-    }
-
-    @Override
-    public void setConfig(AdapterDefinition protocol) {
-        // we do not need the protocol
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
     }
 
     @Override

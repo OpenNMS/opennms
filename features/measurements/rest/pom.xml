@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.measurements</artifactId>
-    <version>25.2.1</version>
+    <version>26.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.measurements</groupId>
@@ -72,12 +72,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp-rest</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.graphml</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

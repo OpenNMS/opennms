@@ -38,7 +38,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 
-@Command(scope = "reload", name = "daemon", description = "Reload a specific daemon")
+@Command(scope = "opennms", name = "reload-daemon", description = "Reload a specific daemon")
 @Service
 public class ReloadDaemonCommand implements Action {
 

@@ -51,7 +51,9 @@ public enum NetworkProtocol {
     JTI(UDP),
     NXOS(UDP),
     FLOWS(UDP),
-    IPFIX_TCP(TCP);
+    BMP(TCP),
+    IPFIX_TCP(TCP),
+    GRPC(TCP);
 
     private final InternetProtocol ipProtocol;
 

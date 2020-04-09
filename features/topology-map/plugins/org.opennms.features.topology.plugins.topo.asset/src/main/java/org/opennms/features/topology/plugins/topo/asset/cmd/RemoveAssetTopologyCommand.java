@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfig;
 
-@Command(scope = "asset-topology", name = "remove", description="Removes Asset Topology. Uses default config if options not supplied")
+@Command(scope = "opennms", name = "asset-topo-remove", description="Removes Asset Topology. Uses default config if options not supplied")
 @Service
 public class RemoveAssetTopologyCommand implements Action {
 

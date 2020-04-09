@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
-@Command(scope = "provision", name = "list-detectors", description = "Lists all of the available detectors.")
+@Command(scope = "opennms", name = "list-detectors", description = "Lists all of the available detectors.")
 @Service
 public class ListDetectors implements Action {
 

@@ -40,12 +40,13 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.support.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.simple.SimpleGraphBuilder;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class FRLayoutTest extends AbstractLayoutTest {
     private static final double ELBOW_ROOM = 50.0;
 
     @Override
-    protected GraphProvider getGraphProvider() {
+    protected BackendGraph getGraph() {
         return new SimpleGraphBuilder("nodes")
                 .vertex("v1").vLabel("vertex1").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
                 .vertex("v2").vLabel("vertex2").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
@@ -84,6 +85,11 @@ public class FRLayoutTest extends AbstractLayoutTest {
                 .edge("e13", "v6", "v8").eStyleName("edge")
                 .edge("e14", "v7", "v8").eStyleName("edge")
                 .get();
+    }
+
+    @Override
+    protected VertexRef getDefaultFocus() {
+        return new DefaultVertexRef("nodes", "v1");
     }
 
     @Test

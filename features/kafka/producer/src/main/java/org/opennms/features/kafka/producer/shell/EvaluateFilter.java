@@ -43,7 +43,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-@Command(scope = "kafka-producer", name = "evaluate-filter", description = "Compiles the given expression and optionally test it against an object.")
+@Command(scope = "opennms", name = "kafka-evaluate-filter", description = "Compiles the given expression and optionally test it against an object.")
 @Service
 public class EvaluateFilter implements Action {
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();

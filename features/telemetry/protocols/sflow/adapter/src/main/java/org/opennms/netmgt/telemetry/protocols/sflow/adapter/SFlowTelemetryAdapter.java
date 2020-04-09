@@ -47,7 +47,8 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractPersistingAdapter;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
+public class SFlowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowTelemetryAdapter.class);
 
@@ -63,13 +64,14 @@ public class SFlowTelemetryAdapter extends AbstractPersistingAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    public SFlowTelemetryAdapter(String name, MetricRegistry metricRegistry) {
-        super(name, metricRegistry);
+    public SFlowTelemetryAdapter(final AdapterDefinition adapterConfig,
+                                 final MetricRegistry metricRegistry) {
+        super(adapterConfig, metricRegistry);
     }
 
     @Override
-    public Stream<CollectionSetWithAgent> handleMessage(final TelemetryMessageLogEntry message,
-                                                        final TelemetryMessageLog messageLog) {
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(final TelemetryMessageLogEntry message,
+                                                                  final TelemetryMessageLog messageLog) {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
         LOG.trace("Parsing packet: {}", message);

@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.HistoryManager;
 
-@Command(scope = "topo", name = "delete-history", description="Deletes history of all users.")
+@Command(scope = "opennms", name = "topo-delete-history", description="Deletes history of all users.")
 @Service
 public class DeleteHistoryCommand implements Action {
 

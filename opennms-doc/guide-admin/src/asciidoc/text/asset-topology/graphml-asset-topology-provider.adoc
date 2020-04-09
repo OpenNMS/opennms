@@ -187,7 +187,7 @@ The following commands are available
 [options="header, autowidth"]
 |===
 | Command                      | Description               | Options
-| asset-topology:create        | Creates Asset Topology.   | 
+| opennms:asset-topo-create        | Creates Asset Topology.   |
 (The default settings are used if a particular setting is not included in the command)
 
 -l, --label : Asset Topology label (shows in topology menu) (Default: asset)
@@ -204,13 +204,13 @@ The following commands are available
 
 If you simply type asset-topology:create a default topology with providerId asset will be created.
 
-| asset-topology:remove        | Removes Asset Topology.   | 
+| opennms:asset-topo-remove        | Removes Asset Topology.   |
 -i, --providerId : Unique providerId of asset topology (Default: asset)
-| asset-topology:list        | Lists all Asset Topologies installed.   | 
+| opennms:asset-topo-list        | Lists all Asset Topologies installed.   |
 all : display detailed view including --uriParams string
-| asset-topology:regenerate        | Regenerates the graphs for the given Asset Topology definition.   | 
+| opennms:asset-topo-regenerate        | Regenerates the graphs for the given Asset Topology definition.   |
 -i, --providerId : Unique providerId of asset topology to regenerate (Default: asset)
-| asset-topology:regenerateall        | Best Effort regeneration of all asset topologies. 
+| opennms:asset-topo-regenerateall        | Best Effort regeneration of all asset topologies.
 (If one graph fails, the command will try to complete the rest of the definitions definition)   | 
 |===
 

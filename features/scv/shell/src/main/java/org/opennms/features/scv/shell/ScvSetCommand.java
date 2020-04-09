@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
-@Command(scope = "scv", name = "set", description="Sets and securely store the credentials for the given alias.")
+@Command(scope = "opennms", name = "scv-set", description="Sets and securely store the credentials for the given alias.")
 @Service
 public class ScvSetCommand implements Action {
 

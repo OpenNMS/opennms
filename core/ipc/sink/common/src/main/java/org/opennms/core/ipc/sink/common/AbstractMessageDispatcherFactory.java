@@ -63,8 +63,6 @@ import io.opentracing.Tracer;
  */
 public abstract class AbstractMessageDispatcherFactory<W> implements MessageDispatcherFactory {
 
-    private final MetricRegistry metrics = new MetricRegistry();
-
     private JmxReporter metricsJmxRepoter = null;
 
     private ServiceRegistration<MetricSet> metricsServiceRegistration = null;
@@ -76,6 +74,8 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
     public abstract BundleContext getBundleContext();
 
     public abstract Tracer getTracer();
+
+    public abstract MetricRegistry getMetrics();
 
     /**
      * Invokes dispatch within a timer context.
@@ -160,9 +160,6 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
         }
     }
 
-    protected MetricRegistry getMetrics() {
-        return metrics;
-    }
 
     public void onInit() {
         registerJmxReporterForMetrics();

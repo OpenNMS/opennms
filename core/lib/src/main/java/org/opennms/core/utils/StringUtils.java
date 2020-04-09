@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
@@ -434,5 +435,22 @@ public abstract class StringUtils {
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+
+    /**
+     * Removes a prefix from the input but returns the input only if the prefix was present.
+     *
+     * @param input the {@link String to remove the prefix from}
+     * @param prefix the prefix to remove
+     *
+     * @return an present {@link Optional} containing the string without the prefix iff the string was prefixed,
+     *         {@link Optional#empty()} otherwise.
+     */
+    public static Optional<String> truncatePrefix(final String input, final String prefix) {
+        if (input.startsWith(prefix)) {
+            return Optional.of(input.substring(prefix.length()));
+        } else {
+            return Optional.empty();
+        }
     }
 }

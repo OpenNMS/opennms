@@ -66,7 +66,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  *
  * @author jwhite
  */
-@Command(scope = "opennms-dns", name = "stress", description="Stress the DNS lookups")
+@Command(scope = "opennms", name = "stress-dns", description="Stress the DNS lookups")
 @Service
 public class StressCommand implements Action {
 

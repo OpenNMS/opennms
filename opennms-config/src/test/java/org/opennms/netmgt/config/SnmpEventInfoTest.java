@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,6 +54,7 @@ import org.opennms.core.network.IPAddressRangeSet;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -1485,19 +1486,19 @@ public class SnmpEventInfoTest {
      * @throws IOException
      */
     @Test
-    public void testRemovalOfIpAddressFromDefinition() throws IOException {
+    public void testRemovalOfIpAddressFromRangeFromDefinition() throws IOException {
 
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\">\n" +
+                "<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v2c\" location=\"MINION\" port=\"1161\">\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
 
         String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\">\n" +
+                "<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v2c\" location=\"MINION\" port=\"1161\">\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.34\"/>\n" +
                 "    </definition>\n" +
                 "</snmp-config>\n" +
@@ -1505,11 +1506,13 @@ public class SnmpEventInfoTest {
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
-        boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.35"), null,"test" );
+        boolean success = SnmpPeerFactory.getInstance().removeFromDefinition(InetAddress.getByName("192.168.1.35"), "MINION","test" );
         assertTrue("Remove from definition should be successful", success);
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+        System.out.println(actualConfig);
         assertXmlEquals(expectedConfig, actualConfig);
     }
+
 
     /**
      * Tests removal of IP address from middle of range splits the range.
@@ -1519,16 +1522,16 @@ public class SnmpEventInfoTest {
     public void testRemovalOfIpAddressRangeShouldSplit() throws IOException {
 
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\">\n" +
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v1\" timeout=\"3000\" write-community=\"private\"  >\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
 
         String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\">\n" +
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v1\" timeout=\"3000\" write-community=\"private\"  >\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
                 "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
@@ -1582,22 +1585,22 @@ public class SnmpEventInfoTest {
     public void testRemovalOfIpAddressWithDifferentLocationsInDefinitions() throws IOException {
 
         String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\"  timeout=\"1200\">\n" +
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v1\"  timeout=\"1200\" write-community=\"horizon\" >\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
-                "    <definition version=\"v1\" location=\"Minion\">\n" +
+                "    <definition version=\"v1\" write-community=\"horizon\" location=\"Minion\"> \n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
                 "</snmp-config>\n" +
                 "";
 
         String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <definition version=\"v1\" timeout=\"1200\" >\n" +
+                "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\"  xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "    <definition version=\"v1\" timeout=\"1200\" write-community=\"horizon\" >\n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
-                "    <definition version=\"v1\" location=\"Minion\">\n" +
+                "    <definition version=\"v1\" write-community=\"horizon\" location=\"Minion\"> \n" +
                 "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
                 "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
                 "    </definition>\n" +
@@ -1610,6 +1613,7 @@ public class SnmpEventInfoTest {
         SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.1.25"), "Minion");
         assertFalse("Config should be derived from default location", snmpAgentConfig.isDefault());
         String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+
         assertXmlEquals(expectedConfig, actualConfig);
     }
 
@@ -2161,7 +2165,7 @@ public class SnmpEventInfoTest {
 
 		// now map the event back to an SnmpEventInfo-object ...
 		// ... and check that second is equally to initial
-		SnmpEventInfo second = new SnmpEventInfo(event);
+		SnmpEventInfo second = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(event));
 		assertEquals(initial, second);
 	}
 }

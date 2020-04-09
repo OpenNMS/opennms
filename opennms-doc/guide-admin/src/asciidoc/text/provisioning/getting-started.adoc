@@ -92,7 +92,7 @@ This is very similar to the way that entities were previously handled by the (no
 ==== Automatic Discovery
 
 Currently in {opennms-product-name}, the ICMP is used to automatically provision node entities into {opennms-product-name}.
-This functionality has been in OpenNMS since is 1.0 release, however, in 1.8, a few of the use cases have been updated with _Provisiond’s_ replacement of _Capsd_.
+This functionality has been in OpenNMS since its 1.0 release, however, in 1.8, a few of the use cases have been updated with _Provisiond’s_ replacement of _Capsd_.
 
 ===== Separation of Concerns
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.ImmutableEvent;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -84,8 +84,7 @@ public class AMQPEventForwarderBlueprintTest extends CamelBlueprintTest {
         getMockEndpoint("mock:destination").expectedMessageCount(1);
 
         // Forward a single event
-        Event event = new Event();
-        forwardingEventListener.onEvent(event);
+        forwardingEventListener.onEvent(ImmutableEvent.newBuilder().build());
 
         assertMockEndpointsSatisfied();
     }

@@ -96,13 +96,13 @@ public class EventSinkIT {
         try (final SshClient sshClient = stack.minion().ssh()) {
             // Issue events:send command
             PrintStream pipe = sshClient.openShell();
-            pipe.println("events:send -u 'uei.opennms.org/alarms/trigger'");
+            pipe.println("opennms:send-event -u 'uei.opennms.org/alarms/trigger'");
             pipe.println("logout");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
             // Grab the output
             String shellOutput = sshClient.getStdout();
-            LOG.info("events:send output: {}", shellOutput);
+            LOG.info("opennms:send-event output: {}", shellOutput);
             // Verify
             return shellOutput.contains("sent");
         } catch (Exception e) {
@@ -115,13 +115,13 @@ public class EventSinkIT {
         try (final SshClient sshClient = stack.sentinel().ssh()) {
             // Issue events:send command
             PrintStream pipe = sshClient.openShell();
-            pipe.println("events:send -u 'uei.opennms.org/threshold/relativeChangeExceeded'");
+            pipe.println("opennms:send-event -u 'uei.opennms.org/threshold/relativeChangeExceeded'");
             pipe.println("logout");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
             // Grab the output
             String shellOutput = sshClient.getStdout();
-            LOG.info("events:send output: {}", shellOutput);
+            LOG.info("opennms:send-event output: {}", shellOutput);
             // Verify
             return shellOutput.contains("sent");
         } catch (Exception e) {

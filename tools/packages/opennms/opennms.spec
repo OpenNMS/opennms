@@ -43,6 +43,10 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%define _source_filedigest_algorithm 0
+%define _binary_filedigest_algorithm 0
+%define _source_payload w0.bzdio
+%define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -584,7 +588,7 @@ END
 # Move the docs into %{_docdir}
 rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
 mkdir -p %{buildroot}%{_docdir}
-find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -0 -r rmdir 2>/dev/null || true
+find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -n 1 -0 -r rmdir 2>/dev/null || true
 mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
 cp README* %{buildroot}%{instprefix}/etc/
 rm -rf %{buildroot}%{instprefix}/etc/README
@@ -705,9 +709,9 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
-    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jira-' | \
-    sort >> %{_tmppath}/files.main
+	sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
 find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
@@ -936,14 +940,14 @@ if [ "$1" = 0 ]; then
 fi
 
 if [ "$1" = 0 ]; then
-  if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
-    rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  fi
+	if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+	fi
 fi
 
 %pre -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
-[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$ROOT_INST" ] && ROOT_INST="%{instprefix}"
 if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi
@@ -994,7 +998,7 @@ echo "done"
 
 printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar     -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then

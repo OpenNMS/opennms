@@ -37,7 +37,8 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Callbacks;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -140,8 +141,8 @@ public class BreadcrumbCriteria extends Criteria {
             if (breadcrumb.getSourceVertices().isEmpty()) {
                 final List<VertexRef> defaultFocus = targetGraphProvider.getDefaults().getCriteria()
                         .stream()
-                        .filter(c -> c instanceof VertexHopGraphProvider.VertexHopCriteria)
-                        .map(c -> ((VertexHopGraphProvider.VertexHopCriteria) c).getVertices())
+                        .filter(c -> c instanceof VertexHopCriteria)
+                        .map(c -> ((VertexHopCriteria) c).getVertices())
                         .flatMap(Set::stream)
                         .collect(Collectors.toList());
                 handleClick(graphContainer, targetGraphProvider, defaultFocus, breadcrumb);
@@ -179,10 +180,10 @@ public class BreadcrumbCriteria extends Criteria {
         }
 
         // Reset focus
-        getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class).forEach(graphContainer::removeCriteria);
+        getCriteriaForGraphContainer(graphContainer, VertexHopCriteria.class).forEach(graphContainer::removeCriteria);
 
         // Set elements to focus
-        verticesToFocus.forEach(v -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(v)));
+        verticesToFocus.forEach(v -> graphContainer.addCriteria(new DefaultVertexHopCriteria(v)));
 
         // Render
         graphContainer.setDirty(true);

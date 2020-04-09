@@ -48,6 +48,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.CollapsibleGraph;
 import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.LayoutOperation;
 import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
@@ -151,30 +152,25 @@ public class DefaultTopologyService implements TopologyService {
             semanticZoomLevel = 0;
         }
         final GraphProvider graphProvider = getGraphProvider(metaTopologyId, namespace);
+        final CollapsibleGraph collapsibleGraph = new CollapsibleGraph(graphProvider.getCurrentGraph());
 
         // Determine visible vertices and edges
-        final List<Vertex> displayVertices = new ArrayList<>();
-        for(Vertex v : graphProvider.getVertices(criteria)) {
-            int vzl = graphProvider.getSemanticZoomLevel(v);
-            if (vzl == semanticZoomLevel || (vzl < semanticZoomLevel && !graphProvider.hasChildren(v))) {
-                displayVertices.add(v);
-            }
-        }
-        final Collection<Edge> displayEdges = graphProvider.getEdges(criteria);
+        final Collection<Vertex> displayVertices = collapsibleGraph.getVertices(semanticZoomLevel, criteria);
+        final Collection<Edge> displayEdges = collapsibleGraph.getEdges(criteria);
 
         // Create graph object
-        final DefaultGraph graph = new DefaultGraph(displayVertices, displayEdges);
+        final DefaultGraph uiGraph = new DefaultGraph(displayVertices, displayEdges);
 
         // Calculate status
         final StatusProvider vertexStatusProvider = serviceLocator != null ? findVertexStatusProvider(graphProvider) : null;
         final EdgeStatusProvider edgeStatusProvider = serviceLocator != null ? findEdgeStatusProvider(graphProvider) : null;
         if (vertexStatusProvider != null) {
-            graph.setVertexStatus(vertexStatusProvider.getStatusForVertices(graphProvider, new ArrayList<>(displayVertices), criteria));
+            uiGraph.setVertexStatus(vertexStatusProvider.getStatusForVertices(collapsibleGraph, new ArrayList<>(displayVertices), criteria));
         }
         if(edgeStatusProvider != null) {
-            graph.setEdgeStatus(edgeStatusProvider.getStatusForEdges(graphProvider, new ArrayList<>(graph.getDisplayEdges()), criteria));
+            uiGraph.setEdgeStatus(edgeStatusProvider.getStatusForEdges(collapsibleGraph, new ArrayList<>(uiGraph.getDisplayEdges()), criteria));
         }
-        return graph;
+        return uiGraph;
     }
 
     @Override
@@ -229,23 +225,28 @@ public class DefaultTopologyService implements TopologyService {
         this.topologyEntityCache = Objects.requireNonNull(topologyEntityCache);
     }
 
+    @Override
     public void invalidate(String namespace) {
         if(namespace.startsWith("nodes")) {
             topologyEntityCache.refresh();
         }
 
-        // Tt the moment the namespace of each topology must be unique overall meta topology providers, even if they
+        // At the moment the namespace of each topology must be unique overall meta topology providers, even if they
         // are encapsulated by the meta topology provider. It should be addressed by <metaId>:<namespace>.
         // This is at the moment not the case, therefore we iterate over all meta topology providers and invalidate
         // The cache if the meta topology provider has a graph with the given namespace. In the future this should
-        // Be handled differently.
+        // be handled differently.
         serviceLocator.findServices(MetaTopologyProvider.class, null).stream()
             .filter(metaTopologyProvider -> metaTopologyProvider.getGraphProviderBy(namespace) != null)
-            .forEach(metaTopologyProvider ->  {
-                graphProviderCache.invalidate(new GraphProviderKey(metaTopologyProvider.getId(), namespace));
-            });
+            .forEach(metaTopologyProvider -> invalidate(metaTopologyProvider.getId(), namespace));
     }
 
+    @Override
+    public void invalidate(String metaTopologyId, String namespace) {
+        graphProviderCache.invalidate(new GraphProviderKey(metaTopologyId, namespace));
+    }
+
+    @Override
     public void invalidateAll() {
         topologyEntityCache.refresh();
         graphProviderCache.invalidateAll();

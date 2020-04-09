@@ -30,9 +30,15 @@ package org.opennms.netmgt.telemetry.protocols.registry.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.persistence.MapsId;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.telemetry.config.api.PackageDefinition;
 import org.opennms.netmgt.telemetry.protocols.registry.api.TelemetryServiceRegistry;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
@@ -67,17 +73,17 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     @Override
     public Adapter getAdapter(AdapterDefinition adapterDefinition) {
-        return adapterRegistryDelegate.getService(adapterDefinition);
+        return adapterRegistryDelegate.getService(MutableAdapterDefinition.wrap(adapterDefinition));
     }
 
     @Override
     public Listener getListener(ListenerDefinition listenerDefinition) {
-        return listenerRegistryDelegate.getService(listenerDefinition);
+        return listenerRegistryDelegate.getService(MutableListenerDefinition.wrap(listenerDefinition));
     }
 
     @Override
     public Parser getParser(ParserDefinition parserDefinition) {
-        return parserRegistryDelegate.getService(parserDefinition);
+        return parserRegistryDelegate.getService(MutableParserDefinition.wrap(parserDefinition));
     }
 
     @Override
@@ -127,5 +133,123 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
+    }
+
+    private static class MutableAdapterDefinition implements AdapterDefinition {
+        private final AdapterDefinition definition;
+        private final Map<String, String> parameters;
+
+        private MutableAdapterDefinition(final AdapterDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        @Override
+        public List<? extends PackageDefinition> getPackages() {
+            return this.definition.getPackages();
+        }
+
+        public static MutableAdapterDefinition wrap(final AdapterDefinition definition) {
+            if (definition instanceof MutableAdapterDefinition) {
+                return (MutableAdapterDefinition) definition;
+            }
+
+            return new MutableAdapterDefinition(definition);
+        }
+    }
+
+    private static class MutableParserDefinition implements ParserDefinition {
+        private final ParserDefinition definition;
+        private final Map<String, String> parameters;
+
+        private MutableParserDefinition(final ParserDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        @Override
+        public String getQueueName() {
+            return this.definition.getQueueName();
+        }
+
+        public static MutableParserDefinition wrap(final ParserDefinition definition) {
+            if (definition instanceof MutableParserDefinition) {
+                return (MutableParserDefinition) definition;
+            }
+
+            return new MutableParserDefinition(definition);
+        }
+    }
+
+    private static class MutableListenerDefinition implements ListenerDefinition {
+        private final ListenerDefinition definition;
+        private final Map<String, String> parameters;
+        private final List<MutableParserDefinition> parsers;
+
+        private MutableListenerDefinition(final ListenerDefinition definition) {
+            this.definition = Objects.requireNonNull(definition);
+            this.parameters = new HashMap<>(definition.getParameterMap());
+            this.parsers = definition.getParsers().stream()
+                    .map(MutableParserDefinition::new)
+                    .collect(Collectors.toList());
+        }
+
+        @Override
+        public String getName() {
+            return this.definition.getName();
+        }
+
+        @Override
+        public String getClassName() {
+            return this.definition.getClassName();
+        }
+
+        @Override
+        public Map<String, String> getParameterMap() {
+            return this.parameters;
+        }
+
+        @Override
+        public List<? extends ParserDefinition> getParsers() {
+            return this.parsers;
+        }
+
+        public static MutableListenerDefinition wrap(final ListenerDefinition definition) {
+            if (definition instanceof MutableListenerDefinition) {
+                return (MutableListenerDefinition) definition;
+            }
+
+            return new MutableListenerDefinition(definition);
+        }
     }
 }

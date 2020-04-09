@@ -1,0 +1,108 @@
+
+=== Run with Docker
+
+Modern infrastructure allows you to deploy and run workloads in containers.
+_{opennms-product-name}_ provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
+
+==== Objectives
+
+* Run and configure a _Minion_ in, and connect it to, the _{opennms-product-name}_ instance using environment variables
+* Introduce a reference with all available configuration and mount conventions for more advanced setups
+
+==== Before you begin
+
+You must have at least the following components installed:
+
+* Current stable _Docker_ release installed, e.g., installed from link:https://docs.docker.com/[Docker Documentation]
+* Current stable _Docker Compose_ installed, e.g., installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
+You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
+_{opennms-product-name}_ is configured to accept connections via _ActiveMQ_ and a Minion user with _ROLE_MINION_ 
+The _Minion_ can connect to _{opennms-product-name}_ with port `61616/TCP` for _ActiveMQ_ and _REST_ on port `8980/TCP`
+
+==== Quickstart service stack
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+===== Step 1: Create service stack with a Minion
+
+Create a project directory with `mkdir opennms-minion` and create a `docker-compose.yml` file in that directory with the following content:
+
+[source,yaml]
+[subs="verbatim,attributes"]
+----
+---
+version: '3'
+
+services:  
+  minion:
+    image: opennms/minion:{opennms-version}
+    container_name: minion<1>
+    network_mode: host<2>
+    environment:
+      - TZ=Europe/Berlin<3>
+      - MINION_ID=my-minion<4>
+      - MINION_LOCATION=my-location<5>
+      - OPENNMS_BROKER_URL=failover:tcp://horizon-instance:61616<6>
+      - OPENNMS_BROKER_USER=minion-user<7>
+      - OPENNMS_BROKER_PASS=minion-password
+      - OPENNMS_HTTP_URL=http://horizon-instance:8980/opennms<8>
+      - OPENNMS_HTTP_USER=minion-user<9>
+      - OPENNMS_HTTP_PASS=minion-password
+    command: ["-f"]
+----
+<1> Friendly container name
+<2> If you process UDP data like SNMP traps, Syslogs or flows, `network_mode: host` ensures the UDP source addresses are not modified
+<3> Time zone for the _Minion_
+<4> A defined identifier for this _Minion_. If not set, a unique user identifier (_UUID_) will be generated
+<5> The name of the location of the _Minion_ and the connection to the _ActiveMQ_ broker running in _{opennms-product-name}_
+<6> _ActiveMQ_ broker endpoint from _{opennms-product-name}_
+<7> Authentication for ActiveMQ broker
+<8> _REST_ endpoint to connect to the _{opennms-product-name}_ instance
+<9> Authentication for the _REST_ endpoint
+
+NOTE: In this example we haven't set credentials to connect the _Minion_ via _REST_ and the _ActiveMQ Message Broker_.
+      The _Minion_ will fall back and uses the default admin/admin credentials for communication.
+      Permissions for _ActiveMQ_ and _REST_ are assigned with the role _ROLE_MINION_ on the _{opennms-product-name}_ instance.
+
+WARNING: If you process UDP data and you don't use `network_mode: host`, the UDP source address from your packets will be modified from Docker.
+         The source address is your Docker internal gateway instead of the source address of your device.
+         Source addresses associate the Syslog or SNMP traps to the nodes in the OpenNMS database.
+         You can use an isolated network and publish ports as usual if you don't receive UDP-based monitoring data.
+         If you don't use `network_mode: host` you have to publish the listener ports manually.
+
+===== Step 2: Start the service stack and test the functionality
+
+[source,shell]
+----
+cd opennms-minion
+docker-compose up -d
+----
+
+===== Step 3: Run _Minion_ Health Check
+
+.Log in to the _Minion Karaf Shell_ and run the health check
+[source, shell]
+----
+ssh admin@localhost -p 8201
+
+admin@minion> health:check
+Verifying the health of the container
+
+Connecting to OpenNMS ReST API   [ Success  ]
+Verifying installed bundles      [ Success  ]
+Connecting to JMS Broker         [ Success  ]
+
+=> Everything is awesome
+----
+
+NOTE: The default admin password for the _Minion Karaf Shell_ is _admin_.
+
+===== Step 4: Verify status in the web UI
+
+* Log in as admin in the _{opennms-product-name}_ web interface
+* _Configure OpenNMS -> Manage Minions_. The _Minion_ should be registered and the status should be _up_
+* Verify that _Minion_ is provisioned automatically by going to _Info -> Nodes_ and selecting the _Minion_. The services _JMX-Minion_, _Minion-Heartbeat_ and _Minion-RPC_ should be _up_ and provisioned on the local loop-back interface
+
+// Enable section numbers
+:sectnums:

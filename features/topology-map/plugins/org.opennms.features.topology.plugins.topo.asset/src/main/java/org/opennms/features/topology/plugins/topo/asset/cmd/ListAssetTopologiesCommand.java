@@ -37,7 +37,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository;
 import org.opennms.features.topology.plugins.topo.asset.GeneratorConfigList;
 
-@Command(scope = "asset-topology", name = "list", description="Lists all of the asset topologies currently installed")
+@Command(scope = "opennms", name = "asset-topo-list", description="Lists all of the asset topologies currently installed")
 @Service
 public class ListAssetTopologiesCommand implements Action {
 

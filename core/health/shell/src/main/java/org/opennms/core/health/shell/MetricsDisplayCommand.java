@@ -41,7 +41,7 @@ import org.osgi.framework.BundleContext;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 
-@Command(scope = "health", name = "metrics-display", description="Display metrics from one or more metric sets.")
+@Command(scope = "opennms", name = "metrics-display", description="Display metrics from one or more metric sets.")
 @Service
 public class MetricsDisplayCommand implements Action {
 

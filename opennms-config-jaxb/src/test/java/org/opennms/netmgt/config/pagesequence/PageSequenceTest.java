@@ -113,6 +113,7 @@ public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
         page.setPath("/Logout.do");
         page.setPort(7080);
         page.setSuccessMatch("HQ Login");
+        page.addHeader(new Header("foo", "bar"));
         ps.addPage(page);
 
         return ps;

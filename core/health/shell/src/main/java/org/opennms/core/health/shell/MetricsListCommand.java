@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.osgi.framework.BundleContext;
 
-@Command(scope = "health", name = "metrics-list", description="List the available metric sets.")
+@Command(scope = "opennms", name = "metrics-list", description="List the available metric sets.")
 @Service
 public class MetricsListCommand implements Action {
 

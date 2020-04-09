@@ -46,8 +46,8 @@ import org.opennms.features.datachoices.internal.StateManager;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "datachoices", name = "reset-system-id", description="Regenerate the system id.")
-@org.apache.karaf.shell.commands.Command(scope = "datachoices", name = "reset-system-id", description="Regenerate the system id.")
+@Command(scope = "opennms", name = "datachoices-reset-system-id", description="Regenerate the system id.")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "datachoices-reset-system-id", description="Regenerate the system id.")
 @Service
 public class ResetSystemIdCommand extends OsgiCommandSupport implements Action {
 
