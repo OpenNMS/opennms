@@ -1,3 +1,14 @@
+opennms-minion (26.0.0-1) stable; urgency=high
+
+  * New major release.  It contains a large number of bug
+    fixes and new features, most notably initial support for
+    handling the BGP Monitoring Protocol in Telemetryd.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/26.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 09 Apr 2020 11:58:00 -0400
+
 opennms-minion (25.2.1-1) stable; urgency=high
 
   * New stable release.  It contains a number of small improvements as well as a
