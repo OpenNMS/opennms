@@ -179,10 +179,10 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(xml, xml.contains("192.0.2.201"));
 
         // set attributes
-        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 202, "/nodes/4243/interfaces/192.0.2.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=N", 202, "/nodes/4243/interfaces/192.0.2.204");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
-        assertTrue(xml, xml.contains("snmp-primary=\"P\""));
+        assertTrue(xml, xml.contains("snmp-primary=\"N\""));
         assertTrue(xml, xml.contains("status=\"3\""));
  
         // delete interface
