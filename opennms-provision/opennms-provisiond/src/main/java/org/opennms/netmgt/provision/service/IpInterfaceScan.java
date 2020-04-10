@@ -51,6 +51,8 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.opentracing.Span;
+
 /**
  * <p>IpInterfaceScan class.</p>
  *
@@ -65,6 +67,7 @@ public class IpInterfaceScan implements RunInBatch {
     private final Integer m_nodeId;
     private final String m_foreignSource;
     private final OnmsMonitoringLocation m_location;
+    private final Span m_parentSpan;
 
     /**
      * <p>Constructor for IpInterfaceScan.</p>
@@ -72,15 +75,16 @@ public class IpInterfaceScan implements RunInBatch {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param address a {@link java.net.InetAddress} object.
      * @param foreignSource a {@link java.lang.String} object.
-     * @param location a {@link org.opennms.netmgt.model.monitoringLocation.OnmsMonitoringLocation} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      */
-    public IpInterfaceScan(final Integer nodeId, final InetAddress address, final String foreignSource, final OnmsMonitoringLocation location, final ProvisionService provisionService) {
+    public IpInterfaceScan(final Integer nodeId, final InetAddress address, final String foreignSource, final OnmsMonitoringLocation location, final ProvisionService provisionService, final Span span) {
         m_nodeId = nodeId;
         m_address = address;
         m_foreignSource = foreignSource;
         m_location = location;
         m_provisionService = provisionService;
+        m_parentSpan = span;
     }
 
     /**
@@ -142,7 +146,6 @@ public class IpInterfaceScan implements RunInBatch {
      * <p>servicePersister</p>
      * 
      * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
-     * @param serviceName a {@link java.lang.String} object.
      * @return a {@link org.opennms.core.tasks.Callback} object.
      */
     public static Callback<Boolean> servicePersister(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address) {
@@ -190,13 +193,14 @@ public class IpInterfaceScan implements RunInBatch {
         };
     }
 
-    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location) {
-        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, nodeId, address, location), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
+    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location, Span span) {
+        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, nodeId, address, location, span), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
     }
 
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask currentPhase) {
+
         // This call returns a collection of new ServiceDetector instances
         final Collection<PluginConfig> detectorConfigs = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
@@ -204,7 +208,7 @@ public class IpInterfaceScan implements RunInBatch {
 
         for (final PluginConfig detectorConfig : detectorConfigs) {
             if (shouldDetect(detectorConfig, getAddress())) {
-                currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress(), getLocation()));
+                currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress(), getLocation(), m_parentSpan));
             }
         }
     }

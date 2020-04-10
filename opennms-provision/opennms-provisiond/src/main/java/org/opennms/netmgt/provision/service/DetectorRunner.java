@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.netmgt.provision.service.ProvisionService.DETECTOR_NAME;
+import static org.opennms.netmgt.provision.service.ProvisionService.ERROR;
+import static org.opennms.netmgt.provision.service.ProvisionService.IP_ADDRESS;
+import static org.opennms.netmgt.provision.service.ProvisionService.LOCATION;
+
 import java.net.InetAddress;
 import java.util.stream.Collectors;
 
@@ -40,6 +45,8 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.opentracing.Span;
+
 class DetectorRunner implements Async<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorRunner.class);
 
@@ -48,14 +55,16 @@ class DetectorRunner implements Async<Boolean> {
     private final Integer m_nodeId;
     private final InetAddress m_address;
     private final OnmsMonitoringLocation m_location;
+    private final Span m_parentSpan;
 
     public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, Integer nodeId, InetAddress address,
-            OnmsMonitoringLocation location) {
+            OnmsMonitoringLocation location, Span span) {
         m_service = service;
         m_detectorConfig = detectorConfig;
         m_nodeId = nodeId;
         m_address = address;
         m_location = location;
+        m_parentSpan = span;
     }
 
     /** {@inheritDoc} */
@@ -65,6 +74,10 @@ class DetectorRunner implements Async<Boolean> {
             LOG.info("Attemping to detect service {} on address {} at location {}", m_detectorConfig.getName(),
                     getHostAddress(), getLocationName());
             // Launch the detector
+            Span span = m_service.buildAndStartSpan(m_detectorConfig.getName() + "-Detect", m_parentSpan.context());
+            span.setTag(DETECTOR_NAME, m_detectorConfig.getName());
+            span.setTag(IP_ADDRESS, m_address.getHostAddress());
+            span.setTag(LOCATION, getLocationName());
             m_service.getLocationAwareDetectorClient().detect().withClassName(m_detectorConfig.getPluginClass())
                     .withAddress(m_address).withNodeId(m_nodeId).withLocation(getLocationName())
                     .withAttributes(m_detectorConfig.getParameters().stream()
@@ -76,9 +89,12 @@ class DetectorRunner implements Async<Boolean> {
                                 m_detectorConfig.getName(), getHostAddress(), getLocationName());
                         if (ex != null) {
                             cb.handleException(ex);
+                            span.log(ex.getMessage());
+                            span.setTag(ERROR, true);
                         } else {
                             cb.accept(res);
                         }
+                        span.finish();
                     });
         } catch (Throwable e) {
             cb.handleException(e);
