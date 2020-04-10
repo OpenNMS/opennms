@@ -194,11 +194,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureJrrd2() {
-		installFeature("jrrd2");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureJsonLib() {
 		installFeature("json-lib");
 		System.out.println(executeCommand("feature:list -i"));
@@ -408,11 +403,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureOpennmsRrdJrobin() {
 		installFeature("opennms-rrd-jrobin");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
-	public void testInstallFeatureOpennmsRrdJrrd2() {
-		installFeature("opennms-rrd-jrrd2");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
