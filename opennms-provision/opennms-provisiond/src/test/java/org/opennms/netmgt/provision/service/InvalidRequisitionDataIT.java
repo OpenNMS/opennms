@@ -204,6 +204,25 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         
     }
 
+    @Test
+    public void shouldDisallowMultiplePrimaryInterfaces() throws Exception {
+        assertEquals(0, m_nodeDao.countAll());
+
+        final Resource invalidRequisitionResource = getResource("classpath:/import_multiplePrimaryInterfaces.xml");
+
+        m_eventManager.getEventAnticipator().anticipateEvent(getStarted(invalidRequisitionResource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getFailed(invalidRequisitionResource));
+
+        // This requisition has two "snmp-primary" interfaces which is not allowed.
+        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
+        waitForEverything();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
+
+        // should fail to import the node since two "snmp-primary" interfaces are not allowed.
+        assertEquals(0, m_nodeDao.countAll());
+
+    }
+
     private Event getStarted(final Resource resource) {
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, "Provisiond" )
         .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
