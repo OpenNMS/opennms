@@ -51,14 +51,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>org.opennms.assemblies</groupId>
-          <artifactId>opennms-remote-poller-windows</artifactId>
-          <version>${project.version}</version>
-          <type>exe</type>
-        </dependency>
-      </dependencies>
     </profile>
     <profile>
       <id>windows</id>
@@ -94,14 +86,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>org.opennms.assemblies</groupId>
-          <artifactId>opennms-remote-poller-windows</artifactId>
-          <version>${project.version}</version>
-          <type>exe</type>
-        </dependency>
-      </dependencies>
     </profile>
   </profiles>
   <build>
