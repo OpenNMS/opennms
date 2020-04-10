@@ -51,14 +51,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>org.opennms.assemblies</groupId>
-          <artifactId>opennms-remote-poller-windows</artifactId>
-          <version>${project.version}</version>
-          <type>exe</type>
-        </dependency>
-      </dependencies>
     </profile>
     <profile>
       <id>windows</id>
@@ -94,14 +86,6 @@
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>org.opennms.assemblies</groupId>
-          <artifactId>opennms-remote-poller-windows</artifactId>
-          <version>${project.version}</version>
-          <type>exe</type>
-        </dependency>
-      </dependencies>
     </profile>
   </profiles>
   <build>
@@ -176,14 +160,6 @@
       <artifactId>opennms-remote-poller-windows</artifactId>
       <type>pom</type>
       <scope>provided</scope>
-    </dependency>
-    <!-- Make sure that the JNLP tar.gz builds before this assembly -->
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-      <version>${project.version}</version>
-      <classifier>jnlp</classifier>
-      <type>tar.gz</type>
     </dependency>
 
     <!-- dependencies that should exist in $OPENNMS_HOME/lib -->
