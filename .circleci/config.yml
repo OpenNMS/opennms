@@ -211,10 +211,7 @@ commands:
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               install --batch-mode --builder smart --threads << parameters.number-vcpu >> \
-              -Prun-expensive-tasks -Pbuild-bamboo -Psmoke
-      - run:
-          name: Remove assembly files from ~/.m2
-          command: rm -rf ~/.m2/repository/org/opennms/*assembl*
+              -Prun-expensive-tasks -Psmoke
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:

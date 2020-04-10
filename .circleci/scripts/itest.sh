@@ -26,7 +26,7 @@ echo "#### Generate project structure .json"
 (cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
       -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
       -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0)
-mvn org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+mvn -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -60,10 +60,25 @@ sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linu
 sudo killall -9 apt-get || true && \
             sudo apt-get update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
-            sudo apt-get install -f r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6
+            sudo apt-get install -f nsis r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6
+
+echo "#### Building Assembly Dependencies"
+mvn install -P'!checkstyle' \
+           -Pbuild-bamboo \
+           -DupdatePolicy=never \
+           -Dbuild.skip.tarball=true \
+           -Dmaven.test.skip.exec=true \
+           -DskipTests=true \
+           -DskipITs=true \
+           -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
+           -B \
+           "${CCI_FAILURE_OPTION:--fae}" \
+           -am \
+           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-mvn verify -P'!checkstyle' \
+mvn install -P'!checkstyle' \
+           -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DrunPingTests=false \
@@ -74,6 +89,9 @@ mvn verify -P'!checkstyle' \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \
+           -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+           -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
+           -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            -pl "$(< /tmp/this_node_projects paste -s -d, -)"
