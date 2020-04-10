@@ -295,7 +295,7 @@ public class NodeScan implements Scan {
             @Override
             public void run() {
                 try {
-
+                    sendScheduledNodeScanStartedEvent();
                     final Task t = createTask();
                     t.schedule();
                     // NMS-5593 shows 10 provisioning threads all waiting on these
@@ -313,6 +313,17 @@ public class NodeScan implements Scan {
         };
 
         return executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    private void sendScheduledNodeScanStartedEvent() {
+        final EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCHEDULED_NODE_SCAN_STARTED, "Provisiond");
+        if (m_nodeId != null) {
+            bldr.setNodeid(m_nodeId);
+        }
+        bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, m_foreignSource);
+        bldr.addParam(EventConstants.PARM_FOREIGN_ID, m_foreignId);
+
+        m_eventForwarder.sendNow(bldr.getEvent());
     }
 
     /**
