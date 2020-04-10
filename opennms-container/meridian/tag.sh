@@ -13,5 +13,6 @@ source ../registry-config.sh
 source ../version-tags.sh
 
 for TAG in ${OCI_TAGS[*]}; do
-  docker push "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/horizon:${TAG}"
+  docker tag meridian "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/meridian:${TAG}"
 done
+docker images
