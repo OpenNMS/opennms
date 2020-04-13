@@ -37,11 +37,12 @@ The BMP Parser accepts BMP connections from router packets using a <<telemetryd-
 ===== BMP Telemetry Adapter
 
 The BMP Telemetry Adapter handles _BMP_ statistics received and parsed by the <<telemetryd-bmp-parser, BMP Parser>>.
-Received statistics are associated as performance data to the router sending the statistics (which must exists as regular Node in _{opennms-product-name}_).
+Statistics received from the router are associated as performance data with that router.
+The router must exist as a regular node in _{opennms-product-name}_.
 
-To associate a router with the according _{opennms-product-name}_ Node, the IP address exporting BMP messages is used.
-In addition, the Nodes Meta Data can be used to specify a BGP ID which will then be used to associate routers.
-If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` meta data name which will be used to lookup a Node which has stored the queried BGP ID as value in exactly this key.
+{opennms-product-name} uses the IP address exporting BMP messages to associate a router with the particular _{opennms-product-name}_ node.
+In addition, the node's metadata can specify a BGP ID, which will then be used to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node which has stored the queried BGP ID as a value in exactly this key.
 
 ====== Facts
 
@@ -63,7 +64,7 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 [[telemetryd-bmp-peer-status-adapter]]
 ===== BMP Peer Status Adapter
 
-The BMP Peer Status Adapter is used to create events for peer status changes.
+The BMP Peer Status Adapter creates events for peer status changes.
 It handles _BMP_ Peer Up and Down messages that the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and converts to _{opennms-product-name}_ events.
 _{opennms-product-name}_ associates the created events with the router sending the messages.
 This router must exist as regular node in _{opennms-product-name}_.
