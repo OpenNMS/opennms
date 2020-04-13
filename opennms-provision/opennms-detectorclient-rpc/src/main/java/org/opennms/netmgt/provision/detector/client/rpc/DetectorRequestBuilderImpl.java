@@ -41,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
+import org.opennms.netmgt.provision.PreDetectCallback;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.slf4j.Logger;
@@ -65,6 +66,8 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     private Integer nodeId;
 
     private Map<String, String> attributes = new HashMap<>();
+
+    private PreDetectCallback preDetectCallback;
 
     private final LocationAwareDetectorClientRpcImpl client;
 
@@ -124,6 +127,13 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         return this;
     }
 
+    @Override
+    public DetectorRequestBuilder withPreDetectCallback(PreDetectCallback preDetectCallback) {
+        this.preDetectCallback = preDetectCallback;
+        return this;
+    }
+
+
     /**
      * Builds the {@link DetectorRequestDTO} and executes the requested detector
      * via the RPC client.
@@ -154,6 +164,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setSystemId(systemId);
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
+        detectorRequestDTO.setPreDetectCallback(preDetectCallback);
         // Update ttl from metadata
         String timeToLive = interpolatedAttributes.get(MetadataConstants.TTL);
         if (!Strings.isNullOrEmpty(timeToLive)) {
@@ -180,7 +191,6 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         // Build the DetectRequest and store the runtime attributes in the DTO
         final DetectRequest request = factory.buildRequest(location, address, port, interpolatedAttributes);
         detectorRequestDTO.addRuntimeAttributes(request.getRuntimeAttributes());
-
         // Execute the request
         return client.getDelegate().execute(detectorRequestDTO)
             .thenApply(response -> {

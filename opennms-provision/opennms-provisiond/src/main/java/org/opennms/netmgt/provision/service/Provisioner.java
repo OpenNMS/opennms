@@ -223,7 +223,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     public void setTracerRegistry(TracerRegistry tracerRegistry) {
-        this.m_tracerRegistry = tracerRegistry;
+        m_tracerRegistry = tracerRegistry;
     }
 
     /**

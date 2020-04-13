@@ -31,9 +31,12 @@ package org.opennms.netmgt.provision.service;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,6 +71,7 @@ public class IpInterfaceScan implements RunInBatch {
     private final String m_foreignSource;
     private final OnmsMonitoringLocation m_location;
     private final Span m_parentSpan;
+    private Span m_span;
 
     /**
      * <p>Constructor for IpInterfaceScan.</p>
@@ -148,7 +152,7 @@ public class IpInterfaceScan implements RunInBatch {
      * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
      * @return a {@link org.opennms.core.tasks.Callback} object.
      */
-    public static Callback<Boolean> servicePersister(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address) {
+    public static Callback<Boolean> servicePersister(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final CompletableFuture<Boolean> future) {
         return new Callback<Boolean>() {
             @Override
             public void accept(final Boolean serviceDetected) {
@@ -183,6 +187,7 @@ public class IpInterfaceScan implements RunInBatch {
                                 }
                             });
                 }
+                future.complete(serviceDetected);
             }
 
             @Override
@@ -193,24 +198,34 @@ public class IpInterfaceScan implements RunInBatch {
         };
     }
 
-    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location, Span span) {
-        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, nodeId, address, location, span), servicePersister(currentPhase, service, detectorConfig, nodeId, address));
+    protected static AbstractTask createDetectorTask(final BatchTask currentPhase, final ProvisionService service, final PluginConfig detectorConfig, final int nodeId, final InetAddress address, final OnmsMonitoringLocation location, Span span, final CompletableFuture<Boolean> future) {
+        return currentPhase.getCoordinator().createTask(currentPhase, new DetectorRunner(service, detectorConfig, nodeId, address, location, span), servicePersister(currentPhase, service, detectorConfig, nodeId, address, future));
     }
 
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask currentPhase) {
 
+        m_span = getProvisionService().buildAndStartSpan("IpInterfaceScan", m_parentSpan.context());
+        m_span.setTag(ProvisionService.IP_ADDRESS, str(getAddress()));
+        m_span.setTag(ProvisionService.LOCATION, getLocation().getLocationName());
+
         // This call returns a collection of new ServiceDetector instances
         final Collection<PluginConfig> detectorConfigs = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
         LOG.info("Detecting services for node {}/{} on address {}: found {} detectors", getNodeId(), getForeignSource(), str(getAddress()), detectorConfigs.size());
-
+        List<CompletableFuture<Boolean>> futures = new ArrayList<>();
         for (final PluginConfig detectorConfig : detectorConfigs) {
             if (shouldDetect(detectorConfig, getAddress())) {
-                currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress(), getLocation(), m_parentSpan));
+                CompletableFuture<Boolean> future = new CompletableFuture<>();
+                futures.add(future);
+                currentPhase.add(createDetectorTask(currentPhase, getProvisionService(), detectorConfig, getNodeId(), getAddress(), getLocation(), m_span, future));
             }
         }
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]));
+        allFutures.whenComplete(((aVoid, throwable) -> {
+            m_span.finish();
+        }));
     }
 
     protected static boolean shouldDetect(final PluginConfig detectorConfig, final InetAddress address) {

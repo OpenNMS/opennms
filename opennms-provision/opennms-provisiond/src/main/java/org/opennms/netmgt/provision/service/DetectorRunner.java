@@ -56,6 +56,7 @@ class DetectorRunner implements Async<Boolean> {
     private final InetAddress m_address;
     private final OnmsMonitoringLocation m_location;
     private final Span m_parentSpan;
+    private Span m_span;
 
     public DetectorRunner(ProvisionService service, PluginConfig detectorConfig, Integer nodeId, InetAddress address,
             OnmsMonitoringLocation location, Span span) {
@@ -74,14 +75,12 @@ class DetectorRunner implements Async<Boolean> {
             LOG.info("Attemping to detect service {} on address {} at location {}", m_detectorConfig.getName(),
                     getHostAddress(), getLocationName());
             // Launch the detector
-            Span span = m_service.buildAndStartSpan(m_detectorConfig.getName() + "-Detect", m_parentSpan.context());
-            span.setTag(DETECTOR_NAME, m_detectorConfig.getName());
-            span.setTag(IP_ADDRESS, m_address.getHostAddress());
-            span.setTag(LOCATION, getLocationName());
+
             m_service.getLocationAwareDetectorClient().detect().withClassName(m_detectorConfig.getPluginClass())
                     .withAddress(m_address).withNodeId(m_nodeId).withLocation(getLocationName())
                     .withAttributes(m_detectorConfig.getParameters().stream()
                             .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
+                    .withPreDetectCallback(this::startSpan)
                     .execute()
                     // After completion, run the callback
                     .whenComplete((res, ex) -> {
@@ -89,15 +88,28 @@ class DetectorRunner implements Async<Boolean> {
                                 m_detectorConfig.getName(), getHostAddress(), getLocationName());
                         if (ex != null) {
                             cb.handleException(ex);
-                            span.log(ex.getMessage());
-                            span.setTag(ERROR, true);
+                            if(m_span != null) {
+                                m_span.log(ex.getMessage());
+                                m_span.setTag(ERROR, true);
+                            }
                         } else {
                             cb.accept(res);
                         }
-                        span.finish();
+                        if(m_span != null) {
+                            m_span.finish();
+                        }
                     });
         } catch (Throwable e) {
             cb.handleException(e);
+        }
+    }
+
+    private void startSpan() {
+        if(m_parentSpan != null) {
+            m_span = m_service.buildAndStartSpan(m_detectorConfig.getName() + "-Detect", m_parentSpan.context());
+            m_span.setTag(DETECTOR_NAME, m_detectorConfig.getName());
+            m_span.setTag(IP_ADDRESS, m_address.getHostAddress());
+            m_span.setTag(LOCATION, getLocationName());
         }
     }
 
@@ -114,4 +126,6 @@ class DetectorRunner implements Async<Boolean> {
     public String toString() {
         return String.format("Run detector %s on address %s", m_detectorConfig.getName(), getHostAddress());
     }
+
+
 }

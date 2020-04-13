@@ -144,7 +144,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         // Change it to "pollerCategory" (capital 'C') and the test passes...
         m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
-            m_eventManager.getEventAnticipator().verifyAnticipated();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
 
         // should still import the node, just skip the asset field
         assertEquals(1, m_nodeDao.countAll());

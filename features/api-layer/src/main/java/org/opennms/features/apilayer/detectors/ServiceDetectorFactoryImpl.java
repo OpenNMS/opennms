@@ -77,6 +77,11 @@ public class ServiceDetectorFactoryImpl<T extends org.opennms.netmgt.provision.S
             public Map<String, String> getRuntimeAttributes() {
                 return detectRequest.getRuntimeAttributes();
             }
+
+            @Override
+            public void preDetect() {
+               // pass
+            }
         };
     }
 }

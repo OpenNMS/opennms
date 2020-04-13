@@ -56,4 +56,6 @@ public interface DetectRequest {
      * may be required when running the detector.
      */
     Map<String, String> getRuntimeAttributes();
+
+    void preDetect();
 }

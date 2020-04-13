@@ -1432,12 +1432,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void setTracer(Tracer tracer) {
         m_tracer = tracer;
     }
-
-    @Override
-    public Tracer getTracer() {
-        return m_tracer;
-    }
-
+    
     @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
@@ -1472,13 +1467,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     public Span buildAndStartSpan(String name, SpanContext spanContext) {
-        if(getTracer() == null) {
+        if(m_tracer == null) {
             m_tracer = GlobalTracer.get();
         }
         if (spanContext == null) {
-            return getTracer().buildSpan("Provisiond-" + name).start();
+            return m_tracer.buildSpan("Provisiond-" + name).start();
         } else {
-            return getTracer().buildSpan("Provisiond-" + name).asChildOf(spanContext).start();
+            return m_tracer.buildSpan("Provisiond-" + name).asChildOf(spanContext).start();
         }
     }
 

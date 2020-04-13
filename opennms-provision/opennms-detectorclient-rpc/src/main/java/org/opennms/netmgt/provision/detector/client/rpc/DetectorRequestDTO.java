@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.PreDetectCallback;
 
 @XmlRootElement(name = "detector-request")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -73,6 +74,8 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
     private Long timeToLiveMs;
 
     private Map<String, String> tracingInfo = new HashMap<>();
+
+    private PreDetectCallback preDetectCallback;
 
     @Override
     public String getLocation() {
@@ -136,6 +139,12 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
         return runtimeAttributeMap;
     }
 
+    public void preDetect() {
+        if (preDetectCallback != null) {
+            preDetectCallback.preDetect();
+        }
+    }
+
     public String getClassName() {
         return className;
     }
@@ -168,6 +177,10 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     public void addTracingInfo(String key, String value) {
         tracingInfo.put(key, value);
+    }
+
+    public void setPreDetectCallback(PreDetectCallback preDetectCallback) {
+        this.preDetectCallback = preDetectCallback;
     }
 
     @Override

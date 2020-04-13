@@ -281,7 +281,5 @@ public interface ProvisionService {
 
     public void setTracer(Tracer tracer);
 
-    public Tracer getTracer();
-
     public Span buildAndStartSpan(String name, SpanContext spanContext);
 }
