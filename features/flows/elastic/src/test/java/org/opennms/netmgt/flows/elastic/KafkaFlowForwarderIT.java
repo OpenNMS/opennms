@@ -58,19 +58,25 @@ import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.searchbox.client.JestClient;
@@ -114,6 +120,13 @@ public class KafkaFlowForwarderIT {
         elasticSearchRule.startServer();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+        NodeDao nodeDao = mockDocumentEnricherFactory.getNodeDao();
+        nodeDao.saveOrUpdate(createOnmsNode(1, null, null));
+        nodeDao.saveOrUpdate(createOnmsNode(2, "fs", "fid"));
+        final InterfaceToNodeCache interfaceToNodeCache = mockDocumentEnricherFactory.getInterfaceToNodeCache();
+        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.2"), 1);
+        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.2.2"), 2);
+        interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.1"), 3);
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
         final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
         try (final JestClient jestClient = restClientFactory.createClient()) {
@@ -123,9 +136,6 @@ public class KafkaFlowForwarderIT {
                     new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(),
                     3, 12000);
             elasticFlowRepository.setEnableFlowForwarding(true);
-
-            // It does not matter what we persist here, as the response is fixed.
-            // We only have to ensure that the list is not empty
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }
         KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConfig, topicName);
@@ -135,6 +145,10 @@ public class KafkaFlowForwarderIT {
         getFlowDocuments().forEach(flowDocument -> {
             assertEquals(FlowDocumentTest.getMockFlow().getSrcAddr(), flowDocument.getSrcAddress());
             assertEquals(FlowDocumentTest.getMockFlow().getDstAddr(), flowDocument.getDstAddress());
+            assertEquals(1, flowDocument.getSrcNode().getNodeId());
+            assertEquals(2, flowDocument.getDestNode().getNodeId());
+            assertEquals("", flowDocument.getSrcNode().getForeginId());
+            assertEquals("fid", flowDocument.getDestNode().getForeginId());
         });
         elasticSearchRule.stopServer();
         kafkaConsumerRunner.destroy();
@@ -184,4 +198,17 @@ public class KafkaFlowForwarderIT {
         }
 
     }
+
+
+    private static OnmsNode createOnmsNode(int nodeId, String foreignSource, String foreignId) {
+        final OnmsNode node = new OnmsNode();
+        node.setId(nodeId);
+        node.setForeignSource(foreignSource);
+        node.setForeignId(foreignId);
+        final OnmsCategory category = new OnmsCategory();
+        category.setName("SomeCategory");
+        node.setCategories(Sets.newHashSet(category));
+        return node;
+    }
+
 }
