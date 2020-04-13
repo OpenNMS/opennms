@@ -207,8 +207,8 @@ public class FlowDocumentBuilder {
         if (nodeInfo != null) {
             NodeInfo.Builder builder = NodeInfo.newBuilder();
             builder.setNodeId(nodeInfo.getNodeId());
-            builder.setForeginId(nodeInfo.getForeignId());
-            builder.setForeignSource(nodeInfo.getForeignSource());
+            getString(nodeInfo.getForeignId()).ifPresent(builder::setForeginId);
+            getString(nodeInfo.getForeignSource()).ifPresent(builder::setForeignSource);
             nodeInfo.getCategories().forEach(builder::addCategories);
             return Optional.of(builder.build());
         }
