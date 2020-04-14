@@ -341,7 +341,11 @@ workflows:
   build-deploy:
     <<: *defaults
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - horizon-rpm-build:
           requires:
             - build
