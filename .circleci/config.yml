@@ -336,7 +336,7 @@ workflows:
   build-deploy:
     <<: *defaults
     jobs:
-      - build
+      - build:
           filters:
             branches:
               ignore:
