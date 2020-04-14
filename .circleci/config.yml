@@ -310,6 +310,10 @@ workflows:
   build-deploy:
     jobs:
       - build
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - meridian-rpm-build:
           requires:
             - build
