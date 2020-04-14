@@ -309,7 +309,7 @@ workflows:
             - integration-test-with-coverage
   build-deploy:
     jobs:
-      - build
+      - build:
           filters:
             branches:
               ignore:
