@@ -73,13 +73,13 @@ public class MultiprotocolUnreachableNlri implements Attribute {
                 parseAfi_IPv4IPv6(true, buffer, peerInfo);
                 break;
             case MultiprotocolReachableNlri.BGP_AFI_BGPLS:
-                LOG.info("MP_UNREACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
+                LOG.info("MP_UNREACH AFI=bgp-ls SAFI={} is not implemented yet, skipping for now", safi);
                 break;
             case MultiprotocolReachableNlri.BGP_AFI_L2VPN:
-                LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI=%d is not implemented yet, skipping", safi);
+                LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI={} is not implemented yet, skipping", safi);
                 break;
             default:
-                LOG.info("MP_UNREACH AFI=%d is not implemented yet, skipping", afi);
+                LOG.info("MP_UNREACH AFI={} is not implemented yet, skipping", afi);
                 break;
         }
     }
@@ -96,7 +96,7 @@ public class MultiprotocolUnreachableNlri implements Attribute {
                 this.vpnWithdrawn = MultiprotocolReachableNlri.parseNlriData_LabelIPv4IPv6(isIPv4, buffer, peerInfo, true);
                 break;
             default:
-                LOG.info("MP_UNREACH AFI=ipv4/ipv6 (%d) SAFI=%d is not implemented yet, skipping for now", isIPv4, this.safi);
+                LOG.info("MP_UNREACH AFI=ipv4/ipv6 ({}) SAFI={} is not implemented yet, skipping for now", isIPv4, this.safi);
         }
     }
 

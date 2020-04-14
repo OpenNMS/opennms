@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,20 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down;
+package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
-import java.util.Optional;
+import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.stats.Metric;
 
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
 
-public class Unknown implements Reason {
-    public Unknown(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+public class UnknownPacket implements Packet {
+    public final Header header;
+
+    public UnknownPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
+        this.header = Objects.requireNonNull(header);
     }
 
     @Override
@@ -48,8 +53,14 @@ public class Unknown implements Reason {
     }
 
     @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
+    }
+
+    @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .toString();
+                          .add("header", this.header)
+                          .toString();
     }
 }

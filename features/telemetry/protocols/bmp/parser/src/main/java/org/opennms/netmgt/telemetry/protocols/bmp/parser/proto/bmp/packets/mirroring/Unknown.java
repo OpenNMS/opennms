@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring;
 
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import io.netty.buffer.ByteBuf;
 
 public class Unknown implements Mirroring {
 
-    public Unknown(final ByteBuf buffer, final PeerFlags flags) {
+    public Unknown(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
     }
 
     @Override

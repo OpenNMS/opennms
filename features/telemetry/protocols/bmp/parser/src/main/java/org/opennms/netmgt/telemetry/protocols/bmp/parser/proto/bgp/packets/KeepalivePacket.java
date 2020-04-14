@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.util.Objects;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
@@ -55,13 +57,15 @@ public class KeepalivePacket implements Packet {
         visitor.visit(this);
     }
 
-    public static KeepalivePacket parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+    public static Optional<KeepalivePacket> parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.KEEPALIVE) {
-            throw new InvalidPacketException(buffer, "Expected Keepalive Message, got: {}", header.type);
+            BmpParser.RATE_LIMITED_LOG.debug("Expected Keepalive Message, got: {}", header.type);
+            skip(buffer, header.length - Header.SIZE);
+            return Optional.empty();
         }
 
-        return new KeepalivePacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo);
+        return Optional.of(new KeepalivePacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo));
     }
 
     @Override
