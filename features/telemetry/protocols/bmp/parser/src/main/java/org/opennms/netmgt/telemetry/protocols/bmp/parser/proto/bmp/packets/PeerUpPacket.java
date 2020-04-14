@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.OpenPacket;
@@ -55,8 +56,8 @@ public class PeerUpPacket implements Packet {
     public final int localPort;  // uint16
     public final int remotePort; // uint16
 
-    public final OpenPacket sendOpenMessage;
-    public final OpenPacket recvOpenMessage;
+    public final Optional<OpenPacket> sendOpenMessage;
+    public final Optional<OpenPacket> recvOpenMessage;
 
     public final TLV.List<InformationElement, InformationElement.Type, String> information;
 

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
@@ -45,7 +46,7 @@ public class RouteMonitoringPacket implements Packet {
     public final Header header;
     public final PeerHeader peerHeader;
 
-    public final UpdatePacket updateMessage;
+    public final Optional<UpdatePacket> updateMessage;
 
     public RouteMonitoringPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);

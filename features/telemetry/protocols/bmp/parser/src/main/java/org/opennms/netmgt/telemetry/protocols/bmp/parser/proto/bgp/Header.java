@@ -36,10 +36,12 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.KeepalivePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.NotificationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.OpenPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UnknownPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
@@ -75,6 +77,7 @@ public class Header {
         UPDATE(UpdatePacket::new),
         NOTIFICATION(NotificationPacket::new),
         KEEPALIVE(KeepalivePacket::new),
+        UNKNOWN(UnknownPacket::new),
         ;
 
         private final Packet.Parser parser;
@@ -95,7 +98,8 @@ public class Header {
                 case 4:
                     return KEEPALIVE;
                 default:
-                    throw new InvalidPacketException(buffer, "Unknown type: %d", type);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown BGP Packet Type: {}", type);
+                    return UNKNOWN;
             }
         }
 

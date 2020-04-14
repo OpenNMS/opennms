@@ -85,12 +85,10 @@ public class InformationElement extends TLV<InformationElement.Type, String, Voi
             @Override
             public String parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) {
                 return InetAddressUtils.toIpAddrString(bytes(buffer, buffer.readableBytes()));
-	    }
-	},
+	        }
+	    },
 
-        UNKNOWN
-
-        {
+        UNKNOWN {
             @Override
             public String parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) {
                 return "Unknown";

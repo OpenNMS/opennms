@@ -39,6 +39,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Route
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 
 import io.netty.buffer.ByteBuf;
 
@@ -58,15 +59,17 @@ public interface Packet {
         void visit(final StatisticsReportPacket packet);
         void visit(final RouteMonitoringPacket packet);
         void visit(final RouteMirroringPacket packet);
+        void visit(final UnknownPacket packet);
 
         class Adapter implements Visitor {
-            public void visit(RouteMonitoringPacket packet) {}
-            public void visit(StatisticsReportPacket packet) {}
-            public void visit(PeerDownPacket packet) {}
-            public void visit(PeerUpPacket packet) {}
-            public void visit(InitiationPacket packet) {}
-            public void visit(TerminationPacket packet) {}
-            public void visit(RouteMirroringPacket packet) {}
+            public void visit(final RouteMonitoringPacket packet) {}
+            public void visit(final StatisticsReportPacket packet) {}
+            public void visit(final PeerDownPacket packet) {}
+            public void visit(final PeerUpPacket packet) {}
+            public void visit(final InitiationPacket packet) {}
+            public void visit(final TerminationPacket packet) {}
+            public void visit(final RouteMirroringPacket packet) {}
+            public void visit(final UnknownPacket packet) {}
         }
     }
 
@@ -78,6 +81,7 @@ public interface Packet {
         R map(final StatisticsReportPacket packet);
         R map(final RouteMonitoringPacket packet);
         R map(final RouteMirroringPacket packet);
+        R map(final UnknownPacket packet);
 
         class Adapter<R> implements Mapper<R> {
             private final R defaultValue;
@@ -93,6 +97,7 @@ public interface Packet {
             public R map(final StatisticsReportPacket packet) { return this.defaultValue; }
             public R map(final RouteMonitoringPacket packet) { return this.defaultValue; }
             public R map(final RouteMirroringPacket packet) { return this.defaultValue; }
+            public R map(final UnknownPacket packet) { return this.defaultValue; }
         }
     }
 
@@ -132,6 +137,11 @@ public interface Packet {
             @Override
             public Optional<PeerHeader> map(final RouteMirroringPacket packet) {
                 return Optional.of(packet.peerHeader);
+            }
+
+            @Override
+            public Optional<PeerHeader> map(final UnknownPacket packet) {
+                return Optional.empty();
             }
         });
     }

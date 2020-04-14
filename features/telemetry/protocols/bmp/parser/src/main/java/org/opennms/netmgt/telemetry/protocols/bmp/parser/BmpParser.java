@@ -89,6 +89,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Route
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalBgpNotification;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalNoNotification;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.Reason;
@@ -194,9 +195,10 @@ public class BmpParser implements TcpParser {
                           final InetSocketAddress localAddress) {
         return new Handler() {
             private static final int ADD_PATH_CAP = 69;
-            private InetAddress bgpId;
-            private Map<InetAddress, PeerInfo> peerInfoMap = new HashMap<>();
 
+            private InetAddress bgpId;
+
+            private final Map<InetAddress, PeerInfo> peerInfoMap = new HashMap<>();
             private PeerAccessor peerAccessor = peerHeader -> {
                 if (peerHeader == null || peerHeader.id == null) {
                     return Optional.empty();
@@ -205,7 +207,7 @@ public class BmpParser implements TcpParser {
             };
 
             @Override
-            public Optional<CompletableFuture<?>> parse(ByteBuf buffer) throws Exception {
+            public Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception {
                 buffer.markReaderIndex();
 
                 final Header header;
@@ -218,7 +220,7 @@ public class BmpParser implements TcpParser {
 
                 final Packet packet;
                 if (buffer.isReadable(header.payloadLength())) {
-                    packet = header.parsePayload(slice(buffer, header.payloadLength()), peerAccessor);
+                    packet = header.parsePayload(slice(buffer, header.payloadLength()), this.peerAccessor);
                 } else {
                     buffer.resetReaderIndex();
                     return Optional.empty();
@@ -244,21 +246,21 @@ public class BmpParser implements TcpParser {
                 packet.accept(new Packet.Visitor.Adapter() {
                     @Override
                     public void visit(PeerUpPacket packet) {
-                        packet.sendOpenMessage.capabilities.stream().filter(c -> c.getCode() == ADD_PATH_CAP).forEach(c -> {
+                        packet.sendOpenMessage.ifPresent(msg -> msg.capabilities.stream().filter(c -> c.getCode() == ADD_PATH_CAP).forEach(c -> {
                             ByteBuf b = Unpooled.wrappedBuffer(c.getValue().toByteArray());
                             int afi = uint16(b);
                             int safi = uint8(b);
                             int sendReceive = uint8(b);
                             peerInfoMap.computeIfAbsent(packet.peerHeader.id, k -> new PeerInfo()).addPathCapability(afi, safi, sendReceive, true);
-                        });
+                        }));
 
-                        packet.recvOpenMessage.capabilities.stream().filter(c -> c.getCode() == ADD_PATH_CAP).forEach(c -> {
+                        packet.recvOpenMessage.ifPresent(msg -> msg.capabilities.stream().filter(c -> c.getCode() == ADD_PATH_CAP).forEach(c -> {
                             ByteBuf b = Unpooled.wrappedBuffer(c.getValue().toByteArray());
                             int afi = uint16(b);
                             int safi = uint8(b);
                             int sendReceive = uint8(b);
                             peerInfoMap.computeIfAbsent(packet.peerHeader.id, k -> new PeerInfo()).addPathCapability(afi, safi, sendReceive, false);
-                        });
+                        }));
                     }
                 });
 
@@ -520,36 +522,40 @@ public class BmpParser implements TcpParser {
             message.setRemotePort(packet.remotePort);
 
             Transport.PeerUpPacket.CapabilityList.Builder sendCapabilitiesBuilder = Transport.PeerUpPacket.CapabilityList.newBuilder();
-            for (final Capability capability : packet.sendOpenMessage.capabilities) {
-                sendCapabilitiesBuilder.addCapability(Transport.PeerUpPacket.Capability.newBuilder()
-                        .setCode(capability.getCode())
-                        .setLength(capability.getLength())
-                        .setValue(capability.getValue())
-                        .build());
-            }
+            packet.sendOpenMessage.ifPresent(sendOpenMessage -> {
+                for (final Capability capability : sendOpenMessage.capabilities) {
+                    sendCapabilitiesBuilder.addCapability(Transport.PeerUpPacket.Capability.newBuilder()
+                                                                                           .setCode(capability.getCode())
+                                                                                           .setLength(capability.getLength())
+                                                                                           .setValue(capability.getValue())
+                                                                                           .build());
+                }
 
-            message.getSendMsgBuilder()
-                    .setVersion(packet.sendOpenMessage.version)
-                    .setAs(packet.sendOpenMessage.as)
-                    .setHoldTime(packet.sendOpenMessage.holdTime)
-                    .setId(address(packet.sendOpenMessage.id))
-                    .setCapabilities(sendCapabilitiesBuilder.build());
+                message.getSendMsgBuilder()
+                       .setVersion(sendOpenMessage.version)
+                       .setAs(sendOpenMessage.as)
+                       .setHoldTime(sendOpenMessage.holdTime)
+                       .setId(address(sendOpenMessage.id))
+                       .setCapabilities(sendCapabilitiesBuilder.build());
+            });
 
+            packet.recvOpenMessage.ifPresent(recvOpenMessage -> {
             Transport.PeerUpPacket.CapabilityList.Builder recvCapabilitiesBuilder = Transport.PeerUpPacket.CapabilityList.newBuilder();
-            for (final Capability capability : packet.recvOpenMessage.capabilities) {
-                recvCapabilitiesBuilder.addCapability(Transport.PeerUpPacket.Capability.newBuilder()
-                        .setCode(capability.getCode())
-                        .setLength(capability.getLength())
-                        .setValue(capability.getValue())
-                        .build());
-            }
+                for (final Capability capability : recvOpenMessage.capabilities) {
+                    recvCapabilitiesBuilder.addCapability(Transport.PeerUpPacket.Capability.newBuilder()
+                            .setCode(capability.getCode())
+                            .setLength(capability.getLength())
+                            .setValue(capability.getValue())
+                            .build());
+                }
 
-            message.getRecvMsgBuilder()
-                    .setVersion(packet.recvOpenMessage.version)
-                    .setAs(packet.recvOpenMessage.as)
-                    .setHoldTime(packet.recvOpenMessage.holdTime)
-                    .setId(address(packet.recvOpenMessage.id))
-                    .setCapabilities(recvCapabilitiesBuilder.build());
+                message.getRecvMsgBuilder()
+                        .setVersion(recvOpenMessage.version)
+                        .setAs(recvOpenMessage.as)
+                        .setHoldTime(recvOpenMessage.holdTime)
+                        .setId(address(recvOpenMessage.id))
+                        .setCapabilities(recvCapabilitiesBuilder.build());
+            });
 
             message.setSysName(packet.information.first(InformationElement.Type.SYS_NAME)
                     .orElse(""));
@@ -569,9 +575,11 @@ public class BmpParser implements TcpParser {
             packet.reason.accept(new Reason.Visitor() {
                 @Override
                 public void visit(final LocalBgpNotification localBgpNotification) {
-                    message.getLocalBgpNotificationBuilder()
-                            .setCode(localBgpNotification.notification.code)
-                            .setSubcode(localBgpNotification.notification.subcode);
+                    localBgpNotification.notification.ifPresent(notification -> {
+                        message.getLocalBgpNotificationBuilder()
+                                .setCode(notification.code)
+                                .setSubcode(notification.subcode);
+                    });
                 }
 
                 @Override
@@ -581,9 +589,11 @@ public class BmpParser implements TcpParser {
 
                 @Override
                 public void visit(final RemoteBgpNotification remoteBgpNotification) {
-                    message.getRemoteBgpNotificationBuilder()
-                            .setCode(remoteBgpNotification.notification.code)
-                            .setSubcode(remoteBgpNotification.notification.subcode);
+                    remoteBgpNotification.notification.ifPresent(notification -> {
+                        message.getRemoteBgpNotificationBuilder()
+                                .setCode(notification.code)
+                                .setSubcode(notification.subcode);
+                    });
                 }
 
                 @Override
@@ -719,26 +729,32 @@ public class BmpParser implements TcpParser {
             final Transport.RouteMonitoringPacket.Builder message = this.message.getRouteMonitoringBuilder();
             message.setPeer(peer(packet.peerHeader));
 
-            for (final UpdatePacket.Prefix prefix : packet.updateMessage.withdrawRoutes) {
-                message.addWithdrawsBuilder()
-                        .setPrefix(address(prefix.prefix))
-                        .setLength(prefix.length);
-            }
+            packet.updateMessage.ifPresent(updateMessage -> {
+                for (final UpdatePacket.Prefix prefix : updateMessage.withdrawRoutes) {
+                    message.addWithdrawsBuilder()
+                            .setPrefix(address(prefix.prefix))
+                            .setLength(prefix.length);
+                }
 
-            for (final UpdatePacket.Prefix prefix : packet.updateMessage.reachableRoutes) {
-                message.addReachablesBuilder()
-                        .setPrefix(address(prefix.prefix))
-                        .setLength(prefix.length);
-            }
+                for (final UpdatePacket.Prefix prefix : updateMessage.reachableRoutes) {
+                    message.addReachablesBuilder()
+                            .setPrefix(address(prefix.prefix))
+                            .setLength(prefix.length);
+                }
 
-            for (final UpdatePacket.PathAttribute attribute : packet.updateMessage.pathAttributes) {
-                message.addAttributes(pathAttribute(attribute));
-            }
+                for (final UpdatePacket.PathAttribute attribute : updateMessage.pathAttributes) {
+                    message.addAttributes(pathAttribute(attribute));
+                }
+            });
         }
 
         @Override
         public void visit(final RouteMirroringPacket packet) {
             // Don't send out mirrored BGP packets.
+        }
+
+        @Override
+        public void visit(final UnknownPacket packet) {
         }
     }
 

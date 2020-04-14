@@ -152,7 +152,7 @@ public class StatisticsReportPacket implements Packet {
             }
 
             @Override
-            public Metric parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+            public Metric parse(final ByteBuf buffer, final Void parameter, final Optional<PeerInfo> peerInfo) {
                 return this.parser.apply(buffer);
             }
         }
