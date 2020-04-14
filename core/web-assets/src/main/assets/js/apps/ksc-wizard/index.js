@@ -9,11 +9,13 @@ const $ = require('vendor/jquery-js');
 const angular = require('vendor/angular-js');
 const bootbox = require('vendor/bootbox-js');
 require('lib/onms-http');
+require('apps/onms-default-apps');
 
 import Util from 'lib/util';
 
 angular.module('onms-ksc-wizard', [
   'onms.http',
+  'onms.default.apps',
   'ui.bootstrap',
   'angular-growl'
 ])

@@ -62,6 +62,11 @@ public class DeleteGetNodesServlet extends HttpServlet {
     // "SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
     "SELECT nodeid, nodelabel FROM node WHERE nodetype != 'D' ORDER BY nodelabel, nodeid";
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
