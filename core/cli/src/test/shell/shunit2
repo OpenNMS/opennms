@@ -1,8 +1,9 @@
 #! /bin/sh
 # vim:et:ft=sh:sts=2:sw=2
 #
-# Copyright 2008-2018 Kate Ward. All Rights Reserved.
+# Copyright 2008-2020 Kate Ward. All Rights Reserved.
 # Released under the Apache 2.0 license.
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # shUnit2 -- Unit testing framework for Unix shell scripts.
 # https://github.com/kward/shunit2
@@ -19,7 +20,7 @@
 
 # Return if shunit2 already loaded.
 command [ -n "${SHUNIT_VERSION:-}" ] && exit 0
-SHUNIT_VERSION='2.1.8pre'
+SHUNIT_VERSION='2.1.8'
 
 # Return values that scripts can use.
 SHUNIT_TRUE=0
@@ -118,6 +119,7 @@ __shunit_reportGenerated=${SHUNIT_FALSE}  # Is report generated.
 __shunit_script=''  # Filename of unittest script (standalone mode).
 __shunit_skip=${SHUNIT_FALSE}  # Is skipping enabled.
 __shunit_suite=''  # Suite of tests to execute.
+__shunit_clean=${SHUNIT_FALSE}  # _shunit_cleanup() was already called.
 
 # ANSI colors (populated by _shunit_configureColor()).
 __shunit_ansi_none=''
@@ -529,7 +531,7 @@ assertFalse() {
   # shellcheck disable=SC2090
   ${_SHUNIT_LINENO_}
   if command [ $# -lt 1 -o $# -gt 2 ]; then
-    _shunit_error "assertFalse() quires one or two arguments; $# given"
+    _shunit_error "assertFalse() requires one or two arguments; $# given"
     _shunit_assertFail
     return ${SHUNIT_ERROR}
   fi
@@ -900,7 +902,7 @@ _shunit_mktempDir() {
   # shellcheck disable=SC2039
   if command [ -r '/dev/urandom' -a -x '/usr/bin/od' ]; then
     _shunit_random_=`/usr/bin/od -vAn -N4 -tx4 </dev/urandom \
-        |sed 's/^[^0-9a-f]*//'`
+        |command sed 's/^[^0-9a-f]*//'`
   elif command [ -n "${RANDOM:-}" ]; then
     # $RANDOM works
     _shunit_random_=${RANDOM}${RANDOM}${RANDOM}$$
@@ -947,28 +949,40 @@ EOF
 _shunit_cleanup() {
   _shunit_name_=$1
 
-  case ${_shunit_name_} in
-    EXIT) _shunit_signal_=0 ;;
-    INT) _shunit_signal_=2 ;;
-    TERM) _shunit_signal_=15 ;;
+  case "${_shunit_name_}" in
+    EXIT) ;;
+    INT) _shunit_signal_=130 ;;  # 2+128
+    TERM) _shunit_signal_=143 ;;  # 15+128
     *)
       _shunit_error "unrecognized trap value (${_shunit_name_})"
       _shunit_signal_=0
       ;;
   esac
-
-  # Do our work.
-  command rm -fr "${__shunit_tmpDir}"
-
-  # Exit for all non-EXIT signals.
   if command [ "${_shunit_name_}" != 'EXIT' ]; then
     _shunit_warn "trapped and now handling the (${_shunit_name_}) signal"
-    # Disable EXIT trap.
-    trap 0
-    # Add 128 to signal and exit.
-    exit "`expr "${_shunit_signal_}" + 128`"
-  elif command [ ${__shunit_reportGenerated} -eq ${SHUNIT_FALSE} ] ; then
-    _shunit_assertFail 'Unknown failure encountered running a test'
+  fi
+
+  # Do our work.
+  if command [ ${__shunit_clean} -eq ${SHUNIT_FALSE} ]; then
+    # Ensure tear downs are only called once.
+    __shunit_clean=${SHUNIT_TRUE}
+
+    tearDown
+    command [ $? -eq ${SHUNIT_TRUE} ] \
+        || _shunit_warn "tearDown() returned non-zero return code."
+    oneTimeTearDown
+    command [ $? -eq ${SHUNIT_TRUE} ] \
+        || _shunit_warn "oneTimeTearDown() returned non-zero return code."
+
+    command rm -fr "${__shunit_tmpDir}"
+  fi
+
+  if command [ "${_shunit_name_}" != 'EXIT' ]; then
+    # Handle all non-EXIT signals.
+    trap - 0  # Disable EXIT trap.
+    exit ${_shunit_signal_}
+  elif command [ ${__shunit_reportGenerated} -eq ${SHUNIT_FALSE} ]; then
+    _shunit_assertFail 'unknown failure encountered running a test'
     _shunit_generateReport
     exit ${SHUNIT_ERROR}
   fi
@@ -1070,6 +1084,8 @@ _shunit_execSuite() {
 # Output:
 #   string: the report of successful and failed tests, as well as totals.
 _shunit_generateReport() {
+  command [ "${__shunit_reportGenerated}" -eq ${SHUNIT_TRUE} ] && return
+
   _shunit_ok_=${SHUNIT_TRUE}
 
   # If no exit code was provided, determine an appropriate one.
@@ -1187,7 +1203,7 @@ _shunit_escapeCharInStr() {
 
   # Escape the character.
   # shellcheck disable=SC1003,SC2086
-  echo ''${_shunit_s_}'' |sed 's/\'${_shunit_c_}'/\\\'${_shunit_c_}'/g'
+  echo ''${_shunit_s_}'' |command sed 's/\'${_shunit_c_}'/\\\'${_shunit_c_}'/g'
 
   unset _shunit_c_ _shunit_s_
 }
@@ -1226,8 +1242,8 @@ _shunit_extractTestFunctions() {
   # function name, and output everything on a single line.
   _shunit_regex_='^\s*((function test[A-Za-z0-9_-]*)|(test[A-Za-z0-9_-]* *\(\)))'
   # shellcheck disable=SC2196
-  egrep -- "${_shunit_regex_}" "${_shunit_script_}" \
-  |sed 's/^[^A-Za-z0-9_-]*//;s/^function //;s/\([A-Za-z0-9_-]*\).*/\1/g' \
+  egrep "${_shunit_regex_}" "${_shunit_script_}" \
+  |command sed 's/^[^A-Za-z0-9_-]*//;s/^function //;s/\([A-Za-z0-9_-]*\).*/\1/g' \
   |xargs
 
   unset _shunit_regex_ _shunit_script_
@@ -1238,7 +1254,7 @@ _shunit_extractTestFunctions() {
 #
 
 # Determine the operating mode.
-if command [ $# -eq 0 ]; then
+if command [ $# -eq 0 -o "${1:-}" = '--' ]; then
   __shunit_script=${__SHUNIT_PARENT}
   __shunit_mode=${__SHUNIT_MODE_SOURCED}
 else
@@ -1285,11 +1301,24 @@ oneTimeSetUp
 command [ $? -eq ${SHUNIT_TRUE} ] \
     || _shunit_fatal "oneTimeSetUp() returned non-zero return code."
 
-# Execute the suite function defined in the parent test script.
-# DEPRECATED as of 2.1.0.
-suite
+# Command line selected tests or suite selected tests
+if command [ "$#" -ge 2 ]; then
+  # Argument $1 is either the filename of tests or '--'; either way, skip it.
+  shift
+  # Remaining arguments ($2 .. $#) are assumed to be test function names.
+  # Interate through all remaining args in "$@" in a POSIX (likely portable) way.
+  # Helpful tip: https://unix.stackexchange.com/questions/314032/how-to-use-arguments-like-1-2-in-a-for-loop
+  for _shunit_arg_ do
+    suite_addTest "${_shunit_arg_}"
+  done
+  unset _shunit_arg_
+else
+  # Execute the suite function defined in the parent test script.
+  # DEPRECATED as of 2.1.0.
+  suite
+fi
 
-# If no suite function was defined, dynamically build a list of functions.
+# If no tests or suite specified, dynamically build a list of functions.
 if command [ -z "${__shunit_suite}" ]; then
   shunit_funcs_=`_shunit_extractTestFunctions "${__shunit_script}"`
   for shunit_func_ in ${shunit_funcs_}; do
