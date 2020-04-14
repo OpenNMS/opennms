@@ -337,20 +337,16 @@ workflows:
     <<: *defaults
     jobs:
       - build
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - horizon-rpm-build:
           requires:
             - build
-          filters:
-            branches:
-              ignore:
-                - /^from-foundation.*/
       - integration-test:
           requires:
             - build
-          filters:
-            branches:
-              ignore:
-                - /^from-foundation.*/
       - smoke-test-full:
           requires:
             - horizon-rpm-build
@@ -364,8 +360,6 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
-              ignore:
-                - /^from-foundation.*/
       - smoke-test-minimal:
           requires:
             - horizon-rpm-build
@@ -376,7 +370,6 @@ workflows:
                 - develop
                 - /^release-.*/
                 - /^foundation.*/
-                - /^from-foundation.*/
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
