@@ -113,7 +113,7 @@
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>
+                <artifactItem>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp
                   <groupId>org.opennms.features</groupId>
                   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
                   <version>${project.version}</version>
@@ -182,15 +182,6 @@
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>opennms-remote-poller-windows</artifactId>
       <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <!-- Make sure that remote-poller-jnlp.tar.gz builds before this assembly -->
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-      <version>${project.version}</version>
-      <classifier>jnlp</classifier>
-      <type>tar.gz</type>
       <scope>provided</scope>
     </dependency>
 
