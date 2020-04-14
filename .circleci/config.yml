@@ -91,6 +91,9 @@ commands:
             name: Remove OpenNMS artifacts from cache
             command: |
               rm -rf ~/.m2/repository/org/opennms
+        - run:
+            name: Remove old artifacts to keep workspace size down
+            command: .circleci/scripts/clean-m2.sh
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -237,17 +240,13 @@ commands:
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+              -DupdatePolicy=never -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
-              install --builder smart --threads << parameters.number-vcpu >>
-      - run:
-          name: Compile smoke tests
-            # Compile the smoke tests, but don't run them yet
-            # We want to make sure that they compile and also leverage the caching that is setup here
-            # so that the artifacts required to run the smoke tests are cached as well without the need
-            # to maintain another cache
-          command: |
-            cd smoke-test && mvn install -DskipTests=true -DskipITs=true
+              install --batch-mode --builder smart --threads << parameters.number-vcpu >> \
+              -Prun-expensive-tasks -Psmoke
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
