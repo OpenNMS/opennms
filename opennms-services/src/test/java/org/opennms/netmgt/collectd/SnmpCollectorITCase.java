@@ -118,6 +118,9 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
         setStartEventd(false);
         super.setUp();
         
+        SnmpUtils.unsetStrategyResolver();
+        System.getProperties().remove("org.opennms.snmp.strategyClass");
+
         m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties").getURL(), InetAddressUtils.str(myLocalHost()) + "/9161");
         
         m_config = new MockDataCollectionConfig();
@@ -139,6 +142,10 @@ public abstract class SnmpCollectorITCase extends OpenNMSITCase {
     @Override
     public void tearDown() throws Exception {
         m_mockAgent.shutDownAndWait();
+
+        SnmpUtils.unsetStrategyResolver();
+        System.getProperties().remove("org.opennms.snmp.strategyClass");
+
         super.tearDown();
     }
     
