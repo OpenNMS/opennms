@@ -9,7 +9,7 @@
   <groupId>org.opennms.assemblies</groupId>
   <artifactId>org.opennms.assemblies.remote-poller-windows</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller (Windows)</name>
+  <name>OpenNMS Remote Poller (Windows, Jar)</name>
   <url>http://maven.apache.org</url>
   <build>
     <resources>

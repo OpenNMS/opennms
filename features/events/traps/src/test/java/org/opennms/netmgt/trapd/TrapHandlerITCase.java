@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -119,6 +120,12 @@ public class TrapHandlerITCase implements InitializingBean {
         MockLogAppender.setupLogging();
     }
     
+    @AfterClass
+    public static void resetStrategyClass() {
+        SnmpUtils.setStrategyResolver(null);
+        System.getProperties().remove("org.opennms.snmp.strategyClass");
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
