@@ -1254,7 +1254,7 @@
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
-    <elasticsearchNettyVersion>4.1.30.Final</elasticsearchNettyVersion>
+    <elasticsearchNettyVersion>4.1.43.Final</elasticsearchNettyVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <fopVersion>1.0</fopVersion>
