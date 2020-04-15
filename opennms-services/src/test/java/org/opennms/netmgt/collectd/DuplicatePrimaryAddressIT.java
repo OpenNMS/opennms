@@ -31,8 +31,11 @@ package org.opennms.netmgt.collectd;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -52,7 +55,9 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSet;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Filter;
@@ -234,6 +239,7 @@ public class DuplicatePrimaryAddressIT {
         EasyMock.expect(m_ifaceDao.load(2)).andReturn(ip1).anyTimes();
         EasyMock.expect(m_ifaceDao.load(4)).andReturn(ip2).anyTimes();
 
+        EasyMock.expect(m_filterDao.getActiveIPAddressList(anyObject())).andReturn(Arrays.asList(InetAddressUtils.addr("192.168.1.1"))).anyTimes();
         m_mockUtils.replayAll();
 
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();
@@ -246,6 +252,15 @@ public class DuplicatePrimaryAddressIT {
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setFilterDao(m_filterDao);
         m_collectd.setPersisterFactory(new MockPersisterFactory());
+
+        final String threshdConfig = "<threshd-configuration threads=\"5\">"
+                + "  <package name=\"testPackage\">"
+                + "    <filter>IPADDR != '0.0.0.0'</filter>"
+                + "  </package>"
+                + "</threshd-configuration>";
+        final InputStream threshdConfigStream = new ByteArrayInputStream(threshdConfig.getBytes());
+        final ThreshdConfigFactory threshdFactory = new ThreshdConfigFactory(threshdConfigStream, OpennmsServerConfigFactory.getInstance().getServerName(), false);
+        ThreshdConfigFactory.setInstance(threshdFactory);
 
         m_collectd.afterPropertiesSet();
         m_collectd.start();
