@@ -178,7 +178,8 @@ public class CollectdIntegrationTest extends TestCase {
         EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
         
         m_filterDao.flushActiveIpAddressListCache();
-        
+        EasyMock.expectLastCall().atLeastOnce();
+
         EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
         
         createGetPackagesExpectation(svc);
