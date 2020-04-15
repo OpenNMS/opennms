@@ -41,6 +41,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -115,6 +116,12 @@ public class TrapHandlerITCase implements InitializingBean {
         MockLogAppender.setupLogging();
     }
     
+    @AfterClass
+    public static void resetStrategyClass() {
+        SnmpUtils.setStrategyResolver(null);
+        System.getProperties().remove("org.opennms.snmp.strategyClass");
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -394,7 +401,7 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testNodeGainedModifiesIpMgr() throws Exception {
-        long nodeId = 1;
+        long nodeId = m_nodeId;
         m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
