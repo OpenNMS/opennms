@@ -344,7 +344,11 @@ workflows:
   build-deploy:
     <<: *defaults
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - tarball-assembly:
           requires:
             - build
