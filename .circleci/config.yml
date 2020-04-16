@@ -309,7 +309,11 @@ workflows:
             - integration-test-with-coverage
   build-deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - meridian-rpm-build:
           requires:
             - build
