@@ -26,7 +26,7 @@ echo "#### Generate project structure .json"
 (cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
       -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
       -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0)
-mvn org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+mvn -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -47,17 +47,38 @@ echo "#### Installing other dependencies"
 # limit the sources we need to update
 sudo rm -f /etc/apt/sources.list.d/*
 # limit more sources and add mirrors
-echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
-deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
+echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ xenial main restricted
+deb http://debian.opennms.org stable main' | sudo tee /etc/apt/sources.list
+
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo apt-key add -
+
+sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
             sudo apt-get update && \
-            sudo apt-get install -f R-base rrdtool
+            RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
+            sudo apt-get install -f nsis r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6
+
+echo "#### Building Assembly Dependencies"
+mvn install -P'!checkstyle' \
+           -Pbuild-bamboo \
+           -DupdatePolicy=never \
+           -Dbuild.skip.tarball=true \
+           -Dmaven.test.skip.exec=true \
+           -DskipTests=true \
+           -DskipITs=true \
+           -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
+           -B \
+           "${CCI_FAILURE_OPTION:--fae}" \
+           -am \
+           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-mvn verify -P'!checkstyle' \
+mvn install -P'!checkstyle' \
+           -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
@@ -67,6 +88,9 @@ mvn verify -P'!checkstyle' \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \
+           -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+           -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
+           -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            -pl "$(< /tmp/this_node_projects paste -s -d, -)"
