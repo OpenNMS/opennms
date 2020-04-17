@@ -84,6 +84,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Route
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalBgpNotification;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalNoNotification;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.Reason;
@@ -393,8 +394,8 @@ public class BlackboxTest implements Packet.Visitor {
 
             @Override
             public void visit(RemoteBgpNotification remoteNotification) {
-                assertThat(remoteNotification.notification.header.length, is(21));
-                assertThat(remoteNotification.notification.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.NOTIFICATION));
+                assertThat(remoteNotification.notification.get().header.length, is(21));
+                assertThat(remoteNotification.notification.get().header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.NOTIFICATION));
             }
 
             @Override
@@ -423,18 +424,18 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.localAddress, is(InetAddressUtils.addr("10.0.255.7")));
         assertThat(packet.localPort, is(179));
         assertThat(packet.remotePort, is(49103));
-        assertThat(packet.sendOpenMessage.header.length, is(45));
-        assertThat(packet.sendOpenMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
-        assertThat(packet.sendOpenMessage.version, is(4));
-        assertThat(packet.sendOpenMessage.as, is(65002));
-        assertThat(packet.sendOpenMessage.id, is(InetAddressUtils.addr("192.168.10.7")));
-        assertThat(packet.sendOpenMessage.holdTime, is(90));
-        assertThat(packet.recvOpenMessage.header.length, is(45));
-        assertThat(packet.recvOpenMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
-        assertThat(packet.recvOpenMessage.version, is(4));
-        assertThat(packet.recvOpenMessage.as, is(64512));
-        assertThat(packet.recvOpenMessage.id, is(InetAddressUtils.addr("192.168.10.5")));
-        assertThat(packet.recvOpenMessage.holdTime, is(90));
+        assertThat(packet.sendOpenMessage.get().header.length, is(45));
+        assertThat(packet.sendOpenMessage.get().header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
+        assertThat(packet.sendOpenMessage.get().version, is(4));
+        assertThat(packet.sendOpenMessage.get().as, is(65002));
+        assertThat(packet.sendOpenMessage.get().id, is(InetAddressUtils.addr("192.168.10.7")));
+        assertThat(packet.sendOpenMessage.get().holdTime, is(90));
+        assertThat(packet.recvOpenMessage.get().header.length, is(45));
+        assertThat(packet.recvOpenMessage.get().header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.OPEN));
+        assertThat(packet.recvOpenMessage.get().version, is(4));
+        assertThat(packet.recvOpenMessage.get().as, is(64512));
+        assertThat(packet.recvOpenMessage.get().id, is(InetAddressUtils.addr("192.168.10.5")));
+        assertThat(packet.recvOpenMessage.get().holdTime, is(90));
         assertThat(packet.information.size(), is(0));
     }
 
@@ -450,42 +451,42 @@ public class BlackboxTest implements Packet.Visitor {
         assertThat(packet.peerHeader.id, is(InetAddressUtils.addr("192.168.10.5")));
         assertThat(packet.peerHeader.timestamp, either(is(Instant.ofEpochSecond(1574257996L))).or(is(Instant.ofEpochSecond(1574257061L))));
 
-        assertThat(packet.updateMessage.header.length, either(is(27)).or(is(47)));
-        assertThat(packet.updateMessage.header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.UPDATE));
+        assertThat(packet.updateMessage.get().header.length, either(is(27)).or(is(47)));
+        assertThat(packet.updateMessage.get().header.type, is(org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header.Type.UPDATE));
 
-        if (!packet.updateMessage.withdrawRoutes.isEmpty()) {
-            assertThat(packet.updateMessage.reachableRoutes, is(empty()));
-            assertThat(packet.updateMessage.withdrawRoutes.get(0).length, is(24));
-            assertThat(packet.updateMessage.withdrawRoutes.get(0).prefix, is(InetAddressUtils.addr("192.168.254.0")));
+        if (!packet.updateMessage.get().withdrawRoutes.isEmpty()) {
+            assertThat(packet.updateMessage.get().reachableRoutes, is(empty()));
+            assertThat(packet.updateMessage.get().withdrawRoutes.get(0).length, is(24));
+            assertThat(packet.updateMessage.get().withdrawRoutes.get(0).prefix, is(InetAddressUtils.addr("192.168.254.0")));
         } else {
-            assertThat(packet.updateMessage.withdrawRoutes, is(empty()));
-            assertThat(packet.updateMessage.reachableRoutes.get(0).length, is(24));
-            assertThat(packet.updateMessage.reachableRoutes.get(0).prefix, is(InetAddressUtils.addr("192.168.255.0")));
+            assertThat(packet.updateMessage.get().withdrawRoutes, is(empty()));
+            assertThat(packet.updateMessage.get().reachableRoutes.get(0).length, is(24));
+            assertThat(packet.updateMessage.get().reachableRoutes.get(0).prefix, is(InetAddressUtils.addr("192.168.255.0")));
         }
 
-        assertThat(packet.updateMessage.pathAttributes.size(), either(is(0)).or(is(3)));
+        assertThat(packet.updateMessage.get().pathAttributes.size(), either(is(0)).or(is(3)));
 
-        if (packet.updateMessage.pathAttributes.size() > 0) {
-            assertThat(packet.updateMessage.pathAttributes.get(0).optional, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(0).transitive, is(true));
-            assertThat(packet.updateMessage.pathAttributes.get(0).partial, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(0).extended, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(0).type, is(UpdatePacket.PathAttribute.Type.ORIGIN));
-            assertThat(packet.updateMessage.pathAttributes.get(0).length, is(1));
-            packet.updateMessage.pathAttributes.get(0).attribute.accept(new AttributeVisitorAdapter() {
+        if (packet.updateMessage.get().pathAttributes.size() > 0) {
+            assertThat(packet.updateMessage.get().pathAttributes.get(0).optional, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(0).transitive, is(true));
+            assertThat(packet.updateMessage.get().pathAttributes.get(0).partial, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(0).extended, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(0).type, is(UpdatePacket.PathAttribute.Type.ORIGIN));
+            assertThat(packet.updateMessage.get().pathAttributes.get(0).length, is(1));
+            packet.updateMessage.get().pathAttributes.get(0).attribute.accept(new AttributeVisitorAdapter() {
                 @Override
                 public void visit(Origin origin) {
                     assertThat(origin.value, is(Origin.Value.INCOMPLETE));
                 }
             });
 
-            assertThat(packet.updateMessage.pathAttributes.get(1).optional, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(1).transitive, is(true));
-            assertThat(packet.updateMessage.pathAttributes.get(1).partial, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(1).extended, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(1).type, is(UpdatePacket.PathAttribute.Type.AS_PATH));
-            assertThat(packet.updateMessage.pathAttributes.get(1).length, is(6));
-            packet.updateMessage.pathAttributes.get(1).attribute.accept(new AttributeVisitorAdapter() {
+            assertThat(packet.updateMessage.get().pathAttributes.get(1).optional, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(1).transitive, is(true));
+            assertThat(packet.updateMessage.get().pathAttributes.get(1).partial, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(1).extended, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(1).type, is(UpdatePacket.PathAttribute.Type.AS_PATH));
+            assertThat(packet.updateMessage.get().pathAttributes.get(1).length, is(6));
+            packet.updateMessage.get().pathAttributes.get(1).attribute.accept(new AttributeVisitorAdapter() {
                 @Override
                 public void visit(AsPath asPath) {
                     assertThat(asPath.segments.size(), is(1));
@@ -494,13 +495,13 @@ public class BlackboxTest implements Packet.Visitor {
                 }
             });
 
-            assertThat(packet.updateMessage.pathAttributes.get(2).optional, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(2).transitive, is(true));
-            assertThat(packet.updateMessage.pathAttributes.get(2).partial, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(2).extended, is(false));
-            assertThat(packet.updateMessage.pathAttributes.get(2).type, is(UpdatePacket.PathAttribute.Type.NEXT_HOP));
-            assertThat(packet.updateMessage.pathAttributes.get(2).length, is(4));
-            packet.updateMessage.pathAttributes.get(2).attribute.accept(new AttributeVisitorAdapter() {
+            assertThat(packet.updateMessage.get().pathAttributes.get(2).optional, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(2).transitive, is(true));
+            assertThat(packet.updateMessage.get().pathAttributes.get(2).partial, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(2).extended, is(false));
+            assertThat(packet.updateMessage.get().pathAttributes.get(2).type, is(UpdatePacket.PathAttribute.Type.NEXT_HOP));
+            assertThat(packet.updateMessage.get().pathAttributes.get(2).length, is(4));
+            packet.updateMessage.get().pathAttributes.get(2).attribute.accept(new AttributeVisitorAdapter() {
                 @Override
                 public void visit(NextHop nextHop) {
                     assertThat(nextHop.address, is(InetAddressUtils.addr("10.0.255.5")));
@@ -564,5 +565,10 @@ public class BlackboxTest implements Packet.Visitor {
     @Override
     public void visit(RouteMirroringPacket packet) {
         fail("Wrong Packet RouteMirroringPacket");
+    }
+
+    @Override
+    public void visit(final UnknownPacket packet) {
+        fail("Wrong Packet UnknownPacket");
     }
 }

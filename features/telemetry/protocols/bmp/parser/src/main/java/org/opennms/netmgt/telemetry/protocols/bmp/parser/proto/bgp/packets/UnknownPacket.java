@@ -26,11 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down;
+package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
+import java.util.Objects;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Header;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
@@ -38,8 +40,11 @@ import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
 
-public class Unknown implements Reason {
-    public Unknown(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+public class UnknownPacket implements Packet {
+    public final Header header;
+
+    public UnknownPacket(final Header header, final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
+        this.header = Objects.requireNonNull(header);
     }
 
     @Override
@@ -50,6 +55,7 @@ public class Unknown implements Reason {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+                .add("header", this.header)
                 .toString();
     }
 }

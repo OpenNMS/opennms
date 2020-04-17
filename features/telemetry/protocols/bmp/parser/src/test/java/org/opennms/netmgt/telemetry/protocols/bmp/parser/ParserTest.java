@@ -49,11 +49,12 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Route
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-public class ParserTest implements Packet.Visitor {
+public class ParserTest {
     private final static Path FILE_NMS_12643 = Paths.get("src/test/resources/NMS-12643.raw");
     private final static Path FILE_NMS_12649 = Paths.get("src/test/resources/NMS-12649.raw");
 
@@ -67,11 +68,10 @@ public class ParserTest implements Packet.Visitor {
                 final Header header = new Header(slice(buf, Header.SIZE));
                 final Packet packet = header.parsePayload(slice(buf, header.length - Header.SIZE), new PeerAccessor() {
                     @Override
-                    public Optional<PeerInfo> getPeerInfo(PeerHeader peerHeader) {
+                    public Optional<PeerInfo> getPeerInfo(final PeerHeader peerHeader) {
                         return Optional.empty();
                     }
                 });
-                packet.accept(this);
             }
         }
     }
@@ -84,33 +84,5 @@ public class ParserTest implements Packet.Visitor {
     @Test
     public void testNMS12649() throws Exception {
         checkFile(FILE_NMS_12649);
-    }
-
-    @Override
-    public void visit(InitiationPacket packet) {
-    }
-
-    @Override
-    public void visit(TerminationPacket packet) {
-    }
-
-    @Override
-    public void visit(PeerUpPacket packet) {
-    }
-
-    @Override
-    public void visit(PeerDownPacket packet) {
-    }
-
-    @Override
-    public void visit(StatisticsReportPacket packet) {
-    }
-
-    @Override
-    public void visit(RouteMonitoringPacket packet) {
-    }
-
-    @Override
-    public void visit(RouteMirroringPacket packet) {
     }
 }

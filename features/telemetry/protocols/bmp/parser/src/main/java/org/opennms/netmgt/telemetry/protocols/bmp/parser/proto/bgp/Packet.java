@@ -34,6 +34,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.KeepalivePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.NotificationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.OpenPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UnknownPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
@@ -52,6 +53,7 @@ public interface Packet {
         void visit(final UpdatePacket packet);
         void visit(final NotificationPacket packet);
         void visit(final KeepalivePacket packet);
+        void visit(final UnknownPacket packet);
     }
 
     static Packet parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
