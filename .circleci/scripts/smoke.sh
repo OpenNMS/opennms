@@ -21,7 +21,7 @@ find_tests()
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
-export MAVEN_OPTS="-Xms1g -Xms1g"
+export MAVEN_OPTS="-Xmx1g -Xms1g"
 
 cd ~/project/smoke-test
 if [ $MINIMAL -eq 1 ]; then
