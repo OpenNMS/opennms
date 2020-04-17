@@ -29,13 +29,13 @@
 package org.opennms.features.kafka.producer.collection;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.Matchers.equalTo;
+import static org.opennms.netmgt.collection.api.CollectionResource.RESOURCE_TYPE_LATENCY;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -47,6 +47,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,18 +58,20 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.features.kafka.producer.KafkaForwarderIT.KafkaMessageConsumerRunner;
-import org.opennms.features.kafka.producer.collection.CollectionSetMapper;
+import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -85,6 +88,8 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
 public class KafkaPersisterIT {
+
+    static final String IP_ADDRESS = "172.0.0.1";
 
     @Autowired
     private DatabasePopulator databasePopulator;
@@ -136,16 +141,65 @@ public class KafkaPersisterIT {
         OnmsNode node = databasePopulator.getNode5();
         CollectionAgent agent = new MockCollectionAgent(node.getId(), "test", InetAddress.getLocalHost());
         NodeLevelResource nodeResource = new NodeLevelResource(node.getId());
+
         CollectionSet collectionSet = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
                 .withNumericAttribute(nodeResource, "group1", "node5", 105, AttributeType.GAUGE)
-                .withNumericAttribute(nodeResource, "group2", "node5", 1050, AttributeType.GAUGE).build();
+                .withNumericAttribute(nodeResource, "group2", "node5", 1050, AttributeType.GAUGE)
+                .withNumericAttribute(new ResponseTimeResource(), "ICMP", "ICMP", 120, AttributeType.GAUGE).build();
         persister.visitCollectionSet(collectionSet);
         
-        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSet(), not(nullValue()));
-        assertThat(kafkaConsumer.getCollectionSet().getResource(0).getNode().getNodeId(), equalTo(node.getId().longValue()));
-        assertThat(kafkaConsumer.getCollectionSet().getResource(0).getNumericCount(), equalTo(2));
-        assertThat(kafkaConsumer.getCollectionSet().getResource(0).getNumeric(1).getValue(), equalTo(1050.0));
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues(), not(Matchers.empty()));
+        assertThat(kafkaConsumer.getCollectionSetValues().get(0).getResource(0).getNode().getNodeId(), equalTo(node.getId().longValue()));
+        assertThat(kafkaConsumer.getCollectionSetValues().get(0).getResource(0).getNumericCount(), equalTo(2));
+        assertThat(kafkaConsumer.getCollectionSetValues().get(0).getResource(1).getResponse().getInstance(), equalTo(IP_ADDRESS));
 
     }
+
+    private class ResponseTimeResource implements Resource {
+
+
+
+        @Override
+        public Resource getParent() {
+            return null;
+        }
+
+        @Override
+        public String getTypeName() {
+            return RESOURCE_TYPE_LATENCY;
+        }
+
+        @Override
+        public String getInstance() {
+            return IP_ADDRESS;
+        }
+
+        @Override
+        public String getUnmodifiedInstance() {
+            return null;
+        }
+
+        @Override
+        public String getLabel(CollectionResource resource) {
+            return null;
+        }
+
+        @Override
+        public ResourcePath getPath(CollectionResource resource) {
+            return ResourcePath.get(IP_ADDRESS);
+        }
+
+        @Override
+        public Date getTimestamp() {
+            return null;
+        }
+
+        @Override
+        public Resource resolve() {
+            return this;
+        }
+    }
+
+
 
 }
