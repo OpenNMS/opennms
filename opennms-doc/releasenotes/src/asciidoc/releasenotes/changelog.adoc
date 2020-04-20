@@ -10,6 +10,7 @@ Release 26.0.0 is the first release in the Horizon 26 series.
 
 It contains a large number of bug fixes and new features, most notably initial support for
 handling the BGP Monitoring Protocol in Telemetryd.
+It also contains a few security fixes for issues reported by Johannes Moritz.
 
 For a high-level overview of what has changed in Horizon 26, see
 link:https://docs.opennms.org/opennms/releases/26.0.0/releasenotes/releasenotes.html#releasenotes-26[What's New in OpenNMS Horizon 26].
