@@ -1,0 +1,12 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+[[ga-admin-legal]]
+= Legal Notice
+
+Copyright © 2015–{docyear} The OpenNMS Group, Inc.
+
+OpenNMS is a registered trademark of The OpenNMS Group, Inc.
+
+All other trademarks are the property of their respective owners.
