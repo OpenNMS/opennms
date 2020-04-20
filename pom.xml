@@ -161,6 +161,33 @@
   </extensions>
   <pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>${sonarVersion}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>apache-jsp</artifactId>
+            <version>${jettyVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.mortbay.jasper</groupId>
+                <artifactId>apache-el</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.mortbay.jasper</groupId>
+                <artifactId>apache-jsp</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <!--
       <plugin>
         <groupId>ch.elca.el4j.maven.plugins</groupId>
