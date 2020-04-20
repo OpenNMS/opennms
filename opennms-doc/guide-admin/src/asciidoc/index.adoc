@@ -15,6 +15,10 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+[[ga-admin-about]]
+== About This Guide
+include::text/about/about.adoc[]
+
 [[ga-admin-datachoices]]
 == Data Choices
 include::text/datachoices.adoc[]
