@@ -1469,6 +1469,13 @@
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/4.1.3</bundle>
     </feature>
+    <feature name="opennms-search" version="${project.version}" description="OpenNMS :: Features :: Search">
+        <details>OpenNMS :: Features :: Search</details>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.providers/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.rest/${project.version}</bundle>
+    </feature>
     <feature name="ifttt-integration" version="${project.version}" description="OpenNMS :: Features :: IFTTT Integration">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature>opennms-dao-api</feature>

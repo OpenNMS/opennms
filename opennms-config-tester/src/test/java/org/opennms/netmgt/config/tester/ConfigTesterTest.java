@@ -621,6 +621,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testStaticSearchActionsConfig() {
+        ignoreConfigFile("search-actions.xml");
+    }
+
+    @Test
     public void zz001testAllConfigs() {
         ConfigTester.main(new String[] { "-a" });
     }

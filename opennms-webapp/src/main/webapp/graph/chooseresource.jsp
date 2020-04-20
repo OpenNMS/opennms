@@ -49,6 +49,7 @@
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="onms-resources" />
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -58,7 +59,7 @@
   <jsp:param name="breadcrumb" value="Choose" />
 </jsp:include>
 
-<div class="" ng-app="onms-resources" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
+<div class="" ng-controller="NodeResourcesCtrl" ng-init="init(${node},${reports},${endUrl})">
 
   <div growl></div>
 

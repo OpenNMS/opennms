@@ -51,6 +51,7 @@
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="onms-ksc-wizard" />
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
@@ -60,7 +61,7 @@
   <jsp:param name="breadcrumb" value="KSC Reports" />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-ksc-wizard" ng-controller="KSCWizardCtrl">
+<div class="container-fluid" ng-controller="KSCWizardCtrl">
 
   <div growl></div>
 

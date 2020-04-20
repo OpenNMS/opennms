@@ -47,7 +47,7 @@ public abstract class Element {
     private final TimeUnit implicitWaitUnit;
 
     public Element(final WebDriver driver, int implicitWait, TimeUnit implictWaitUnit) {
-        this.driver = driver;
+        this.driver = Objects.requireNonNull(driver);
         this.implicitWait = implicitWait;
         this.implicitWaitUnit = Objects.requireNonNull(implictWaitUnit);
     }
