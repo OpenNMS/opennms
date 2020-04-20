@@ -247,7 +247,7 @@ public class MultiprotocolReachableNlri implements Attribute {
         final List<String> labels = new ArrayList<>();
 
         while (buffer.readableBytes() > 0) {
-            final int data = BufferUtils.uint24(buffer);
+            final int data = BufferUtils.uint24(buffer) & 0x000FFFFF;
 
             final int label = data >> 4;
             final int exp = (data & 0x0000000E) >> 1;
