@@ -136,8 +136,8 @@ public class PrometheusCollectorTest {
         // Verify
         List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
         assertThat(collectionSetKeys, hasSize(26));
-        assertThat(collectionSetKeys, hasItem("0/flinkTaskManager/42bb6e71af3820977305d89635f47dbf/flink-task-manager/Network_TotalMemorySegments[null,3278.0]"));
-        assertThat(collectionSetKeys, hasItem("0/flinkTaskManager/42bb6e71af3820977305d89635f47dbf/flink-task-manager/JVM_GarbageCollector_G1_Old_Generation_Count[null,1.0]"));
+        assertThat(collectionSetKeys, hasItem("0/flinkTaskManager/42bb6e71af3820977305d89635f47dbf/flink-task-manager/Netwo_TotalMemoSegm[null,3278.0]"));
+        assertThat(collectionSetKeys, hasItem("0/flinkTaskManager/42bb6e71af3820977305d89635f47dbf/flink-task-manager/JV_GaCo_G1_Ol_Ge_Co[null,1.0]"));
         assertThat(collectionSetKeys, hasItem("0/flinkTaskManager/42bb6e71af3820977305d89635f47dbf/flink-task-manager/host[jw_dev_2,null]"));
     }
 
@@ -175,7 +175,7 @@ public class PrometheusCollectorTest {
         // Verify
         List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
         assertThat(collectionSetKeys, hasSize(629));
-        assertThat(collectionSetKeys, hasItem("0/flinkTask/058ef95d84f46825bd5592f3e3fc122a/flink-task/numRecordsOutPerSecond[null,0.1]"));
+        assertThat(collectionSetKeys, hasItem("0/flinkTask/058ef95d84f46825bd5592f3e3fc122a/flink-task/numRecorOutPerSecon[null,0.1]"));
         assertThat(collectionSetKeys, hasItem("0/flinkTask/058ef95d84f46825bd5592f3e3fc122a/flink-task/task_name[FlowAnalyzer_CalculateFlowStatistics_CalculateTopHostsByExporterAndInterface_CalculateTopHostsByExporterAndInterface_top_k_per_key____FlowAnalyzer_CalculateFlowStatistics_CalculateTopHostsByExporterAndInterface_CalculateTopHostsByExporterAndInterface_flatten_Values_Map_ParMultiDo_Anonymous_____FlowAnalyzer_CalculateFlowStatistics_CalculateTopHostsByExporterAndInterface_CalculateTopHostsByExporterAndInterface_top_k_for_window_ParMultiDo_Anonymous_,null]"));
     }
 

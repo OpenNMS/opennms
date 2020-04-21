@@ -107,6 +107,7 @@
           </restriction>
         </simpleType>
       </attribute>
+      <attribute name="compress-alias" type="boolean" default="true" />
     </complexType>
   </element>
   <element name="string-attribute">

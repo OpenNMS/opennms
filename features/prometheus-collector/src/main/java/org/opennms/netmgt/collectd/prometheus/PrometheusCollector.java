@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.collectd.prometheus;
 
+import static org.opennms.core.utils.ConfigFileConstants.RRD_DS_MAX_SIZE;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -201,7 +203,11 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
                     Expression exp = parser.parseExpression(attribute.getAliasExp());
                     Function<Metric, String> attributeNameMapper = (metric) -> {
                         StandardEvaluationContext context = new StandardEvaluationContext(metric);
-                        return exp.getValue(context, String.class);
+                        String name = exp.getValue(context, String.class);
+                        if (attribute.isCompressAlias()) {
+                            name = CamelCaseCompressor.compress(name, RRD_DS_MAX_SIZE);
+                        }
+                        return name;
                     };
                     Function<AttributeType, AttributeType> attributeTypeMapper = (knownType) -> {
                         // Use the configured type if set
