@@ -53,16 +53,6 @@
       <outputFileNameMapping></outputFileNameMapping>
       <includes><include>org.opennms:opennms-webapp:tar.gz:meta-inf:${project.version}</include></includes>
     </dependencySet>
-
-    <!-- Remoting webapp -->
-    <dependencySet>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useStrictFiltering>true</useStrictFiltering>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>jetty-webapps/opennms-remoting</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:war:${project.version}</include></includes>
-    </dependencySet>
   </dependencySets>
   <fileSets>
     <!-- Copy Hawtio to jetty-webapps -->

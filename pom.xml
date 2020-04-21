@@ -1967,11 +1967,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.http-remoting</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.assemblies</groupId>
         <artifactId>opennms-remote-poller-windows</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -4070,11 +4065,6 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.tuckey</groupId>
-        <artifactId>urlrewritefilter</artifactId>
-        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>

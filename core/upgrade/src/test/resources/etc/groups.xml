@@ -11,10 +11,5 @@
 			<comments>The administrators</comments>
 			<user>admin</user>
 		</group>
-		<group>
-			<name>Remoting Users</name>
-			<comments>Users with access for submitting remote poller management data.</comments>
-			<user>remoting</user>
-		</group>
 	</groups>
 </groupinfo>
