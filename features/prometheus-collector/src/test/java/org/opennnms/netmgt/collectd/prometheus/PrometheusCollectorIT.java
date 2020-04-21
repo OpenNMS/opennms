@@ -86,7 +86,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-public class PrometheusCollectorTest {
+public class PrometheusCollectorIT {
 
     private PrometheusCollector collector = new PrometheusCollector();
 
