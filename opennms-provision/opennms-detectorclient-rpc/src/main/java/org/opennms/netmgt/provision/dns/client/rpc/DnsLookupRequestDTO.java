@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.rpc.api.RpcRequest;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name = "dns-lookup-request")
 @XmlAccessorType(XmlAccessType.NONE)
 public class DnsLookupRequestDTO implements RpcRequest {
@@ -99,6 +101,11 @@ public class DnsLookupRequestDTO implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

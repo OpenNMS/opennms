@@ -41,13 +41,14 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
-import org.opennms.netmgt.provision.PreDetectCallback;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+
+import io.opentracing.Span;
 
 public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
@@ -67,7 +68,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
 
     private Map<String, String> attributes = new HashMap<>();
 
-    private PreDetectCallback preDetectCallback;
+    private Span span;
 
     private final LocationAwareDetectorClientRpcImpl client;
 
@@ -128,11 +129,10 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
     }
 
     @Override
-    public DetectorRequestBuilder withPreDetectCallback(PreDetectCallback preDetectCallback) {
-        this.preDetectCallback = preDetectCallback;
+    public DetectorRequestBuilder withParentSpan(Span span) {
+        this.span = span;
         return this;
     }
-
 
     /**
      * Builds the {@link DetectorRequestDTO} and executes the requested detector
@@ -164,7 +164,6 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.setSystemId(systemId);
         detectorRequestDTO.setClassName(className);
         detectorRequestDTO.setAddress(address);
-        detectorRequestDTO.setPreDetectCallback(preDetectCallback);
         // Update ttl from metadata
         String timeToLive = interpolatedAttributes.get(MetadataConstants.TTL);
         if (!Strings.isNullOrEmpty(timeToLive)) {
@@ -176,6 +175,7 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
         detectorRequestDTO.addDetectorAttributes(interpolatedAttributes);
         detectorRequestDTO.addTracingInfo(RpcRequest.TAG_CLASS_NAME, className);
         detectorRequestDTO.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(address));
+        detectorRequestDTO.setSpan(span);
 
         // Attempt to extract the port from the list of attributes
         Integer port = null;

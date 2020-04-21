@@ -57,5 +57,4 @@ public interface DetectRequest {
      */
     Map<String, String> getRuntimeAttributes();
 
-    void preDetect();
 }

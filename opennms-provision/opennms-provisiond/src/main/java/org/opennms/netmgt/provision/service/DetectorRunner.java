@@ -75,12 +75,12 @@ class DetectorRunner implements Async<Boolean> {
             LOG.info("Attemping to detect service {} on address {} at location {}", m_detectorConfig.getName(),
                     getHostAddress(), getLocationName());
             // Launch the detector
-
+            startSpan();
             m_service.getLocationAwareDetectorClient().detect().withClassName(m_detectorConfig.getPluginClass())
                     .withAddress(m_address).withNodeId(m_nodeId).withLocation(getLocationName())
                     .withAttributes(m_detectorConfig.getParameters().stream()
                             .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
-                    .withPreDetectCallback(this::startSpan)
+                    .withParentSpan(m_span)
                     .execute()
                     // After completion, run the callback
                     .whenComplete((res, ex) -> {
@@ -106,7 +106,7 @@ class DetectorRunner implements Async<Boolean> {
 
     private void startSpan() {
         if(m_parentSpan != null) {
-            m_span = m_service.buildAndStartSpan(m_detectorConfig.getName() + "-Detect", m_parentSpan.context());
+            m_span = m_service.buildAndStartSpan(m_detectorConfig.getName() + "-DetectRunner", m_parentSpan.context());
             m_span.setTag(DETECTOR_NAME, m_detectorConfig.getName());
             m_span.setTag(IP_ADDRESS, m_address.getHostAddress());
             m_span.setTag(LOCATION, getLocationName());

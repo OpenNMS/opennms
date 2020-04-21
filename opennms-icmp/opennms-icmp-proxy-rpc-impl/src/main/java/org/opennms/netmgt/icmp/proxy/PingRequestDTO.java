@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.rpc.api.RpcRequest;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name="ping-request")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PingRequestDTO implements RpcRequest {
@@ -127,6 +129,11 @@ public class PingRequestDTO implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

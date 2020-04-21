@@ -32,6 +32,8 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import io.opentracing.Span;
+
 public interface DetectorRequestBuilder {
 
     DetectorRequestBuilder withLocation(String location);
@@ -50,7 +52,7 @@ public interface DetectorRequestBuilder {
 
     DetectorRequestBuilder withNodeId(Integer nodeId);
 
-    DetectorRequestBuilder withPreDetectCallback(PreDetectCallback preDetectCallback);
+    DetectorRequestBuilder withParentSpan(Span span);
 
     CompletableFuture<Boolean> execute();
 
