@@ -237,7 +237,7 @@ commands:
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               install --batch-mode --builder smart --threads << parameters.number-vcpu >> \
-              -Prun-expensive-tasks -Psmoke
+              -Psmoke
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
