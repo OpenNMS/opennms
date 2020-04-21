@@ -89,6 +89,7 @@ import org.slf4j.LoggerFactory;
  *  * Support dynamically scheduling/rescheduling services
  *  * RP model associates state with individual RPs, whereas this doesn't work with our Minion model
  *    - the state should be associated with locations instead
+ *  * Save the state using m_locMonDao.saveStatusChange
  */
 public class PollerBackEndNG {
     private static final Logger LOG = LoggerFactory.getLogger(PollerBackEndNG.class);
