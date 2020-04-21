@@ -37,6 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,6 +56,9 @@ public class FileUpdateWatcherTest {
     
     @Before
     public void before() throws IOException {
+        // filewatcher doesn't work right on OSX
+        Assume.assumeFalse(System.getProperty("os.name").startsWith("Mac OS X"));
+
         testFile = tempFolder.newFile("testWatcher.log");
         fileWatcher = new FileUpdateWatcher(testFile.getAbsolutePath(), fileReload());
 
