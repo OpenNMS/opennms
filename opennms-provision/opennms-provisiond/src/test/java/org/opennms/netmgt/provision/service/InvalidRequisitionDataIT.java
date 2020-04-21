@@ -135,6 +135,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         m_eventManager.getEventAnticipator().anticipateEvent(getStarted(invalidAssetFieldResource));
         m_eventManager.getEventAnticipator().anticipateEvent(getSuccessful(invalidAssetFieldResource));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeAdded(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanStarted(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedInterface(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedService(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanCompleted(nextNodeId));
@@ -169,6 +170,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedInterface(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedService(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanCompleted(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanStarted(nextNodeId));
 
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
@@ -236,6 +238,12 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         return new EventBuilder( EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond" )
         .setNodeid(nodeId).setInterface(InetAddressUtils.addr("10.0.0.1")).setService("ICMP").getEvent();
     }
+
+    private Event getNodeScanStarted(final int nodeId) {
+        return new EventBuilder( EventConstants.PROVISION_SCHEDULED_NODE_SCAN_STARTED, "Provisiond" )
+                .setNodeid(nodeId).getEvent();
+    }
+
 
     private Event getNodeScanCompleted(final int nodeId) {
         return new EventBuilder( EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond" )

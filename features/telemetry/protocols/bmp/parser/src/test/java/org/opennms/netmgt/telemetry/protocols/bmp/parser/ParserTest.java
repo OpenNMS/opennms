@@ -57,6 +57,7 @@ import io.netty.buffer.Unpooled;
 public class ParserTest {
     private final static Path FILE_NMS_12643 = Paths.get("src/test/resources/NMS-12643.raw");
     private final static Path FILE_NMS_12649 = Paths.get("src/test/resources/NMS-12649.raw");
+    private final static Path FILE_NMS_12671 = Paths.get("src/test/resources/NMS-12671.raw");
 
     private void checkFile(final Path file) throws Exception {
         try (final FileChannel channel = FileChannel.open(file)) {
@@ -84,5 +85,10 @@ public class ParserTest {
     @Test
     public void testNMS12649() throws Exception {
         checkFile(FILE_NMS_12649);
+    }
+
+    @Test
+    public void testNMS12671() throws Exception {
+        checkFile(FILE_NMS_12671);
     }
 }
