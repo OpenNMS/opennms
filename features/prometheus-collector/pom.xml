@@ -104,11 +104,6 @@
       <artifactId>org.opennms.core.web</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.prometheus.client</groupId>
-      <artifactId>model</artifactId>
-      <version>0.0.2</version>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
