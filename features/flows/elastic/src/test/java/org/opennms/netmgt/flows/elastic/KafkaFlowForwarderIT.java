@@ -136,7 +136,7 @@ public class KafkaFlowForwarderIT {
                     jestClient, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(),
-                    3, 12000, aggregatedFlowRepository);
+                    3, 12000, aggregatedFlowRepository, 0);
             elasticFlowRepository.setEnableFlowForwarding(true);
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }

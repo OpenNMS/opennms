@@ -184,7 +184,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
                                  IndexSettings indexSettings, int bulkRetryCount, long maxFlowDurationMs,
-                                 AggregatedFlowRepository aggFlowRepository) {
+                                 AggregatedFlowRepository aggFlowRepository, long timeRangeAggregateThresholdMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);

@@ -105,13 +105,14 @@ public class FlowQueryIT {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
-
+        final IndexSettings settings = new IndexSettings();
+        settings.setIndexPrefix("flows");
         final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                3, 12000, aggregatedFlowRepository);
-        final IndexSettings settings = new IndexSettings();
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,
+                3, 12000, aggregatedFlowRepository, 0);
+
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 
         // Here we load the flows by building the documents ourselves,

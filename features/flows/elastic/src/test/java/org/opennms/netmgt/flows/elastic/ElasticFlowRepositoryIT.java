@@ -84,7 +84,7 @@ public class ElasticFlowRepositoryIT {
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    3, 12000, aggregatedFlowRepository);
+                    3, 12000, aggregatedFlowRepository, 0);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty

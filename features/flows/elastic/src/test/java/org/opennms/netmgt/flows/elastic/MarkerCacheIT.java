@@ -171,7 +171,7 @@ public class MarkerCacheIT {
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     sessionUtils, nodeDao, snmpInterfaceDao,
                     new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    3, 12000, aggregatedFlowRepository);
+                    3, 12000, aggregatedFlowRepository, 0);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));

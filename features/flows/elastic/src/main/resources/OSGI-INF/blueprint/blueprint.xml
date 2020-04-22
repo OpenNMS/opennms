@@ -35,6 +35,7 @@
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+            <cm:property name="timeRangeAggregateThresholdMs" value="0"/>
 
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
@@ -182,6 +183,7 @@
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
         <argument ref="aggregatedFlowRepository" />
+        <argument value="${timeRangeAggregateThresholdMs}" />
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
