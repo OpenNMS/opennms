@@ -48,8 +48,9 @@
           </execution>
         </executions>
       </plugin>
-<!-- 
-<plugin>
+<!-- Uncomment this block to regenerate the JAXB annotated classes from the XSD.
+     Useful when updating the XSD.
+  <plugin>
     <groupId>org.apache.cxf</groupId>
     <artifactId>cxf-xjc-plugin</artifactId>
     <version>3.1.0</version>

@@ -21,15 +21,15 @@ This collector provides tools for parsing and mapping the metrics to the collect
 
 ===== Collector Parameters
 
-.Collector specific parameters for the WsManCollector
+.Collector specific parameters for the PrometheusCollector
 [options="header, autowidth"]
 |===
-| Parameter       | Description                                   | Required | Default value
-| `collection`    | The name of the _WS-Man Collection_ to use    | required |
-| `url`           | HTTP URL to query for the metrics             | required |
-| `timeout`       | HTTP socket and read timeout in milliseconds  | optional | 10000 (10 seconds)
-| `retry`         | Number of retries before failing              | optional | 2
-| `header-*       | Optional headers to pass in the HTTP request  | optional | (none)
+| Parameter       | Description                                    | Required | Default value
+| `collection`    | The name of the _Prometheus Collection_ to use | required |
+| `url`           | HTTP URL to query for the metrics              | required |
+| `timeout`       | HTTP socket and read timeout in milliseconds   | optional | 10000 (10 seconds)
+| `retry`         | Number of retries before failing               | optional | 2
+| `header-*       | Optional headers to pass in the HTTP request   | optional | (none)
 |===
 
 
