@@ -57,7 +57,6 @@ import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Time;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -556,18 +555,8 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
-    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators() {
         throw new UnsupportedOperationException("not yet implemented");
-    }
-
-    @Override
-    public Package getFirstLocalPackageMatch(final String ipaddr) {
-        throw new UnsupportedOperationException("MockPollerConfig.getFirstLocalPackageMatch is not yet implemented");
-    }
-
-    @Override
-    public boolean isPolledLocally(final String ipaddr) {
-        throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
 
     @Override

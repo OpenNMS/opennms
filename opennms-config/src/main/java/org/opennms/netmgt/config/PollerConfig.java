@@ -43,7 +43,6 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -378,10 +377,9 @@ public interface PollerConfig extends PathOutageConfig {
     /**
      * <p>getServiceMonitorLocators</p>
      *
-     * @param context a {@link org.opennms.netmgt.poller.DistributionContext} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+    Collection<ServiceMonitorLocator> getServiceMonitorLocators();
 
     ServiceMonitorRegistry getServiceMonitorRegistry();
 
