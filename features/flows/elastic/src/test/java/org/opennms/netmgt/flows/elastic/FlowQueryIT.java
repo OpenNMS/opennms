@@ -111,7 +111,7 @@ public class FlowQueryIT {
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                 new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,
-                3, 12000, aggregatedFlowRepository, 0);
+                3, 12000, aggregatedFlowRepository);
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 

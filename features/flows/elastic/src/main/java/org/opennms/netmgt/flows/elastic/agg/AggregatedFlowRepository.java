@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic.agg;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +59,7 @@ public class AggregatedFlowRepository implements FlowRepository {
     public static final String NETFLOW_AGG_INDEX_PREFIX = "netflow_agg";
     private final JestClient jestClient;
 
-    public AggregatedFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, IndexSettings indexSettings) {
+    public AggregatedFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, IndexSettings indexSettings, long timeRangeAggregateThresholdMs) {
         this.jestClient = Objects.requireNonNull(jestClient);
     }
 

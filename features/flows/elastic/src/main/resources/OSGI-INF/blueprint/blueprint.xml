@@ -163,6 +163,7 @@
         <argument ref="jestClient"/>
         <argument ref="aggIndexStrategy"/>
         <argument ref="aggIndexSettings"/>
+        <argument value="${timeRangeAggregateThresholdMs}" />
     </bean>
 
     <!-- The repository -->
@@ -183,7 +184,6 @@
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
         <argument ref="aggregatedFlowRepository" />
-        <argument value="${timeRangeAggregateThresholdMs}" />
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->

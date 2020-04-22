@@ -104,7 +104,7 @@ public class DefaultDirectionIT {
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
                             classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                             new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                            3, 12000, aggregatedFlowRepository, 0), jestClient);
+                            3, 12000, aggregatedFlowRepository), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
                     FlowDocumentTest.getMockFlowSource());
