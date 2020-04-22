@@ -246,7 +246,16 @@ commands:
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               install --batch-mode --builder smart --threads << parameters.number-vcpu >> \
-              -Prun-expensive-tasks -Psmoke
+              -Psmoke
+            pushd opennms-doc
+              ../compile.pl \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=1 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -DskipPdfGeneration=false \
+                -P'!jdk7+' \
+                install --batch-mode
+            popd
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
@@ -375,7 +384,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -390,7 +398,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
