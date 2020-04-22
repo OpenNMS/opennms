@@ -290,23 +290,6 @@ commands:
             .circleci/scripts/publish-cloudsmith.sh
 
 workflows:
-  weekly-coverage:
-    triggers:
-      - schedule:
-          # Saturday at 12:00 AM
-          cron: "0 0 * * 6"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - build
-      - integration-test-with-coverage:
-          requires:
-            - build
-      - code-coverage:
-          requires:
-            - integration-test-with-coverage
   build-deploy:
     jobs:
       - build:
