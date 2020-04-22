@@ -33,6 +33,8 @@ If the banner is not available in the output the status is determined as down.
 
 The parameter `args` supports variable replacement for the following set of variables.
 
+NOTE: It is recommended to set reasonable output before the script exists, because the output will be added into the event reason.
+
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the configuration
@@ -50,10 +52,42 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 
 ===== Examples
 
+
+====== Placeholder usage
+
 [source, xml]
 ----
 <parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
+----
+
+====== Reasonable output example
+
+[source, xml]
+----
+<service name="DivisibleByFive" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/DivisibleByFive.sh"/>
+  <parameter key="banner" value="Your number is divisible by 5"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="DivisibleByFive" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+**/opt/opennms/contrib/DivisibleByFive.sh**
+
+[source, bash]
+----
+#!/bin/bash
+set -e
+set -u
+
+if (( $RANDOM % 5 == 0 ))
+then
+    echo "Your number is divisible by 5"
+else
+    echo "Your number is not divisible by 5"
+fi
 ----
 
 ===== SystemExecuteMonitor vs GpMonitor
