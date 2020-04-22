@@ -1187,8 +1187,8 @@
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <asciidoctorVersion>1.5.6</asciidoctorVersion>
-    <asciidoctorjVersion>1.5.7</asciidoctorjVersion>
-    <asciidoctorjPdfVersion>1.5.0-alpha.16</asciidoctorjPdfVersion>
+    <asciidoctorjVersion>1.6.2</asciidoctorjVersion>
+    <asciidoctorjPdfVersion>1.5.3</asciidoctorjPdfVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
@@ -1262,7 +1262,7 @@
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
-    <jrubyVersion>9.1.16.0</jrubyVersion>
+    <jrubyVersion>9.2.6.0</jrubyVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
