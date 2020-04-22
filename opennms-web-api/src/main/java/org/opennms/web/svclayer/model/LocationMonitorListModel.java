@@ -41,7 +41,6 @@ import java.util.Map.Entry;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.springframework.validation.Errors;
 
 /**
@@ -145,10 +144,6 @@ public class LocationMonitorListModel {
             
             setDefinitionName(monitor.getLocation());
             setId(monitor.getId());
-            setHostName(monitor.getProperties().get(PollerBackEnd.HOST_NAME_KEY));
-            setIpAddress(monitor.getProperties().get(PollerBackEnd.HOST_ADDRESS_KEY));
-            setConnectionHostName(monitor.getProperties().get(PollerBackEnd.CONNECTION_HOST_NAME_KEY));
-            setConnectionIpAddress(monitor.getProperties().get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY));
             setStatus(monitor.getStatus());
             setLastCheckInTime(monitor.getLastUpdated());
             
@@ -162,10 +157,7 @@ public class LocationMonitorListModel {
             });
             for (Entry<String, String> detail : details) {
                 if (
-                    !detail.getKey().equals(PollerBackEnd.HOST_NAME_KEY) && 
-                    !detail.getKey().equals(PollerBackEnd.HOST_ADDRESS_KEY) &&
-                    !detail.getKey().equals(PollerBackEnd.CONNECTION_HOST_NAME_KEY) &&
-                    !detail.getKey().equals(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY)
+                    false
                  ) {
                     addAdditionalDetail(detail.getKey(), detail.getValue());
                 }

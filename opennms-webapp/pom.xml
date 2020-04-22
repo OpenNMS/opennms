@@ -524,11 +524,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.remote</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.core</artifactId>
       <scope>${onmsLibScope}</scope>

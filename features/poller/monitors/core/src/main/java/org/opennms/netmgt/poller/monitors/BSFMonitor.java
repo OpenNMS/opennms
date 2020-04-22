@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 
 
 
-// This might actually be usable in the remote poller with some work
 @Distributable(DistributionContext.DAEMON)
 
 /**

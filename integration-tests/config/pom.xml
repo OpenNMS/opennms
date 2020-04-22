@@ -98,11 +98,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.remote</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
       <scope>test</scope>

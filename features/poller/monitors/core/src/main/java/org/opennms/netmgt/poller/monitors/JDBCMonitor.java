@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 
-// NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
 @Distributable
 public class JDBCMonitor extends ParameterSubstitutingMonitor {
     

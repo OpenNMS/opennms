@@ -12,7 +12,6 @@ A summary what the monitor is doing. When is the monitor up or down.
 [options="autowidth"]
 |===
 | Class Name     | `Name of the monitor class which has to be used in the poller-configuration.xml`
-| Remote Enabled | true or false if the monitor can be used by the {opennms-product-name} remote poller
 |===
 
 ===== Configuration and Usage
