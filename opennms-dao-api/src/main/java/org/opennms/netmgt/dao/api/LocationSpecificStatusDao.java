@@ -38,7 +38,7 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-public interface LocationSpecificStatusDao {
+public interface LocationSpecificStatusDao extends OnmsDao<OnmsLocationSpecificStatus, Integer> {
     Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application);
     void saveStatusChange(final OnmsLocationSpecificStatus locationSpecificStatus);
     OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsMonitoringLocation location, final OnmsMonitoredService monSvc);
@@ -50,5 +50,4 @@ public interface LocationSpecificStatusDao {
     Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames);
     Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName);
     Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);
-    Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocation locationDefinition);
 }

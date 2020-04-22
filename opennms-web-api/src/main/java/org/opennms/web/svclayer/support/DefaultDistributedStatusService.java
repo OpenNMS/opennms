@@ -48,18 +48,16 @@ import java.util.TreeSet;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.DistributedStatusService;
@@ -77,6 +75,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
+import com.google.common.collect.Lists;
+
 /**
  * <p>DefaultDistributedStatusService class.</p>
  *
@@ -90,7 +90,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 
     private MonitoredServiceDao m_monitoredServiceDao;
     private MonitoringLocationDao m_monitoringLocationDao;
-    private LocationMonitorDao m_locationMonitorDao;
+    private LocationSpecificStatusDao m_locationSpecificStatusDao;
     private ApplicationDao m_applicationDao;
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
@@ -238,10 +238,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addCell(s.getMonitoredService().getIpInterface().getNode().getLabel(), 
                           getStyleForPollResult(s.getPollResult()),
                           "element/node.jsp?node=" + s.getMonitoredService().getIpInterface().getNode().getId());
-            table.addCell(s.getLocationMonitor().getLocation() + "-"
-                          + s.getLocationMonitor().getId(),
+            table.addCell(s.getLocation().getLocationName(),
                           "",
-                          "distributed/locationMonitorDetails.htm?monitorId=" + s.getLocationMonitor().getId()); 
+                          "distributed/locationMonitorDetails.htm?monitorId=" + s.getLocation().getLocationName());
             table.addCell(s.getMonitoredService().getServiceName(), "",
                           "element/service.jsp?ifserviceid="
                           + s.getMonitoredService().getId());
@@ -249,7 +248,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                           "bright");
             table.addCell(getResponseText(s.getPollResult()), "");
             table.addCell(reDateify(s.getPollResult().getTimestamp()), "");
-            table.addCell(reDateify(s.getLocationMonitor().getLastUpdated()), "");
+            //TODO: table.addCell(reDateify(s.getLocationMonitor().getLastUpdated()), "");
         }
         
         return table;
@@ -303,7 +302,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>findLocationSpecificStatus</p>
      *
-     * @param command a {@link org.opennms.web.command.DistributedStatusDetailsCommand} object.
+     * @param command a {@link org.opennms.web.svclayer.model.DistributedStatusDetailsCommand} object.
      * @param errors a {@link org.springframework.validation.Errors} object.
      * @return a {@link java.util.List} object or null if no location monitors are registered for the specified location and application tuple
      */
@@ -328,19 +327,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                                                + applicationName + "\"");
         }
 
-        Collection<OnmsLocationMonitor> locationMonitors = m_locationMonitorDao.findByLocationDefinition(location);
-        
-        if (locationMonitors.size() == 0) {
-            errors.reject("location.no-monitors",
-                          new Object[] { applicationName, locationName },
-                          "No remote pollers have registered for this "
-                          + "application and location");
-            return null;
-        }
-        
-        List<OnmsLocationMonitor> sortedLocationMonitors = new ArrayList<OnmsLocationMonitor>(locationMonitors);
-        Collections.sort(sortedLocationMonitors);
-        
         Collection<OnmsMonitoredService> services = m_monitoredServiceDao.findByApplication(application);
         
         List<OnmsMonitoredService> sortedServices = new ArrayList<OnmsMonitoredService>(services);
@@ -348,13 +334,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                                                                      
         List<OnmsLocationSpecificStatus> status = new LinkedList<>();
         for (OnmsMonitoredService service : sortedServices) {
-            for (OnmsLocationMonitor locationMonitor : sortedLocationMonitors) {
-                OnmsLocationSpecificStatus currentStatus = m_locationMonitorDao.getMostRecentStatusChange(locationMonitor, service);
-                if (currentStatus == null) {
-                    status.add(new OnmsLocationSpecificStatus(locationMonitor, service, NO_RECORDED_STATUS));
-                } else {
-                    status.add(currentStatus);
-                }
+            OnmsLocationSpecificStatus currentStatus = m_locationSpecificStatusDao.getMostRecentStatusChange(location, service);
+            if (currentStatus == null) {
+                status.add(new OnmsLocationSpecificStatus(location, service, NO_RECORDED_STATUS));
+            } else {
+                status.add(currentStatus);
             }
         }
 
@@ -382,11 +366,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         List<OnmsApplication> sortedApplications = new ArrayList<OnmsApplication>(applications);
         Collections.sort(sortedApplications);
         
-        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = m_locationMonitorDao.getAllMostRecentStatusChanges();
+        Collection<OnmsLocationSpecificStatus> mostRecentStatuses = m_locationSpecificStatusDao.getAllMostRecentStatusChanges();
 
         Collection<OnmsLocationSpecificStatus> statusesPeriod = new HashSet<>();
-        statusesPeriod.addAll(m_locationMonitorDao.getAllStatusChangesAt(start));
-        statusesPeriod.addAll(m_locationMonitorDao.getStatusChangesBetween(start, end));
+        statusesPeriod.addAll(m_locationSpecificStatusDao.getAllStatusChangesAt(start));
+        statusesPeriod.addAll(m_locationSpecificStatusDao.getStatusChangesBetween(start, end));
 
         table.setTitle("Distributed Status Summary");
         
@@ -397,17 +381,15 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
         
         for (OnmsMonitoringLocation locationDefinition : locationDefinitions) {
-            Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
-            
             table.newRow();
             table.addCell(locationDefinition.getMonitoringArea(), "");
             table.addCell(locationDefinition.getLocationName(), "");
             
             for (OnmsApplication application : sortedApplications) {
                 Collection<OnmsMonitoredService> memberServices = m_monitoredServiceDao.findByApplication(application);
-                Severity status = calculateCurrentStatus(monitors, memberServices, mostRecentStatuses);
+                Severity status = calculateCurrentStatus(locationDefinition, memberServices, mostRecentStatuses);
             
-                Set<OnmsLocationSpecificStatus> selectedStatuses = filterStatus(statusesPeriod, monitors, memberServices);
+                Set<OnmsLocationSpecificStatus> selectedStatuses = filterStatus(statusesPeriod, Lists.newArrayList(locationDefinition), memberServices);
                 
                 if (selectedStatuses.size() > 0) {
                     String percentage = calculatePercentageUptime(memberServices, selectedStatuses, start, end);
@@ -458,17 +440,17 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      * services.
      * 
      * @param statuses
-     * @param monitors
+     * @param locations
      * @param services
      * @return filtered list
      */
     private Set<OnmsLocationSpecificStatus> filterStatus(Collection<OnmsLocationSpecificStatus> statuses,
-                                                         Collection<OnmsLocationMonitor> monitors,
+                                                         Collection<OnmsMonitoringLocation> locations,
                                                          Collection<OnmsMonitoredService> services) {
         Set<OnmsLocationSpecificStatus> filteredStatuses = new HashSet<>();
         
         for (OnmsLocationSpecificStatus status : statuses) {
-            if (!monitors.contains(status.getLocationMonitor())) {
+            if (!locations.contains(status.getLocation())) {
                 continue;
             }
         
@@ -485,24 +467,24 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>calculateCurrentStatus</p>
      *
-     * @param monitors a {@link java.util.Collection} object.
+     * @param locations a {@link java.util.Collection} object.
      * @param applicationServices a {@link java.util.Collection} object.
      * @param statuses a {@link java.util.Collection} object.
      * @return a {@link org.opennms.web.svclayer.support.DefaultDistributedStatusService.Severity} object.
      */
     public Severity calculateCurrentStatus(
-            Collection<OnmsLocationMonitor> monitors,
+            Collection<OnmsMonitoringLocation> locations,
             Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
         int goodMonitors = 0;
         int badMonitors = 0;
         
-        for (OnmsLocationMonitor monitor : monitors) {
-            if (monitor == null || monitor.getStatus() != MonitorStatus.STARTED) {
+        for (OnmsMonitoringLocation location : locations) {
+            if (location == null) {
                 continue;
             }
             
-            Severity status = calculateCurrentStatus(monitor, applicationServices, statuses);
+            Severity status = calculateCurrentStatus(location, applicationServices, statuses);
             
             if (status == Severity.NORMAL) {
                 goodMonitors++;
@@ -531,12 +513,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>calculateCurrentStatus</p>
      *
-     * @param monitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param location a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
      * @param applicationServices a {@link java.util.Collection} object.
      * @param statuses a {@link java.util.Collection} object.
      * @return a {@link org.opennms.web.svclayer.support.DefaultDistributedStatusService.Severity} object.
      */
-    public Severity calculateCurrentStatus(OnmsLocationMonitor monitor,
+    public Severity calculateCurrentStatus(OnmsMonitoringLocation location,
             Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
         Set<PollStatus> pollStatuses = new HashSet<>();
@@ -544,7 +526,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         for (OnmsMonitoredService service : applicationServices) {
             boolean foundIt = false;
             for (OnmsLocationSpecificStatus status : statuses) {
-                if (status.getMonitoredService().equals(service) && status.getLocationMonitor().equals(monitor)) {
+                if (status.getMonitoredService().equals(service) && status.getLocation().equals(location.getLocationName())) {
                     pollStatuses.add(status.getPollResult());
                     foundIt = true;
                     break;
@@ -753,8 +735,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 }
             }
         }
-        
-        Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(location);
+
+        /*
+        Collection<OnmsLocationMonitor> monitors = m_locationSpecificStatusDao.findByLocationDefinition(location);
         List<OnmsLocationMonitor> sortedMonitors = new LinkedList<OnmsLocationMonitor>(monitors);
         Collections.sort(sortedMonitors);
 
@@ -767,11 +750,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 }
             }
         }
-        
+
         if (monitor == null && !sortedMonitors.isEmpty()) {
             monitor = sortedMonitors.get(0);
         }
-        
+        */
+
         RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(timeSpan);
         
         /*
@@ -781,8 +765,8 @@ public class DefaultDistributedStatusService implements DistributedStatusService
          */
         Collection<OnmsMonitoredService> memberServices = m_monitoredServiceDao.findByApplication(application);
         for (OnmsMonitoredService service : memberServices) {
-            m_locationMonitorDao.initialize(service.getIpInterface());
-            m_locationMonitorDao.initialize(service.getIpInterface().getNode());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface().getNode());
         }
 
         Collection<OnmsMonitoredService> applicationMemberServices = m_monitoredServiceDao.findByApplication(application);
@@ -792,12 +776,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         DistributedStatusHistoryModel model = new DistributedStatusHistoryModel(locationDefinitions,
                                                  sortedApplications,
-                                                 sortedMonitors,
                                                  periods,
                                                  location,
                                                  application,
                                                  applicationMemberServices,
-                                                 monitor,
                                                  period,
                                                  errors);
         initializeGraphUrls(model);
@@ -805,7 +787,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
     private void initializeGraphUrls(DistributedStatusHistoryModel model) {
-        if (model.getChosenMonitor() != null) {
+        if (model.getChosenLocation() != null) {
         
             Collection<OnmsMonitoredService> services = model.getChosenApplicationMemberServices();
         
@@ -813,7 +795,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
             SortedSet<ServiceGraph> serviceGraphs = new TreeSet<ServiceGraph>(SERVICE_GRAPH_COMPARATOR);
             for (OnmsMonitoredService service : services) {
-                serviceGraphs.add(getServiceGraphForService(model.getChosenMonitor(), service, times));
+                serviceGraphs.add(getServiceGraphForService(model.getChosenLocation(), service, times));
             }
         
             model.setServiceGraphs(serviceGraphs);
@@ -821,10 +803,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
 
-    private ServiceGraph getServiceGraphForService(OnmsLocationMonitor locMon, OnmsMonitoredService service, long[] times) {
+    private ServiceGraph getServiceGraphForService(OnmsMonitoringLocation location, OnmsMonitoredService service, long[] times) {
         OnmsResource resource;
         try {
-            resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), locMon);
+            resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), location);
         } catch (ObjectRetrievalFailureException e) {
             resource = null;
         }
@@ -862,7 +844,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao cannot be null");
-        Assert.state(m_locationMonitorDao != null, "property locationMonitorDao cannot be null");
+        Assert.state(m_locationSpecificStatusDao != null, "property locationSpecificStatusDao cannot be null");
         Assert.state(m_applicationDao != null, "property applicationDao cannot be null");
         Assert.state(m_resourceDao != null, "property resourceDao cannot be null");
         Assert.state(m_graphDao != null, "property graphDao cannot be null");
@@ -887,10 +869,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @param locationSpecificStatusDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
      */
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
+    public void setLocationSpecificStatusDao(LocationSpecificStatusDao locationSpecificStatusDao) {
+        m_locationSpecificStatusDao = locationSpecificStatusDao;
         
     }
     

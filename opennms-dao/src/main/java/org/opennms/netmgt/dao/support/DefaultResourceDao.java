@@ -28,8 +28,16 @@
 
 package org.opennms.netmgt.dao.support;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.CharEncoding;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
@@ -41,11 +49,11 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -53,15 +61,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 
 /**
  * Retrieves and enumerates elements from the resource tree.
@@ -335,14 +336,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * null if the <code>distributedStatus</code> resource cannot be found for the given IP interface.
      */ 
     @Override
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locMon) {
+    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsMonitoringLocation location) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
-        Assert.notNull(locMon, "locMon argument must not be null");
+        Assert.notNull(location, "location argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
         
         final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
         final OnmsResource nodeResource = getResourceForNode(ipInterface.getNode());
-        return getChildResource(nodeResource, DistributedStatusResourceType.TYPE_NAME, DistributedStatusResourceType.getResourceName(locMon.getId(), ipAddress));
+        return getChildResource(nodeResource, DistributedStatusResourceType.TYPE_NAME, DistributedStatusResourceType.getResourceName(location.getLocationName(), ipAddress));
     }
 
     @Override

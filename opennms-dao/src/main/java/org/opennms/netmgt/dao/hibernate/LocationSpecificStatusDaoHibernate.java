@@ -61,11 +61,6 @@ public class LocationSpecificStatusDaoHibernate extends AbstractDaoHibernate<Onm
     }
 
     @Override
-    public Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocation locationDefinition) {
-        return null;
-    }
-
-    @Override
     public Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application) {
         return findObjects(OnmsLocationMonitor.class, "select distinct l from OnmsLocationSpecificStatus as status " +
                 "join status.monitoredService as m " +

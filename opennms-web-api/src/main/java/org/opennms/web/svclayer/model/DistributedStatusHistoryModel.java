@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.SortedSet;
 
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
@@ -52,8 +51,6 @@ public class DistributedStatusHistoryModel {
     private List<String> m_errors;
     private List<RelativeTimePeriod> m_periods;
     private RelativeTimePeriod m_chosenPeriod;
-    private List<OnmsLocationMonitor> m_monitors;
-    private OnmsLocationMonitor m_chosenMonitor;
     private SortedSet<ServiceGraph> m_serviceGraphs;
     
     /**
@@ -61,34 +58,28 @@ public class DistributedStatusHistoryModel {
      *
      * @param locations a {@link java.util.List} object.
      * @param applications a {@link java.util.List} object.
-     * @param monitors a {@link java.util.List} object.
      * @param periods a {@link java.util.List} object.
-     * @param chosenLocation a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @param chosenLocation a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @param chosenApplication a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @param chosenApplicationMemberServices a {@link java.util.Collection} object.
-     * @param chosenMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
      * @param chosenPeriod a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
      * @param errors a {@link java.util.List} object.
      */
     public DistributedStatusHistoryModel(
             List<OnmsMonitoringLocation> locations,
             List<OnmsApplication> applications,
-            List<OnmsLocationMonitor> monitors,
             List<RelativeTimePeriod> periods,
             OnmsMonitoringLocation chosenLocation,
             OnmsApplication chosenApplication,
             Collection<OnmsMonitoredService> chosenApplicationMemberServices,
-            OnmsLocationMonitor chosenMonitor,
             RelativeTimePeriod chosenPeriod,
             List<String> errors) {
         m_locations = locations;
         m_applications = applications;
-        m_monitors = monitors;
         m_periods = periods;
         m_chosenLocation = chosenLocation;
         m_chosenApplication = chosenApplication;
         m_chosenApplicationMemberServices = chosenApplicationMemberServices;
-        m_chosenMonitor = chosenMonitor;
         m_chosenPeriod = chosenPeriod;
         m_errors = errors;
         
@@ -161,24 +152,6 @@ public class DistributedStatusHistoryModel {
         return m_periods;
     }
 
-    /**
-     * <p>getChosenMonitor</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
-     */
-    public OnmsLocationMonitor getChosenMonitor() {
-        return m_chosenMonitor;
-    }
-
-    /**
-     * <p>getMonitors</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsLocationMonitor> getMonitors() {
-        return m_monitors;
-    }
-    
     /**
      * <p>getServiceGraphs</p>
      *
