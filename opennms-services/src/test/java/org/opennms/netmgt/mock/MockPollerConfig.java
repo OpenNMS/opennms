@@ -560,6 +560,16 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
+    public Package getFirstLocalPackageMatch(final String ipaddr) {
+        throw new UnsupportedOperationException("MockPollerConfig.getFirstLocalPackageMatch is not yet implemented");
+    }
+
+    @Override
+    public boolean isPolledLocally(final String ipaddr) {
+        throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
+    }
+
+    @Override
     public boolean isPolledLocally(final String ipaddr, final String svcName) {
         throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
