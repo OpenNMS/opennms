@@ -55,6 +55,7 @@ import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,11 +99,12 @@ public class DefaultDirectionIT {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
             final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
+            final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
                             classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                             new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                            3, 12000), jestClient);
+                            3, 12000, aggregatedFlowRepository), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
                     FlowDocumentTest.getMockFlowSource());

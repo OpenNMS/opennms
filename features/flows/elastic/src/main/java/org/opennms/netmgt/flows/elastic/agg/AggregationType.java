@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,26 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.netmgt.flows.elastic.agg;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.opennms.netmgt.flows.elastic.RawIndexInitializer;
-import org.opennms.features.jest.client.template.DefaultTemplateLoader;
-import org.opennms.features.jest.client.template.Version;
-
-public class DefaultTemplateLoaderTest {
-
-    @Test
-    public void verifyTemplateLoading() throws IOException {
-        final String template = new DefaultTemplateLoader().load(new Version(6,2,3), RawIndexInitializer.TEMPLATE_RESOURCE);
-        assertNotNull(template);
-        assertThat(template.length(), Matchers.greaterThan(0));
-    }
-
+public enum AggregationType {
+    TOTAL,
+    TOPK
 }

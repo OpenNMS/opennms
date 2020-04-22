@@ -34,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -104,11 +106,13 @@ public class FlowQueryIT {
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
 
+        final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), 3, 12000);
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                3, 12000, aggregatedFlowRepository);
         final IndexSettings settings = new IndexSettings();
-        final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);
+        final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually

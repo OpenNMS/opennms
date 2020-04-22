@@ -26,41 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.template;
+package org.opennms.netmgt.flows.elastic;
 
-import static org.opennms.netmgt.flows.elastic.RawIndexInitializer.TEMPLATE_RESOURCE;
-
-import java.io.IOException;
-
-import org.junit.Test;
-import org.opennms.core.test.xml.JsonTest;
+import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
 import org.opennms.features.jest.client.template.DefaultTemplateLoader;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.features.jest.client.template.MergingTemplateLoader;
-import org.opennms.features.jest.client.template.Version;
+import org.osgi.framework.BundleContext;
 
-public class MergingTemplateLoaderTest {
+import io.searchbox.client.JestClient;
 
-    private static final Version version = new Version(7,2,0);
+public class RawIndexInitializer extends DefaultTemplateInitializer {
 
-    @Test
-    public void verifyMergingEmpty() throws IOException {
-        final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), new IndexSettings()).load(version, TEMPLATE_RESOURCE);
-        final String expected = new DefaultTemplateLoader().load(version, TEMPLATE_RESOURCE);
-        JsonTest.assertJsonEquals(expected, merged);
+    public static final String TEMPLATE_RESOURCE = "/netflow-template";
+
+    private static final String FLOW_TEMPLATE_NAME = "netflow";
+
+    public RawIndexInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
+        super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
     }
 
-    @Test
-    public void verifyMergingFull() throws IOException {
-        final IndexSettings IndexSettings = new IndexSettings();
-        IndexSettings.setNumberOfReplicas(10);
-        IndexSettings.setNumberOfShards(20);
-        IndexSettings.setRefreshInterval("60s");
-        IndexSettings.setRoutingPartitionSize(100);
-
-        final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), IndexSettings).load(version, TEMPLATE_RESOURCE);
-        final String expected = new DefaultTemplateLoader().load(version,"/netflow-template-merged");
-        JsonTest.assertJsonEquals(expected, merged);
+    protected RawIndexInitializer(JestClient client, IndexSettings indexSettings) {
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
+    protected RawIndexInitializer(JestClient client) {
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
+    }
 }

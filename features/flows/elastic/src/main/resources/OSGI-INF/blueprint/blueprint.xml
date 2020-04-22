@@ -46,6 +46,15 @@
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
             <cm:property name="indexPrefix" value="" />
+
+            <!-- Aggregate Index settings -->
+            <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
+            <cm:property name="aggregate.settings.index.number_of_shards" value="" />
+            <cm:property name="aggregate.settings.index.number_of_replicas" value="" />
+            <cm:property name="aggregate.settings.index.refresh_interval" value="" />
+            <cm:property name="aggregate.settings.index.routing_partition_size" value="" />
+            <cm:property name="aggregate.indexPrefix" value="" />
+            <cm:property name="aggregate.elasticIndexStrategy" value="monthly" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -92,12 +101,24 @@
         <argument value="${elasticIndexStrategy}"/>
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
+    <bean id="aggIndexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
+        <argument value="${aggregate.elasticIndexStrategy}"/>
+    </bean>
+
+    <bean id="rawIndexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
         <property name="indexPrefix" value="${indexPrefix}"/>
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
         <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
         <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
+    </bean>
+
+    <bean id="aggIndexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
+        <property name="indexPrefix" value="${aggregate.indexPrefix}"/>
+        <property name="numberOfShards" value="${aggregate.settings.index.number_of_shards}"/>
+        <property name="numberOfReplicas" value="${aggregate.settings.index.number_of_replicas}"/>
+        <property name="refreshInterval" value="${aggregate.settings.index.refresh_interval}"/>
+        <property name="routingPartitionSize" value="${aggregate.settings.index.routing_partition_size}"/>
     </bean>
 
     <!-- Enrichment -->
@@ -132,8 +153,16 @@
 
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
-
     <reference id="enrichedFlowForwarder" interface="org.opennms.netmgt.flows.api.EnrichedFlowForwarder"/>
+
+    <!-- The repository -->
+    <bean id="aggregatedFlowRepository" class="org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository"
+          init-method="start">
+        <argument ref="flowRepositoryMetricRegistry"/>
+        <argument ref="jestClient"/>
+        <argument ref="aggIndexStrategy"/>
+        <argument ref="aggIndexSettings"/>
+    </bean>
 
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
@@ -149,9 +178,10 @@
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
         <argument ref="enrichedFlowForwarder"/>
-        <argument ref="indexSettings"/>
+        <argument ref="rawIndexSettings"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
+        <argument ref="aggregatedFlowRepository" />
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
@@ -159,7 +189,8 @@
         <argument ref="blueprintBundleContext" />
         <argument ref="elasticFlowRepository" />
         <argument ref="jestClient" />
-        <argument ref="indexSettings" />
+        <argument ref="rawIndexSettings" />
+        <argument ref="aggIndexSettings" />
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
 

@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
@@ -43,6 +44,7 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -77,11 +79,12 @@ public class ElasticFlowRepositoryIT {
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
+            final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    3, 12000);
+                    3, 12000, aggregatedFlowRepository);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty

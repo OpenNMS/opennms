@@ -68,6 +68,7 @@ import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -129,12 +130,13 @@ public class KafkaFlowForwarderIT {
         interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.1"), 3);
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
         final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
+        final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     jestClient, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(),
-                    3, 12000);
+                    3, 12000, aggregatedFlowRepository);
             elasticFlowRepository.setEnableFlowForwarding(true);
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }

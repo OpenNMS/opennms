@@ -69,6 +69,7 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsNode;
@@ -169,6 +170,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private boolean enableFlowForwarding = false;
 
+    private final AggregatedFlowRepository aggFlowRepository;
+
     /**
      * Cache for marking nodes and interfaces as having flows.
      *
@@ -180,7 +183,8 @@ public class ElasticFlowRepository implements FlowRepository {
                                  DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
-                                 IndexSettings indexSettings, int bulkRetryCount, long maxFlowDurationMs) {
+                                 IndexSettings indexSettings, int bulkRetryCount, long maxFlowDurationMs,
+                                 AggregatedFlowRepository aggFlowRepository) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -194,6 +198,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
+        this.aggFlowRepository = Objects.requireNonNull(aggFlowRepository);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
@@ -354,6 +359,9 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther,
                                                                                        List<Filter> filters) {
+        if (aggFlowRepository.shouldUseAggregatedDocuments(filters)) {
+            return aggFlowRepository.getTopNApplicationSummaries(N, includeOther, filters);
+        }
         return getTotalBytesFromTopN(N, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters);
     }
 
@@ -378,6 +386,9 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step,
                                                                                                 boolean includeOther,
                                                                                                 List<Filter> filters) {
+        if (aggFlowRepository.shouldUseAggregatedDocuments(filters)) {
+            return aggFlowRepository.getTopNApplicationSeries(N, step, includeOther, filters);
+        }
         return getSeriesFromTopN(N, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters)
                 .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
     }
@@ -408,6 +419,9 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N,
                                                                                               boolean includeOther,
                                                                                               List<Filter> filters) {
+        if (aggFlowRepository.shouldUseAggregatedDocuments(filters)) {
+            return aggFlowRepository.getTopNConversationSummaries(N, includeOther, filters);
+        }
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                                                .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
@@ -443,6 +457,9 @@ public class ElasticFlowRepository implements FlowRepository {
                                                                                                           long step,
                                                                                                           boolean includeOther,
                                                                                                           List<Filter> filters) {
+        if (aggFlowRepository.shouldUseAggregatedDocuments(filters)) {
+            return aggFlowRepository.getTopNConversationSeries(N, step, includeOther, filters);
+        }
         return getSeriesFromTopN(N, step, "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((res) -> mapTable(res, convoKey -> this.resolveHostnameForConversation(convoKey, filters)));
     }
@@ -484,6 +501,9 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
                                                                               List<Filter> filters) {
+        if (aggFlowRepository.shouldUseAggregatedDocuments(filters)) {
+            return aggFlowRepository.getTopNHostSummaries(N, includeOther, filters);
+        }
         return getTotalBytesFromTopN(N, "hosts", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
@@ -520,6 +540,9 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step,
                                                                                          boolean includeOther,
                                                                                          List<Filter> filters) {
+        if (aggFlowRepository.shouldUseAggregatedDocuments(filters)) {
+            return aggFlowRepository.getTopNHostSeries(N, step, includeOther, filters);
+        }
         return getSeriesFromTopN(N, step, "hosts", null, includeOther, filters)
                 .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }

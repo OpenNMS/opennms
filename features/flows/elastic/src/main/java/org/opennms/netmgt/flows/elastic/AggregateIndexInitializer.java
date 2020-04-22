@@ -36,21 +36,21 @@ import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
 
-public class ElasticFlowRepositoryInitializer extends DefaultTemplateInitializer {
+public class AggregateIndexInitializer extends DefaultTemplateInitializer {
 
-    public static final String TEMPLATE_RESOURCE = "/netflow-template";
+    public static final String TEMPLATE_RESOURCE = "/netflow_agg-template";
 
-    private static final String FLOW_TEMPLATE_NAME = "netflow";
+    private static final String FLOW_TEMPLATE_NAME = "netflow_agg";
 
-    public ElasticFlowRepositoryInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
+    public AggregateIndexInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
         super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
     }
 
-    protected ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
+    protected AggregateIndexInitializer(JestClient client, IndexSettings indexSettings) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
-    protected ElasticFlowRepositoryInitializer(JestClient client) {
+    protected AggregateIndexInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }
