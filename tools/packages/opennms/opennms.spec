@@ -557,8 +557,10 @@ if [ "%{skip_compile}" = 1 ]; then
 		-Dinstall.version="%{version}-%{release}" \
 		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Dopennms.home="%{instprefix}" \
+		install \
 		-PskipCompile \
-		install
+		--builder smart \
+		--threads ${CCI_MAXCPU:-2}
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl \
@@ -572,8 +574,10 @@ else
 		-Dinstall.version="%{version}-%{release}" \
 		-Dopennms.home="%{instprefix}" \
 		-Dbuild=all \
+		install \
 		-Prun-expensive-tasks \
-		install
+		--builder smart \
+		--threads ${CCI_MAXCPU:-2}
 fi
 
 cd opennms-tools
@@ -584,7 +588,9 @@ cd opennms-tools
 		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Dinstall.version="%{version}-%{release}" \
 		-Dopennms.home="%{instprefix}" \
-		install
+		install \
+		--builder smart \
+		--threads ${CCI_MAXCPU:-2}
 cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
@@ -601,8 +607,10 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dinstall.init.dir="/etc/init.d" \
 	-Dbuild=all \
 	-Dbuild.profile=full \
+	install \
 	-Prun-expensive-tasks \
-	install
+	--builder smart \
+	--threads ${CCI_MAXCPU:-2}
 
 echo "=== INSTALL COMPLETED ==="
 
