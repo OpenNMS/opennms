@@ -31,7 +31,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -54,7 +53,6 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * @version $Id: $
  */
-@Distributable
 final public class JschSshMonitor extends AbstractServiceMonitor {
     private SshMonitor m_monitor;
     

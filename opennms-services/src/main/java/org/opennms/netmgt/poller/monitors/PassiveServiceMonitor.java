@@ -32,8 +32,6 @@ import java.util.Map;
 
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -45,7 +43,6 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
  * @version $Id: $
  */
 // this retrieves data from the deamon so it is not Distributable
-@Distributable(DistributionContext.DAEMON)
 public class PassiveServiceMonitor extends AbstractServiceMonitor {
 
     @Override

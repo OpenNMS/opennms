@@ -34,8 +34,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -57,8 +55,6 @@ import jcifs.netbios.NbtAddress;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  */
-// I this thise needs a jcifs.properties file so we can't distribute it now
-@Distributable(DistributionContext.DAEMON)
 final public class SmbMonitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(SmbMonitor.class);

@@ -61,7 +61,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -71,14 +70,11 @@ import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerListener;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
@@ -227,7 +223,7 @@ public class PollerBackEndNG {
             // Now locate the associated monitor
             // TODO: We don't need to repeat this for every package
             ServiceMonitor serviceMonitor = null;
-            for (final ServiceMonitorLocator locator : pollerConfig.getServiceMonitorLocators(DistributionContext.ALL)) {
+            for (final ServiceMonitorLocator locator : pollerConfig.getServiceMonitorLocators()) {
                 if (serviceConfig.getName().equals(locator.getServiceName())) {
                     serviceMonitor  = locator.getServiceMonitor(serviceMonitorRegistry);
                 }

@@ -56,7 +56,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.SocketUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -79,7 +78,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="mailto:dschlenk@convergeone.com">David Schlenk</a>
  */
-@Distributable
 public class SSLCertMonitor extends ParameterSubstitutingMonitor {
     
     

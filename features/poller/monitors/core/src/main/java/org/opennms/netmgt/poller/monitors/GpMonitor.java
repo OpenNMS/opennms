@@ -36,8 +36,6 @@ import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -55,9 +53,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
  */
-
-// this is marked not distributable because it relieds on the dhcpd deamon of opennms
-@Distributable(DistributionContext.DAEMON)
 
 /**
  *

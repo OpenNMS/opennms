@@ -34,8 +34,6 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -55,7 +53,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:jason.aras@gmail.com">Jason Aras</a>
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  */
-@Distributable(DistributionContext.DAEMON)
 final public class DiskUsageMonitor extends SnmpMonitorStrategy {
 
     public static final Logger LOG = LoggerFactory.getLogger(DiskUsageMonitor.class);
