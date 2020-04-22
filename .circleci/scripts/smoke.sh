@@ -9,14 +9,14 @@ fi
 find_tests()
 {
     # Generate surefire test list
-    circleci tests glob **/src/test/java/**/*Test*.java |\
+    circleci tests glob '**/src/test/java/**/*Test*.java' |\
         sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > surefire_classnames
-    cat surefire_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_tests
+    circleci tests split --split-by=timings --timings-type=classname < surefire_classnames > /tmp/this_node_tests
 
     # Generate failsafe list
-    circleci tests glob **/src/test/java/**/*IT*.java |\
+    circleci tests glob '**/src/test/java/**/*IT*.java' |\
         sed -e 's#^.*src/test/java/\(.*\)\.java#\1#' | tr "/" "." > failsafe_classnames
-    cat failsafe_classnames | circleci tests split --split-by=timings --timings-type=classname > /tmp/this_node_it_tests
+    circleci tests split --split-by=timings --timings-type=classname < failsafe_classnames > /tmp/this_node_it_tests
 }
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
@@ -27,6 +27,7 @@ cd ~/project/smoke-test
 if [ $MINIMAL -eq 1 ]; then
   echo "#### Executing minimal set smoke/system tests"
   # Run a set of known tests
+  # shellcheck disable=SC2043
   for TEST_CLASS in "MenuHeaderIT"
   do
     echo "###### Testing: ${TEST_CLASS}"
@@ -36,10 +37,10 @@ else
   echo "#### Executing complete suite of smoke/system tests"
   find_tests
   # Iterate through the tests and stop after the first failure
-  for TEST_CLASS in $(cat /tmp/this_node_it_tests)
+  while read -r TEST_CLASS
   do
     echo "###### Testing: ${TEST_CLASS}"
-    mvn -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dit.test=$TEST_CLASS install verify
-  done
+    mvn -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dit.test="$TEST_CLASS" install verify
+  done < /tmp/this_node_it_tests
 fi 
 
