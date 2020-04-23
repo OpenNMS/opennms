@@ -66,6 +66,7 @@ import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.prometheus.Collection;
 import org.opennms.netmgt.config.prometheus.Group;
 import org.opennms.netmgt.config.prometheus.NumericAttribute;
+import org.opennms.netmgt.config.prometheus.PrometheusCollectionRequest;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
 import org.opennms.netmgt.config.prometheus.StringAttribute;
 import org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDao;
@@ -100,7 +101,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
     private static final String COLLECTION_REQUEST_KEY = "collection-request";
 
     private static final Map<String, Class<?>> TYPE_MAP = new ImmutableMap.Builder<String, Class<?>>()
-            .put(COLLECTION_REQUEST_KEY, PrometheusCollectionRequestDTO.class)
+            .put(COLLECTION_REQUEST_KEY, PrometheusCollectionRequest.class)
             .build();
 
     private PrometheusDataCollectionConfigDao prometheusCollectionDao;
@@ -130,7 +131,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
 
         // Fetch the list of groups that belong to the collection
         final List<Group> groups = prometheusCollectionDao.getGroupsForCollection(collection);
-        PrometheusCollectionRequestDTO request = new PrometheusCollectionRequestDTO();
+        PrometheusCollectionRequest request = new PrometheusCollectionRequest();
         request.setGroups(groups);
         runtimeAttributes.put(COLLECTION_REQUEST_KEY, request);
 
@@ -140,7 +141,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> map) throws CollectionException {
         // Pull the URL from the the request
-        final PrometheusCollectionRequestDTO request = (PrometheusCollectionRequestDTO)map.get(COLLECTION_REQUEST_KEY);
+        final PrometheusCollectionRequest request = (PrometheusCollectionRequest)map.get(COLLECTION_REQUEST_KEY);
         String url = ParameterMap.getKeyedString(map, "url", null);
         if (Strings.isNullOrEmpty(url)) {
             throw new IllegalArgumentException("url parameter is required.");
@@ -165,7 +166,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
         return toCollectionSet(agent, request, walker.getMetrics());
     }
 
-    protected static CollectionSet toCollectionSet(CollectionAgent agent, PrometheusCollectionRequestDTO request, List<Metric> metrics) {
+    protected static CollectionSet toCollectionSet(CollectionAgent agent, PrometheusCollectionRequest request, List<Metric> metrics) {
         final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         
         for (Group group : request.getGroups()) {

@@ -36,6 +36,16 @@
       <attribute name="rrd-repository" type="string"/>
     </complexType>
   </element>
+  <element name="prometheus-collection-request">
+    <annotation>
+      <documentation>Used to communicate collection details to Minion.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ns:group" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
   <element name="collection">
     <annotation>
       <documentation>A grouping of related RRD parameters and group references</documentation>
@@ -54,7 +64,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="ns:numeric-attribute" minOccurs="1" maxOccurs="unbounded" />
+        <element ref="ns:numeric-attribute" minOccurs="0" maxOccurs="unbounded" />
         <element ref="ns:string-attribute" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="name" type="string" use="required">

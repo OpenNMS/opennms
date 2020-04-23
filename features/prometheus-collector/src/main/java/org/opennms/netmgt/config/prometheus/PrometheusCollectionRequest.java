@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd.prometheus;
+package org.opennms.netmgt.config.prometheus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +36,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.config.prometheus.Group;
 import java.util.Objects;
 
 @XmlRootElement(name = "prometheus-collection-request")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PrometheusCollectionRequestDTO {
+public class PrometheusCollectionRequest {
 
     @XmlElement(name="group")
     private List<Group> groups;
@@ -59,10 +58,10 @@ public class PrometheusCollectionRequestDTO {
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof PrometheusCollectionRequestDTO)) {
+        if (!(other instanceof PrometheusCollectionRequest)) {
             return false;
         }
-        PrometheusCollectionRequestDTO castOther = (PrometheusCollectionRequestDTO) other;
+        PrometheusCollectionRequest castOther = (PrometheusCollectionRequest) other;
         return Objects.equals(groups, castOther.groups);
     }
 
