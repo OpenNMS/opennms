@@ -1,0 +1,17 @@
+# just
+# a
+# small comment
+# HELP http_requests_total Total number of HTTP requests made.
+# TYPE http_requests_total counter
+
+# and
+# yet more
+# comments are here
+http_requests_total{code="200",handler="prometheus",method="get"} 162030
+http_requests_total{code="200",handler="query",method="get"} 40
+http_requests_total{code="200",handler="series",method="get"} NaN
+http_requests_total{code="400",handler="query",method="get"} +Inf
+http_requests_total{code="400",handler="series",method="get"} -Inf
+
+# just a commment
+#
