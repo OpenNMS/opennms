@@ -54,6 +54,9 @@ public interface DetectorRequestBuilder {
 
     DetectorRequestBuilder withParentSpan(Span span);
 
+    DetectorRequestBuilder withPreDetectCallback(PreDetectCallback preDetectCallback);
+
+
     CompletableFuture<Boolean> execute();
 
 }

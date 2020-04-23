@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginParameter;
@@ -75,12 +76,15 @@ class DetectorRunner implements Async<Boolean> {
             LOG.info("Attemping to detect service {} on address {} at location {}", m_detectorConfig.getName(),
                     getHostAddress(), getLocationName());
             // Launch the detector
-            startSpan();
+            if(!LocationUtils.isDefaultLocationName(getLocationName())) {
+                startSpan();
+            }
             m_service.getLocationAwareDetectorClient().detect().withClassName(m_detectorConfig.getPluginClass())
                     .withAddress(m_address).withNodeId(m_nodeId).withLocation(getLocationName())
                     .withAttributes(m_detectorConfig.getParameters().stream()
                             .collect(Collectors.toMap(PluginParameter::getKey, PluginParameter::getValue)))
                     .withParentSpan(m_span)
+                    .withPreDetectCallback(this::startSpan)
                     .execute()
                     // After completion, run the callback
                     .whenComplete((res, ex) -> {
@@ -105,7 +109,7 @@ class DetectorRunner implements Async<Boolean> {
     }
 
     private void startSpan() {
-        if(m_parentSpan != null) {
+        if (m_parentSpan != null) {
             m_span = m_service.buildAndStartSpan(m_detectorConfig.getName() + "-DetectRunner", m_parentSpan.context());
             m_span.setTag(DETECTOR_NAME, m_detectorConfig.getName());
             m_span.setTag(IP_ADDRESS, m_address.getHostAddress());

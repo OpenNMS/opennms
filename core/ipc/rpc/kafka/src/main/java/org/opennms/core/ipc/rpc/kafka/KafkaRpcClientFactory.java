@@ -162,13 +162,12 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
             @Override
             public CompletableFuture<T> execute(S request) {
-                Span span = buildAndStartSpan(request);
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly
-                    CompletableFuture<T> response =  module.execute(request);
-                    span.finish();
-                    return response;
+                    return module.execute(request);
                 }
+
+                Span span = buildAndStartSpan(request);
                 String requestTopic = topicProvider.getRequestTopicAtLocation(request.getLocation(), module.getId());
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.

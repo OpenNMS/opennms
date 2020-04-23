@@ -119,13 +119,12 @@ public class CamelRpcClientFactory implements RpcClientFactory {
         return new RpcClient<S,T>() {
             @Override
             public CompletableFuture<T> execute(S request) {
-                Span span = buildAndStartSpan(request);
+
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly
-                    CompletableFuture<T> responseFuture = module.execute(request);
-                    span.finish();
-                    return responseFuture;
+                    return module.execute(request);
                 }
+                Span span = buildAndStartSpan(request);
                 TracingInfoCarrier tracingInfoCarrier = getTracingInfoCarrier(request, span);
                 // Save the context map and restore it on callback
                 final Map<String, String> clientContextMap = Logging.getCopyOfContextMap();
