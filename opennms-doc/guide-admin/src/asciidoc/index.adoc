@@ -399,6 +399,7 @@ include::text/elasticsearch/features/alarm-history.adoc[]
 include::text/flows/introduction.adoc[]
 include::text/flows/setup.adoc[]
 include::text/flows/classification-engine.adoc[]
+include::text/flows/aggregation.adoc[]
 
 [[ga-kafka-producer]]
 == Kafka Producer

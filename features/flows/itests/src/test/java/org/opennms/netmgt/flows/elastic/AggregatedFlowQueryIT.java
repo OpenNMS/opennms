@@ -34,7 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.mock;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -43,15 +42,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.testing.TestPipeline;
+import org.apache.beam.sdk.testing.TestStream;
+import org.apache.beam.sdk.values.TimestampedValue;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
+import org.joda.time.Instant;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -61,8 +64,12 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
 import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.nephron.NephronOptions;
+import org.opennms.nephron.Pipeline;
+import org.opennms.nephron.coders.FlowDocumentProtobufCoder;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
@@ -72,12 +79,14 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -86,13 +95,19 @@ import com.google.common.collect.Table;
 
 import io.searchbox.client.JestClient;
 
-public class FlowQueryIT {
+public class AggregatedFlowQueryIT {
+
+    @Rule
+    public TestPipeline p = TestPipeline.create();
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
                     .withPlugins(DriftPlugin.class));
 
     private ElasticFlowRepository flowRepository;
+    private MockDocumentForwarder documentForwarder = new MockDocumentForwarder();
+    private RawFlowQueryService rawFlowQueryService;
+    private AggregatedFlowQueryService aggFlowQueryService;
 
     @Before
     public void setUp() throws MalformedURLException, FlowException, ExecutionException, InterruptedException {
@@ -105,19 +120,35 @@ public class FlowQueryIT {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
-        final IndexSettings settings = new IndexSettings();
-        settings.setIndexPrefix("flows");
-        final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
-                classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,
-                3, 12000, aggregatedFlowRepository);
-
-        final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
+        final IndexSettings rawIndexSettings = new IndexSettings();
+        rawIndexSettings.setIndexPrefix("flows");
+        final IndexSettings aggIndexSettings = new IndexSettings();
+        aggIndexSettings.setIndexPrefix("aggflows");
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
+        final RawIndexInitializer initializer = new RawIndexInitializer(client, rawIndexSettings);
         initializer.initialize();
+
+        final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
+                IndexStrategy.MONTHLY, 120000);
+        rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector);
+
+        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(client, aggIndexSettings);
+        aggIndexInitializer.initialize();
+
+        final IndexSelector aggIndexSelector = new IndexSelector(aggIndexSettings, AggregatedFlowQueryService.INDEX_NAME,
+                IndexStrategy.MONTHLY, 120000);
+        aggFlowQueryService = new AggregatedFlowQueryService(client, aggIndexSelector);
+
+        SmartQueryService smartQueryService = new SmartQueryService(metricRegistry, rawFlowQueryService, aggFlowQueryService);
+        smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
+
+        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
+            new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings,
+                smartQueryService);
+        flowRepository.setEnableFlowForwarding(true);
 
         // The repository should be empty
         assertThat(flowRepository.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, 0))).get(), equalTo(0L));
@@ -237,21 +268,22 @@ public class FlowQueryIT {
         loadDefaultFlows();
 
         // Top 10
-        Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationSeries(10, 10, false,
+        long step = TimeUnit.MINUTES.toMillis(1);
+        Table<Directional<String>, Long, Double> appTraffic = flowRepository.getTopNApplicationSeries(10, step, false,
                 getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(6));
 
         // Top 2 with others
-        appTraffic = flowRepository.getTopNApplicationSeries(2, 10, true, getFilters()).get();
+        appTraffic = flowRepository.getTopNApplicationSeries(2, step, true, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(6));
 
         // Top 1
-        appTraffic = flowRepository.getTopNApplicationSeries(1, 10, false, getFilters()).get();
+        appTraffic = flowRepository.getTopNApplicationSeries(1, step, false, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(2));
         assertThat(appTraffic.rowKeySet(), containsInAnyOrder(new Directional<>("https", true),
                 new Directional<>("https", false)));
 
-        verifyHttpsSeries(appTraffic, "https");
+        verifyHttpsSeriesAggregated(appTraffic, "https");
     }
 
     @Test
@@ -280,23 +312,6 @@ public class FlowQueryIT {
         appTraffic = flowRepository.getApplicationSeries(ImmutableSet.of("http", "https"), 10,
                 true, getFilters()).get();
         assertThat(appTraffic.rowKeySet(), hasSize(6));
-    }
-
-    @Test
-    public void canGetTopNApplicationsWithPartialSums() throws Exception {
-        // Load the default set of flows
-        loadDefaultFlows();
-
-        // Retrieve the Top N applications over a subset of the range
-        final List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(1, false,
-                Lists.newArrayList(new TimeRangeFilter(10,  20))).get();
-
-        // Expect the top application with a partial sum of all the bytes
-        assertThat(appTrafficSummary, hasSize(1));
-        final TrafficSummary<String> HTTPS = appTrafficSummary.get(0);
-        assertThat(HTTPS.getEntity(), equalTo("https"));
-        assertThat(HTTPS.getBytesIn(), equalTo(75L));
-        assertThat(HTTPS.getBytesOut(), equalTo(751L));
     }
 
     @Test
@@ -417,21 +432,21 @@ public class FlowQueryIT {
         loadDefaultFlows();
 
         // Top 10
-        Table<Directional<Host>, Long, Double> hostTraffic = flowRepository.getTopNHostSeries(10, 10, false,
+        long step = TimeUnit.MINUTES.toMillis(1);
+        Table<Directional<Host>, Long, Double> hostTraffic = flowRepository.getTopNHostSeries(10, step, false,
                 getFilters()).get();
         // 6 hosts in two directions should yield 12 rows
         assertThat(hostTraffic.rowKeySet(), hasSize(12));
 
         // Top 2 with others
-        hostTraffic = flowRepository.getTopNHostSeries(2, 10, true, getFilters()).get();
+        hostTraffic = flowRepository.getTopNHostSeries(2, step, true, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(6));
-
         // Top 1
-        hostTraffic = flowRepository.getTopNHostSeries(1, 10, false, getFilters()).get();
+        hostTraffic = flowRepository.getTopNHostSeries(1, step, false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
         assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>(new Host("10.1.1.12"), true),
                 new Directional<>(new Host("10.1.1.12"), false)));
-        verifyHttpsSeries(hostTraffic, new Host("10.1.1.12"));
+        verifyHttpsSeriesAggregated(hostTraffic, new Host("10.1.1.12"));
     }
 
     @Test
@@ -504,8 +519,9 @@ public class FlowQueryIT {
         TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
         assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
         assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
-        assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
-        assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.of("ingress.only")));
+        // Disabled for now - see https://issues.opennms.org/browse/NMS-12692
+        // assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
+        // assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.of("ingress.only")));
         assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(110L));
         assertThat(convo.getBytesOut(), equalTo(1100L));
@@ -513,8 +529,9 @@ public class FlowQueryIT {
         convo = convoTrafficSummary.get(1);
         assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
         assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
-        assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.empty()));
+        // Disabled for now - see https://issues.opennms.org/browse/NMS-12692
+        //assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
+        //assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.empty()));
         assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(100L));
         assertThat(convo.getBytesOut(), equalTo(1000L));
@@ -601,57 +618,30 @@ public class FlowQueryIT {
         loadDefaultFlows();
 
         // Top 10
-        Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationSeries(10, 10, false, getFilters()).get();
+        long step = TimeUnit.MINUTES.toMillis(1);
+        Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationSeries(10, step, false, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(8));
 
         // Top 2 with others
-        convoTraffic = flowRepository.getTopNConversationSeries(2, 10, true, getFilters()).get();
+        convoTraffic = flowRepository.getTopNConversationSeries(2, step, true, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(6));
     }
 
-    @Test
-    public void hasCorrectOrdering() throws Exception {
-        this.loadFlows(new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", 99)
-                .withSnmpInterfaceId(98)
-                .withDirection(Direction.INGRESS)
+    private <L> void verifyHttpsSeriesAggregated(Table<Directional<L>, Long, Double> appTraffic, L label) {
+        // Pull the values from the table into arrays for easy comparision and validate
+        List<Long> timestamps = getTimestampsFrom(appTraffic);
+        List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), appTraffic);
+        List<Double> httpsEgressValues = getValuesFor(new Directional<>(label, false), appTraffic);
 
-                // More documents - less data
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-                .withFlow(new Date(0), new Date(10), "192.168.0.1", 1234, "192.168.1.1", 1234, 100)
-
-
-                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
-                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
-                .withFlow(new Date(0), new Date(10), "192.168.0.2", 1234, "192.168.1.2", 1234, 1000)
-
-                // Less documents - more data
-                .withFlow(new Date(0), new Date(10), "192.168.0.3", 1234, "192.168.1.3", 1234, 10000)
-
-                .build());
-
-        final List<TrafficSummary<Host>> summary = flowRepository.getTopNHostSummaries(10, false, getFilters()).get();
-        assertThat(summary, contains(
-                TrafficSummary.from(Host.from("192.168.0.3").build()).withBytes(10000, 0).build(),
-                TrafficSummary.from(Host.from("192.168.1.3").build()).withBytes(10000, 0).build(),
-                TrafficSummary.from(Host.from("192.168.0.2").build()).withBytes(3000, 0).build(),
-                TrafficSummary.from(Host.from("192.168.1.2").build()).withBytes(3000, 0).build(),
-                TrafficSummary.from(Host.from("192.168.0.1").build()).withBytes(500, 0).build(),
-                TrafficSummary.from(Host.from("192.168.1.1").build()).withBytes(500, 0).build()
-        ));
-
-        final Table<Directional<Host>, Long, Double> series = flowRepository.getTopNHostSeries(10, 10, false, getFilters()).get();
-        assertThat(series.rowKeySet(), contains(
-                new Directional<>(Host.from("192.168.0.3").build(), true),
-                new Directional<>(Host.from("192.168.1.3").build(), true),
-                new Directional<>(Host.from("192.168.0.2").build(), true),
-                new Directional<>(Host.from("192.168.1.2").build(), true),
-                new Directional<>(Host.from("192.168.0.1").build(), true),
-                new Directional<>(Host.from("192.168.1.1").build(), true)
-        ));
+        // In the range t=[10,20) there are 2 active flows with dstport=443:
+        //   100 bytes from [13,26]
+        //
+        //   110 bytes from [14,45]
+        //
+        final double error = 1E-8;
+        assertThat(timestamps, contains(0L, 60000L));
+        assertThat(httpsIngressValues, containsDoubles(error, 210.0, 0.0));
+        assertThat(httpsEgressValues, containsDoubles(error, 2100.0, 0.0));
     }
 
     private <L> void verifyHttpsSeries(Table<Directional<L>, Long, Double> appTraffic, L label) {
@@ -754,16 +744,82 @@ public class FlowQueryIT {
                 .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
                 .build();
 
-        this.loadFlows(flows);
+        this.loadFlows(flows, 17);
     }
 
-    private void loadFlows(final List<FlowDocument> flowDocuments) throws FlowException {
-        final List<Flow> flows = flowDocuments.stream().map(TestFlow::new).collect(Collectors.toList());
+    private void loadFlows(final List<FlowDocument> flowDocuments, long expectedNumFlowSummaries) throws FlowException {
+        final List<Flow> flows = new ArrayList<>();
+        for (FlowDocument flow : flowDocuments) {
+            TestFlow testFlow = new TestFlow(flow);
+            flow.setFlow(testFlow);
+            flows.add(testFlow);
+        }
         flowRepository.persist(flows, new FlowSource("test", "127.0.0.1", null));
 
         // Retrieve all the flows we just persisted
-        await().atMost(60, TimeUnit.SECONDS).until(() -> flowRepository.getFlowCount(Collections.singletonList(
+        await().atMost(60, TimeUnit.SECONDS).until(() -> rawFlowQueryService.getFlowCount(Collections.singletonList(
                 new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(Long.valueOf(flows.size())));
+
+        // Pass those same flows through the pipeline and persist the aggregations
+        NephronOptions options = PipelineOptionsFactory.as(NephronOptions.class);
+        doPipeline(documentForwarder.getFlows().stream()
+                .map( flow -> {
+                    flow.setExporterNodeInfo(new NodeInfo() {
+                        @Override
+                        public Integer getNodeId() {
+                            return 1;
+                        }
+
+                        @Override
+                        public String getForeignId() {
+                            return "SomeFID";
+                        }
+
+                        @Override
+                        public String getForeignSource() {
+                            return "SomeFS";
+                        }
+
+                        @Override
+                        public List<String> getCategories() {
+                            return Collections.emptyList();
+                        }
+                    });
+                    return FlowDocumentBuilder.buildFlowDocument(flow);
+                })
+                .collect(Collectors.toList()), options);
+
+        // Count the number aggregated flows we persisted
+        // Wait for these to be present to ensure the tests have a consistent view of the data
+        // This value will need to be updated if/when the flow aggregation logic changes
+        await().atMost(60, TimeUnit.SECONDS).until(() -> aggFlowQueryService.getFlowCount(Collections.singletonList(
+                new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(expectedNumFlowSummaries));
+    }
+
+    private void doPipeline(List<org.opennms.netmgt.flows.persistence.model.FlowDocument> flows, NephronOptions options) {
+        Pipeline.registerCoders(p);
+
+        // Build a stream from the given set of flows
+        long timestampOffsetMillis = TimeUnit.MINUTES.toMillis(1);
+        TestStream.Builder<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStreamBuilder = TestStream.create(new FlowDocumentProtobufCoder());
+        for (org.opennms.netmgt.flows.persistence.model.FlowDocument flow : flows) {
+            flowStreamBuilder = flowStreamBuilder.addElements(TimestampedValue.of(flow,
+                    new Instant(flow.getLastSwitched().getValue() + timestampOffsetMillis)));
+        }
+        TestStream<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStream = flowStreamBuilder.advanceWatermarkToInfinity();
+
+        // Build the pipeline
+        options.setElasticUrl(elasticSearchRule.getUrl());
+        // Must match!
+        options.setElasticIndexStrategy(org.opennms.nephron.elastic.IndexStrategy.MONTHLY);
+        options.setElasticFlowIndex("aggflowsnetflow_agg");
+
+        p.apply(flowStream)
+                .apply(new Pipeline.CalculateFlowStatistics(options))
+                .apply(new Pipeline.WriteToElasticsearch(options));
+
+        // Run the pipeline until completion
+        p.run().waitUntilFinish();
     }
 
     private List<Filter> getFilters(Filter... filters) {

@@ -45,17 +45,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.SearchResultUtils;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.SearchResultUtils;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
+import org.opennms.netmgt.flows.api.FlowSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,16 +97,14 @@ public class DefaultDirectionIT {
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-            final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
-            final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY, documentEnricher,
-                            classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                             new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                            3, 12000, aggregatedFlowRepository), jestClient);
+                            mock(SmartQueryService.class)), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
-                    FlowDocumentTest.getMockFlowSource());
+                    getMockFlowSource());
 
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
@@ -131,5 +128,12 @@ public class DefaultDirectionIT {
 
         // stop ES
         elasticSearchRule.stopServer();
+    }
+
+    public static FlowSource getMockFlowSource() {
+        final FlowSource flowSource = mock(FlowSource.class);
+        when(flowSource.getLocation()).thenReturn("SomeLocation");
+        when(flowSource.getSourceAddress()).thenReturn("192.168.1.1");
+        return flowSource;
     }
 }

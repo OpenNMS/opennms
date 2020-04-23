@@ -28,9 +28,24 @@
 
 package org.opennms.netmgt.flows.elastic.agg;
 
+/**
+ * Different ways metrics are grouped before top-k
+ * calculations are performed.
+ */
 public enum GroupedBy {
-    EXPORTER_INTERFACE,
-    EXPORTER_INTERFACE_APPLICATION,
-    EXPORTER_INTERFACE_HOST,
-    EXPORTER_INTERFACE_CONVERSATION;
+    EXPORTER(null),
+    EXPORTER_INTERFACE(EXPORTER),
+    EXPORTER_INTERFACE_APPLICATION(EXPORTER_INTERFACE),
+    EXPORTER_INTERFACE_HOST(EXPORTER_INTERFACE),
+    EXPORTER_INTERFACE_CONVERSATION(EXPORTER_INTERFACE);
+
+    private GroupedBy parent;
+
+    GroupedBy(GroupedBy parent) {
+        this.parent = parent;
+    }
+
+    public GroupedBy getParent() {
+        return parent;
+    }
 }

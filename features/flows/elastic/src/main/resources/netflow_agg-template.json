@@ -19,7 +19,11 @@
                 "type": "keyword",
                 "norms": false
             },
-            "type": {
+            "grouped_by_key": {
+                "type": "keyword",
+                "norms": false
+            },
+            "aggregation_type": {
                 "type": "keyword",
                 "norms": false
             },

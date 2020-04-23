@@ -46,11 +46,11 @@ public class AggregateIndexInitializer extends DefaultTemplateInitializer {
         super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
     }
 
-    protected AggregateIndexInitializer(JestClient client, IndexSettings indexSettings) {
+    public AggregateIndexInitializer(JestClient client, IndexSettings indexSettings) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
-    protected AggregateIndexInitializer(JestClient client) {
+    public AggregateIndexInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

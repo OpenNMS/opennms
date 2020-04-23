@@ -28,7 +28,20 @@
 
 package org.opennms.netmgt.flows.filter.api;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface Filter {
 
     <T> T visit(FilterVisitor<T> visitor);
+
+    static <T> Optional<T> find(List<Filter> filters, Class<T> filterClazz) {
+        for (Filter filter : filters) {
+            if (filterClazz.isInstance(filter)) {
+                return Optional.of(filterClazz.cast(filter));
+            }
+        }
+        return Optional.empty();
+    }
+
 }

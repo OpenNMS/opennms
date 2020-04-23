@@ -46,11 +46,11 @@ public class RawIndexInitializer extends DefaultTemplateInitializer {
         super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
     }
 
-    protected RawIndexInitializer(JestClient client, IndexSettings indexSettings) {
+    public RawIndexInitializer(JestClient client, IndexSettings indexSettings) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
-    protected RawIndexInitializer(JestClient client) {
+    public RawIndexInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

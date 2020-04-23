@@ -64,7 +64,6 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
-import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -166,12 +165,11 @@ public class MarkerCacheIT {
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
 
         try (JestClient client = factory.getObject()) {
-            final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
+                    client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
                     new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    3, 12000, aggregatedFlowRepository);
+                    mock(SmartQueryService.class));
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));

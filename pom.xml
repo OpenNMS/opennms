@@ -1255,6 +1255,7 @@
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <elasticsearchNettyVersion>4.1.43.Final</elasticsearchNettyVersion>
+    <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <fopVersion>1.0</fopVersion>
@@ -1331,7 +1332,7 @@
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rancidApiVersion>1.0.4</rancidApiVersion>
-    <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
+    <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.18.3</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>

@@ -26,9 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.agg;
+package org.opennms.netmgt.flows.elastic;
 
-public enum AggregationType {
-    TOTAL,
-    TOPK
+import java.util.LinkedList;
+import java.util.List;
+
+import org.opennms.netmgt.flows.api.EnrichedFlow;
+import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
+
+public class MockDocumentForwarder implements EnrichedFlowForwarder {
+
+    private List<EnrichedFlow> flows = new LinkedList<>();
+
+    @Override
+    public void forward(EnrichedFlow enrichedFlow) {
+        flows.add(enrichedFlow);
+    }
+
+    public List<EnrichedFlow> getFlows() {
+        return flows;
+    }
 }

@@ -39,17 +39,15 @@ import org.junit.rules.Timeout;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.executors.DefaultRequestExecutor;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.executors.DefaultRequestExecutor;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowRepository;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -99,12 +97,11 @@ public class ElasticFlowRepositoryRetryIT {
 
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-            final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
-            final AggregatedFlowRepository aggregatedFlowRepository = mock(AggregatedFlowRepository.class);
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
-                            classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),3, 12000, aggregatedFlowRepository), client);
+                             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                            mock(SmartQueryService.class)), client);
 
             consumer.accept(elasticFlowRepository);
 
