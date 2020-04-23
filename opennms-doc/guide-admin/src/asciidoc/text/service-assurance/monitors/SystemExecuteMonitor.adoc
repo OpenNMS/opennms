@@ -61,32 +61,66 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
-====== Reasonable output example
+====== Banner matching example
 
 [source, xml]
 ----
-<service name="DivisibleByFive" interval="300000" user-defined="true" status="on">
-  <parameter key="script" value="/opt/opennms/contrib/DivisibleByFive.sh"/>
-  <parameter key="banner" value="Your number is divisible by 5"/>
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="banner" value="UP"/>
   <parameter key="timeout" value="5000"/>
 </service>
 
-<monitor service="DivisibleByFive" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
 ----
-
-**/opt/opennms/contrib/DivisibleByFive.sh**
 
 [source, bash]
 ----
+#/opt/opennms/contrib/Script_Example.sh
 #!/bin/bash
 set -e
 set -u
 
-if (( $RANDOM % 5 == 0 ))
+# Create a value 1 or 2 randomly
+VALUE=$(shuf -i 1-2 -n 1)
+
+# Depending on the value echo UP or DOWN
+if [ "$VALUE" -eq 1 ]
 then
-    echo "Your number is divisible by 5"
+    echo "UP"
 else
-    echo "Your number is not divisible by 5"
+    echo "DOWN"
+fi
+----
+
+====== Exit status example
+
+[source, xml]
+----
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+[source, bash]
+----
+#/opt/opennms/contrib/Script_Example.sh
+#!/bin/bash
+set -e
+set -u
+
+# Create a value 1 or 2 randomly
+VALUE=$(shuf -i 1-2 -n 1)
+
+# Depending on the value exit with status 0 or 1
+if [ "$VALUE" -eq 1 ]
+then
+    exit 0
+else
+    exit 1
 fi
 ----
 
