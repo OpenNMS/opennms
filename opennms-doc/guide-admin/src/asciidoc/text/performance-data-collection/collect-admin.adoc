@@ -1,0 +1,14 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+.Configuration and log files related to Collectd
+[options="header, autowidth"]
+|===
+| File                                           | Description
+| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global _Collectd_ daemon and _Collectors_ configuration
+| `$OPENNMS_HOME/logs/collectd.log`              | Log file for all _Collectors_ and the global _Collectd_ daemon
+| `$OPENNMS_HOME/etc/snmp-graph.properties`      | _RRD_ graph definitions to render performance data measurements in the _Web UI_
+| `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with _RRD_ graph definitions for devices and applications to render performance data measurements in the _Web UI_
+| `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
+| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions.
+|===
