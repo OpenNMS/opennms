@@ -3,19 +3,30 @@
 :imagesdir: ../../images
 
 [[ga-collectd-configuration]]
-=== Collectd Configuration
+=== Configuring _Collectd_ 
 
-.Configuration and log files related to Collectd
-[options="header, autowidth"]
-|===
-| File                                           | Description
-| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global _Collectd_ daemon and _Collectors_ configuration
-| `$OPENNMS_HOME/logs/collectd.log`              | Log file for all _Collectors_ and the global _Collectd_ daemon
-| `$OPENNMS_HOME/etc/snmp-graph.properties`      | _RRD_ graph definitions to render performance data measurements in the _Web UI_
-| `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with _RRD_ graph definitions for devices and applications to render performance data measurements in the _Web UI_
-| `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
-| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions.
-|===
+_Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
+Each collector has its own associated configuration that defines parameters for the collector.
+
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+These collectors are scheduled and run in parallel in a global-defined _thread pool_ in _Collectd_.
+
+==== How is _Collectd_ Configured?
+
+The _collectd-configuration.xml_ file controls _collectd_’s operation by defining the nodes from which to collect, the services on which to collect, parameters associated with the service, and a list of available collectors. 
+
+The content of this file is classified by packages (TODO: see x-ref to the image).
+Each package defines the nodes (based on a filter), a list of services to collect on, and parameters for the service.
+Each service is associated with a specific collector; a list of these collectors and their related Java class appears at the bottom of the _collectd-configuration.xml_ file.
+
+_Collectd_ activates data collection for each node that passes the filter, contains an IP address in the configured range, and also contains any of the services listed in the package associated with the selected IP address.
+
+By default data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX).
+
+==== Editing the _collectd-configuration.xml_ File
 
 To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
 The configuration file is structured in the following parts:

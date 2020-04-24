@@ -2,30 +2,18 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-_{opennms-product-name}_ collects performance data using the _Collectd_ daemon, which is enabled by default. 
-_Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
-Each collector has its own associated configuration that defines parameters for the collector.
+_{opennms-product-name}_ collects performance data using the _Collectd_ daemon, which is enabled by default. _Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
 
-[[ga-performance-management-collectd-overview]]
-.Collectd overview for associated files and configuration
-image::performance-management/01_collectd-overview.png[]
+Data collection works out of the box with SNMP, provided you have your SNMP community string configured properly. 
+The default value of the community string is `public`. 
+If your community string is different, you need to edit the _snmp-config.xml_ file and change the `read-community` string to your value. TODO: is there more than one snmp-config.xml file. Where is it located? 
 
-These collectors are scheduled and run in parallel in a global-defined _thread pool_ in _Collectd_.
+Performance data collection of services on other protocols (HTTPS, JMX, JDBC, etc.), requires additional configuration. 
+You may also want to change how _collectd_ works: when, how, and what data it collects. 
 
-**How is _Collectd_ Configured?**
+This section describes what you need to do to manage performance data collection:
 
-The _collectd-configuration.xml_ file controls _Collectd_’s operation by defining the nodes from which to collect, the services on which to collect (SNMP, HTTPS, JMX, etc.), parameters associated with the service, and a list of available collectors. 
-
-The content of this file is classified by packages (see x-ref to the image).
-Each package defines the nodes (based on a filter), a list of services to collect on, and parameters for the service.
-Each service is associated with a specific collector; a list of these collectors and their associated Java class appears at the bottom of the _collectd-configuration.xml_ file.
-
-**How Does _Collectd_ Work?**
-
-_Collectd_ will activate data collection for each node that passes the filter, contains an IP address in the configured range, and also contains any of the services listed in the package associated with the selected IP address.
-
-By default data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX).
-
-**How Do I Make It Work?**
-
-This section describes how to configure _Collectd_ for performance data collection with all available _Collectors_ coming with _{opennms-product-name}_.
+* xref:configuration.adoc#ga-collectd-configuration[configure _collectd_]
+* configure collection for specific protocols
+* manage resource types
+* manage _collectd_ logging, graphing, and event properties
