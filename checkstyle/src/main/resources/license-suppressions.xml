@@ -16,6 +16,7 @@
     <suppress files="org[\\/]opennms[\\/]poller[\\/]remote[\\/]Mac.*" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]container[\\/]web[\\/].*" checks=".*"/>
     <suppress files="org[\\/]apache[\\/]taglibs[\\/]standard[\\/]lang[\\/].*" checks=".*"/>
+    <suppress files="org[\\/]hawkular[\\/]agent[\\/]prometheus[\\/].*" checks=".*"/>
 
     <!-- BSD style -->
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]syslogd[\\/]SyslogClient.java" checks=".*"/>

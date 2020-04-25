@@ -804,6 +804,11 @@
         <bundle dependency="true">wrap:mvn:org.jinterop/j-interopdeps/${jinteropVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
+    <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">
+        <feature>opennms-core-web</feature>
+        <feature>opennms-collection-api</feature>
+        <bundle>mvn:org.opennms.features/org.opennms.features.prometheus-collector/${project.version}</bundle>
+    </feature>
     <feature name="opennms-xml-collector" version="${project.version}" description="OpenNMS :: Protocols :: XML Collector">
         <feature>commons-io</feature>
         <feature>commons-jxpath</feature>
