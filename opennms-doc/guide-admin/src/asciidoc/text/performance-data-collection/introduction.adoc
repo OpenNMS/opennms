@@ -8,7 +8,7 @@ Data collection works out of the box with SNMP, provided you have your SNMP comm
 The default value of the community string is `public`. 
 If your community string is different, you need to edit the _snmp-config.xml_ file and change the `read-community` string to your value. TODO: is there more than one snmp-config.xml file. Where is it located? 
 
-Performance data collection of services on other protocols (HTTPS, JMX, JDBC, etc.), requires additional configuration. 
+Performance data collection on other protocols (HTTPS, JMX, JDBC, etc.), requires additional configuration. 
 You may also want to change how _collectd_ works: when, how, and what data it collects. 
 
 This section describes what you need to do to manage performance data collection:
