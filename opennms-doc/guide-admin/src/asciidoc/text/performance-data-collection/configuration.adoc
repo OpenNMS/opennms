@@ -12,34 +12,35 @@ Each collector has its own associated configuration that defines parameters for 
 .Collectd overview for associated files and configuration
 image::performance-management/01_collectd-overview.png[]
 
-These collectors are scheduled and run in parallel in a global-defined _thread pool_ in _Collectd_.
-
-==== How is _Collectd_ Configured?
-
-The _collectd-configuration.xml_ file controls _collectd_’s operation by defining the nodes from which to collect, the services on which to collect, parameters associated with the service, and a list of available collectors. 
-
-The content of this file is classified by packages (TODO: see x-ref to the image).
-Each package defines the nodes (based on a filter), a list of services to collect on, and parameters for the service.
-Each service is associated with a specific collector; a list of these collectors and their related Java class appears at the bottom of the _collectd-configuration.xml_ file.
-
-_Collectd_ activates data collection for each node that passes the filter, contains an IP address in the configured range, and also contains any of the services listed in the package associated with the selected IP address.
-
 By default data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX).
 
+Configuring _collectd_ involves
+
+* <<ga-edit-collectd-config, editing the _collectd-configuration.xml_ file>>
+* <<collectors.adoc,configuring collectors>> for the protocols from which you want to collect data
+* configuring resource types
+
+[[ga-edit-collectd-config]]
 ==== Editing the _collectd-configuration.xml_ File
 
-To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
-The configuration file is structured in the following parts:
+The _collectd-configuration.xml_ file defines the nodes, services and parameters on which _collectd_ collects metrics. 
+It also specifies a list of available collectors. 
 
-* _Global daemon config_: Define the size of the used _Thread Pool_ to run _Collectors_ in parallel.
-* _Collection packages_: Packages to allow the grouping of configuration parameters for _Collectors_.
-* _Collection service association_: Based on the name of the collection service, the implementation for application or network management protocols are assigned.
+The _collectd-configuration.xml_ file is located in `$OPENNMS_HOME/etc/collectd-configuration.xml`.
+Edit three areas of the _collectd-configuration.xml_ to modify performance data collection:
 
-[[ga-performance-management-collectd-overview]]
-.Collectd overview for associated files and configuration
-image::performance-management/01_collectd-overview.png[]
+* <<ga-thread-pool-edit, Threads>>: Define the size of thread pool to run _collectors_ in parallel.
+* <<ga-collector-package-edit, Collector packages>>: Configuration parameters for _collectors_, including IP address, status, port, etc. 
+* <<ga-collector-list-edit, Collector service>>: Available collectors and their related Java class. 
 
-The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is configured in the `collectd-configuration.xml`.
+_Collectd_ activates data collection for each node that contains an IP address in the configured range and also contains any of the services listed in the package associated with the selected IP address.
+
+[[ga-thread-pool-edit]]
+===== Editing the Thread Pool
+
+A globally defined thread pool in _collectd_ schedules and runs these collectors in parallel. 
+The thread attribute limits the number of threads the data collection process uses. 
+Increase or decrease this value based upon your network and the size of your server by changing the value in `$OPENNMS_HOME/etc/collectd-configuration.xml`:
 
 .Global configuration parameters for Collectd
 [source, xml]
@@ -49,6 +50,24 @@ The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is
 ----
 
 <1> Size of the _Thread Pool_ to run _Collectors_ in parallel
+
+[[ga-collector-package-edit]]
+===== Editing Collector Packages
+
+The content of this file is classified by packages (TODO: see x-ref to the image).
+Each package defines the nodes (based on a filter), a list of services to collect on, and parameters for the service.
+Each service is associated with a specific collector; a list of these collectors and their related Java class appears at the bottom of the _collectd-configuration.xml_ file.
+
+[[ga-collector-list-edit]]
+===== Editing Collectors List
+
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is configured in the `collectd-configuration.xml`.
+
+
 
 [[ga-performance-management-collectd-resource-types]]
 ==== Resource Types
