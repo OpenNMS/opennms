@@ -154,10 +154,10 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg > ~/test-results/system-logs/dmesg
-            ps auxf > ~/test-results/system-logs/ps
-            free -m > ~/test-results/system-logs/free
-            docker stats --no-stream > ~/test-results/system-logs/docker_stats
+            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/test-results/system-logs/ps 2>&1
+            free -m || : > ~/test-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/test-results/system-logs/
             ls -alh ~/project/smoke-test/
       - run:
