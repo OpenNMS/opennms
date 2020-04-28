@@ -1,5 +1,4 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[ga-collector-configuration]]
-=== Configuring Collectors
+introduction

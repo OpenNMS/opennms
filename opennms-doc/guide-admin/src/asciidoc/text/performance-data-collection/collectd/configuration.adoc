@@ -1,0 +1,49 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-configuration]]
+=== Configuring _Collectd_ 
+
+_Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
+Each collector has its own associated configuration that defines parameters for the collector.
+
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+
+By default data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX).
+
+Configuring _collectd_ involves editing the _collectd-configuration.xml_ file to:
+
+* <<ga-edit-collectd-config, set the thread pool>>
+* <<collection-packages.adoc, configure collector packages>>
+* <<collection-packages.adoc#ga-collector-list-edit, specify collectors to use>>
+
+In addtion, you need to <<collectors.adoc,configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
+
+[[ga-collectd-file-about]]
+==== About the _collectd-configuration.xml_ File
+
+The _collectd-configuration.xml_ file defines the nodes, services and parameters on which _collectd_ collects metrics. 
+It also specifies a list of available collectors. 
+
+The file is located in `$OPENNMS_HOME/etc/collectd-configuration.xml`.
+
+[[ga-thread-pool-edit]]
+===== Setting the Thread Pool
+
+A globally defined thread attribute limits the number of threads the data collection process uses. 
+Increase or decrease this value based on your network and the size of your server by changing the value in `$OPENNMS_HOME/etc/collectd-configuration.xml`:
+
+.Global configuration parameters for Collectd
+[source, xml]
+----
+<collectd-configuration
+        threads="50"> <1>
+----
+
+<1> Size of the thread pool to run collectors in parallel
+
+Next: <<collection-packages.adoc, Configuring Collector Packages>>
