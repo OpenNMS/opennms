@@ -85,6 +85,19 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.18]
+
+==== Release Meridian-2018.1.18
+
+Release 2018.1.18 is an off-schedule release to fix a vulnerability in ActiveMQ and the Minion.
+Thanks to Florian Hauser of Code White for catching this one.
+
+The codename for 2018.1.18 is _Wildfire_.
+
+===== Bug
+
+* Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
+
 [releasenotes-changelog-Meridian-2018.1.17]
 
 ==== Release Meridian-2018.1.17
