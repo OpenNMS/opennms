@@ -3,7 +3,12 @@
 :imagesdir: ../../images
 
 [[ga-collectd-packages]]
-=== Collection Packages
+==== Configuring Collector Packages
+
+Configuration parameters for _collectors_, including IP address, status, port, etc. 
+* <<ga-collector-list-edit, Collector service>>: Available collectors and their related Java class. 
+
+_Collectd_ activates data collection for each node that contains an IP address in the configured range and also contains any of the services listed in the package associated with the selected IP address.
 
 To define more complex collection configuration it is possible to group _Service_ configurations that provide performance metrics into _Collection Packages_.
 This allows you to assign different _Service Configurations_ to _Nodes_ to differentiate performance metric collection and connection settings.
@@ -15,6 +20,14 @@ The order how _Collection Packages_ are defined is important when _IP Interfaces
 The last _Collection Package_ on the service will be applied.
 This can be used to define a less-specific, catch-all filter for a default configuration.
 You can use a more specific _Collection Package_ to overwrite the default setting.
+
+[[ga-collector-package-edit]]
+===== Editing Collector Packages
+
+The content of this file is classified by packages (TODO: see x-ref to the image).
+Each package defines the nodes (based on a filter), a list of services to collect on, and parameters for the service.
+Each service is associated with a specific collector; a list of these collectors and their related Java class appears at the bottom of the _collectd-configuration.xml_ file.
+
 
 .Collection Package Attributes
 [source, xml]
@@ -30,7 +43,7 @@ You can use a more specific _Collection Package_ to overwrite the default settin
 <4> Evaluate _IPv6 rule_ to collect for all _IPv6 interfaces_ in the given range
 
 [[ga-collectd-packages-services]]
-==== Service Configurations
+===== Service Configurations
 
 _Service Configurations_ define what _Collector_ to use and which performance metrics to collect.
 _Service Configurations_ contain common _Service Attributes_ as well as _Collector_-specific parameters.
