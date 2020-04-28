@@ -100,7 +100,8 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger",
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class JtiIT {
 
