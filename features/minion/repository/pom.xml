@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>26.0.0</version>
+        <version>26.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -407,15 +407,13 @@
         <repository>
             <snapshots>
                 <enabled>false</enabled>
-                <updatePolicy>${updatePolicy}</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>${updatePolicy}</updatePolicy>
             </releases>
-            <id>oosnmp-repo</id>
-            <name>OOSNMP Repository</name>
-            <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
+            <id>coova</id>
+            <name>Coova Repository</name>
+            <url>http://maven.opennms.org/content/repositories/coova/</url>
         </repository>
         <repository>
             <snapshots>
@@ -424,9 +422,9 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
-            <id>coova</id>
-            <name>Coova Repository</name>
-            <url>http://maven.opennms.org/content/repositories/coova/</url>
+            <id>jboss-repo</id>
+            <name>JBoss Repository</name>
+            <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
         </repository>
     </repositories>
 </project>

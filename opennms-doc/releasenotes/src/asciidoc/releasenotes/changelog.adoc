@@ -2,6 +2,21 @@
 
 === Changelog
 
+[releasenotes-changelog-26.0.1]
+
+==== Release 26.0.1
+
+Release 26.0.1 is the second release in the Horizon 26 series.
+
+It is an off-schedule release to fix a vulnerability in ActiveMQ and the Minion.
+Thanks to Florian Hauser of Code White for catching this one.
+
+The codename for 26.0.1 is _link:$$https://en.wikipedia.org/wiki/Lucha_libre#Masks$$[Luchador]_.
+
+===== Bug
+
+* Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
+
 [releasenotes-changelog-26.0.0]
 
 ==== Release 26.0.0
@@ -10,6 +25,7 @@ Release 26.0.0 is the first release in the Horizon 26 series.
 
 It contains a large number of bug fixes and new features, most notably initial support for
 handling the BGP Monitoring Protocol in Telemetryd.
+It also contains a few security fixes for issues reported by Johannes Moritz.
 
 For a high-level overview of what has changed in Horizon 26, see
 link:https://docs.opennms.org/opennms/releases/26.0.0/releasenotes/releasenotes.html#releasenotes-26[What's New in OpenNMS Horizon 26].
