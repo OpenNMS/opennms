@@ -1,0 +1,9 @@
+[template]
+src = "org.apache.karaf.management.cfg.tmpl"
+dest = "/opt/minion/etc/org.apache.karaf.management.cfg"
+keys = [
+    "/karaf/management/rmi/registry/host",
+    "/karaf/management/rmi/registry/port",
+    "/karaf/management/rmi/server/host",
+    "/karaf/management/rmi/server/port"
+]

@@ -1,0 +1,5 @@
+sshPort={{getv "/karaf/ssh/port" "8201"}}
+sshHost={{getv "/karaf/ssh/host" "127.0.0.1"}}
+hostKeyFormat=PEM
+sshRealm=karaf
+hostKey=${karaf.etc}/host.key

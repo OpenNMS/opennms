@@ -161,3 +161,23 @@ system:
 ```
 Config specified will be written to `etc/confd.system.properties` which gets automatically appended to `etc/system.properties`. Additionally, provided the
 `jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.
+
+### Karaf Properties
+```
+---
+karaf:
+    ssh:
+        host: "127.0.0.1"
+        port: 8201
+    management:
+        rmi:
+            registry:
+                host: "127.0.0.1"
+                port: 1299
+            server:
+                host: "127.0.0.1"
+                port: 45444
+```
+Config specified will be written to:
+- `etc/org.apache.karaf.shell.cfg` for content under `ssh`.
+- `etc/org.apache.karaf.management.cfg` for content under `management`.
