@@ -92,6 +92,21 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.6]
+
+==== Release Meridian-2019.1.6
+
+Release 2019.1.6 is the seventh release in the Meridian 2019 series.
+
+It is an off-schedule release to fix a vulnerability in ActiveMQ and the Minion.
+Thanks to Florian Hauser of Code White for catching this one.
+
+The codename for 2019.1.6 is _link:$$https://en.wikipedia.org/wiki/Europa$$[Europa]_
+
+===== Bug
+
+* Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
+
 [releasenotes-changelog-Meridian-2019.1.5]
 
 ==== Release Meridian-2019.1.5

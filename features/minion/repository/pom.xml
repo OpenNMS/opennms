@@ -385,15 +385,13 @@
         <repository>
             <snapshots>
                 <enabled>false</enabled>
-                <updatePolicy>${updatePolicy}</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>${updatePolicy}</updatePolicy>
             </releases>
-            <id>oosnmp-repo</id>
-            <name>OOSNMP Repository</name>
-            <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
+            <id>coova</id>
+            <name>Coova Repository</name>
+            <url>http://maven.opennms.org/content/repositories/coova/</url>
         </repository>
         <repository>
             <snapshots>
@@ -402,9 +400,9 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
-            <id>coova</id>
-            <name>Coova Repository</name>
-            <url>http://maven.opennms.org/content/repositories/coova/</url>
+            <id>jboss-repo</id>
+            <name>JBoss Repository</name>
+            <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
         </repository>
     </repositories>
 </project>
