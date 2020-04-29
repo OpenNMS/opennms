@@ -41,7 +41,6 @@ import java.util.Properties;
 import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -64,8 +63,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 
-// NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
-@Distributable
 public class JDBCMonitor extends ParameterSubstitutingMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(JDBCMonitor.class);

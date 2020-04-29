@@ -35,7 +35,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.InsufficientParametersException;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -53,7 +52,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-@Distributable
 public final class SshMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SshMonitor.class);

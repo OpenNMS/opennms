@@ -33,7 +33,6 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.SslSocketWrapper;
-import org.opennms.netmgt.poller.Distributable;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -45,7 +44,6 @@ import org.opennms.netmgt.poller.Distributable;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  */
-@Distributable
 public class HttpsMonitor extends HttpMonitor {
 
     /**

@@ -8,9 +8,6 @@ This monitor tests reachability of a node by using the _isReachable_ method of t
 The service is considered available if isReachable returns true.
 See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
 
-IMPORTANT: This monitor is deprecated in favour of the <<poller-icmp-monitor,IcmpMonitor>> monitor. You should only use this monitor on remote pollers
-running on unusual configurations (See <<poller-availability-monitor-vs-icmp-monitor,below>> for more details).
-
 ===== Monitor facts
 
 [options="autowidth"]

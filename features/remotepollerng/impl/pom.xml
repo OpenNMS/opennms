@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.remotepollerng</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.remotepollerng</groupId>
@@ -44,11 +44,11 @@
       </dependency>
       <dependency>
           <groupId>org.opennms</groupId>
-          <artifactId>opennms-dao-api</artifactId>
+          <artifactId>opennms-config</artifactId>
       </dependency>
       <dependency>
-          <groupId>org.opennms.features.poller</groupId>
-          <artifactId>org.opennms.features.poller.remote</artifactId>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-dao-api</artifactId>
       </dependency>
       <dependency>
           <groupId>org.quartz-scheduler</groupId>

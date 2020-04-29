@@ -52,8 +52,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -73,7 +71,6 @@ import com.google.common.base.Strings;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
 
-@Distributable(DistributionContext.DAEMON)
 final public class HttpPostMonitor extends ParameterSubstitutingMonitor {
 
     /**

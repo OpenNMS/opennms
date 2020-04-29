@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
-By default, the RMI port in the {opennms-product-name} server is disabled, for security reasons.  If you wish to enable it so you can access {opennms-product-name} through jconsole, remote-manage {opennms-product-name}, or use the remote poller over RMI, you will have to add some settings to the default {opennms-product-name} install.
+By default, the RMI port in the {opennms-product-name} server is disabled, for security reasons.  If you wish to enable it so you can access {opennms-product-name} through jconsole or remote-manage {opennms-product-name}, you will have to add some settings to the default {opennms-product-name} install.
 
 === Enabling RMI
 

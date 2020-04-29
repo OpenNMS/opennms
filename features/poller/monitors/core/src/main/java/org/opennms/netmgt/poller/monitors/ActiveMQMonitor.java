@@ -37,8 +37,6 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -49,7 +47,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author roskens
  */
-@Distributable(DistributionContext.DAEMON)
 public class ActiveMQMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveMQMonitor.class);
 

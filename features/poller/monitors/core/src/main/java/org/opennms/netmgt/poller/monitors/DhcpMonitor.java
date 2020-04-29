@@ -39,15 +39,12 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.features.dhcpd.Dhcpd;
 import org.opennms.features.dhcpd.Transaction;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Distributable(DistributionContext.DAEMON)
 public final class DhcpMonitor extends AbstractServiceMonitor {
     public static final int DEFAULT_RETRIES = 0;
     public static final int DEFAULT_TIMEOUT = 3000;
