@@ -30,11 +30,14 @@ package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
+import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.NodeInfo;
 
 public class LegacyVertex extends AbstractVertex implements LevelAware {
     private final int level;
@@ -51,12 +54,18 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
         if (genericVertex.getProperty("edge-path-offset") != null) {
             setEdgePathOffset(genericVertex.getProperty("edge-path-offset"));
         }
+        // We have 3 ways to determine the nodeId, lets try all - last one wins.
+        // nodeInfo is produced by the NodeEnrichment
+        Optional.ofNullable(genericVertex.getProperty(GenericProperties.NODE_INFO))
+                .map(o -> (NodeInfo)o)
+                .map(NodeInfo::getId)
+                .ifPresent(this::setNodeID);
         if (genericVertex.getProperty(GenericProperties.NODE_ID) != null) {
             setNodeID(genericVertex.getProperty(GenericProperties.NODE_ID));
         }
-        if (genericVertex.getNodeRef() != null) {
-            setNodeID(genericVertex.getNodeRef().getNodeId());
-        }
+        Optional.ofNullable(genericVertex.getNodeRef())
+                .map(NodeRef::getNodeId)
+                .ifPresent(this::setNodeID);
         level = genericVertex.getProperty("level", 0);
         properties = genericVertex.getProperties();
     }
