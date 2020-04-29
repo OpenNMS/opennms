@@ -248,7 +248,7 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
 
-    <bean id="locationSpecificStatusDaoHibernate" class="org.opennms.netmgt.dao.hibernate.LocationSpecificStatusDaoHibernate">
+    <bean id="locationSpecificStatusDao" class="org.opennms.netmgt.dao.hibernate.LocationSpecificStatusDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao" ref="locationSpecificStatusDao" />

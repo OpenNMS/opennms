@@ -40,22 +40,27 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 
 import com.google.common.base.MoreObjects;
 
-public class PolledService {
+public class RemotePolledService {
 
     private final OnmsMonitoredService monSvc;
-    private final MonitoredService monitoredService;
+
     private final Package pkg;
     private final Service service;
+
     private final ServiceMonitor serviceMonitor;
 
-    public PolledService(OnmsMonitoredService monSvc,
-                         Package pkg, Service service, ServiceMonitor serviceMonitor) {
+    private final MonitoredService monitoredService;
+
+    public RemotePolledService(final OnmsMonitoredService monSvc,
+                               final Package pkg,
+                               final Service service,
+                               final ServiceMonitor serviceMonitor) {
         this.monSvc = Objects.requireNonNull(monSvc);
         this.pkg = Objects.requireNonNull(pkg);
         this.service = Objects.requireNonNull(service);
         this.serviceMonitor = Objects.requireNonNull(serviceMonitor);
 
-        monitoredService = new MonitoredService() {
+        this.monitoredService = new MonitoredService() {
             @Override
             public String getSvcName() {
                 return service.getName();
@@ -110,7 +115,7 @@ public class PolledService {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(PolledService.class)
+        return MoreObjects.toStringHelper(RemotePolledService.class)
                 .add("package", pkg.getName())
                 .add("service", service.getName())
                 .add("ipAddress", InetAddressUtils.str(monSvc.getIpAddress()))

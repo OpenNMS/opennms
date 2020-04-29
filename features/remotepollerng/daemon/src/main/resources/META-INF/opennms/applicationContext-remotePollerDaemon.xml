@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+  <tx:annotation-driven/>
+
+  <onmsgi:reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+  <onmsgi:reference id="monitoringLocationDao" interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"/>
+  <onmsgi:reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig"/>
+  <onmsgi:reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+  <onmsgi:reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient"/>
+  <onmsgi:reference id="locationSpecificStatusDao" interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao"/>
+  <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
+  <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
+
+  <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
+    <constructor-arg index="0" ref="sessionUtils"/>
+    <constructor-arg index="1" ref="monitoringLocationDao"/>
+    <constructor-arg index="2" ref="pollerConfig"/>
+    <constructor-arg index="3" ref="monitoredServiceDao"/>
+    <constructor-arg index="4" ref="locationAwarePollerClient"/>
+    <constructor-arg index="5" ref="locationSpecificStatusDao"/>
+    <constructor-arg index="6" ref="persisterFactory"/>
+    <constructor-arg index="7" ref="eventForwarder"/>
+  </bean>
+
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+</beans>
