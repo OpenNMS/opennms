@@ -17,10 +17,12 @@ The _VmwareCimCollector_ collects _ESXi_ host and sensor metrics from _vCenter_.
 
 ===== Collector Parameters
 
-.Collector specific parameters for the VmwareCimCollector
+Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the VmwareCimCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                     | Required | Default value
-| `collection`           | The name of the _VMWare CIM Collection_ to use  | required |
+| `collection`           | The name of the _VMWare CIM Collection_ to use.  | required |
 | `timeout`              | Connection timeout in milliseconds              | optional |
 |===

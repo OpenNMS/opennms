@@ -4,7 +4,7 @@
 
 ==== NSClientCollector
 
-The _NSClientCollector_ is used to collect performance data over _HTTP_ from _NSClient++_.
+The _NSClientCollector_ collects performance data over _HTTP_ from _NSClient++_.
 
 ===== Collector Facts
 
@@ -17,9 +17,11 @@ The _NSClientCollector_ is used to collect performance data over _HTTP_ from _NS
 
 ===== Collector Parameters
 
-.Collector specific parameters for the NSClientCollector
+Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>).
+
+.Collector-specific parameters for the NSClientCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                     | Required | Default value
-| `collection`           | The name of the _NSClient Collection_ to use                                    | optional | default
+| `collection`           | The name of the _NSClient Collection_ to use.                                    | optional | default
 |===

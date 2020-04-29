@@ -17,13 +17,15 @@ The _XmpCollector_ collects peformance metrics via the X/Open Management Protoco
 
 ===== Collector Parameters
 
-.Collector specific parameters for the XmpCollector
+Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the XmpCollector
 [options="header, autowidth"]
 |===
 | Parameter     | Description                                          | Required | Default value
-| `collection`  | The name of the _XMP Collection_ to use              | required |
-| `port`        | The TCP port on which the agent communicates         | required |
-| `authenUser`  | The username used for authenticating to the agent    | optional |  (none)
-| `timeout`     | The timeout used when communicating with the agent   | optional |  3000
-| `retry`       | The number of retries permitted when timeout expires | optional |  0
+| `collection`  | The name of the _XMP Collection_ to use.              | required |
+| `port`        | The TCP port on which the agent communicates.         | required |
+| `authenUser`  | The username used for authenticating to the agent.    | optional |  (none)
+| `timeout`     | The timeout used when communicating with the agent.   | optional |  3000
+| `retry`       | The number of retries permitted when timeout expires. | optional |  0
 |===
