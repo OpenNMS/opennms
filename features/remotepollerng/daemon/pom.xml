@@ -7,9 +7,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.remotepollerng</groupId>
-  <artifactId>org.opennms.features.remotepollerng.impl</artifactId>
+  <artifactId>org.opennms.features.remotepollerng.daemon</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS :: Features :: Remote Poller NG :: Impl.</name>
+  <name>OpenNMS :: Features :: Remote Poller NG :: Daemon</name>
 
   <build>
     <plugins>
@@ -58,6 +58,10 @@
       <dependency>
           <groupId>org.opennms.core.ipc.rpc</groupId>
           <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.core</groupId>
+          <artifactId>org.opennms.core.daemon</artifactId>
       </dependency>
   </dependencies>
 </project>

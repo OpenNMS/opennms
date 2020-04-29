@@ -52,11 +52,17 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
+import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -80,15 +86,20 @@ import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
+/*
  * TODO:
  *  * Support dynamically scheduling/rescheduling services
  *  * RP model associates state with individual RPs, whereas this doesn't work with our Minion model
  *    - the state should be associated with locations instead
  *  * Save the state using m_locMonDao.saveStatusChange
  */
-public class PollerBackEndNG {
-    private static final Logger LOG = LoggerFactory.getLogger(PollerBackEndNG.class);
+@EventListener(name=RemotePollerd.NAME, logPrefix=RemotePollerd.LOG_PREFIX)
+public class RemotePollerd implements SpringServiceDaemon {
+    private static final Logger LOG = LoggerFactory.getLogger(RemotePollerd.class);
+
+    public static final String NAME = "RemotePollerNG";
+
+    public static final String LOG_PREFIX = "remotepollerd";
 
     private static final ServiceMonitorRegistry serviceMonitorRegistry = new DefaultServiceMonitorRegistry();
 
@@ -103,11 +114,14 @@ public class PollerBackEndNG {
 
     private Scheduler scheduler;
 
-    public PollerBackEndNG(SessionUtils sessionUtils, MonitoringLocationDao monitoringLocationDao,
-                           PollerConfig pollerConfig, MonitoredServiceDao monSvcDao,
-                           LocationAwarePollerClient locationAwarePollerClient,
-                           LocationSpecificStatusDao locationSpecificStatusDao, PersisterFactory persisterFactory,
-                           EventForwarder eventForwarder) {
+    public RemotePollerd(final SessionUtils sessionUtils,
+                         final MonitoringLocationDao monitoringLocationDao,
+                         final PollerConfig pollerConfig,
+                         final MonitoredServiceDao monSvcDao,
+                         final LocationAwarePollerClient locationAwarePollerClient,
+                         final LocationSpecificStatusDao locationSpecificStatusDao,
+                         final PersisterFactory persisterFactory,
+                         final EventForwarder eventForwarder) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
@@ -118,25 +132,31 @@ public class PollerBackEndNG {
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
     }
 
-    public void start() throws SchedulerException {
-        scheduler = new StdSchedulerFactory()
-                .getScheduler();
-        scheduler.start();
-        scheduler.getListenerManager().addSchedulerListener(new SchedulerListenerSupport() {
+    @Override
+    public void start() throws Exception {
+        this.scheduler = new StdSchedulerFactory().getScheduler();
+        this.scheduler.start();
+        this.scheduler.getListenerManager().addSchedulerListener(new SchedulerListenerSupport() {
             @Override
             public void schedulerError(String msg, SchedulerException cause) {
                 LOG.error("Unexpected error during poll: {}", msg, cause);
             }
         });
 
-        scheduleAllServices();
+        this.scheduleAllServices();
     }
 
-    public void stop() throws SchedulerException {
-        if (scheduler != null) {
-            scheduler.shutdown();
-            scheduler = null;
+    @Override
+    public void destroy() throws Exception {
+        if (this.scheduler != null) {
+            this.scheduler.shutdown();
+            this.scheduler = null;
         }
+    }
+
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadEvent(IEvent e) {
+//        DaemonTools.handleReloadEvent(e, RemotePollerd.NAME, (event) -> handleConfigurationChanged());
     }
 
     /**
@@ -145,7 +165,7 @@ public class PollerBackEndNG {
      * Using the package definition, we retrieve all matching ifservices
      */
     public void scheduleAllServices() {
-        final Map<String, List<PolledService>> servicesByPackage = new HashMap<>();
+        final Map<String, List<RemotePolledService>> servicesByPackage = new HashMap<>();
 
         LOG.info("Scheduling all services...");
         sessionUtils.withReadOnlyTransaction(() -> {
@@ -153,7 +173,7 @@ public class PollerBackEndNG {
                 final List<String> pollingPackageNames = loc.getPollingPackageNames();
                 LOG.debug("Location '{}' has polling packages: {}", loc.getLocationName(), pollingPackageNames);
                 for (String pollingPackageName : pollingPackageNames) {
-                    final List<PolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> {
+                    final List<RemotePolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> {
                         final Package pkg = pollerConfig.getPackage(pollingPackageName);
                         if (pkg == null) {
                             LOG.warn("Polling package '{}' is associated with location '{}', but the package was not found." +
@@ -163,7 +183,7 @@ public class PollerBackEndNG {
                         return getServicesForPackage(pkg);
                     });
 
-                    for (PolledService polledService : servicesForPackage) {
+                    for (RemotePolledService polledService : servicesForPackage) {
                         try {
                             scheduleService(loc.getLocationName(), polledService);
                         } catch (SchedulerException e) {
@@ -177,23 +197,23 @@ public class PollerBackEndNG {
         });
     }
 
-    private static String getJobIdentity(PolledService polledService) {
+    private static String getJobIdentity(RemotePolledService polledService) {
         return String.format("job-%s-%s", polledService.getPkg().getName(), polledService.getMonSvc().getId());
     }
 
-    private static String getTriggerIdentity(PolledService polledService) {
+    private static String getTriggerIdentity(RemotePolledService polledService) {
         return String.format("trigger-%s-%s", polledService.getPkg().getName(), polledService.getMonSvc().getId());
     }
 
-    private void scheduleService(String locationName, PolledService polledService) throws SchedulerException {
+    private void scheduleService(String locationName, RemotePolledService polledService) throws SchedulerException {
         JobDetail job = JobBuilder
-                .newJob(PollJob.class)
+                .newJob(RemotePollJob.class)
                 .withIdentity(getJobIdentity(polledService), locationName)
                 .build();
 
-        job.getJobDataMap().put(PollJob.LOCATION_NAME, locationName);
-        job.getJobDataMap().put(PollJob.POLLED_SERVICE, polledService);
-        job.getJobDataMap().put(PollJob.REMOTE_POLLER_BACKEND, this);
+        job.getJobDataMap().put(RemotePollJob.LOCATION_NAME, locationName);
+        job.getJobDataMap().put(RemotePollJob.POLLED_SERVICE, polledService);
+        job.getJobDataMap().put(RemotePollJob.REMOTE_POLLER_BACKEND, this);
 
         Trigger trigger = TriggerBuilder
                 .newTrigger()
@@ -212,11 +232,11 @@ public class PollerBackEndNG {
         return locationAwarePollerClient;
     }
 
-    private List<PolledService> getServicesForPackage(Package pkg) {
+    private List<RemotePolledService> getServicesForPackage(Package pkg) {
         final ServiceSelector selector = pollerConfig.getServiceSelectorForPackage(pkg);
         final Collection<OnmsMonitoredService> services = monSvcDao.findMatchingServices(selector);
         LOG.debug("Found {} services in polling package {}", services.size(), pkg.getName());
-        final List<PolledService> polledServices = new ArrayList<>(services.size());
+        final List<RemotePolledService> polledServices = new ArrayList<>(services.size());
         for (final OnmsMonitoredService monSvc : services) {
             final Service serviceConfig = pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
 
@@ -234,12 +254,12 @@ public class PollerBackEndNG {
             }
 
             LOG.debug("Found service {} in package {}", serviceConfig.getName(), pkg.getName());
-            polledServices.add(new PolledService(monSvc, pkg, serviceConfig, serviceMonitor));
+            polledServices.add(new RemotePolledService(monSvc, pkg, serviceConfig, serviceMonitor));
         }
         return polledServices;
     }
 
-    protected void reportResult(final String locationName, final PolledService polledService, final PollStatus pollResult) {
+    protected void reportResult(final String locationName, final RemotePolledService polledService, final PollStatus pollResult) {
         try {
             if (pollResult.getResponseTime() != null) {
                 saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult.getResponseTime(), polledService.getPkg());
@@ -325,5 +345,9 @@ public class PollerBackEndNG {
             }
         }
         return null;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
     }
 }

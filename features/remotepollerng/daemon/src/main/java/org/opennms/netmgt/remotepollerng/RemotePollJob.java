@@ -44,8 +44,8 @@ import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PollJob implements Job {
-    private static final Logger LOG = LoggerFactory.getLogger(PollJob.class);
+public class RemotePollJob implements Job {
+    private static final Logger LOG = LoggerFactory.getLogger(RemotePollJob.class);
 
     protected static final String LOCATION_NAME = "locationName";
     protected static final String POLLED_SERVICE = "polledService";
@@ -55,15 +55,9 @@ public class PollJob implements Job {
     public void execute(JobExecutionContext context) {
         final JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-        final String locationName = (String)dataMap.get(LOCATION_NAME);
-        Objects.requireNonNull(locationName, "location name required!");
-
-        final PolledService svc = (PolledService)dataMap.get(POLLED_SERVICE);
-        Objects.requireNonNull(svc, "svc required!");
-
-        final PollerBackEndNG backend = (PollerBackEndNG)dataMap.get(REMOTE_POLLER_BACKEND);
-        Objects.requireNonNull(svc, "backend required!");
-
+        final String locationName = Objects.requireNonNull((String) dataMap.get(LOCATION_NAME), "location name required");
+        final RemotePolledService svc = Objects.requireNonNull((RemotePolledService) dataMap.get(POLLED_SERVICE), "svc required");
+        final RemotePollerd backend = Objects.requireNonNull((RemotePollerd) dataMap.get(REMOTE_POLLER_BACKEND), "backend required");
 
         LOG.debug("Poll triggered for {} at {}", svc, locationName);
 
