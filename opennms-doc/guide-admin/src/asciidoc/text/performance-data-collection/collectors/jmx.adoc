@@ -19,19 +19,19 @@ Attributes are extracted from the available _MBeans_.
 ===== Collector Parameters
 
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
-.Collector specific parameters for the Jsr160Collector
+.Collector-specific parameters for the #Jsr160Collector Why is it called this?#
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                     | Required | Default value
-| `collection`           | The name of the _JMX Collection_ to use                                         | required | (none)
+| `collection`           | The name of the _JMX Collection_ to use.                                         | required | (none)
 | `thresholding-enabled` | Whether collected performance data should be tested against thresholds           | optional | `true`
 | `retry`                | Number of retries                                                               | optional | `3`
 | `friendlyName`         | Name of the path in which the metrics should be stored                          | optional | Value of the port, or 'jsr160' if no port is set.
 | `factory`              | The password strategy to use.
                            Supported values are: `STANDARD` (for authentication),
-                           `PASSWORD_CLEAR` (same as `STANDARD`) and `SASL` (if secure connection is required)
+                           `PASSWORD_CLEAR` (same as `STANDARD`) and `SASL` (if secure connection is required).
                                                                                                            | optional | `STANDARD`
 | `url`                  | The connection url, e.g., `service:jmx:rmi:localhost:18980`.
                            The IP address can be substituted. Use `${ipaddr}` in that case, e.g.,
@@ -46,7 +46,7 @@ Use these parameters in the used in the <<collection-packages.adoc,_collectd-con
 |===
 
 NOTE: The deprecated parameters `port`, `protocol`, `urlPath`, `rmiServerPort` and `remoteJMX` should be replaced with the `url` parameter.
-If `url` is not defined the collector falls back to _Legacy Mode_ and the deprecated parameters are used instead to build the connection url.
+If `url` is not defined the collector falls back to legacy mode #TODO: what is legacy mode in this context?# and the deprecated parameters are used instead to build the connection url.
 
 NOTE: If a service requires different configuration, an entry in `$OPENNMS_HOME/etc/jmx-config.xml` can overwrite it.
 
@@ -124,22 +124,23 @@ Here `BrokerName` can be defined as parameter for SiblingColumnStorageStrategy
 ----
 The extracted BrokerNames from the wildcard will be the resource folders in the form of `nodeId/resourceTypeName/{resource-label}`
 
-Wildcard may exist in domain as well, for ex: `org.apache.*:BrokerName=trap, Type=Queue`.
+Wildcard may exist in domain as well. For example: `org.apache.*:BrokerName=trap, Type=Queue`.
 Then `domain` can be defined as the `sibling-column-name` parameter.
 ----
   <parameter key="sibling-column-name" value="domain" />
 ----
-The `objectname` itself can be used as resource label, simply use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
+To use the `objectname` itself as a resource label, use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
 
 ===== Third-Party JMX Services
 
 Some Java applications provide their own JMX implementation and require certain libraries to be present on the classpath, e.g., the Java application server Wildfly.
-To successfully collect data the following steps may be required:
+To successfully collect data, you may need to do the following:
 
   * Place the jmx client lib to the $OPENNMS_HOME/lib folder (e.g., jboss-cli-client.jar)
   * Configure the JMX-Collector accordingly (see below)
   * Configure the collection accordingly (see above)
 
+#TODO: this example looks like what you do in the collectd.config file, not in a JMX config file#
 .Example
 [source, xml]
 ----

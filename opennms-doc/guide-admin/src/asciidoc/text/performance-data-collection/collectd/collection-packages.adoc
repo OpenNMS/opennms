@@ -5,14 +5,12 @@
 [[ga-collectd-packages]]
 ==== Configuring Collector Packages
 
-Collector packages in the _collectd-configuration.xml_ file contain the information (IP addresses, services, and parameters) that collectd needs to activate data collection. 
+Collector packages in the _collectd-configuration.xml_ file contain the information (IP interfaces #should this be address or interface?#, services, and connection parameters) that collectd needs to activate data collection. 
 
-Collectd activates data collection for each node that contains an IP address in the configured range and also contains any of the services listed in the package associated with the selected IP address.
+Collectd activates data collection for each node that contains an IP interface in the configured range and also contains any of the services listed in the package associated with the selected IP interface.
 
 Edit existing collector packages or create new ones to customize data collection for your needs. 
-
-[[ga-collector-package-edit]]
-===== Editing Collector Packages
+If you create a new collector package, we recommend copying and pasting an existing package in the _collectd-configuration.xml_ to use as a template. 
 
 A collector package has two categories of information to edit or specify:
 
@@ -28,13 +26,13 @@ At a minimum, collector package attributes include a package name and a filter t
 <package name="cassandra-via-jmx" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
 ----
-TODO: Describe "remote".
+#TODO: what does "remote" do? why is it there?#
 
 Each package must have a filter tag that performs the initial test to see if an interface should be included in a package. 
 Filters operate on interfaces (not nodes).
-Each package can have only one `filter` statement.
+Each package can have only one `filter` tag.
 
-The following tags are also available to define what interfaces to include:
+The following tags are also available for an interface filter:
 
 [options="autowidth"]
 |===
@@ -43,10 +41,10 @@ The following tags are also available to define what interfaces to include:
 |`include-range`| Specify a range of IP addresses to include in a package.|`<include-range begin="192.168.0.1" end="192.168.0.254"/>``
 |`exclude-range`| Specify a range of IP addresses to exclude in a package. 
 This will override an `include-range` tag.| `<exclude-range begin="192.168.0.100" end="192.168.0.104"/>``
-|`include-url`|Specify a file that contains a list of IP addresses to include.|`<include-url>file:/opt/OpenNMS/etc/include</include-url>``
+|`include-url`|Specify a file that contains a list of #IP addresses to include. TODO: we use address and interface interchangeably. Please clarify.#|`<include-url>file:/opt/OpenNMS/etc/include</include-url>``
 |===
 
-The following example illustrates collector package attributes that use some of these tags:
+The following example illustrates collector package attributes that use some of these additional tags:
 [source, xml]
 ----
 <package name="example1" remote="false"><1>
@@ -59,11 +57,12 @@ The following example illustrates collector package attributes that use some of 
 <3> Evaluate _IPv4 rule_ to collect for all _IPv4 interfaces_ in the given range
 <4> Evaluate _IPv6 rule_ to collect for all _IPv6 interfaces_ in the given range
 
+
 [[ga-collectd-packages-services]]
 .Service Configuration Attributes
 
 Service configuration attributes define the collector to use and which performance metrics to collect.
-Each service is associated with a specific collector; a list of these collectors and their related Java class appears at the bottom of the _collectd-configuration.xml_ file:
+Each service is associated with a specific collector; the collector and its related Java class must appear at the bottom of the _collectd-configuration.xml_ file:
 
 [source, xml]
 ----
@@ -76,17 +75,20 @@ Each service is associated with a specific collector; a list of these collectors
 </service>
 
 <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/><7>
+
 ----
-<1> Service Configuration name which is mapped to a specific collector.
+
+<1> Service configuration name, which is mapped to a specific collector.
 <2> The interval at which to collect the service (in milliseconds).
 <3> Marker to say if service is user defined (used for UI purposes).
-<4> Service is collected only if on.
-<5> Assign performance data collection metric groups named `default`.
+<4> Service is collected only if "on".
+<5> Assign performance data collection metric groups named `default`. #TODO: What does this mean?#
 <6> Enable threshold evaluation for metrics provided by this service.
 <7> Run the _SnmpCollector_ implementation for the service named `SNMP`.
+This 
 
 The following table lists service attributes common to all services.
-For a list of collector-specific parameters and their default values, refer to the collector listed in the <<collectors.adoc, Collectors>> section. 
+For a list of collector-specific parameters and their default values, refer to the specific collector listed in the <<collectors.adoc, Collectors>> section. 
 
 [options="autowidth"]
 |===
@@ -103,8 +105,6 @@ image::performance-management/02_collectd-configuration-xml.png[]
 
 ==== Guidelines for Collector Packages
 
-These packages group protocol-specific collection services that provide performance metrics and assign them to nodes to specify different performance metric collection and connection settings. 
-
 You can configure multiple packages, and an interface can exist in more than one package.
 This gives great flexibility in determining the service levels for a given device.
 
@@ -117,7 +117,7 @@ OR
 * Use it as a more-specific collector package to overwrite the default setting.
 
 
-TODO: Why do you want to use meta-data-dsl
+#TODO: Why do you want to use meta-data-dsl? Why is it important? Why is it included here?#
 
 [[ga-collectd-packages-services-meta-data]]
 ===== Meta-Data-DSL

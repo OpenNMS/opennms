@@ -2,18 +2,27 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-_{opennms-product-name}_ collects performance data using the _Collectd_ daemon, which is enabled by default. _Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
+_{opennms-product-name}_ collects performance data using the _Collectd_ daemon, which is enabled by default. 
+_Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
+Each collector has its own associated configuration that defines parameters for the collector.
 
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+By default, data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX). 
 Data collection works out of the box with SNMP, provided you have your SNMP community string configured properly. 
 The default value of the community string is `public`. 
-If your community string is different, you need to edit the _snmp-config.xml_ file and change the `read-community` string to your value. TODO: is there more than one snmp-config.xml file. Where is it located? 
+If your community string is different, you need to edit the _snmp-config.xml_ file and change the `read-community` string to your value. 
+
+#TODO: is there more than one snmp-config.xml file? Where is it located?# 
 
 Performance data collection on other protocols (HTTPS, JMX, JDBC, etc.), requires additional configuration. 
 You may also want to change how _collectd_ works: when, how, and what data it collects. 
 
-This section describes what you need to do to manage performance data collection:
+Learn how to manage performance data collection:
 
 * xref:configuration.adoc#ga-collectd-configuration[configure _collectd_]
-* configure collection for specific protocols
-* manage resource types
-* manage _collectd_ logging, graphing, and event properties
+* <<collectors.adoc,configure collection for specific protocols>>
+* <<resource-types.adoc, manage resource types>>
+* <<collect-admin.adoc, _collectd_ administration>> (logging, graphing, and event properties)
