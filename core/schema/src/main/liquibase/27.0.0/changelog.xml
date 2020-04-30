@@ -6,6 +6,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
     <changeSet runOnChange="false" author="cpape" id="27.0.0-rp-change">
+        <sql>
+            DELETE FROM monitoringsystems WHERE type='Remote Poller';
+        </sql>
+
         <dropUniqueConstraint tableName="location_specific_status_changes" constraintName="location_specific_status_changes_systemid_fkey"/>
         <dropColumn tableName="location_specific_status_changes" columnName="systemid"/>
         <addColumn tableName="location_specific_status_changes">

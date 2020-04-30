@@ -154,6 +154,7 @@ public class AvailCalculator {
     }
     
     public static class ServiceAvailCalculator {
+        // TODO: This need to take care of this spot...
         Map<OnmsMonitoringLocation, UptimeCalculator> m_uptimeCalculators = new HashMap<OnmsMonitoringLocation, UptimeCalculator>();
         TimeChunker m_timeChunker;
         public ServiceAvailCalculator(TimeChunker timeChunker) {

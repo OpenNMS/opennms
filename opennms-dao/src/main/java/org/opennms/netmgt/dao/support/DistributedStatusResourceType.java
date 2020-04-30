@@ -120,13 +120,12 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         final Collection<LocationIpInterface> statuses = m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId());
 
         for (LocationIpInterface status : statuses) {
-            String definitionName = status.getLocation().getLocationName();
-            String id = status.getLocation().getLocationName();
+            String location = status.getLocation().getLocationName();
             final OnmsIpInterface ipInterface = status.getIpInterface();
             String ipAddr = InetAddressUtils.str(ipInterface.getIpAddress());
 
-            if (m_resourceStorageDao.exists(getRelativeInterfacePath(id, ipAddr), 0)) {
-                resources.add(createResource(definitionName, id, ipAddr));
+            if (m_resourceStorageDao.exists(getRelativeInterfacePath(location, ipAddr), 0)) {
+                resources.add(createResource(location, ipAddr));
             }
         }
 
@@ -148,15 +147,14 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         throw new ObjectRetrievalFailureException(OnmsResource.class, "No child with name '" + name + "' found on '" + parent + "'");
     }
 
-    private OnmsResource createResource(String definitionName,
-            String locationMonitorId, String ipAddress) {
-        String monitor = definitionName + "-" + locationMonitorId;
+    private OnmsResource createResource(final String locationName, final String ipAddress) {
+        String monitor = locationName;
         String label = ipAddress + " from " + monitor;
 
-        final ResourcePath path = getRelativeInterfacePath(locationMonitorId, ipAddress);
+        final ResourcePath path = getRelativeInterfacePath(locationName, ipAddress);
         final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(m_resourceStorageDao, path);
         final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(loader);
-        return new OnmsResource(getResourceName(locationMonitorId, ipAddress), label, this, set, path);
+        return new OnmsResource(getResourceName(locationName, ipAddress), label, this, set, path);
     }
 
     protected static String getResourceName(String locationMonitorId, String ipAddress) {
