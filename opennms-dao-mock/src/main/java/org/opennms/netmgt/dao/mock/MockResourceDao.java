@@ -33,11 +33,11 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class MockResourceDao implements ResourceDao {
 
@@ -62,7 +62,7 @@ public class MockResourceDao implements ResourceDao {
     }
 
     @Override
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor) {
+    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsMonitoringLocation location) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

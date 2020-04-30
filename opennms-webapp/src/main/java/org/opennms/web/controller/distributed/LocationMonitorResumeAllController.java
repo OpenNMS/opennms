@@ -50,7 +50,7 @@ public class LocationMonitorResumeAllController extends AbstractController imple
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        m_distributedPollerService.resumeAllLocationMonitors();
+        //m_distributedPollerService.resumeAllLocationMonitors();
         return new ModelAndView("redirect:/distributed/locationMonitorList.htm");
     }
 

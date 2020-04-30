@@ -155,10 +155,6 @@
                   ref="distributedPollerService"/>
     </bean>
 
-    <bean id="locationMonitorIdValidator" class="org.opennms.web.validator.LocationMonitorIdValidator">
-        <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    </bean>
-
     <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
         <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
     </bean>

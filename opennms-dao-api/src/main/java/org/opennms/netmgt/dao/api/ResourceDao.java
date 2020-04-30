@@ -32,11 +32,11 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>ResourceDao interface.</p>
@@ -77,10 +77,10 @@ public interface ResourceDao {
      * <p>getResourceForIpInterface</p>
      *
      * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor);
+    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsMonitoringLocation location);
 
     /**
      * Deletes the resource identified by the given resource ID.

@@ -30,7 +30,6 @@ package org.opennms.web.controller.distributed;
 
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
-import org.opennms.web.validator.LocationMonitorIdValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -52,19 +51,14 @@ public class LocationMonitorPauseController {
     @Autowired
     private DistributedPollerService m_distributedPollerService;
 
-    @Autowired
-    private LocationMonitorIdValidator m_validator;
-
     private static final String SUCCESS_VIEW = "redirect:/distributed/locationMonitorList.htm";
 
     private static final String ERROR_VIEW = "distributed/error";
 
     @RequestMapping(method={ RequestMethod.GET, RequestMethod.POST })
     public String handle(@ModelAttribute("command") LocationMonitorIdCommand cmd, BindingResult errors) {
-        m_validator.validate(cmd, errors);
-
         if (!errors.hasErrors()) {
-            m_distributedPollerService.pauseLocationMonitor(cmd, errors);
+            //m_distributedPollerService.pauseLocationMonitor(cmd, errors);
         }
 
         if (errors.hasErrors()) {

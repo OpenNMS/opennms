@@ -50,7 +50,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationAvailDataPoint;
 import org.opennms.netmgt.model.OnmsLocationAvailDefinition;
 import org.opennms.netmgt.model.OnmsLocationAvailDefinitionList;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -72,6 +71,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.google.common.collect.Lists;
+
 @Component("remotePollerAvailabilityService")
 @Path("remotelocations")
 @Transactional
@@ -81,7 +82,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     MonitoringLocationDao m_monitoringLocationDao;
     
     @Autowired
-    LocationMonitorDao m_locationMonitorDao;
+    LocationSpecificStatusDao m_locationSpecificStatusDao;
     
     @Autowired
     ApplicationDao m_applicationDao;
@@ -188,9 +189,8 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         if (locationDefinition == null) {
             throw getException(Status.BAD_REQUEST, "Cannot find location definition: {}", location);
         }
-        Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
-        
-        OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), monitors, null);
+
+        OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), Lists.newArrayList(locationDefinition), null);
         
         return availList;
     }
@@ -200,11 +200,11 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
      * 
      * @param timeChunker
      * @param sortedApplications
-     * @param selectedMonitors
+     * @param selectedLocations
      * @param selectedNodes
      * @return
      */
-    private OnmsLocationAvailDefinitionList getAvailabilityList(TimeChunker timeChunker, List<OnmsApplication> sortedApplications, Collection<OnmsLocationMonitor> selectedMonitors, Collection<OnmsNode> selectedNodes) {
+    private OnmsLocationAvailDefinitionList getAvailabilityList(TimeChunker timeChunker, List<OnmsApplication> sortedApplications, Collection<OnmsMonitoringLocation> selectedLocations, Collection<OnmsNode> selectedNodes) {
         OnmsLocationAvailDefinitionList availList = new OnmsLocationAvailDefinitionList();
         
         List<String> names = new ArrayList<String>(sortedApplications.size());
@@ -212,11 +212,11 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             names.add(app.getName());
         }
         
-        Collection<OnmsLocationSpecificStatus> statusesPeriod = m_locationMonitorDao.getStatusChangesBetweenForApplications(timeChunker.getStartDate(), timeChunker.getEndDate(), names);
+        Collection<OnmsLocationSpecificStatus> statusesPeriod = m_locationSpecificStatusDao.getStatusChangesBetweenForApplications(timeChunker.getStartDate(), timeChunker.getEndDate(), names);
         
         AvailCalculator availCalc = new AvailCalculator(timeChunker);
 
-        removeUnneededMonitors(statusesPeriod, selectedMonitors);
+        removeUnneededMonitors(statusesPeriod, selectedLocations);
         removeUnneededServices(statusesPeriod, selectedNodes);
 
         for(OnmsLocationSpecificStatus statusChange : statusesPeriod) {
@@ -266,14 +266,14 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         }
     }
 
-    private static void removeUnneededMonitors(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsLocationMonitor> selectedMonitors) {
-        if(selectedMonitors != null) {
+    private static void removeUnneededMonitors(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsMonitoringLocation> selectedLocations) {
+        if(selectedLocations != null) {
             Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<>();
             
             for(OnmsLocationSpecificStatus status : statusesPeriod) {
                 
-                for(OnmsLocationMonitor monitor : selectedMonitors) {
-                    if(status.getLocationMonitor().getId() == monitor.getId()) {
+                for(OnmsMonitoringLocation monitor : selectedLocations) {
+                    if(status.getLocation().getLocationName().equals(monitor.getLocationName())) {
                         unneededStatuses.add(status);
                     }
                 }

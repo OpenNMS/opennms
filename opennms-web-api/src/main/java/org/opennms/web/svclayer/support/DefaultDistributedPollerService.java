@@ -32,17 +32,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.model.LocationMonitorListModel;
 import org.opennms.web.svclayer.model.LocationMonitorListModel.LocationMonitorModel;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 
 /**
  * <p>DefaultDistributedPollerService class.</p>
@@ -55,10 +52,7 @@ import org.springframework.validation.ObjectError;
 public class DefaultDistributedPollerService implements DistributedPollerService {
 
     private MonitoringLocationDao m_monitoringLocationDao;
-    private LocationMonitorDao m_locationMonitorDao;
-    
-    private OnmsLocationMonitorAreaNameComparator m_comparator =
-        new OnmsLocationMonitorAreaNameComparator();
+    private LocationSpecificStatusDao m_locationSpecificStatusDao;
 
     /**
      * <p>getLocationMonitorList</p>
@@ -67,14 +61,13 @@ public class DefaultDistributedPollerService implements DistributedPollerService
      */
     @Override
     public LocationMonitorListModel getLocationMonitorList() {
-        List<OnmsLocationMonitor> monitors = m_locationMonitorDao.findAll();
+        List<OnmsMonitoringLocation> monitors = m_monitoringLocationDao.findAll();
         
-        Collections.sort(monitors, m_comparator);
+        Collections.sort(monitors, Comparator.comparing(OnmsMonitoringLocation::getLocationName));
         
         LocationMonitorListModel model = new LocationMonitorListModel();
-        for (OnmsLocationMonitor monitor : monitors) {
-            OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitor.getLocation());
-            model.addLocationMonitor(new LocationMonitorModel(monitor, def));
+        for (OnmsMonitoringLocation monitor : monitors) {
+            model.addLocationMonitor(new LocationMonitorModel(monitor));
         }
         
         return model;
@@ -83,10 +76,10 @@ public class DefaultDistributedPollerService implements DistributedPollerService
     /**
      * <p>getLocationMonitorDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.LocationSpecificStatusDao} object.
      */
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
+    public LocationSpecificStatusDao getLocationSpecificStatusDao() {
+        return m_locationSpecificStatusDao;
     }
 
     /**
@@ -101,52 +94,10 @@ public class DefaultDistributedPollerService implements DistributedPollerService
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @param locationSpecificStatusDao a {@link org.opennms.netmgt.dao.api.LocationSpecificStatusDao} object.
      */
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
-    }
-    
-    /**
-     * Sorts OnmsLocationMonitor by the area for the monitoring location
-     * definition (if any), then monitoring location definition name, and
-     * finally by location monitor ID.
-     * 
-     * @author djgregor
-     */
-    public class OnmsLocationMonitorAreaNameComparator
-                implements Comparator<OnmsLocationMonitor> {
-        @Override
-        public int compare(OnmsLocationMonitor o1, OnmsLocationMonitor o2) {
-            OnmsMonitoringLocation def1 = null;
-            OnmsMonitoringLocation def2 = null;
-            
-            if (o1.getLocation() != null) {
-                def1 = m_monitoringLocationDao.get(o1.getLocation());
-            }
-            
-            if (o2.getLocation() != null) {
-                def2 = m_monitoringLocationDao.get(o2.getLocation());
-            }
-            
-            int diff;
-            
-            if ((def1 == null || def1.getMonitoringArea() == null) && (def2 != null && def2.getMonitoringArea() != null)) {
-                return 1;
-            } else if ((def1 != null && def1.getMonitoringArea() != null) && (def2 == null || def2.getMonitoringArea() == null)) {
-                return -1;
-            } else if ((def1 != null && def1.getMonitoringArea() != null) && (def2 != null && def2.getMonitoringArea() != null)) {
-                if ((diff = def1.getMonitoringArea().compareToIgnoreCase(def1.getMonitoringArea())) != 0) {
-                    return diff;
-                }
-            }
-
-            if ((diff = o1.getLocation().compareToIgnoreCase(o2.getLocation())) != 0) {
-                return diff;
-            }
-            
-            return o1.getId().compareTo(o2.getId());
-        }
+    public void setLocationSpecificStatusDao(LocationSpecificStatusDao locationSpecificStatusDao) {
+        m_locationSpecificStatusDao = locationSpecificStatusDao;
     }
 
     /** {@inheritDoc} */
@@ -159,95 +110,9 @@ public class DefaultDistributedPollerService implements DistributedPollerService
             return model;
         }
         
-        OnmsLocationMonitor monitor = m_locationMonitorDao.load(cmd.getMonitorId());
-        OnmsMonitoringLocation def = m_monitoringLocationDao.get(monitor.getLocation());
-        model.addLocationMonitor(new LocationMonitorModel(monitor, def));
+        OnmsMonitoringLocation def = m_monitoringLocationDao.get(cmd.getLocation());
+        model.addLocationMonitor(new LocationMonitorModel(def));
 
         return model;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindingResult errors) {
-        if (command == null) {
-            throw new IllegalStateException("command argument cannot be null");
-        }
-        if (errors == null) {
-            throw new IllegalStateException("errors argument cannot be null");
-        }
-        
-        if (errors.hasErrors()) {
-            return;
-        }
-        
-        OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
-        
-        if (monitor.getStatus() == MonitorStatus.PAUSED) {
-            errors.addError(new ObjectError(MonitorStatus.class.getName(),
-                                            new String[] { "distributed.locationMonitor.alreadyPaused" },
-                                            new Object[] { command.getMonitorId() },
-                                            "Location monitor " + command.getMonitorId() + " is already paused."));
-            return;
-        }
-        
-        monitor.setStatus(MonitorStatus.PAUSED);
-        m_locationMonitorDao.update(monitor);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindingResult errors) {
-        if (command == null) {
-            throw new IllegalStateException("command argument cannot be null");
-        }
-        if (errors == null) {
-            throw new IllegalStateException("errors argument cannot be null");
-        }
-        
-        if (errors.hasErrors()) {
-            return;
-        }
-        
-        OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
-        
-        if (monitor.getStatus() != MonitorStatus.PAUSED) {
-            errors.addError(new ObjectError(MonitorStatus.class.getName(),
-                                            new String[] { "distributed.locationMonitor.notPaused" },
-                                            new Object[] { command.getMonitorId() },
-                                            "Location monitor " + command.getMonitorId() + " is not paused."));
-            return;
-        }
-        
-        monitor.setStatus(MonitorStatus.STARTED);
-        m_locationMonitorDao.update(monitor);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindingResult errors) {
-        if (command == null) {
-            throw new IllegalStateException("command argument cannot be null");
-        }
-        if (errors == null) {
-            throw new IllegalStateException("errors argument cannot be null");
-        }
-        
-        if (errors.hasErrors()) {
-            return;
-        }
-        
-        OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
-        m_locationMonitorDao.delete(monitor);
-    }
-
-    @Override
-    public void pauseAllLocationMonitors() {
-        m_locationMonitorDao.pauseAll();
-    }
-
-    @Override
-    public void resumeAllLocationMonitors() {
-        m_locationMonitorDao.resumeAll();
-    }
-
 }

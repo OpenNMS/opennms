@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.springframework.util.Assert;
 
 import com.google.common.base.MoreObjects;
@@ -36,20 +37,20 @@ import com.google.common.base.MoreObjects;
 /**
  * <p>LocationMonitorIpInterface class.</p>
  */
-public class LocationMonitorIpInterface {
-    private final OnmsLocationMonitor m_locationMonitor;
+public class LocationIpInterface {
+    private final OnmsMonitoringLocation m_location;
     private final OnmsIpInterface m_ipInterface;
 
     /**
      * <p>Constructor for LocationMonitorIpInterface.</p>
      *
-     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
-    public LocationMonitorIpInterface(final OnmsLocationMonitor locationMonitor, final OnmsIpInterface ipInterface) {
-        Assert.notNull(locationMonitor);
+    public LocationIpInterface(final OnmsMonitoringLocation location, final OnmsIpInterface ipInterface) {
+        Assert.notNull(location);
         Assert.notNull(ipInterface);
-        m_locationMonitor = locationMonitor;
+        m_location = location;
         m_ipInterface = ipInterface;
     }
 
@@ -63,18 +64,18 @@ public class LocationMonitorIpInterface {
     }
 
     /**
-     * <p>getLocationMonitor</p>
+     * <p>getLocation</p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @return a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      */
-    public OnmsLocationMonitor getLocationMonitor() {
-        return m_locationMonitor;
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
     }
     
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("locationMonitor", m_locationMonitor)
+            .add("location", m_location)
             .add("ipInterface", m_ipInterface)
             .toString();
     }
@@ -84,7 +85,7 @@ public class LocationMonitorIpInterface {
         final int prime = 31;
         int result = 1;
         result = prime * result + m_ipInterface.getId().hashCode();
-        result = prime * result + m_locationMonitor.getId().hashCode();
+        result = prime * result + m_location.getLocationName().hashCode();
         return result;
     }
 
@@ -94,18 +95,18 @@ public class LocationMonitorIpInterface {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof LocationMonitorIpInterface))
+        if (!(obj instanceof LocationIpInterface))
             return false;
-        LocationMonitorIpInterface other = (LocationMonitorIpInterface) obj;
+        LocationIpInterface other = (LocationIpInterface) obj;
         if (m_ipInterface.getId() == null) {
             if (other.m_ipInterface.getId() != null)
                 return false;
         } else if (!m_ipInterface.getId().equals(other.m_ipInterface.getId()))
             return false;
-        if (m_locationMonitor.getId() == null) {
-            if (other.m_locationMonitor.getId() != null)
+        if (m_location.getLocationName() == null) {
+            if (other.m_location.getLocationName() != null)
                 return false;
-        } else if (!m_locationMonitor.getId().equals(other.m_locationMonitor.getId()))
+        } else if (!m_location.getLocationName().equals(other.m_location.getLocationName()))
             return false;
         return true;
     }

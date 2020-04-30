@@ -36,26 +36,23 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.web.rest.v1.AvailCalculator;
 import org.opennms.web.rest.v1.support.TimeChunker;
 
 
 public class AvailCalculatorTest {
 
-    private OnmsLocationMonitor m_locationMon;
     private OnmsMonitoredService m_svc;
+    private OnmsMonitoringLocation m_location;
 
     @Before
     public void setUp() {
-        m_locationMon = new OnmsLocationMonitor();
-        m_locationMon.setLocation("IPv6");
-        m_locationMon.setStatus(MonitorStatus.STARTED);
-        
+        m_location = new OnmsMonitoringLocation();
+        m_location.setLocationName("IPv6");
+
         m_svc = new OnmsMonitoredService();
     }
     
@@ -82,7 +79,7 @@ public class AvailCalculatorTest {
     private OnmsLocationSpecificStatus createStatusChange(PollStatus pollStatus, Date timestamp) {
         pollStatus.setTimestamp(timestamp);
         OnmsLocationSpecificStatus statusChange = new OnmsLocationSpecificStatus();
-        statusChange.setLocationMonitor(m_locationMon);
+        statusChange.setLocation(m_location);
         statusChange.setMonitoredService(m_svc);
         statusChange.setPollResult(pollStatus);
         return statusChange;

@@ -35,9 +35,7 @@ import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -52,14 +50,12 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v1.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.v1.support.TimeChunker;
@@ -97,7 +93,7 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
     ApplicationDao m_applicationDao;
 
     @Autowired
-    LocationMonitorDao m_locationMonitorDao;
+    LocationSpecificStatusDao m_locationSpecificStatusDao;
 
     @Autowired
     MonitoredServiceDao m_monServiceDao;
@@ -110,6 +106,9 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
 
     @Autowired
     private ServletContext m_servletContext;
+
+    @Autowired
+    MonitoringLocationDao m_monitoringLocationDao;
 
     public static final String BASE_REST_URL = "/remotelocations/availability";
 
@@ -139,7 +138,7 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
                 final TimeChunker timeChunker = new TimeChunker(totalTime, new Date(startMillis), new Date(endMillis));
                 // increment the time segment
                 timeChunker.getNextSegment();
-                final Collection<OnmsLocationSpecificStatus> allStatusChanges = m_locationMonitorDao.getStatusChangesForApplicationBetween(new Date(startMillis), new Date(endMillis), "IPv6");
+                final Collection<OnmsLocationSpecificStatus> allStatusChanges = m_locationSpecificStatusDao.getStatusChangesForApplicationBetween(new Date(startMillis), new Date(endMillis), "IPv6");
                 final AvailCalculator calc = new AvailCalculator(timeChunker);
 
                 for(final OnmsLocationSpecificStatus statusChange : allStatusChanges) {
@@ -251,7 +250,14 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
         }
     }
 
+    private void createLocationMonitors() throws InterruptedException {
+        OnmsMonitoringLocation loc1 = new OnmsMonitoringLocation();
+        loc1.setLocationName("RDU");
+        loc1.setMonitoringArea("RDU");
+        m_monitoringLocationDao.save(loc1);
+    }
 
+/*
     private void createLocationMonitors() throws InterruptedException {
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -289,12 +295,12 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
                     m_monServiceDao.saveOrUpdate(service);
                     m_applicationDao.saveOrUpdate(ipv6App);
 
-                    OnmsLocationMonitor locMon = m_locationMonitorDao.findAll().get(0);
+                    OnmsLocationMonitor locMon = m_locationSpecificStatusDao.findAll().get(0);
                     OnmsLocationSpecificStatus statusChange = new OnmsLocationSpecificStatus();
                     statusChange.setLocationMonitor(locMon);
                     statusChange.setPollResult(PollStatus.available());
                     statusChange.setMonitoredService(service);
-                    m_locationMonitorDao.saveStatusChange(statusChange);
+                    m_locationSpecificStatusDao.saveStatusChange(statusChange);
                 }
 
                 System.err.println("======= End createLocationMonitors() ======");
@@ -311,13 +317,13 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
                 List<OnmsMonitoredService> services = m_monServiceDao.findByType("HTTP");
                 for(OnmsMonitoredService service : services) {
 
-                    OnmsLocationMonitor locMon = m_locationMonitorDao.findAll().get(0);
+                    OnmsLocationMonitor locMon = m_locationSpecificStatusDao.findAll().get(0);
                     OnmsLocationSpecificStatus statusChange = new OnmsLocationSpecificStatus();
                     statusChange.setLocationMonitor(locMon);
                     statusChange.setPollResult(PollStatus.unavailable());
                     statusChange.setMonitoredService(service);
 
-                    m_locationMonitorDao.saveStatusChange(statusChange);
+                    m_locationSpecificStatusDao.saveStatusChange(statusChange);
                 }
             }
         });
@@ -331,16 +337,17 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
                 List<OnmsMonitoredService> services = m_monServiceDao.findByType("HTTP");
                 for(OnmsMonitoredService service : services) {
 
-                    OnmsLocationMonitor locMon = m_locationMonitorDao.findAll().get(0);
+                    OnmsLocationMonitor locMon = m_locationSpecificStatusDao.findAll().get(0);
                     OnmsLocationSpecificStatus statusChange = new OnmsLocationSpecificStatus();
                     statusChange.setLocationMonitor(locMon);
                     statusChange.setPollResult(PollStatus.available());
                     statusChange.setMonitoredService(service);
 
-                    m_locationMonitorDao.saveStatusChange(statusChange);
+                    m_locationSpecificStatusDao.saveStatusChange(statusChange);
                 }
             }
         });
 
     }
+    */
 }

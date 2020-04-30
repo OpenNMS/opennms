@@ -39,9 +39,9 @@ import java.util.TreeSet;
 
 import org.opennms.core.utils.TimeInterval;
 import org.opennms.core.utils.TimeIntervalSequence;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.v1.support.TimeChunker;
 import org.opennms.web.rest.v1.support.TimeChunker.TimeChunk;
 
@@ -154,23 +154,24 @@ public class AvailCalculator {
     }
     
     public static class ServiceAvailCalculator {
-        Map<OnmsLocationMonitor, UptimeCalculator> m_uptimeCalculators = new HashMap<OnmsLocationMonitor, UptimeCalculator>();
+        // TODO: This need to take care of this spot...
+        Map<OnmsMonitoringLocation, UptimeCalculator> m_uptimeCalculators = new HashMap<OnmsMonitoringLocation, UptimeCalculator>();
         TimeChunker m_timeChunker;
         public ServiceAvailCalculator(TimeChunker timeChunker) {
             m_timeChunker = timeChunker;
         }
         public void onStatusChange(OnmsLocationSpecificStatus statusChange) {
-            UptimeCalculator calc = m_uptimeCalculators.get(statusChange.getLocationMonitor());
+            UptimeCalculator calc = m_uptimeCalculators.get(statusChange.getLocation());
             if (calc == null) {
                 calc = new UptimeCalculator(m_timeChunker);
-                m_uptimeCalculators.put(statusChange.getLocationMonitor(), calc);
+                m_uptimeCalculators.put(statusChange.getLocation(), calc);
             }
             
             calc.onStatusChange(statusChange);
         }
         public double getAvailability(int index) {
             double sum = 0.0;
-            for(final Map.Entry<OnmsLocationMonitor, UptimeCalculator> entry : m_uptimeCalculators.entrySet()) {
+            for(final Map.Entry<OnmsMonitoringLocation, UptimeCalculator> entry : m_uptimeCalculators.entrySet()) {
                 sum += entry.getValue().getUptimePercentage(index);
             }
             return (m_uptimeCalculators.size() == 0 ? 1.0 : sum / m_uptimeCalculators.size());

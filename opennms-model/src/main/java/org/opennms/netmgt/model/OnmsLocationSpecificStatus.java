@@ -39,7 +39,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
 
 @Entity
@@ -47,7 +52,7 @@ import org.opennms.netmgt.poller.PollStatus;
 public class OnmsLocationSpecificStatus {
 
     private Integer m_id;
-    private OnmsLocationMonitor m_locationMonitor;
+    private OnmsMonitoringLocation m_location;
     private OnmsMonitoredService m_monitoredService;
     private PollStatus m_pollResult;
 
@@ -61,12 +66,12 @@ public class OnmsLocationSpecificStatus {
     /**
      * <p>Constructor for OnmsLocationSpecificStatus.</p>
      *
-     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      * @param pollResult a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public OnmsLocationSpecificStatus(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monitoredService, final PollStatus pollResult) {
-        m_locationMonitor = locationMonitor;
+    public OnmsLocationSpecificStatus(final OnmsMonitoringLocation location, final OnmsMonitoredService monitoredService, final PollStatus pollResult) {
+        m_location = location;
         m_monitoredService = monitoredService;
         m_pollResult = pollResult;
     }
@@ -96,21 +101,25 @@ public class OnmsLocationSpecificStatus {
     /**
      * <p>getLocationMonitor</p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @return a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      */
+    @JsonSerialize(using=MonitoringLocationJsonSerializer.class)
+    @JsonDeserialize(using=MonitoringLocationJsonDeserializer.class)
+    @XmlElement(name="location")
     @ManyToOne(optional=false, fetch=FetchType.EAGER)
-    @JoinColumn(name="systemId")
-    public OnmsLocationMonitor getLocationMonitor() {
-        return m_locationMonitor;
+    @JoinColumn(name="location")
+    @XmlJavaTypeAdapter(MonitoringLocationIdAdapter.class)
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
     }
 
     /**
      * <p>setLocationMonitor</p>
      *
-     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      */
-    public void setLocationMonitor(final OnmsLocationMonitor locationMonitor) {
-        m_locationMonitor = locationMonitor;
+    public void setLocation(final OnmsMonitoringLocation location) {
+        m_location = location;
     }
 
     /**
