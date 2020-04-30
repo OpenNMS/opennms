@@ -1,15 +1,13 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[ga-performance-management-collectd-resource-types]]
-==== Resource Types
-.Resource Types
+#TODO: has not been updated yet, please don't review#
 
-Resource Types are used to group sets of performance data measurements for persisting, indexing, and display in the _Web UI_.
-Each resource type has a unique name, label definitions for display in the _Web UI_, and strategy definitions for archiving the measurements for long term analysis.
+Resource types group sets of performance data measurements for persisting, indexing, and display in the web UI.
+Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
 
 There are two labels for a resource type.
-The first, `label`, defines a string to display in the _Web UI_.
+The first, `label`, defines a string to display in the UI.
 The second, `resourceLabel`, defines the template used when displaying each unique group of measurements name for the resource type.
 
 There are two types of strategy definitions for resource types, persistence selector and storage strategies.
@@ -18,8 +16,7 @@ The storage strategy is used to convert an index into a resource path label for 
 There are two special resource types that do not have a resource-type definition.
 They are `node` and `ifIndex`.
 
-Resource Types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
-
+Resource types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
 
 Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
 

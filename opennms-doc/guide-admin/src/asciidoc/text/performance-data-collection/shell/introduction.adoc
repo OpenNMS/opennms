@@ -2,6 +2,8 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+==== Shell Commands
+
 A number of _Karaf Shell_ commands are made available to help administer and diagnose issues related to performance data collection.
 
 To use the commands, log into the _Karaf Shell_ on your system using:
