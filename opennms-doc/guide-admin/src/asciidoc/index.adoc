@@ -171,12 +171,19 @@ include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
 include::text/performance-data-collection/collectors/xmp.adoc[]
 
+[[ga-resource-types]]
+=== Resource Types
+include::text/performance-data-collection/resource-types.adoc[]
+
 [[ga-performance-mgmt-shell]]
-=== Shell Commands
+=== Administration and Troubleshooting
+include::text/performance-data-collection/collectd/collect-admin.adoc[]
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+
 
 [[ga-performance-mgmt-thresholds]]
 == Thresholding
