@@ -421,14 +421,14 @@ public class Poller extends AbstractServiceDaemon {
 
     /**
      * <p>scheduleService</p>
-     *
      * @param nodeId a int.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param nodeLocation a {@link java.lang.String} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName a {@link java.lang.String} object.
+     * @param nodeLabel a {@link String} object.
+     * @param nodeLocation a {@link String} object.
+     * @param ipAddr a {@link String} object.
+     * @param svcName a {@link String} object.
+     * @param pollableNode
      */
-    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName) {
+    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName, PollableNode pollableNode) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
@@ -440,6 +440,11 @@ public class Poller extends AbstractServiceDaemon {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
                     node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
+                    if(pollableNode != null) {
+                        node.updateStatus(pollableNode.getStatus());
+                        node.setCause(pollableNode.getCause());
+                        node.resetStatusChanged();
+                    }
                 }
             }
 
