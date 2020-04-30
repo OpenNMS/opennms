@@ -36,9 +36,9 @@ import java.util.Set;
 
 import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.model.LocationMonitorIpInterface;
+import org.opennms.netmgt.model.LocationIpInterface;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -63,17 +63,17 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     public static final String TYPE_NAME = "distributedStatus";
 
     private final ResourceStorageDao m_resourceStorageDao;
-    private final LocationMonitorDao m_locationMonitorDao;
+    private final LocationSpecificStatusDao m_locationSpecificStatusDao;
     
     /**
      * <p>Constructor for DistributedStatusResourceType.</p>
      *
      * @param resourceStorageDao a {@link org.opennms.netmgt.dao.api.ResourceStorageDao} object.
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @param locationSpecificStatusDao a {@link org.opennms.netmgt.dao.api.LocationSpecificStatusDao} object.
      */
-    public DistributedStatusResourceType(ResourceStorageDao resourceStorageDao, LocationMonitorDao locationMonitorDao) {
+    public DistributedStatusResourceType(ResourceStorageDao resourceStorageDao, LocationSpecificStatusDao locationSpecificStatusDao) {
         m_resourceStorageDao = resourceStorageDao;
-        m_locationMonitorDao = locationMonitorDao;
+        m_locationSpecificStatusDao = locationSpecificStatusDao;
     }
 
     /**
@@ -117,11 +117,11 @@ public class DistributedStatusResourceType implements OnmsResourceType {
 
         final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
         final List<OnmsResource> resources = Lists.newLinkedList();
-        final Collection<LocationMonitorIpInterface> statuses = m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId());
+        final Collection<LocationIpInterface> statuses = m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId());
 
-        for (LocationMonitorIpInterface status : statuses) {
-            String definitionName = status.getLocationMonitor().getLocation();
-            String id = status.getLocationMonitor().getId();
+        for (LocationIpInterface status : statuses) {
+            String definitionName = status.getLocation().getLocationName();
+            String id = status.getLocation().getLocationName();
             final OnmsIpInterface ipInterface = status.getIpInterface();
             String ipAddr = InetAddressUtils.str(ipInterface.getIpAddress());
 

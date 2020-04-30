@@ -37,10 +37,9 @@ import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
-import org.opennms.netmgt.model.LocationMonitorIpInterface;
+import org.opennms.netmgt.model.LocationIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -61,8 +60,8 @@ public class LocationSpecificStatusDaoHibernate extends AbstractDaoHibernate<Onm
     }
 
     @Override
-    public Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application) {
-        return findObjects(OnmsLocationMonitor.class, "select distinct l from OnmsLocationSpecificStatus as status " +
+    public Collection<OnmsMonitoringLocation> findByApplication(final OnmsApplication application) {
+        return findObjects(OnmsMonitoringLocation.class, "select distinct l from OnmsLocationSpecificStatus as status " +
                 "join status.monitoredService as m " +
                 "join m.applications a " +
                 "join status.location as l " +
@@ -215,17 +214,17 @@ public class LocationSpecificStatusDaoHibernate extends AbstractDaoHibernate<Onm
     }
 
     @Override
-    public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
+    public Collection<LocationIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
         @SuppressWarnings("unchecked")
         final List<Object[]> list = (List<Object[]>) getHibernateTemplate().find(
-                "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
+                "select distinct status.location, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
                         "where status.monitoredService.ipInterface.node.id = ?", nodeId);
 
-        final HashSet<LocationMonitorIpInterface> resultSet = new HashSet<>();
+        final HashSet<LocationIpInterface> resultSet = new HashSet<>();
         for (final Object[] tuple : list) {
-            final OnmsLocationMonitor mon = (OnmsLocationMonitor) tuple[0];
+            final OnmsMonitoringLocation loc = (OnmsMonitoringLocation) tuple[0];
             final OnmsIpInterface ip = (OnmsIpInterface) tuple[1];
-            resultSet.add(new LocationMonitorIpInterface(mon, ip));
+            resultSet.add(new LocationIpInterface(loc, ip));
         }
 
         return resultSet;

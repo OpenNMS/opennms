@@ -43,7 +43,7 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -150,7 +150,7 @@ public class DatabasePopulator {
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
     private MonitoringLocationDao m_monitoringLocationDao;
-    private LocationMonitorDao m_locationMonitorDao;
+    private LocationSpecificStatusDao m_locationSpecificStatusDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
 
@@ -795,12 +795,12 @@ public class DatabasePopulator {
         m_monitoringLocationDao = monitoringLocationDao;
     }
 
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
+    public LocationSpecificStatusDao getLocationSpecificStatusDao() {
+        return m_locationSpecificStatusDao;
     }
 
-    public void setLocationMonitorDao(final LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
+    public void setLocationSpecificStatusDao(final LocationSpecificStatusDao locationSpecificStatusDao) {
+        m_locationSpecificStatusDao = locationSpecificStatusDao;
     }
 
     public AcknowledgmentDao getAcknowledgmentDao() {

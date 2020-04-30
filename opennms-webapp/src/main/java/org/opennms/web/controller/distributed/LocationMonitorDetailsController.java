@@ -34,7 +34,6 @@ import org.opennms.web.api.Authentication;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.model.LocationMonitorListModel;
-import org.opennms.web.validator.LocationMonitorIdValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -56,17 +55,12 @@ public class LocationMonitorDetailsController {
     @Autowired
     private DistributedPollerService m_distributedPollerService;
 
-    @Autowired
-    private LocationMonitorIdValidator m_validator;
-
     private static final String SUCCESS_VIEW = "distributed/locationMonitorDetails";
 
     private static final String ERROR_VIEW = "distributed/error";
 
     @RequestMapping(method={ RequestMethod.GET, RequestMethod.POST })
     public ModelAndView handle(HttpServletRequest request, @ModelAttribute("command") LocationMonitorIdCommand cmd, BindingResult errors) {
-        m_validator.validate(cmd, errors);
-
         LocationMonitorListModel model = null;
         if (!errors.hasErrors()) {
             model = m_distributedPollerService.getLocationMonitorDetails(cmd, errors);

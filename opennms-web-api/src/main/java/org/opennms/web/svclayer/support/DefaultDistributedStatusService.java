@@ -869,7 +869,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationSpecificStatusDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @param locationSpecificStatusDao a {@link org.opennms.netmgt.dao.api.LocationSpecificStatusDao} object.
      */
     public void setLocationSpecificStatusDao(LocationSpecificStatusDao locationSpecificStatusDao) {
         m_locationSpecificStatusDao = locationSpecificStatusDao;

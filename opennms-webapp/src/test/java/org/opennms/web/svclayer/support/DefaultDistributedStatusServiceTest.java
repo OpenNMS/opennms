@@ -46,13 +46,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -60,9 +57,6 @@ import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -70,6 +64,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -80,6 +75,9 @@ import org.opennms.web.svclayer.model.SimpleWebTable.Cell;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
 
 public class DefaultDistributedStatusServiceTest extends TestCase {
 
@@ -92,7 +90,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     /**
      *  We need to make sure that these UUIDs are in sorted order because 
      *  {@link DefaultDistributedStatusService#createHistoryModel(String, String, String, String, String)
-     *  pulls the first entry from the list of {@link LocationMonitorDao#findByLocationDefinition(OnmsMonitoringLocation)}
+     *  pulls the first entry from the list of {@link LocationSpecificStatusDao#findByLocationDefinition(OnmsMonitoringLocation)}
      *  and we need to be able to verify mock calls reliably.
      */
     private static final String LOCATION_MONITOR_ID_A = "00000000-0000-0000-0000-000000000001";
@@ -105,7 +103,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     private MonitoredServiceDao m_monitoredServiceDao = m_easyMockUtils.createMock(MonitoredServiceDao.class);
     private MonitoringLocationDao m_monitoringLocationDao = m_easyMockUtils.createMock(MonitoringLocationDao.class); 
-    private LocationMonitorDao m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class); 
+    private LocationSpecificStatusDao m_locationSpecificStatusDao = m_easyMockUtils.createMock(LocationSpecificStatusDao.class);
     private ApplicationDao m_applicationDao = m_easyMockUtils.createMock(ApplicationDao.class);
     private ResourceDao m_resourceDao = m_easyMockUtils.createMock(ResourceDao.class);
     private GraphDao m_graphDao = m_easyMockUtils.createMock(GraphDao.class);
@@ -113,9 +111,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private OnmsMonitoringLocation m_locationDefinition1;
     private OnmsMonitoringLocation m_locationDefinition2;
     private OnmsMonitoringLocation m_locationDefinition3;
-    private OnmsLocationMonitor m_locationMonitor1_1;
-    private OnmsLocationMonitor m_locationMonitor2_1;
-    private OnmsLocationMonitor m_locationMonitor2_2;
     private OnmsApplication m_application1;
     private OnmsApplication m_application2;
     
@@ -140,7 +135,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
         m_service.setMonitoringLocationDao(m_monitoringLocationDao);
-        m_service.setLocationMonitorDao(m_locationMonitorDao);
+        m_service.setLocationSpecificStatusDao(m_locationSpecificStatusDao);
         m_service.setApplicationDao(m_applicationDao);
         m_service.setResourceDao(m_resourceDao);
         m_service.setGraphDao(m_graphDao);
@@ -156,26 +151,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_application2 = new OnmsApplication();
         m_application2.setName("Application 2");
 
-        m_locationMonitor1_1 = new OnmsLocationMonitor();
-        m_locationMonitor1_1.setId(LOCATION_MONITOR_ID_A);
-        m_locationMonitor1_1.setLastUpdated(new Date());
-        m_locationMonitor1_1.setLocation("Raleigh");
-        m_locationMonitor1_1.setStatus(MonitorStatus.STARTED);
-        assertEquals("location monitor 1.1 status", MonitorStatus.STARTED, m_locationMonitor1_1.getStatus());
-        
-        m_locationMonitor2_1 = new OnmsLocationMonitor();
-        m_locationMonitor2_1.setId(LOCATION_MONITOR_ID_B);
-        m_locationMonitor2_1.setLastUpdated(new Date());
-        m_locationMonitor2_1.setLocation("Durham");
-        m_locationMonitor2_1.setStatus(MonitorStatus.STARTED);
-        assertEquals("location monitor 2.1 status", MonitorStatus.STARTED, m_locationMonitor2_1.getStatus());
-        
-        m_locationMonitor2_2 = new OnmsLocationMonitor();
-        m_locationMonitor2_2.setId(LOCATION_MONITOR_ID_C);
-        m_locationMonitor2_2.setLocation("Durham");
-        m_locationMonitor2_2.setStatus(MonitorStatus.STARTED);
-        assertEquals("location monitor 2.2 status", MonitorStatus.STARTED, m_locationMonitor2_2.getStatus());
-        
         List<String> serviceNames = new ArrayList<>();
         serviceNames.add("ICMP");
         serviceNames.add("DNS");
@@ -379,13 +354,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
         expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
         expect(m_monitoringLocationDao.get(m_locationDefinition1.getLocationName())).andReturn(m_locationDefinition1);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
 
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpService)).andReturn(null);
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpsService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1_1, httpsService, PollStatus.available()));
+        expect(m_locationSpecificStatusDao.getMostRecentStatusChange(m_locationDefinition1, httpService)).andReturn(null);
+        expect(m_locationSpecificStatusDao.getMostRecentStatusChange(m_locationDefinition1, httpsService)).andReturn(new OnmsLocationSpecificStatus(m_locationDefinition1, httpsService, PollStatus.available()));
         
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1);
         
@@ -437,7 +411,6 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         expect(m_monitoringLocationDao.get(m_locationDefinition3.getLocationName())).andReturn(m_locationDefinition3);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(new HashSet<OnmsLocationMonitor>());
 
         m_easyMockUtils.replayAll();
         SimpleWebTable table = m_service.createStatusTable(command, errors);
@@ -553,35 +526,31 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService icmpService = findMonitoredService(m_services, m_ip, "ICMP");
         
         Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<>();
-        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition2, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition2, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpService, PollStatus.available(), "20061011-00:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition2, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition2, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
         Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<>();
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        statusChanges.add(createStatus(m_locationMonitor1_1, icmpService, PollStatus.down(), "20061010-06:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, icmpService, PollStatus.down(), "20061010-06:00:00"));
 
         Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
         Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
 
         expect(m_monitoringLocationDao.findAll()).andReturn(locationDefinitions);
         expect(m_applicationDao.findAll()).andReturn(applications);
-        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
-        Collection<OnmsLocationMonitor> monitors2 = new HashSet<>();
-        monitors2.add(m_locationMonitor2_1);
-        monitors2.add(m_locationMonitor2_2);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(new HashSet<OnmsLocationMonitor>());
-        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
-        expect(m_locationMonitorDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
+        expect(m_locationSpecificStatusDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
+        Collection<OnmsMonitoringLocation> monitors2 = new HashSet<>();
+        monitors2.add(m_locationDefinition2);
+        expect(m_locationSpecificStatusDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
+        expect(m_locationSpecificStatusDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
 
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(3);
         expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(3);
@@ -634,21 +603,19 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
         
         Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<>();
-        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061011-00:00:00"));
         
         Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<>();
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061011-00:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061011-00:00:00"));
 
         Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
         Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
 
         expect(m_monitoringLocationDao.findAll()).andReturn(locationDefinitions);
         expect(m_applicationDao.findAll()).andReturn(Collections.singletonList(app));
-        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(Collections.singleton(m_locationMonitor2_1));
-        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
-        expect(m_locationMonitorDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
+        expect(m_locationSpecificStatusDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
+        expect(m_locationSpecificStatusDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
+        expect(m_locationSpecificStatusDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
 
         expect(m_monitoredServiceDao.findByApplication(app)).andReturn(m_applicationServices2).times(2);
 
@@ -694,33 +661,29 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService icmpService = findMonitoredService(m_services, m_ip, "ICMP");
         
         Collection<OnmsLocationSpecificStatus> mostRecentStatuses = new LinkedList<>();
-        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpService, PollStatus.available(), "20061011-00:00:00"));
-        mostRecentStatuses.add(createStatus(m_locationMonitor2_2, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        mostRecentStatuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
         
         Collection<OnmsLocationSpecificStatus> statusChanges = new LinkedList<>();
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
-        statusChanges.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        statusChanges.add(createStatus(m_locationMonitor1_1, icmpService, PollStatus.down(), "20061010-06:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statusChanges.add(createStatus(m_locationDefinition1, icmpService, PollStatus.down(), "20061010-06:00:00"));
 
         Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
         Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
 
         expect(m_monitoringLocationDao.findAll()).andReturn(locationDefinitions);
         expect(m_applicationDao.findAll()).andReturn(applications);
-        expect(m_locationMonitorDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(0))).andReturn(Collections.singleton(m_locationMonitor1_1));
-        Collection<OnmsLocationMonitor> monitors2 = new HashSet<>();
-        monitors2.add(m_locationMonitor2_1);
-        monitors2.add(m_locationMonitor2_2);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(1))).andReturn(monitors2);
-        expect(m_locationMonitorDao.findByLocationDefinition(locationDefinitions.get(2))).andReturn(new HashSet<OnmsLocationMonitor>());
-        expect(m_locationMonitorDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
-        expect(m_locationMonitorDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
+        expect(m_locationSpecificStatusDao.getAllMostRecentStatusChanges()).andReturn(mostRecentStatuses);
+        Collection<OnmsMonitoringLocation> monitors2 = new HashSet<>();
+        monitors2.add(m_locationDefinition2);
+        expect(m_locationSpecificStatusDao.getStatusChangesBetween(startDate, endDate)).andReturn(statusChanges);
+        expect(m_locationSpecificStatusDao.getAllStatusChangesAt(startDate)).andReturn(new HashSet<OnmsLocationSpecificStatus>());
 
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(3);
         expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(3);
@@ -760,10 +723,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
         Collection<OnmsLocationSpecificStatus> statuses = new HashSet<>();
-        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061012-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061013-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061012-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061013-00:00:00"));
 
         Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
         Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
@@ -780,11 +743,11 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
         Collection<OnmsLocationSpecificStatus> statuses = new HashSet<>();
-        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061011-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061012-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpsService, PollStatus.available(), "20061012-06:00:00"));
-        statuses.add(createStatus(m_locationMonitor1_1, httpService, PollStatus.available(), "20061013-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061011-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061012-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.unavailable(), "20061012-00:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpsService, PollStatus.available(), "20061012-06:00:00"));
+        statuses.add(createStatus(m_locationDefinition1, httpService, PollStatus.available(), "20061013-00:00:00"));
 
         Date startDate = s_dbDate.parse("2006-10-12 00:00:00.0");
         Date endDate = s_dbDate.parse("2006-10-13 00:00:00.0");
@@ -811,14 +774,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoringLocationDao.get("Durham")).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         
-        List<OnmsLocationMonitor> monitors = new ArrayList<>();
-        monitors.add(m_locationMonitor2_1);
-        monitors.add(m_locationMonitor2_2);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
-        
+        List<OnmsMonitoringLocation> monitors = new ArrayList<>();
+        monitors.add(m_locationDefinition2);
+
         for (OnmsMonitoredService service : m_applicationServices2) {
-            m_locationMonitorDao.initialize(service.getIpInterface());
-            m_locationMonitorDao.initialize(service.getIpInterface().getNode());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface().getNode());
         }
         
         String locationName = m_locationDefinition2.getLocationName();
@@ -829,7 +790,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(2);
         
-        expectResourceDaoCall(m_locationMonitor2_1, m_applicationServices2);
+        expectResourceDaoCall(m_locationDefinition2, m_applicationServices2);
         
         m_easyMockUtils.replayAll();
         DistributedStatusHistoryModel summary =  m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
@@ -862,7 +823,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         assertNotNull("graph 0 URL should not be null", summary.getServiceGraphs().iterator().next().getUrl());
     }
 
-    private void expectResourceDaoCall(OnmsLocationMonitor monitor, Collection<OnmsMonitoredService> services) {
+    private void expectResourceDaoCall(OnmsMonitoringLocation monitor, Collection<OnmsMonitoredService> services) {
         PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
         PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
         
@@ -892,13 +853,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoringLocationDao.get("Raleigh-bad")).andReturn(null);
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
         
-        List<OnmsLocationMonitor> monitors = new ArrayList<>();
-        monitors.add(m_locationMonitor1_1);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(monitors);
-        
+        List<OnmsMonitoringLocation> monitors = new ArrayList<>();
+        monitors.add(m_locationDefinition1);
+
         for (OnmsMonitoredService service : m_applicationServices2) {
-            m_locationMonitorDao.initialize(service.getIpInterface());
-            m_locationMonitorDao.initialize(service.getIpInterface().getNode());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface().getNode());
         }
 
         String locationName = "Raleigh-bad";
@@ -909,7 +869,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_monitoredServiceDao.findByApplication(m_application2)).andReturn(m_applicationServices2).times(2);
         
-        expectResourceDaoCall(m_locationMonitor1_1, m_applicationServices2);
+        expectResourceDaoCall(m_locationDefinition1, m_applicationServices2);
         
         m_easyMockUtils.replayAll();
         DistributedStatusHistoryModel summary = m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
@@ -958,14 +918,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expect(m_monitoringLocationDao.get(m_locationDefinition2.getLocationName())).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Big Bad Voodoo Daddy Application")).andReturn(null);
         
-        List<OnmsLocationMonitor> monitors = new ArrayList<>();
-        monitors.add(m_locationMonitor2_1);
-        monitors.add(m_locationMonitor2_2);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition2)).andReturn(monitors);
+        List<OnmsMonitoringLocation> monitors = new ArrayList<>();
+        monitors.add(m_locationDefinition2);
 
         for (OnmsMonitoredService service : m_applicationServices1) {
-            m_locationMonitorDao.initialize(service.getIpInterface());
-            m_locationMonitorDao.initialize(service.getIpInterface().getNode());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface());
+            m_locationSpecificStatusDao.initialize(service.getIpInterface().getNode());
         }
 
         String locationName = m_locationDefinition2.getLocationName();
@@ -976,7 +934,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expect(m_monitoredServiceDao.findByApplication(m_application1)).andReturn(m_applicationServices1).times(2);
 
-        expectResourceDaoCall(m_locationMonitor2_1, m_applicationServices1);
+        expectResourceDaoCall(m_locationDefinition2, m_applicationServices1);
 
         m_easyMockUtils.replayAll();
         DistributedStatusHistoryModel summary = m_service.createHistoryModel(locationName, monitorId, applicationName, timeSpan, previousLocation);
@@ -1009,7 +967,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         assertEquals("summary chosen application matches list", summary.getApplications().get(0), summary.getChosenApplication());
     }
 
-    private OnmsLocationSpecificStatus createStatus(OnmsLocationMonitor locationMonitor,
+    private OnmsLocationSpecificStatus createStatus(OnmsMonitoringLocation location,
             OnmsMonitoredService service, PollStatus status, String timestamp) {
         
         SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd-HH:mm:ss");
@@ -1020,7 +978,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
             error.initCause(e);
             throw error;
         }
-        return new OnmsLocationSpecificStatus(locationMonitor, service, status);
+        return new OnmsLocationSpecificStatus(location, service, status);
     }
     
     public void assertTableEquals(SimpleWebTable expectedTable, SimpleWebTable table) {
@@ -1070,13 +1028,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     public void expectEverything() {
         expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
         expect(m_monitoringLocationDao.get(m_locationDefinition1.getLocationName())).andReturn(m_locationDefinition1);
-        expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
 
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
         OnmsMonitoredService httpsService = findMonitoredService(m_services, m_ip, "HTTPS");
 
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationMonitor1_1, httpService, PollStatus.available()));
-        expect(m_locationMonitorDao.getMostRecentStatusChange(m_locationMonitor1_1, httpsService)).andReturn(null);
+        expect(m_locationSpecificStatusDao.getMostRecentStatusChange(m_locationDefinition1, httpService)).andReturn(new OnmsLocationSpecificStatus(m_locationDefinition1, httpService, PollStatus.available()));
+        expect(m_locationSpecificStatusDao.getMostRecentStatusChange(m_locationDefinition1, httpsService)).andReturn(null);
     }
 
     public OnmsMonitoredService findMonitoredService(Collection<OnmsMonitoredService> services, String interfaceIp, String serviceName) {

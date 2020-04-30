@@ -101,7 +101,7 @@ public class OnmsLocationSpecificStatus {
     /**
      * <p>getLocationMonitor</p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @return a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      */
     @JsonSerialize(using=MonitoringLocationJsonSerializer.class)
     @JsonDeserialize(using=MonitoringLocationJsonDeserializer.class)

@@ -31,15 +31,14 @@ package org.opennms.netmgt.dao.api;
 import java.util.Collection;
 import java.util.Date;
 
-import org.opennms.netmgt.model.LocationMonitorIpInterface;
+import org.opennms.netmgt.model.LocationIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public interface LocationSpecificStatusDao extends OnmsDao<OnmsLocationSpecificStatus, Integer> {
-    Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application);
+    Collection<OnmsMonitoringLocation> findByApplication(final OnmsApplication application);
     void saveStatusChange(final OnmsLocationSpecificStatus locationSpecificStatus);
     OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsMonitoringLocation location, final OnmsMonitoredService monSvc);
     Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges();
@@ -49,5 +48,5 @@ public interface LocationSpecificStatusDao extends OnmsDao<OnmsLocationSpecificS
     Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName);
     Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames);
     Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName);
-    Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);
+    Collection<LocationIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);
 }

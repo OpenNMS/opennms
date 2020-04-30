@@ -77,7 +77,7 @@ public interface ResourceDao {
      * <p>getResourceForIpInterface</p>
      *
      * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param location a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param location a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsMonitoringLocation location);

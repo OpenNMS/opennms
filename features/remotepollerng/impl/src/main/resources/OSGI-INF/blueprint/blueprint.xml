@@ -7,7 +7,7 @@
     <reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
     <reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient"/>
-    <reference id="locationMonitorDao" interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
+    <reference id="locationSpecificStatusDao" interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao"/>
     <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
     <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
 
@@ -17,7 +17,7 @@
         <argument index="2" ref="pollerConfig"/>
         <argument index="3" ref="monitoredServiceDao"/>
         <argument index="4" ref="locationAwarePollerClient"/>
-        <argument index="5" ref="locationMonitorDao"/>
+        <argument index="5" ref="locationSpecificStatusDao"/>
         <argument index="6" ref="persisterFactory"/>
         <argument index="7" ref="eventForwarder"/>
     </bean>

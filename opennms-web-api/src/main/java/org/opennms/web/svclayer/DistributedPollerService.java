@@ -57,43 +57,4 @@ public interface DistributedPollerService {
      * @return a {@link org.opennms.web.svclayer.model.LocationMonitorListModel} object.
      */
     public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand command, BindingResult errors);
-
-    /**
-     * <p>pauseLocationMonitor</p>
-     *
-     * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindingResult} object.
-     */
-    @Transactional(readOnly = false)
-    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindingResult errors);
-    
-    /**
-     * <p>resumeLocationMonitor</p>
-     *
-     * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindingResult} object.
-     */
-    @Transactional(readOnly = false)
-    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindingResult errors);
-    
-    /**
-     * <p>deleteLocationMonitor</p>
-     *
-     * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindingResult} object.
-     */
-    @Transactional(readOnly = false)
-    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindingResult errors);
-
-    /**
-     * Pause all the locations monitors
-     */
-    @Transactional(readOnly = false)
-    public void pauseAllLocationMonitors();
-
-    /**
-     * Resume all the locations monitors (those that have been stopped are not resumed)
-     */
-    @Transactional(readOnly = false)
-    public void resumeAllLocationMonitors();
 }

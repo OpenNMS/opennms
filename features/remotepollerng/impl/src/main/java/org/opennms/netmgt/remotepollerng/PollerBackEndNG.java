@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -97,7 +97,7 @@ public class PollerBackEndNG {
     private final PollerConfig pollerConfig;
     private final MonitoredServiceDao monSvcDao;
     private final LocationAwarePollerClient locationAwarePollerClient;
-    private final LocationMonitorDao locationMonitorDao;
+    private final LocationSpecificStatusDao locationSpecificStatusDao;
     private final PersisterFactory persisterFactory;
     private final EventForwarder eventForwarder;
 
@@ -106,14 +106,14 @@ public class PollerBackEndNG {
     public PollerBackEndNG(SessionUtils sessionUtils, MonitoringLocationDao monitoringLocationDao,
                            PollerConfig pollerConfig, MonitoredServiceDao monSvcDao,
                            LocationAwarePollerClient locationAwarePollerClient,
-                           LocationMonitorDao locationMonitorDao, PersisterFactory persisterFactory,
+                           LocationSpecificStatusDao locationSpecificStatusDao, PersisterFactory persisterFactory,
                            EventForwarder eventForwarder) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
         this.monSvcDao = Objects.requireNonNull(monSvcDao);
         this.locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
-        this.locationMonitorDao = Objects.requireNonNull(locationMonitorDao);
+        this.locationSpecificStatusDao = Objects.requireNonNull(locationSpecificStatusDao);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
     }
@@ -245,13 +245,13 @@ public class PollerBackEndNG {
                 saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult.getResponseTime(), polledService.getPkg());
             }
         } catch (final Exception e) {
-            LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationMonitorDao, polledService.getMonSvc().getId(), e);
+            LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
         }
 
         try {
             sendRegainedOrLostServiceEvent(locationName, polledService.getMonSvc(), pollResult);
         } catch (final Exception e) {
-            LOG.error("Unable to save result for location {}, monitored service ID {}.", locationMonitorDao, polledService.getMonSvc().getId(), e);
+            LOG.error("Unable to save result for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
         }
     }
 

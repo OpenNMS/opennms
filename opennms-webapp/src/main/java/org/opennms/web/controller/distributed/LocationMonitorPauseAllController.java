@@ -50,7 +50,7 @@ public class LocationMonitorPauseAllController extends AbstractController implem
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        m_distributedPollerService.pauseAllLocationMonitors();
+        //m_distributedPollerService.pauseAllLocationMonitors();
         return new ModelAndView(getSuccessView());
 
     }
