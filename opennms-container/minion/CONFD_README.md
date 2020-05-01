@@ -166,9 +166,10 @@ Config specified will be written to `etc/confd.system.properties` which gets aut
 ```
 ---
 karaf:
-    ssh:
-        host: "127.0.0.1"
-        port: 8201
+    shell:
+        ssh:
+            host: "0.0.0.0"
+            port: 8201
     management:
         rmi:
             registry:
@@ -179,5 +180,5 @@ karaf:
                 port: 45444
 ```
 Config specified will be written to:
-- `etc/org.apache.karaf.shell.cfg` for content under `ssh`.
+- `etc/org.apache.karaf.shell.cfg` for content under `shell`.
 - `etc/org.apache.karaf.management.cfg` for content under `management`.

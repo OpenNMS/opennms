@@ -2,6 +2,6 @@
 src = "org.apache.karaf.shell.cfg.tmpl"
 dest = "/opt/minion/etc/org.apache.karaf.shell.cfg"
 keys = [
-    "/karaf/ssh/host",
-    "/karaf/ssh/port"
+    "/karaf/shell/ssh/host",
+    "/karaf/shell/ssh/port"
 ]
