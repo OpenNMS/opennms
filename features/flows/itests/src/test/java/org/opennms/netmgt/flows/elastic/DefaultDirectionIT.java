@@ -104,7 +104,7 @@ public class DefaultDirectionIT {
                             mock(SmartQueryService.class)), jestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()),
-                    getMockFlowSource());
+                    FlowDocumentTest.getMockFlowSource());
 
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
@@ -128,12 +128,5 @@ public class DefaultDirectionIT {
 
         // stop ES
         elasticSearchRule.stopServer();
-    }
-
-    public static FlowSource getMockFlowSource() {
-        final FlowSource flowSource = mock(FlowSource.class);
-        when(flowSource.getLocation()).thenReturn("SomeLocation");
-        when(flowSource.getSourceAddress()).thenReturn("192.168.1.1");
-        return flowSource;
     }
 }

@@ -54,7 +54,6 @@ import freemarker.template.TemplateExceptionHandler;
  * substitution.
  *
  * We could consider removing this in favor of using the High-level Elasticsearch client.
- *
  */
 public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
 

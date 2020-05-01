@@ -35,8 +35,7 @@
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-            <cm:property name="timeRangeAggregateThresholdMs" value="0"/>
-            <!-- Set to false to disable persisting flows to ES.
+`            <!-- Set to false to disable persisting flows to ES.
                  ES must still be configured and this should only be used for testing
                  specific scenarios such as enrichment and forwarding throughput.
              -->

@@ -35,6 +35,9 @@ import java.util.Map;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * Helper class for working with bytes in/out.
+ */
 public class BytesInOut implements Comparable<BytesInOut> {
     private long bytesIn;
     private long bytesOut;

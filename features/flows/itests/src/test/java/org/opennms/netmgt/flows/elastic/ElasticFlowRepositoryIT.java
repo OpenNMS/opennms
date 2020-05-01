@@ -88,28 +88,7 @@ public class ElasticFlowRepositoryIT {
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow()), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }
-    }
-
-    public static Flow getMockFlow() {
-        final Flow flow = mock(Flow.class);
-        when(flow.getNetflowVersion()).thenReturn(Flow.NetflowVersion.V5);
-        when(flow.getDirection()).thenReturn(Flow.Direction.INGRESS);
-        when(flow.getIpProtocolVersion()).thenReturn(4);
-        when(flow.getSrcAddr()).thenReturn("192.168.1.2");
-        when(flow.getSrcAddrHostname()).thenReturn(Optional.empty());
-        when(flow.getDstAddr()).thenReturn("192.168.2.2");
-        when(flow.getDstAddrHostname()).thenReturn(Optional.of("four.three.two.one"));
-        when(flow.getNextHopHostname()).thenReturn(Optional.empty());
-        when(flow.getVlan()).thenReturn(null);
-        return flow;
-    }
-
-    public static FlowSource getMockFlowSource() {
-        final FlowSource flowSource = mock(FlowSource.class);
-        when(flowSource.getLocation()).thenReturn("SomeLocation");
-        when(flowSource.getSourceAddress()).thenReturn("192.168.1.1");
-        return flowSource;
     }
 }
