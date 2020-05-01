@@ -65,6 +65,7 @@ mvn install -P'!checkstyle' \
            -DskipTests=true \
            -DskipITs=true \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
+           -Dnsis.makensis.bin="$(which makensis)" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \
            -am \
@@ -80,6 +81,7 @@ mvn install -P'!checkstyle' \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
+           -Dnsis.makensis.bin="$(which makensis)" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
