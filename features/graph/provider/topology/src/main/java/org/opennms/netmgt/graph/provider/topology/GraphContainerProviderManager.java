@@ -38,6 +38,7 @@ import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.integration.api.v1.graph.Properties;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
@@ -143,7 +144,11 @@ public class GraphContainerProviderManager {
 
         @Override
         public boolean isResolveNodeIds() {
-            return Boolean.valueOf(properties.get("resolve-node-ids"));
+            if(properties.get(Properties.Enrichment.RESOLVE_NODES) != null) {
+                return Boolean.parseBoolean(properties.get(Properties.Enrichment.RESOLVE_NODES));
+            }
+            // Fallback: legacy property - this is deprecated and will be removed in future versions
+            return Boolean.parseBoolean(properties.get("resolve-node-ids"));
         }
     }
 }

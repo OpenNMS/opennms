@@ -43,5 +43,10 @@
             <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>api</artifactId>
+            <version>${opennmsApiVersion}</version>
+        </dependency>
     </dependencies>
 </project>
