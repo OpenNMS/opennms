@@ -50,7 +50,8 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
         setLocked(Boolean.valueOf(genericVertex.getProperty("locked")));
         setSelected(Boolean.valueOf(genericVertex.getProperty("selected")));
         setStyleName(genericVertex.getProperty("styleName"));
-        setTooltipText(genericVertex.getProperty(genericVertex.getLabel()));
+        String tooltip = genericVertex.getProperty("tooltipText", genericVertex.getLabel());
+        setTooltipText(tooltip);
         if (genericVertex.getProperty("edge-path-offset") != null) {
             setEdgePathOffset(genericVertex.getProperty("edge-path-offset"));
         }

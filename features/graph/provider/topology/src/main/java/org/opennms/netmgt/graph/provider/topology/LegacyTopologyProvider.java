@@ -29,7 +29,6 @@
 package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class LegacyTopologyProvider implements GraphProvider {
@@ -134,18 +132,5 @@ public class LegacyTopologyProvider implements GraphProvider {
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
-    }
-
-    private Map<String, Map<String, Integer>> getNodeIdMap(GenericGraph graph) {
-        final Set<String> foreignSources = graph.getVertices().stream()
-                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
-                .map(v -> v.getNodeRef().getForeignSource())
-                .collect(Collectors.toSet());
-        final Map<String, Map<String, Integer>> foreignSourceMap = Maps.newHashMap();
-        for (String eachForeignSource : foreignSources) {
-            final Map<String, Integer> foreignIdToNodeIdMap = nodeDao.getForeignIdToNodeIdMap(eachForeignSource);
-            foreignSourceMap.put(eachForeignSource, foreignIdToNodeIdMap);
-        }
-        return foreignSourceMap;
     }
 }

@@ -43,6 +43,8 @@ public class LegacyEdge extends AbstractEdge {
     public LegacyEdge(GenericEdge edge) {
         super(Objects.requireNonNull(edge).getNamespace(), edge.getId(), createVertexRef(edge.getSource()), createVertexRef(edge.getTarget()));
         this.properties = edge.getProperties();
+        String tooltip = edge.getProperty("tooltipText", edge.getLabel());
+        setTooltipText(tooltip);
     }
 
     public Map<String, Object> getProperties() {
