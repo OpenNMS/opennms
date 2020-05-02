@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -47,6 +49,7 @@ import org.opennms.netmgt.flows.elastic.ProportionalSumAggregation;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 
@@ -126,7 +129,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                     timeRangeFilter.getEnd(), filters);
             seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
                     .thenApply(res -> {
-                        toTable(builder, type::toEntity, res);
+                        toTableFromBuckets(builder, type::toEntity, res);
                         return null;
                     });
         } else {
@@ -140,7 +143,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
             final ImmutableTable.Builder<Directional<T>, Long, Double> totalsTableBuilder = ImmutableTable.builder();
             CompletableFuture<Void> totalSeriesFuture = searchAsync(seriesFromTotalQuery, timeRangeFilter)
                     .thenApply(res -> {
-                        toTable(totalsTableBuilder, type::toEntity, res);
+                        toTableFromTotals(totalsTableBuilder, type.getOtherEntity(), res);
                         return null;
                     });
 
@@ -149,9 +152,25 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                 ImmutableTable<Directional<T>, Long, Double> topNTable = builder.build();
                 ImmutableTable<Directional<T>, Long, Double> totalsTable = totalsTableBuilder.build();
 
-                for (Long ts : topNTable.columnKeySet()) {
-                    BytesInOut bytesFromTopN = BytesInOut.sum(topNTable.column(ts).entrySet());
-                    BytesInOut totalBytes = BytesInOut.sum(totalsTable.column(ts).entrySet());
+                SortedSet<Long> timestamps = new TreeSet<>();
+                timestamps.addAll(topNTable.columnKeySet());
+                timestamps.addAll(totalsTable.columnKeySet());
+                for (Long ts : timestamps) {
+                    ImmutableMap<Directional<T>, Double>  entries = topNTable.column(ts);
+                    BytesInOut bytesFromTopN;
+                    if (entries != null) {
+                        bytesFromTopN = BytesInOut.sum(entries.entrySet());
+                    } else {
+                        bytesFromTopN = new BytesInOut();
+                    }
+
+                    entries = totalsTable.column(ts);
+                    BytesInOut totalBytes;
+                    if (entries != null) {
+                        totalBytes = BytesInOut.sum(entries.entrySet());
+                    } else {
+                        totalBytes = new BytesInOut();
+                    }
 
                     // Determine the remainder of bytes not represented by the top N
                     BytesInOut otherBytes = totalBytes.minus(bytesFromTopN);
@@ -168,7 +187,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     }
 
     /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
-    private static <T> void toTable(ImmutableTable.Builder<Directional<T>, Long, Double> builder, Function<String,T> keyToEntity, SearchResult res) {
+    private static <T> void toTableFromBuckets(ImmutableTable.Builder<Directional<T>, Long, Double> builder, Function<String,T> keyToEntity, SearchResult res) {
         final MetricAggregation aggs = res.getAggregations();
         if (aggs == null) {
             // No results
@@ -188,6 +207,23 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
             for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
                 builder.put(new Directional<>(keyToEntity.apply(bucket.getKey()), false), dateHistogram.getTime(), dateHistogram.getValue());
             }
+        }
+    }
+
+    /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
+    private static <T> void toTableFromTotals(ImmutableTable.Builder<Directional<T>, Long, Double> builder, T otherEntity, SearchResult res) {
+        final MetricAggregation aggs = res.getAggregations();
+        if (aggs == null) {
+            // No results
+            return;
+        }
+        final ProportionalSumAggregation bytesInAgg = aggs.getAggregation("bytes_in", ProportionalSumAggregation.class);
+        for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesInAgg.getBuckets()) {
+            builder.put(new Directional<>(otherEntity, true), dateHistogram.getTime(), dateHistogram.getValue());
+        }
+        final ProportionalSumAggregation bytesOutAgg = aggs.getAggregation("bytes_out", ProportionalSumAggregation.class);
+        for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
+            builder.put(new Directional<>(otherEntity, false), dateHistogram.getTime(), dateHistogram.getValue());
         }
     }
 

@@ -410,7 +410,6 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
-                - features/drift261
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
@@ -420,7 +419,6 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
-                - features/drift261
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
@@ -591,14 +589,6 @@ jobs:
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
                      DOCKER_FLAGS=--push \
                      VERSION="bleeding" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "features/drift261")
-                     make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="drift261" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
                      BUILD_BRANCH="${CIRCLE_BRANCH}"

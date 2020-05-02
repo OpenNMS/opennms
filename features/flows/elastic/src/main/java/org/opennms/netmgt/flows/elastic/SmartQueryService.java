@@ -63,7 +63,9 @@ public class SmartQueryService implements FlowQueryService {
         AGG
     }
 
-    private QueryServiceType forceType = null;
+    private boolean alwaysUseAggForQueries = false;
+    private boolean alwaysUseRawForQueries = true;
+
     private long timeRangeDurationAggregateThresholdMs = TimeUnit.MINUTES.toMillis(2);
     private long timeRangeEndpointAggregateThresholdMs = TimeUnit.DAYS.toMillis(7);
 
@@ -84,8 +86,10 @@ public class SmartQueryService implements FlowQueryService {
 
     private QueryServiceType getDelegate(List<Filter> filters, boolean isQueryForSpecificEntities) {
         // If we're configured to use a specific query service, then always return that one
-        if (forceType != null) {
-            return forceType;
+        if (alwaysUseRawForQueries) {
+            return QueryServiceType.RAW;
+        } else if (alwaysUseAggForQueries) {
+            return QueryServiceType.AGG;
         }
 
         // We do not currently support queries for specific entities in the agg service - use the raw
@@ -224,20 +228,26 @@ public class SmartQueryService implements FlowQueryService {
                 qs -> qs.getTopNHostSeries(N, step, includeOther, filters));
     }
 
-    public QueryServiceType getForceType() {
-        return forceType;
-    }
-
-    public void setForceType(QueryServiceType forceType) {
-        this.forceType = forceType;
+    public boolean isAlwaysUseAggForQueries() {
+        return alwaysUseAggForQueries;
     }
 
     public void setAlwaysUseAggForQueries(boolean alwaysUseAggForQueries) {
-        forceType = QueryServiceType.AGG;
+        this.alwaysUseAggForQueries = alwaysUseAggForQueries;
+        if (alwaysUseAggForQueries) {
+            alwaysUseRawForQueries = false;
+        }
+    }
+
+    public boolean isAlwaysUseRawForQueries() {
+        return alwaysUseRawForQueries;
     }
 
     public void setAlwaysUseRawForQueries(boolean alwaysUseRawForQueries) {
-        forceType = QueryServiceType.RAW;
+        this.alwaysUseRawForQueries = alwaysUseRawForQueries;
+        if (alwaysUseRawForQueries) {
+            alwaysUseAggForQueries = false;
+        }
     }
 
     public long getTimeRangeDurationAggregateThresholdMs() {
@@ -259,9 +269,8 @@ public class SmartQueryService implements FlowQueryService {
     @Override
     public String toString() {
         return "SmartQueryService{" +
-                "rawQueryService=" + rawQueryService +
-                ", aggQueryService=" + aggQueryService +
-                ", forceType=" + forceType +
+                "alwaysUseAggForQueries=" + alwaysUseAggForQueries +
+                ", alwaysUseRawForQueries=" + alwaysUseRawForQueries +
                 ", timeRangeDurationAggregateThresholdMs=" + timeRangeDurationAggregateThresholdMs +
                 ", timeRangeEndpointAggregateThresholdMs=" + timeRangeEndpointAggregateThresholdMs +
                 '}';

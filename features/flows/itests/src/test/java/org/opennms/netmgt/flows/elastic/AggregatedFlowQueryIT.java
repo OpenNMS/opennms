@@ -95,6 +95,9 @@ import com.google.common.collect.Table;
 
 import io.searchbox.client.JestClient;
 
+/**
+ * Similar to {@link FlowQueryIT}, but adapted for aggregated queries.
+ */
 public class AggregatedFlowQueryIT {
 
     @Rule
@@ -142,6 +145,9 @@ public class AggregatedFlowQueryIT {
         aggFlowQueryService = new AggregatedFlowQueryService(client, aggIndexSelector);
 
         SmartQueryService smartQueryService = new SmartQueryService(metricRegistry, rawFlowQueryService, aggFlowQueryService);
+        // Prefer aggregated queries, but fallback to raw when unsupported by agg.
+        smartQueryService.setAlwaysUseAggForQueries(false);
+        smartQueryService.setAlwaysUseRawForQueries(false);
         smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
 
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,

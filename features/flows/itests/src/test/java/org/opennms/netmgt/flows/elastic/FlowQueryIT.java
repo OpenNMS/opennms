@@ -110,7 +110,7 @@ public class FlowQueryIT {
         final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(client, rawIndexSelector);
         final AggregatedFlowQueryService aggFlowRepository = mock(AggregatedFlowQueryService.class);
         final SmartQueryService smartQueryService = new SmartQueryService(metricRegistry, rawFlowRepository, aggFlowRepository);
-        smartQueryService.setForceType(SmartQueryService.QueryServiceType.RAW); // Always use RAW values for these tests
+        smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                 new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,

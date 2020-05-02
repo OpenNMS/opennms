@@ -218,6 +218,7 @@
         <argument ref="rawIndexSettings"/>
         <argument ref="smartQueryService" />
 
+        <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>
         <property name="skipElasticsearchPersistence" value="${skipElasticsearchPersistence}"/>
     </bean>

@@ -229,7 +229,7 @@ public class ElasticFlowRepository implements FlowRepository {
         }
 
         if(enableFlowForwarding) {
-            LOG.debug("Forwarding {} flow documents", flowDocuments.size());
+            LOG.debug("Forwarding {} flow documents.", flowDocuments.size());
             flowDocuments.stream().map(FlowDocument::buildEnrichedFlow).forEach(enrichedFlowForwarder::forward);
         }
 

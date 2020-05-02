@@ -11,9 +11,6 @@ case "${CIRCLE_BRANCH}" in
   "release-"*)
     VERSION="release-candidate"
     ;;
-  "features/drift261")
-    VERSION="drift261"
-    ;;
   *)
     # Replace / in branch names which is not allowed in OCI tags
     VERSION="${CIRCLE_BRANCH//\//-}"
