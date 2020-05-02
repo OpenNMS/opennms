@@ -35,11 +35,7 @@
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-`            <!-- Set to false to disable persisting flows to ES.
-                 ES must still be configured and this should only be used for testing
-                 specific scenarios such as enrichment and forwarding throughput.
-             -->
-            <cm:property name="skipElasticsearchPersistence" value="false"/>
+            <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
@@ -211,7 +207,7 @@
           init-method="start">
         <argument ref="flowRepositoryMetricRegistry"/>
         <argument ref="jestClient"/>
-        <argument ref="indexStrategy"/>
+        <argument ref="rawIndexStrategy"/>
         <argument ref="documentEnricher"/>
         <argument ref="sessionUtils"/>
         <argument ref="nodeDao"/>
@@ -220,8 +216,7 @@
         <argument ref="tracerRegistry"/>
         <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
-        <argument ref="rawFlowQueryService" />
-        <argument ref="aggFlowQueryService" />
+        <argument ref="smartQueryService" />
 
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>
         <property name="skipElasticsearchPersistence" value="${skipElasticsearchPersistence}"/>
