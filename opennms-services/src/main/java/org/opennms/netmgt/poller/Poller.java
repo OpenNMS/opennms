@@ -426,7 +426,7 @@ public class Poller extends AbstractServiceDaemon {
      * @param nodeLocation a {@link String} object.
      * @param ipAddr a {@link String} object.
      * @param svcName a {@link String} object.
-     * @param pollableNode
+     * @param pollableNode a {@link PollableNode} object
      */
     public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName, PollableNode pollableNode) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
@@ -440,6 +440,7 @@ public class Poller extends AbstractServiceDaemon {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
                     node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
+                    // Retrieve current status of node.
                     if(pollableNode != null) {
                         node.updateStatus(pollableNode.getStatus());
                         node.setCause(pollableNode.getCause());

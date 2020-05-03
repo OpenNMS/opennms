@@ -754,7 +754,6 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        PollStatus pollStatus = pnode != null ? pnode.getStatus() : null;
         // Schedule all of the services, if they are not already
         for (final Service databaseService : databaseServices) {
             if (polledServices.contains(databaseService)) {

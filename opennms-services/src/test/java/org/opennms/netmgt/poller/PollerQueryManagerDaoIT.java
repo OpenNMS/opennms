@@ -977,7 +977,12 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_eventMgr.sendEventToListeners(builder.getEvent());
 
 		verifyAnticipated(5000);
-		System.out.println(m_eventMgr.getEventAnticipator().getUnanticipatedEvents());
+
+		anticipateUp(svc);
+		anticipateUp(node);
+		node.bringUp();
+
+		verifyAnticipated(8000);
 	}
 
     @Test
