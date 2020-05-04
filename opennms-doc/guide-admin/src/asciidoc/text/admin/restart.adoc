@@ -4,7 +4,7 @@
 
 This chapter provides an example of the order to follow when shutting down and restarting a sample {opennms-product-name} system: {opennms-product-name} core layer, persistence and messaging layer, and database layer. 
 
-image::admin/restart-process.png[process, 500]
+image::admin/restart-process.png[process]
 
 Note that restarting the whole stack is rare. 
 Usually, restarting the {opennms-product-name} core happens for reconfiguration or to run upgrades. 

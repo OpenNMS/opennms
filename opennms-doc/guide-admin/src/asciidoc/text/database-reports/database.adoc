@@ -291,7 +291,7 @@ The PDF report displays each of the panels from the specified dashboard, with on
 
 Dashboard to PDF:
 
-image:database-reports/dashboard-pdf.png[PDF report, 600]
+image:database-reports/dashboard-pdf.png[PDF report]
 
 ==== Before You Begin
 
@@ -347,4 +347,4 @@ Separate multiple recipient emails with a comma.
 
 Scheduled reports appear in the `Report Schedules` tab, where you can edit or delete them:
 
-image::database-reports/PDF-Report.png[pdf report, 600]
+image::database-reports/PDF-Report.png[pdf report]
