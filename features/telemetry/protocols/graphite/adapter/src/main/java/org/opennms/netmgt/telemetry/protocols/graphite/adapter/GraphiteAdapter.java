@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.graphite.adapter;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -95,12 +96,12 @@ public class GraphiteAdapter extends AbstractScriptedCollectionAdapter {
             if (entry.length != 3) {
                 LOG.warn("Unparseable graphite plaintext message: {}", line);
             } else {
-                final GraphiteMetric metric = new GraphiteMetric(entry[0], entry[1], Long.valueOf(entry[2], 10));
                 try {
+                    final GraphiteMetric metric = new GraphiteMetric(entry[0], entry[1], Long.valueOf(entry[2], 10));
                     final CollectionSet collectionSet = builder.build(agent, metric, metric.getTimestamp());
                     collectionSets.add(new CollectionSetWithAgent(agent, collectionSet));
                 } catch (final ScriptException e) {
-                    LOG.warn("Dropping metric, unable to create collection set: {}", metric, e);
+                    LOG.warn("Dropping metric, unable to create collection set: {}", Arrays.asList(entry), e);
                 }
             }
         }

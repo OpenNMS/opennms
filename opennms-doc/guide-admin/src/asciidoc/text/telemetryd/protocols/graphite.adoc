@@ -1,9 +1,9 @@
 
 ==== Graphite Telemetry
 
-The _Graphite_ telemetry adapter allows you to push telemetry data to _{opennms-product-name}_ using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[_plaintext_ protocol].
+The _Graphite_ telemetry adapter allows you to push telemetry data over UDP to _{opennms-product-name}_ using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[_plaintext_ protocol].
 
-To enable support for Graphite, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `Graphite` protocol.
+To enable support for plaintext Graphite over UDP, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `Graphite` protocol.
 
 .Enable Graphite protocol in telemetryd-configuration.xml
 [source, xml]
@@ -41,7 +41,7 @@ By default, this will open a UDP socket bound to `0.0.0.0:2003` to which _Graphi
 
 ===== Configure Graphite Listener on a Minion
 
-To enable and configure an _UDP Listener_ for Graphite on Minion, connect to the _Karaf Console_ and set the following properties:
+To enable and configure a _UDP Listener_ for Graphite on Minion, connect to the _Karaf Console_ and set the following properties:
 
 [source]
 ----
