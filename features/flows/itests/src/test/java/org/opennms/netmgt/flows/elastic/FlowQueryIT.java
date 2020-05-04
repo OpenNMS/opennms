@@ -34,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
 import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -72,7 +74,7 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -93,22 +95,28 @@ public class FlowQueryIT {
     private ElasticFlowRepository flowRepository;
 
     @Before
-    public void setUp() throws MalformedURLException, FlowException, ExecutionException, InterruptedException {
+    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         MockLogAppender.setupLogging(true, "DEBUG");
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
 
-        final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
-
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
         final JestClient client = restClientFactory.createClient();
-
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
-                classificationEngine, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), 3, 12000);
         final IndexSettings settings = new IndexSettings();
-        final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);
+        settings.setIndexPrefix("flows");
+        final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,
+                IndexStrategy.MONTHLY, 120000);
+        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(client, rawIndexSelector);
+        final AggregatedFlowQueryService aggFlowRepository = mock(AggregatedFlowQueryService.class);
+        final SmartQueryService smartQueryService = new SmartQueryService(metricRegistry, rawFlowRepository, aggFlowRepository);
+        smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
+        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
+                new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,
+                smartQueryService);
+
+        final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually

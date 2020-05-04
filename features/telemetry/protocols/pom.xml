@@ -15,6 +15,7 @@
     <module>bmp</module>
     <module>common</module>
     <module>flows</module>
+    <module>graphite</module>
     <module>jti</module>
     <module>nxos</module>
     <module>sflow</module>

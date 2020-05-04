@@ -40,6 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.joda.time.Duration;
 import org.opennms.core.ipc.sink.api.DispatchQueue;
 import org.opennms.core.ipc.sink.api.WriteFailedException;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class QueueFileOffHeapDispatchQueue<T> implements DispatchQueue<T> {
     private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5)
-            .every(Duration.standardSeconds(30))
+            .every(Duration.ofSeconds(30))
             .build();
 
     // This must match the size of the HEADER_LENGTH in QueueFile's Element class

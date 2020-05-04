@@ -53,8 +53,8 @@ public class FlowDocument {
     public FlowDocument() {
     }
 
-
     private transient Flow flow;
+
     /**
      * Flow timestamp in milliseconds.
      */
@@ -339,6 +339,10 @@ public class FlowDocument {
 
     public Flow getFlow() {
         return flow;
+    }
+
+    public void setFlow(Flow flow) {
+        this.flow = flow;
     }
 
     public long getTimestamp() {

@@ -109,6 +109,9 @@ public class FlowBuilder {
         }
         flow.setApplication(application);
         flow.setDirection(direction);
+        flow.setSrcLocality(Locality.PRIVATE);
+        flow.setDstLocality(Locality.PRIVATE);
+        flow.setFlowLocality(Locality.PRIVATE);
         flows.add(flow);
         return this;
     }
