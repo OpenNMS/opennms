@@ -113,6 +113,11 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
 
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+
 /**
  * DefaultProvisionService
  *
@@ -197,6 +202,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private SnmpProfileMapper m_snmpProfileMapper;
+
+    private Tracer m_tracer;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -1422,6 +1429,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Override
+    public void setTracer(Tracer tracer) {
+        m_tracer = tracer;
+    }
+    
+    @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
     }
@@ -1452,5 +1464,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     public void setEventForwarder(final EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
+    }
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext) {
+        if(m_tracer == null) {
+            m_tracer = GlobalTracer.get();
+        }
+        if (spanContext == null) {
+            return m_tracer.buildSpan("Provisiond-" + name).start();
+        } else {
+            return m_tracer.buildSpan("Provisiond-" + name).asChildOf(spanContext).start();
+        }
+    }
+
+    public static void setTag(Span span, String name, String value) {
+        if ((!Strings.isNullOrEmpty(name)) && (!Strings.isNullOrEmpty(value))) {
+            span.setTag(name, value);
+        }
+
     }
 }

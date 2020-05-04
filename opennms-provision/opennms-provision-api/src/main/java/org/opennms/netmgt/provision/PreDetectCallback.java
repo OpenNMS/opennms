@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,35 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
-import java.net.InetAddress;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+public interface PreDetectCallback {
 
-import io.opentracing.Span;
-
-public interface DetectorRequestBuilder {
-
-    DetectorRequestBuilder withLocation(String location);
-
-    DetectorRequestBuilder withSystemId(String systemId);
-
-    DetectorRequestBuilder withServiceName(String serviceName);
-
-    DetectorRequestBuilder withClassName(String className);
-
-    DetectorRequestBuilder withAddress(InetAddress address);
-
-    DetectorRequestBuilder withAttribute(String key, String value);
-
-    DetectorRequestBuilder withAttributes(Map<String, String> attributes);
-
-    DetectorRequestBuilder withNodeId(Integer nodeId);
-
-    DetectorRequestBuilder withParentSpan(Span span);
-
-    DetectorRequestBuilder withPreDetectCallback(PreDetectCallback preDetectCallback);
-
-
-    CompletableFuture<Boolean> execute();
+    void preDetect();
 
 }

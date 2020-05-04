@@ -86,6 +86,7 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
                 @Override
                 public DetectorResponseDTO get() {
                     try {
+                        detectRequest.preDetect();
                         return new DetectorResponseDTO(syncDetector.detect(detectRequest));
                     } catch (Throwable t) {
                         return new DetectorResponseDTO(t);
@@ -99,6 +100,7 @@ public class DetectorClientRpcModule extends AbstractXmlRpcModule<DetectorReques
             final AsyncServiceDetector asyncDetector = (AsyncServiceDetector) detector;
             try {
                 DetectFuture detectFuture = asyncDetector.detect(detectRequest);
+                detectRequest.preDetect();
                 detectFuture.addListener(new DetectFutureListener<DetectFuture>() {
                     @Override
                     public void operationComplete(DetectFuture detectFuture) {
