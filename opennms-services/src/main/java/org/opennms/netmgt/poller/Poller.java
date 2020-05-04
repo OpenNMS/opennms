@@ -440,7 +440,9 @@ public class Poller extends AbstractServiceDaemon {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
                     node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
-                    // Retrieve current status of node.
+                    // In case of module reload, all existing PollableNodes gets deleted and re-created.
+                    // It is necessary to retrieve the previous state of node and reset the change of status.
+                    // Otherwise this may produce duplicate node down events, see NMS-12681
                     if(pollableNode != null) {
                         node.updateStatus(pollableNode.getStatus());
                         node.setCause(pollableNode.getCause());
