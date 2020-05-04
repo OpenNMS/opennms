@@ -100,7 +100,7 @@ public class GraphiteAdapter extends AbstractScriptedCollectionAdapter {
                     final GraphiteMetric metric = new GraphiteMetric(entry[0], entry[1], Long.valueOf(entry[2], 10));
                     final CollectionSet collectionSet = builder.build(agent, metric, metric.getTimestamp());
                     collectionSets.add(new CollectionSetWithAgent(agent, collectionSet));
-                } catch (final ScriptException e) {
+                } catch (final NumberFormatException | ScriptException e) {
                     LOG.warn("Dropping metric, unable to create collection set: {}", Arrays.asList(entry), e);
                 }
             }
