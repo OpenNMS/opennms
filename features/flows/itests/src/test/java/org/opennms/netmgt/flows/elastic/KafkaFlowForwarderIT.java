@@ -67,7 +67,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -98,7 +97,6 @@ public class KafkaFlowForwarderIT {
             .withManualStartup()
     );
 
-
     @Before
     public void setup() throws IOException {
         kafkaConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
@@ -128,13 +126,12 @@ public class KafkaFlowForwarderIT {
         interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.2.2"), 2);
         interfaceToNodeCache.setNodeId("SomeLocation", InetAddressUtils.addr("192.168.1.1"), 3);
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-        final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    jestClient, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
+                    jestClient, IndexStrategy.MONTHLY, documentEnricher,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(),
-                    3, 12000);
+                    mock(SmartQueryService.class));
             elasticFlowRepository.setEnableFlowForwarding(true);
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }

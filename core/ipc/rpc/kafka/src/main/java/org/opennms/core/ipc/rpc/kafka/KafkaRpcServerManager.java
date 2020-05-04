@@ -35,6 +35,7 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,6 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.KafkaTopicProvider;
@@ -99,7 +99,7 @@ public class KafkaRpcServerManager {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcServerManager.class);
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
     private Map<String, RpcModule<RpcRequest, RpcResponse>> modulesById = new ConcurrentHashMap<>();
     private final Properties kafkaConfig = new Properties();

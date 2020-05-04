@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +40,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
@@ -68,7 +68,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     private static final Logger LOG = LoggerFactory.getLogger(AbstractThresholdEvaluatorState.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     private static final String UNKNOWN = "Unknown";
