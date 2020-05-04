@@ -205,6 +205,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         if (model.isTelemetryProcessingEnabled()) {
             featuresOnBoot.add("sentinel-flows");
             featuresOnBoot.add("sentinel-telemetry-bmp");
+            featuresOnBoot.add("sentinel-telemetry-graphite");
             featuresOnBoot.add("sentinel-telemetry-jti");
             featuresOnBoot.add("sentinel-telemetry-nxos");
         }

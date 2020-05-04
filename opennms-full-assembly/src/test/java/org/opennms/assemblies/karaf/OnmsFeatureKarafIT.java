@@ -590,6 +590,12 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	public void testInstallFeatureOpennmsTelemetryGraphite() {
+		installFeature("opennms-dao-api"); // System classpath
+		installFeature("opennms-telemetry-graphite");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsTelemetryNxos() {
 		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-telemetry-nxos");

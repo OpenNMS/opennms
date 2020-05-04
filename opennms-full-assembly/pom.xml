@@ -567,6 +567,7 @@
                 <feature>opennms-telemetry-bmp</feature>
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
+                <feature>opennms-telemetry-graphite</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
                 <feature>org.opennms.features.bsm.service.api</feature>
                 <feature>org.opennms.features.bsm.shell-commands</feature>
