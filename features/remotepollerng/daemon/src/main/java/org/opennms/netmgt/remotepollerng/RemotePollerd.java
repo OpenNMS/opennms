@@ -61,6 +61,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -258,6 +259,15 @@ public class RemotePollerd implements SpringServiceDaemon {
     }
 
     protected void reportResult(final String locationName, final RemotePolledService polledService, final PollStatus pollResult) {
+        final OnmsMonitoringLocation location = this.monitoringLocationDao.get(locationName);
+
+        final OnmsLocationSpecificStatus status = new OnmsLocationSpecificStatus();
+        status.setLocation(location);
+        status.setMonitoredService(polledService.getMonSvc());
+        status.setPollResult(pollResult);
+
+        this.locationSpecificStatusDao.saveStatusChange(status);
+
         try {
             if (pollResult.getResponseTime() != null) {
                 saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult.getResponseTime(), polledService.getPkg());
