@@ -15,7 +15,8 @@
         <argument ref="awsSqsConfig"/>
     </bean>
 
-    <bean id="awsSqsMessageconsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager">
+    <bean id="awsSqsMessageconsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager"
+          destroy-method="shutdown">
         <property name="awsSqsManager" ref="awsSqsManager"/>
     </bean>
     <service ref="awsMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />

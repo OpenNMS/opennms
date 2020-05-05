@@ -28,18 +28,6 @@
 
 package org.opennms.core.ipc.sink.aws.sqs.server;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.AmazonSQSException;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
-import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.SinkModule;
-import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.logging.Logging;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +37,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
+import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.MessageConsumerManager;
+import org.opennms.core.ipc.sink.api.SinkModule;
+import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * The Class AwsMessageConsumerManager.
@@ -196,6 +197,13 @@ public class AmazonSQSMessageConsumerManager extends AbstractMessageConsumerMana
                 consumerRunner.shutdown();
             }
             consumerRunnersByModule.remove(module);
+        }
+    }
+
+    public void shutdown() {
+        executor.shutdown();
+        if(getStartupExecutor() != null) {
+            getStartupExecutor().shutdown();
         }
     }
 }
