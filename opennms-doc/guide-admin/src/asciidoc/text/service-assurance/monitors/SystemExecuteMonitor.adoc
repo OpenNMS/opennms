@@ -61,38 +61,6 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
-====== Banner matching example
-
-[source, xml]
-----
-<service name="Script_Example" interval="300000" user-defined="true" status="on">
-  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
-  <parameter key="banner" value="UP"/>
-  <parameter key="timeout" value="5000"/>
-</service>
-
-<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
-----
-
-[source, bash]
-----
-#/opt/opennms/contrib/Script_Example.sh
-#!/bin/bash
-set -e
-set -u
-
-# Create a value 1 or 2 randomly
-VALUE=$(shuf -i 1-2 -n 1)
-
-# Depending on the value echo UP or DOWN
-if [ "$VALUE" -eq 1 ]
-then
-    echo "UP"
-else
-    echo "DOWN"
-fi
-----
-
 ====== Exit status example
 
 [source, xml]
@@ -107,20 +75,44 @@ fi
 
 [source, bash]
 ----
-#/opt/opennms/contrib/Script_Example.sh
-#!/bin/bash
-set -e
-set -u
+#!/usr/bin/env bash
 
-# Create a value 1 or 2 randomly
-VALUE=$(shuf -i 1-2 -n 1)
+# ...some test logic
 
-# Depending on the value exit with status 0 or 1
-if [ "$VALUE" -eq 1 ]
-then
-    exit 0
+RESULT="TEST OK"
+
+if [[ "TEST OK" == "${RESULT}" ]]; then
+  exit 0
 else
-    exit 1
+  exit 1
+fi
+----
+
+====== Banner matching example
+
+[source, xml]
+----
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="banner" value="PASSED"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+# ...some test logic
+
+RESULT="TEST OK"
+
+if [[ "TEST OK" == "${RESULT}" ]]; then
+  echo "PASSED"
+else
+  echo "FAILED"
 fi
 ----
 
