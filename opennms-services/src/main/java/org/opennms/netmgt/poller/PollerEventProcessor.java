@@ -215,7 +215,7 @@ final class PollerEventProcessor implements EventListener {
                 return;
             }
         }
-        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName);
+        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName, pnode);
 
     }
 
@@ -764,7 +764,7 @@ final class PollerEventProcessor implements EventListener {
             }
 
             LOG.debug("{} is being scheduled (or rescheduled) for polling.", databaseService);
-            getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, databaseService.getAddress(), databaseService.getServiceName());
+            getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, databaseService.getAddress(), databaseService.getServiceName(), pnode);
             if (!getPollerConfig().isPolled(databaseService.getAddress(), databaseService.getServiceName())) {
                 LOG.debug("{} is no longer polled.  Closing any pending outages.", databaseService);
                 closeOutagesForService(sourceEvent, nodeId, closeDate, databaseService);
