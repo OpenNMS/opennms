@@ -182,3 +182,12 @@ karaf:
 Config specified will be written to:
 - `etc/org.apache.karaf.shell.cfg` for content under `shell`.
 - `etc/org.apache.karaf.management.cfg` for content under `management`.
+
+### Jolokia Properties
+```
+---
+jolokia:
+    web:
+        port: 8181
+```
+Config specified will be written to `etc/org.ops4j.pax.web.cfg`
