@@ -58,7 +58,7 @@ if [ -z "${BUILD}" ] || [ -z "${PLAN_KEY}" ] || [ -z "${BUILD_ID}" ] || [ -z "${
     exit 2
 fi
 
-pushd horizon/rpms || exit 1
+pushd meridian/rpms || exit 1
 for RPM in ${RPMS_MERIDIAN[*]}; do
     echo "RPM: ${RPM}"
     if [ ! -f "${RPM}" ]; then

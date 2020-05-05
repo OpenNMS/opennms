@@ -5,7 +5,7 @@
         <relativePath>../../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>2019.1.6</version>
+        <version>2019.1.7-SNAPSHOT</version>
     </parent>
     <properties>
         <bundle.symbolicName>org.opennms.features.topology.plugins.browsers</bundle.symbolicName>
@@ -93,6 +93,17 @@
             <groupId>org.opennms</groupId>
             <artifactId>opennms-rrd-jrobin</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-rrdtool-api</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jrrd2-dependencies</artifactId>
+            <scope>test</scope>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.collection</groupId>

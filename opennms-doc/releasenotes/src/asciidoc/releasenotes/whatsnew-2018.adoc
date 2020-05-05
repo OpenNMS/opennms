@@ -85,6 +85,23 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.19]
+
+==== Release Meridian-2018.1.19
+
+Release 2018.1.19 is a small release that fixes a couple of bugs.
+
+The codename for 2018.1.18 is _Sinkhole_.
+
+===== Bug
+
+* SystemExecuteMonitor fails with exit code 6 (Issue http://issues.opennms.org/browse/NMS-12564[NMS-12564])
+* Reloading the Pollerd daemon causes multiple nodeDown messages (Issue http://issues.opennms.org/browse/NMS-12681[NMS-12681])
+
+===== Enhancement
+
+* Add an example for SystemExecuteMonitor into the docs (Issue http://issues.opennms.org/browse/NMS-12568[NMS-12568])
+
 [releasenotes-changelog-Meridian-2018.1.18]
 
 ==== Release Meridian-2018.1.18

@@ -12,10 +12,10 @@ source ../registry-config.sh
 # shellcheck source=opennms-container/version-n-tags.sh
 source ../version-tags.sh
 
-# OpenNMS Horizon packages
+# OpenNMS Meridian packages
 ONMS_PACKAGES="meridian-core meridian-webapp-jetty meridian-webapp-remoting meridian-webapp-hawtio"
 
-for PKG in ${ONMS_PACKAGES}; do 
+for PKG in ${ONMS_PACKAGES}; do
   cp ../../target/rpm/RPMS/noarch/"${PKG}"*.rpm rpms
 done
 

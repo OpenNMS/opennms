@@ -17,34 +17,34 @@ executors:
     machine:
       image: ubuntu-1604:201903-01
 
-# NOTE: the "_label" versions of these are for the case when your source or target
-# branches have slashes in them, that way the merge branch gets created properly
-defaults: &defaults
-  parameters:
-    previous_branch:
-      description: the previous branch, if any
-      type: string
-      default: foundation-2018
-    previous_branch_label:
-      description: the previous branch, if any (escaped, no slashes)
-      type: string
-      default: foundation-2018
-    main_branch:
-      description: the auto-merge main branch
-      type: string
-      default: foundation-2019
-    main_branch_label:
-      description: the auto-merge main branch (escaped, no slashes)
-      type: string
-      default: foundation-2019
-    next_branch:
-      description: the auto-merge target branch
-      type: string
-      default: release-26.0.0
-    next_branch_label:
-      description: the auto-merge target branch (escaped, no slashes)
-      type: string
-      default: release-26.0.0
+## NOTE: the "_label" versions of these are for the case when your source or target
+## branches have slashes in them, that way the merge branch gets created properly
+#defaults: &defaults
+#  parameters:
+#    previous_branch:
+#      description: the previous branch, if any
+#      type: string
+#      default: foundation-2018
+#    previous_branch_label:
+#      description: the previous branch, if any (escaped, no slashes)
+#      type: string
+#      default: foundation-2018
+#    main_branch:
+#      description: the auto-merge main branch
+#      type: string
+#      default: foundation-2019
+#    main_branch_label:
+#      description: the auto-merge main branch (escaped, no slashes)
+#      type: string
+#      default: foundation-2019
+#    next_branch:
+#      description: the auto-merge target branch
+#      type: string
+#      default: release-26.1.0
+#    next_branch_label:
+#      description: the auto-merge target branch (escaped, no slashes)
+#      type: string
+#      default: release-26.1.0
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -91,6 +91,9 @@ commands:
             name: Remove OpenNMS artifacts from cache
             command: |
               rm -rf ~/.m2/repository/org/opennms
+        - run:
+            name: Remove old artifacts to keep workspace size down
+            command: .circleci/scripts/clean-m2.sh
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -152,9 +155,9 @@ commands:
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
       - run:
-          name: Load Horizon OCI image
+          name: Load Meridian OCI image
           command: |
-            cd opennms-container/horizon
+            cd opennms-container/meridian
             docker image load -i images/container.oci
       - run:
           name: Load Minion OCI image
@@ -186,10 +189,10 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg > ~/test-results/system-logs/dmesg
-            ps auxf > ~/test-results/system-logs/ps
-            free -m > ~/test-results/system-logs/free
-            docker stats --no-stream > ~/test-results/system-logs/docker_stats
+            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/test-results/system-logs/ps 2>&1
+            free -m || : > ~/test-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/test-results/system-logs/
             ls -alh ~/project/smoke-test/
       - run:
@@ -237,17 +240,22 @@ commands:
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+              -DupdatePolicy=never -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
-              install --builder smart --threads << parameters.number-vcpu >>
-      - run:
-          name: Compile smoke tests
-            # Compile the smoke tests, but don't run them yet
-            # We want to make sure that they compile and also leverage the caching that is setup here
-            # so that the artifacts required to run the smoke tests are cached as well without the need
-            # to maintain another cache
-          command: |
-            cd smoke-test && mvn install -DskipTests=true -DskipITs=true
+              -Psmoke \
+              install --batch-mode
+            pushd opennms-doc
+              ../compile.pl \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=1 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -DskipPdfGeneration=false \
+                -P'!jdk7+' \
+                install --batch-mode
+            popd
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
@@ -326,28 +334,32 @@ commands:
             .circleci/scripts/publish-cloudsmith.sh
 
 workflows:
-  weekly-coverage:
-    triggers:
-      - schedule:
-          # Saturday at 12:00 AM
-          cron: "0 0 * * 6"
+#  weekly-coverage:
+#    triggers:
+#      - schedule:
+#          # Saturday at 12:00 AM
+#          cron: "0 0 * * 6"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#    jobs:
+#      - build
+#      - integration-test-with-coverage:
+#          requires:
+#            - build
+#      - code-coverage:
+#          requires:
+#            - integration-test-with-coverage
+  build-deploy:
+#    <<: *defaults
+    jobs:
+      - build:
           filters:
             branches:
-              only:
-                - develop
-    jobs:
-      - build
-      - integration-test-with-coverage:
-          requires:
-            - build
-      - code-coverage:
-          requires:
-            - integration-test-with-coverage
-  build-deploy:
-    <<: *defaults
-    jobs:
-      - build
-      - horizon-rpm-build:
+              ignore:
+                - /^from-foundation.*/
+      - meridian-rpm-build:
           requires:
             - build
       - minion-rpm-build:
@@ -361,7 +373,7 @@ workflows:
             - build
       - smoke-test-full:
           requires:
-            - horizon-rpm-build
+            - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
           filters:
@@ -370,13 +382,12 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
-                - /^foundation.*/
+#                - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
-            - horizon-rpm-build
+            - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
           filters:
@@ -385,116 +396,115 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
-                - /^foundation.*/
+#                - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
-      - horizon-publish-oci:
-          requires:
-            - horizon-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-      - minion-publish-oci:
-          requires:
-            - minion-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-      - sentinel-publish-oci:
-          requires:
-            - sentinel-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-      # These don't actually require `integration-test` but we shouldn't bother
-      # spending cycles unless everything else passed
-      - horizon-deb-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /^merge-foundation\/.*/
-                - /.*smoke.*/
-      - minion-deb-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /^merge-foundation\/.*/
-                - /.*smoke.*/
-      - sentinel-deb-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /^merge-foundation\/.*/
-                - /.*smoke.*/
-      - create-merge-foundation-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
-          filters:
-            branches:
-              only: << parameters.main_branch >>
-      - merge-foundation-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
-          filters:
-            branches:
-              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
-      - publish-cloudsmith:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - smoke-test-full
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
-                - /^foundation.*/
+#      - meridian-publish-oci:
+#          requires:
+#            - meridian-rpm-build
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#      - minion-publish-oci:
+#          requires:
+#            - minion-rpm-build
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#      - sentinel-publish-oci:
+#          requires:
+#            - sentinel-rpm-build
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#      # These don't actually require `integration-test` but we shouldn't bother
+#      # spending cycles unless everything else passed
+#      - meridian-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#      - minion-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#      - sentinel-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#      - create-merge-foundation-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: << parameters.main_branch >>
+#      - merge-foundation-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+#      - publish-cloudsmith:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - smoke-test-full
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#                - /^release-.*/
+#                - /^foundation.*/
 
 jobs:
   build:
@@ -505,7 +515,7 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
-  horizon-rpm-build:
+  meridian-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     resource_class: large
@@ -531,13 +541,13 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Fetch RPM artifacts and build Horizon container image
+          name: Fetch RPM artifacts and build Meridian container image
           command: |
-            cd opennms-container/horizon
+            cd opennms-container/meridian
             ./build_container_image.sh
       - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
+          path: ~/project/opennms-container/meridian/images/container.oci
+          destination: meridian.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
@@ -545,11 +555,11 @@ jobs:
           root: ~/
           paths:
             - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/horizon/images/
+            - project/opennms-container/meridian/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-rpm-build is under 15 min
+    # Will need to increase resource class if meridian-rpm-build is under 15 min
     resource_class: large
     steps:
       - attach_workspace:
@@ -592,7 +602,7 @@ jobs:
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-rpm-build is under 19 min
+    # Will need to increase resource class if meridian-rpm-build is under 19 min
     resource_class: large
     steps:
       - attach_workspace:
@@ -632,10 +642,9 @@ jobs:
           paths:
             - project/target/rpm/RPMS/noarch/
             - project/opennms-container/sentinel/images/
-  horizon-deb-build:
+  meridian-deb-build:
     executor: debian-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -645,16 +654,40 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
+            export CCI_MAXCPU=2
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/build-results/system-logs/ps 2>&1
+            free -m || : > ~/build-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
@@ -722,7 +755,7 @@ jobs:
           root: ~/
           paths:
             - project/target/debs/
-  horizon-publish-oci:
+  meridian-publish-oci:
     executor: centos-build-executor
     steps:
       - attach_workspace:
@@ -731,9 +764,9 @@ jobs:
           docker_layer_caching: true
       - dockerhub-login
       - run:
-          name: Load Horizon OCI image, tag it and publish to registry
+          name: Load Meridian OCI image, tag it and publish to registry
           command: |
-            cd opennms-container/horizon
+            cd opennms-container/meridian
             docker image load -i images/container.oci
             ./tag.sh
             ./publish.sh
@@ -824,7 +857,7 @@ jobs:
       - run-smoke-tests:
           minimal: true
   create-merge-foundation-branch:
-    <<: *defaults
+#    <<: *defaults
     <<: *docker_container_config
     steps:
       - run:
@@ -860,7 +893,7 @@ jobs:
   # it will include the contents of the `foundation-2017` branch, thus we need to actually
   # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
   merge-foundation-branch:
-    <<: *defaults
+#    <<: *defaults
     <<: *docker_container_config
     steps:
       - run:

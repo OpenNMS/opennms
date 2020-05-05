@@ -87,7 +87,7 @@ if (not defined $MVN or not -x $MVN) {
 
 delete $ENV{'M2_HOME'};
 
-my $MEM = "2560m";
+my $MEM = "3g";
 my $RCCS = "512m";
 
 # maven options
