@@ -5,26 +5,29 @@
 #
 # The properties in this file define the configuration of Apache Karaf's JMX Management
 #
+{{$karafRmiPath := "/karaf/management/rmi" -}}
+{{$karafRmiRegistryPath := (print $karafRmiPath "/registry") -}}
+{{$karafRmiServerPath := (print $karafRmiPath "/server") -}}
 
 #
 # Port number for RMI registry connection
 #
-rmiRegistryPort = {{getv "/karaf/management/rmi/registry/port" "1299"}}
+rmiRegistryPort = {{getv (print $karafRmiRegistryPath "/port") "1299"}}
 
 #
 # Host for RMI registry
 #
-rmiRegistryHost = {{getv "/karaf/management/rmi/registry/host" "127.0.0.1"}}
+rmiRegistryHost = {{getv (print $karafRmiRegistryPath "/host") "127.0.0.1"}}
 
 #
 # Port number for RMI server connection
 #
-rmiServerPort = {{getv "/karaf/management/rmi/server/port" "45444"}}
+rmiServerPort = {{getv (print $karafRmiServerPath "/port") "45444"}}
 
 #
 # Host for RMI server
 #
-rmiServerHost = {{getv "/karaf/management/rmi/server/host" "127.0.0.1"}}
+rmiServerHost = {{getv (print $karafRmiServerPath "/host") "127.0.0.1"}}
 
 #
 # Name of the JAAS realm used for authentication

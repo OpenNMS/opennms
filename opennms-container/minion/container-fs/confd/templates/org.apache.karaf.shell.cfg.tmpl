@@ -1,8 +1,9 @@
 #
 # DON'T EDIT THIS FILE :: GENERATED WITH CONFD
 #
-sshPort={{getv "/karaf/shell/ssh/port" "8201"}}
-sshHost={{getv "/karaf/shell/ssh/host" "127.0.0.1"}}
+{{$karafSshPath := "/karaf/shell/ssh" -}}
+sshPort={{getv (print $karafSshPath "/port") "8201"}}
+sshHost={{getv (print $karafSshPath "/host") "127.0.0.1"}}
 hostKeyFormat=PEM
 sshRealm=karaf
 hostKey=${karaf.etc}/host.key
