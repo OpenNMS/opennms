@@ -212,7 +212,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         }
 
         if (m_locationSpecificStatusDao == null) {
-            throw new IllegalStateException("locationMonitorDao property has not been set");
+            throw new IllegalStateException("locationSpecificStatusDao property has not been set");
         }
 
         if (m_resourceStorageDao == null) {

@@ -140,7 +140,7 @@
     <bean id="distributedStatusDetailsValidator" class="org.opennms.web.validator.DistributedStatusDetailsValidator">
         <property name="applicationDao" ref="applicationDao"/>
         <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-        <property name="locationMonitorDao" ref="locationMonitorDao"/>
+        <property name="locationSpecificStatusDao" ref="locationSpecificStatusDao" />
     </bean>
 
     <bean name="/distributedStatusHistory.htm"
