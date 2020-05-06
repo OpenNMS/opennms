@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
@@ -100,7 +101,7 @@ public class UpdatePacket implements Packet {
         public long pathId = 0;
 
         public Prefix(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) {
-            final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(BGP_AFI_IPV4, BGP_SAFI_UNICAST) : false;
+            final boolean addPathCapabilityEnabled = peerInfo.map(info -> info.isAddPathEnabled(BGP_AFI_IPV4, BGP_SAFI_UNICAST)).orElse(false);
 
             if (addPathCapabilityEnabled) {
                 this.pathId = uint32(buffer);
@@ -323,13 +324,15 @@ public class UpdatePacket implements Packet {
         }
     }
 
-    public static UpdatePacket parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+    public static Optional<UpdatePacket> parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         final Header header = new Header(buffer);
         if (header.type != Header.Type.UPDATE) {
-            throw new InvalidPacketException(buffer, "Expected Update Message, got: {}", header.type);
+            BmpParser.RATE_LIMITED_LOG.debug("Expected Update Message, got: {}", header.type);
+            skip(buffer, header.length - Header.SIZE);
+            return Optional.empty();
         }
 
-        return new UpdatePacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo);
+        return Optional.of(new UpdatePacket(header, slice(buffer, header.length - Header.SIZE), flags, peerInfo));
     }
 
     @Override

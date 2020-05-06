@@ -31,11 +31,11 @@ defaults: &defaults
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: release-26.0.0
+      default: release-26.1.0
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: release-26.0.0
+      default: release-26.1.0
     next_branch:
       description: the auto-merge target branch
       type: string
@@ -90,6 +90,9 @@ commands:
             name: Remove OpenNMS artifacts from cache
             command: |
               rm -rf ~/.m2/repository/org/opennms
+        - run:
+            name: Remove old artifacts to keep workspace size down
+            command: .circleci/scripts/clean-m2.sh
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -185,10 +188,10 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg > ~/test-results/system-logs/dmesg
-            ps auxf > ~/test-results/system-logs/ps
-            free -m > ~/test-results/system-logs/free
-            docker stats --no-stream > ~/test-results/system-logs/docker_stats
+            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/test-results/system-logs/ps 2>&1
+            free -m || : > ~/test-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/test-results/system-logs/
             ls -alh ~/project/smoke-test/
       - run:
@@ -236,17 +239,22 @@ commands:
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -DupdatePolicy=never -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
-              install --builder smart --threads << parameters.number-vcpu >>
-      - run:
-          name: Compile smoke tests
-            # Compile the smoke tests, but don't run them yet
-            # We want to make sure that they compile and also leverage the caching that is setup here
-            # so that the artifacts required to run the smoke tests are cached as well without the need
-            # to maintain another cache
-          command: |
-            cd smoke-test && mvn install -DskipTests=true -DskipITs=true
+              -Psmoke \
+              install --batch-mode
+            pushd opennms-doc
+              ../compile.pl \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=1 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -DskipPdfGeneration=false \
+                -P'!jdk7+' \
+                install --batch-mode
+            popd
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
@@ -345,7 +353,11 @@ workflows:
   build-deploy:
     <<: *defaults
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - tarball-assembly:
           requires:
             - build
@@ -374,7 +386,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -389,7 +400,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
           requires:
@@ -717,8 +727,7 @@ jobs:
             - project/opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -728,16 +737,40 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
+            export CCI_MAXCPU=2
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/build-results/system-logs/ps 2>&1
+            free -m || : > ~/build-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs

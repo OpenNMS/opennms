@@ -289,9 +289,42 @@ You can also schedule and email these PDF reports to anyone:
 
 The PDF report displays each of the panels from the specified dashboard, with one, two, or four panels per page, depending on the selected template. 
 
-NOTE: This feature requires {opennms-product-name} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+Dashboard to PDF:
 
-To create a PDF from a dashboard, follow these steps:
+image:database-reports/dashboard-pdf.png[PDF report]
+
+==== Before You Begin
+
+This feature requires {opennms-product-name} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+
+You must set up Grafana as a datasource by xref:grafana-ednpoint[configuring the Grafana endpoint] in {opennms-product-name}. 
+
+[[grafana-endpoint]]
+==== Configure the Grafana Endpoint
+
+Configuring the Grafana endpoint sets up Grafana as the datasource for the dashboards from which you create PDFs. 
+
+. Login to your Grafana instance.
+. Choose **Configuration > API Keys** and click **New API Key**. 
+. Specify a key name and "Viewer" role and click **Add**.
+.. Leave the time to live blank so that the key never expires. 
+. Copy the key so that you can paste it into the {opennms-product-name} UI. 
++
+image:database-reports/API-Key.png[Grafana API, 400]
+
+.. If desired, test the key using the Curl command provided oi the API key dialog. 
+. In OpenNMS, click *Please add a Grafana endpoint*:
+
++
+image:database-reports/grafana-endpoint.png[Endpoint, 400]
+
+. In the *Endpoint Configuration* screen click the plus sign on the right to add a new endpoint.
+. Fill in the information and click *Test Connection*.
+. Click *Create*.
+
+You can now use {opennms-product-name} to create PDF reports of Grafana dashboards. 
+
+==== Creating a PDF of a Grafana Dashboard
 
 . In the {opennms-product-name} UI, choose `Reports>Database Reports`.
 . In the `Report Templates` area, click `Grafana Dashboard Report <Xppp>`, where `<Xppp>` represents the number of panels per page you want to display. 
@@ -314,8 +347,4 @@ Separate multiple recipient emails with a comma.
 
 Scheduled reports appear in the `Report Schedules` tab, where you can edit or delete them:
 
-image::database-reports/PDF-Report.png[pdf report, 600]
-
-
-
-
+image::database-reports/PDF-Report.png[pdf report]

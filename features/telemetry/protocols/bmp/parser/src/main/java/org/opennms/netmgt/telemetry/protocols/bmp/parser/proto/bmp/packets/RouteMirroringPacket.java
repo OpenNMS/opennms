@@ -45,6 +45,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.BgpMessage;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.Information;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.Mirroring;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.Unknown;
 
 import com.google.common.base.MoreObjects;
 
@@ -94,8 +95,8 @@ public class RouteMirroringPacket implements Packet {
             },
             UNKNOWN{
                 @Override
-                public Mirroring parse(final ByteBuf buffer, final PeerFlags parameter, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
-                    return null;
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                    return new Unknown(buffer, flags, peerInfo);
                 }
             };
 

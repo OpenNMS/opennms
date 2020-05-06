@@ -1,0 +1,12 @@
+# HELP prometheus_local_storage_maintain_series_duration_milliseconds The duration (in milliseconds) it took to perform maintenance on a series.
+# TYPE prometheus_local_storage_maintain_series_duration_milliseconds summary
+prometheus_local_storage_maintain_series_duration_milliseconds{location="memory",quantile="0.5"} 50.467295
+prometheus_local_storage_maintain_series_duration_milliseconds{location="memory",quantile="0.9"} 63.920446
+prometheus_local_storage_maintain_series_duration_milliseconds{location="memory",quantile="0.99"} 73.236479
+prometheus_local_storage_maintain_series_duration_milliseconds_sum{location="memory"} 4.238477484786966e+06
+prometheus_local_storage_maintain_series_duration_milliseconds_count{location="memory"} 80608
+prometheus_local_storage_maintain_series_duration_milliseconds{location="disk",quantile="0.5"} 40.0
+prometheus_local_storage_maintain_series_duration_milliseconds{location="disk",quantile="0.9"} 50.0
+prometheus_local_storage_maintain_series_duration_milliseconds{location="disk",quantile="0.99"} 60.0
+prometheus_local_storage_maintain_series_duration_milliseconds_sum{location="disk"} 1.5
+prometheus_local_storage_maintain_series_duration_milliseconds_count{location="disk"} 12345

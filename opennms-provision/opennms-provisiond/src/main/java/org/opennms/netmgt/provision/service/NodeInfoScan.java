@@ -31,6 +31,9 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.netmgt.provision.service.ProvisionService.IP_ADDRESS;
+import static org.opennms.netmgt.provision.service.ProvisionService.LOCATION;
+
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.List;
@@ -54,6 +57,8 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
 
+import io.opentracing.Span;
+
 final class NodeInfoScan implements RunInBatch {
     private static final Logger LOG = LoggerFactory.getLogger(NodeInfoScan.class);
 
@@ -66,8 +71,10 @@ final class NodeInfoScan implements RunInBatch {
     private boolean restoreCategories = false;
     private final ProvisionService m_provisionService;
     private final ScanProgress m_scanProgress;
+    private Span m_parentSpan;
+    private Span m_span;
 
-    NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, final OnmsMonitoringLocation location, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId){
+    NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, final OnmsMonitoringLocation location, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId, Span span){
         m_node = node;
         m_agentAddress = agentAddress;
         m_foreignSource = foreignSource;
@@ -76,25 +83,38 @@ final class NodeInfoScan implements RunInBatch {
         m_agentConfigFactory = agentConfigFactory;
         m_provisionService = provisionService;
         m_nodeId = nodeId;
+        m_parentSpan = span;
     }
 
     /** {@inheritDoc} */
     @Override
     public void run(BatchTask phase) {
-        
+        if (m_parentSpan != null) {
+            m_span = m_provisionService.buildAndStartSpan("NodeInfoScan", m_parentSpan.context());
+        } else {
+            m_span = m_provisionService.buildAndStartSpan("NodeInfoScan", null);
+        }
+        m_span.setTag(IP_ADDRESS, m_agentAddress.getHostAddress());
+        m_span.setTag(LOCATION, getLocationName());
         phase.getBuilder().addSequence(
                 new RunInBatch() {
                     @Override
                     public void run(BatchTask batch) {
+                        Span span = m_provisionService.buildAndStartSpan("CollectNodeInfo", m_span.context());
                         collectNodeInfo();
+                        span.finish();
                     }
                 },
                 new RunInBatch() {
                     @Override
                     public void run(BatchTask phase) {
+                        Span span = m_provisionService.buildAndStartSpan("PersistNodeInfo", m_span.context());
                         doPersistNodeInfo();
+                        span.finish();
+                        m_span.finish();
                     }
                 });
+
     }
 
     private InetAddress getAgentAddress() {

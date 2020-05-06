@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>26.0.1</version>
+  <version>26.1.0</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -480,6 +480,12 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.graphite</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.graphite.adapter</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

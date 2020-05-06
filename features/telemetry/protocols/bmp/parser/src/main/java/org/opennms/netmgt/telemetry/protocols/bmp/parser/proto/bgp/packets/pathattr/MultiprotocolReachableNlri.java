@@ -116,7 +116,7 @@ public class MultiprotocolReachableNlri implements Attribute {
                 break;
             case BGP_AFI_BGPLS:
                 nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
-                LOG.info("MP_REACH AFI=bgp-ls SAFI=%d is not implemented yet, skipping for now", safi);
+                LOG.info("MP_REACH AFI=bgp-ls SAFI={} is not implemented yet, skipping for now", safi);
                 break;
             case BGP_AFI_L2VPN:
                 if (nextHopBytes.length > 16) {
@@ -124,10 +124,10 @@ public class MultiprotocolReachableNlri implements Attribute {
                 } else {
                     nextHop = InetAddressUtils.getInetAddress(nextHopBytes);
                 }
-                LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI=%d is not implemented yet, skipping", safi);
+                LOG.info("EVPN AFI=bgp_afi_l2vpn SAFI={} is not implemented yet, skipping", safi);
                 break;
             default:
-                LOG.info("MP_REACH AFI=%d is not implemented yet, skipping", afi);
+                LOG.info("MP_REACH AFI={} is not implemented yet, skipping", afi);
                 break;
         }
     }
@@ -165,12 +165,12 @@ public class MultiprotocolReachableNlri implements Attribute {
                 this.vpnAdvertised = parseNlriData_LabelIPv4IPv6(isIPv4, buffer, peerInfo, true);
                 break;
             default:
-                LOG.info("MP_REACH AFI=ipv4/ipv6 (%d) SAFI=%d is not implemented yet, skipping for now", isIPv4, this.safi);
+                LOG.info("MP_REACH AFI=ipv4/ipv6 ({}) SAFI={} is not implemented yet, skipping for now", isIPv4, this.safi);
         }
     }
 
     static List<UpdatePacket.Prefix> parseNlriData_IPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo) {
-        final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, BGP_SAFI_UNICAST) : false;
+        final boolean addPathCapabilityEnabled = peerInfo.map(info -> info.isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, BGP_SAFI_UNICAST)).orElse(false);
 
         return BufferUtils.repeatRemaining(buffer, b -> {
             final UpdatePacket.Prefix tuple = new UpdatePacket.Prefix();
@@ -190,7 +190,7 @@ public class MultiprotocolReachableNlri implements Attribute {
     }
 
     static List<UpdatePacket.Prefix> parseNlriData_LabelIPv4IPv6(boolean isIPv4, final ByteBuf buffer, final Optional<PeerInfo> peerInfo, boolean isVPN) throws Exception {
-        final boolean addPathCapabilityEnabled = peerInfo.isPresent() ? peerInfo.get().isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, isVPN ? BGP_SAFI_MPLS : BGP_SAFI_NLRI_LABEL) : false;
+        final boolean addPathCapabilityEnabled = peerInfo.map(info -> info.isAddPathEnabled(isIPv4 ? BGP_AFI_IPV4 : BGP_AFI_IPV6, isVPN ? BGP_SAFI_MPLS : BGP_SAFI_NLRI_LABEL)).orElse(false);
         return BufferUtils.repeatRemaining(buffer, b -> {
             final UpdatePacket.Prefix tuple = new UpdatePacket.Prefix();
 
@@ -247,7 +247,7 @@ public class MultiprotocolReachableNlri implements Attribute {
         final List<String> labels = new ArrayList<>();
 
         while (buffer.readableBytes() > 0) {
-            final int data = BufferUtils.uint24(buffer);
+            final int data = BufferUtils.uint24(buffer) & 0x000FFFFF;
 
             final int label = data >> 4;
             final int exp = (data & 0x0000000E) >> 1;

@@ -53,11 +53,32 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+
 /*
  * ProvisionService
  * @author brozow
  */
 public interface ProvisionService {
+
+    String NODE_ID = "nodeId";
+
+    String LOCATION = "location";
+
+    String IP_ADDRESS = "ipAddress";
+
+    String FOREIGN_ID = "foreignId";
+
+    String FOREIGN_SOURCE = "foreignSource";
+
+    String DETECTOR_NAME = "detectorName";
+
+    String ABORT = "abort";
+
+    String ERROR = "error";
+
 
     boolean isDiscoveryEnabled();
     
@@ -257,4 +278,8 @@ public interface ProvisionService {
     SnmpProfileMapper getSnmpProfileMapper();
 
     public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper);
+
+    public void setTracer(Tracer tracer);
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext);
 }

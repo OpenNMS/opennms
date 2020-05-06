@@ -40,7 +40,7 @@ import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 public class LocalBgpNotification implements Reason {
-    public final NotificationPacket notification;
+    public final Optional<NotificationPacket> notification;
 
     public LocalBgpNotification(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         this.notification = NotificationPacket.parse(buffer, flags, peerInfo);

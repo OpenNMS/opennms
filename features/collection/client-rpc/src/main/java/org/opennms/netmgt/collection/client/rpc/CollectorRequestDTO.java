@@ -46,6 +46,8 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.collection.dto.CollectionAttributeDTO;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name = "collector-request")
 @XmlAccessorType(XmlAccessType.NONE)
 public class CollectorRequestDTO implements RpcRequest {
@@ -118,6 +120,11 @@ public class CollectorRequestDTO implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

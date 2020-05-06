@@ -532,31 +532,68 @@ if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
+OPTS_UPDATE_POLICY="-DupdatePolicy=never"
+if [ "%{enable_snapshots}" = 1 ]; then
+	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
+	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
+fi
+
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
-	if [ "%{enable_snapshots}" = 1 ]; then
-		OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
-	fi
 	TOPDIR=`pwd`
-	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -PskipCompile -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+	"$TOPDIR"/compile.pl -N \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Dinstall.version="%{version}-%{release}" \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dopennms.home="%{instprefix}" \
+		-PskipCompile \
+		install
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install --builder smart --threads ${CCI_MAXCPU:-2}
+	./compile.pl \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Daether.connector.basic.threads=1 \
+		-Daether.connector.resumeDownloads=false \
+		-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dinstall.version="%{version}-%{release}" \
+		-Dopennms.home="%{instprefix}" \
+		-Dbuild=all \
+		-Prun-expensive-tasks \
+		install
 fi
 
 cd opennms-tools
-	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-	-Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+	../compile.pl -N \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dinstall.version="%{version}-%{release}" \
+		-Dopennms.home="%{instprefix}" \
+		install
 cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Dinstall.init.dir="/etc/init.d" \
-	-Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads ${CCI_MAXCPU:-2}
+./assemble.pl \
+	$OPTS_SKIP_TESTS \
+	$OPTS_SETTINGS_XML \
+	$OPTS_ENABLE_SNAPSHOTS \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false \
+	-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+	-Dinstall.version="%{version}-%{release}" \
+	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+	-Dopennms.home="%{instprefix}" \
+	-Dinstall.init.dir="/etc/init.d" \
+	-Dbuild=all \
+	-Dbuild.profile=full \
+	-Prun-expensive-tasks \
+	install
 
 echo "=== INSTALL COMPLETED ==="
 

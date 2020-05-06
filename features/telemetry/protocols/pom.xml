@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.telemetry</artifactId>
-    <version>26.0.1</version>
+    <version>26.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry</groupId>
@@ -15,6 +15,7 @@
     <module>bmp</module>
     <module>common</module>
     <module>flows</module>
+    <module>graphite</module>
     <module>jti</module>
     <module>nxos</module>
     <module>sflow</module>

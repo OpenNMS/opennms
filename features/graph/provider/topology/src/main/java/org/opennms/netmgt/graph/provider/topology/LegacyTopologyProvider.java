@@ -29,7 +29,6 @@
 package org.opennms.netmgt.graph.provider.topology;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,12 +42,11 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.graph.api.NodeRef;
+import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class LegacyTopologyProvider implements GraphProvider {
@@ -58,13 +56,17 @@ public class LegacyTopologyProvider implements GraphProvider {
     private final GraphService graphService;
     private final NodeDao nodeDao;
     private final boolean resolveNodeIds;
+    private final EnrichmentService enrichmentService;
 
     private LegacyBackendGraph backendGraph;
 
-    public LegacyTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao, final GraphService graphService, final String containerId, final String graphNamespace) {
+    public LegacyTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao,
+                                  final GraphService graphService, final EnrichmentService enrichmentService,
+                                  final String containerId, final String graphNamespace) {
         this.containerId = Objects.requireNonNull(containerId);
         this.namespace = Objects.requireNonNull(graphNamespace);
         this.graphService = Objects.requireNonNull(graphService);
+        this.enrichmentService = Objects.requireNonNull(enrichmentService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.resolveNodeIds = Objects.requireNonNull(configuration).isResolveNodeIds();
     }
@@ -76,24 +78,14 @@ public class LegacyTopologyProvider implements GraphProvider {
 
     @Override
     public void refresh() {
-        final GenericGraph graph = graphService.getGraph(containerId, namespace);
-        this.backendGraph = new LegacyBackendGraph(graph);
+        GenericGraph graph = graphService.getGraph(containerId, namespace);
 
-        // Optionally resolve the nodIds of vertices providing information related to nodes
+        // Enrichment
         if (resolveNodeIds) {
-            // Update nodeId information as enrichment is not implemented at the moment
-            final Map<String, Map<String, Integer>> nodeIdMap = getNodeIdMap(graph);
-            graph.getVertices().stream()
-                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
-                .forEach(vertex -> {
-                    final NodeRef nodeRef = vertex.getNodeRef();
-                    final Map<String, Integer> foreignIdNodeIdMap = nodeIdMap.get(nodeRef.getForeignSource());
-                    final Integer nodeId = foreignIdNodeIdMap.get(nodeRef.getForeignId());
-                    if (nodeId != null) {
-                        backendGraph.getVertex(getNamespace(), vertex.getId()).setNodeID(nodeId);
-                    }
-                });
+            graph = this.enrichmentService.enrich(graph);
         }
+
+        this.backendGraph = new LegacyBackendGraph(graph);
     }
 
     @Override
@@ -140,18 +132,5 @@ public class LegacyTopologyProvider implements GraphProvider {
     @Override
     public boolean contributesTo(ContentType type) {
         return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
-    }
-
-    private Map<String, Map<String, Integer>> getNodeIdMap(GenericGraph graph) {
-        final Set<String> foreignSources = graph.getVertices().stream()
-                .filter(v -> v.getNodeRef() != null && v.getNodeRef().getNodeId() == null)
-                .map(v -> v.getNodeRef().getForeignSource())
-                .collect(Collectors.toSet());
-        final Map<String, Map<String, Integer>> foreignSourceMap = Maps.newHashMap();
-        for (String eachForeignSource : foreignSources) {
-            final Map<String, Integer> foreignIdToNodeIdMap = nodeDao.getForeignIdToNodeIdMap(eachForeignSource);
-            foreignSourceMap.put(eachForeignSource, foreignIdToNodeIdMap);
-        }
-        return foreignSourceMap;
     }
 }

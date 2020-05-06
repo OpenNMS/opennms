@@ -23,11 +23,14 @@ export BUILDDEFINES=\
 	-Dinstall.logs.dir=/var/log/opennms \
 	-Dinstall.pid.file=/var/run/opennms.pid \
 	-Dmaven.test.skip.exec=true \
+	-DskipTests=true \
 	-DskipITs=true \
 	-Dproduct.release=1 \
 	-Dproduct.snapshot=true \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
+	--builder smart \
+	--threads $${CCI_MAXCPU:-2} \
 	$(OPTS_PROFILES)
 
 configure:

@@ -95,7 +95,7 @@ public class PeerDownPacket implements Packet {
         UNKNOWN {
             @Override
             public Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
-                return new Unknown(buffer, flags);
+                return new Unknown(buffer, flags, peerInfo);
             }
         };
 

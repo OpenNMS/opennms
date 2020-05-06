@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -138,10 +138,14 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
 
-        frontPage();
-        final String userMenuName = "nav-user-top";
-        clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
-        findElementById("input_j_username");
+        Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
+            frontPage();
+            Thread.sleep(200);
+            final String userMenuName = "nav-user-top";
+            clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
+            findElementById("input_j_username");
+            return null;
+        });
     }
 
     @Test

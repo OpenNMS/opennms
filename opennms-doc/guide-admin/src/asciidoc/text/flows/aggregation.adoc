@@ -1,0 +1,42 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-flow-support-aggregation]]
+=== Aggregation
+
+The flow query engine supports rendering Top-N metrics from pre-aggregated documents stored in Elasticsearch.
+These can be used to help alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
+
+In order to use this functionality you must enable the Kafka forwarder as described in <<ga-flow-support-kafka-forwarder>> and setup link:https://github.com/OpenNMS/nephron[Nephron] to process the flows.
+
+NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
+
+
+The following properties can bet set in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| `alwaysUseRawForQueries`
+| Set to `true` to use raw flow documents to respond to all queries and effectively disable the use of aggregated flows.
+| `false`
+| `true`
+
+| `alwaysUseAggForQueries`
+| Set to `true` to use raw aggregated flow documents to respond to all queries and effectively disable the use of raw flows.
+| `false`
+| `false` 
+
+| `timeRangeDurationAggregateThresholdMs`
+| Queries with time range filters that have a duration greater than this value will use aggregated flows when possible.
+| `false`
+| `120000` (2 minutes)
+
+| `timeRangeEndpointAggregateThresholdMs`
+| Queries with time range filters that have an endpoint that is older than this value will use aggregated flows when possible.
+| `false`
+| `604800000` (7 days)
+
+|===

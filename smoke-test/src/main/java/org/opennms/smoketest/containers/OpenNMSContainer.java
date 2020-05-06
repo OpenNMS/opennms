@@ -253,11 +253,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             writeProps(etc.resolve("org.opennms.features.kafka.producer.client.cfg"),
                     ImmutableMap.<String,String>builder()
                             .put("bootstrap.servers", KAFKA_ALIAS + ":9092")
+                            .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
             writeProps(etc.resolve("org.opennms.features.kafka.producer.cfg"),
                     ImmutableMap.<String,String>builder()
                             // This is false by default, so we enable it here
                             .put("forward.metrics", Boolean.TRUE.toString())
+                            .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
     }
@@ -314,8 +316,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.sink.strategy", "kafka");
             props.put("org.opennms.core.ipc.sink.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
+            props.put("org.opennms.core.ipc.sink.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
             props.put("org.opennms.core.ipc.rpc.strategy", "kafka");
             props.put("org.opennms.core.ipc.rpc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
+            props.put("org.opennms.core.ipc.rpc.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
         }
         if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "osgi");
