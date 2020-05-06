@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.integration;
 
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
@@ -86,7 +86,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     private WorkerPool<SampleBatchEvent> workerPool;

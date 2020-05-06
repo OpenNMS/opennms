@@ -166,10 +166,10 @@ public class MarkerCacheIT {
 
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
+                    client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
                     new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    3, 12000);
+                    mock(SmartQueryService.class));
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));

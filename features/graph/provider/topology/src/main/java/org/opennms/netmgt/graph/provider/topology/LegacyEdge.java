@@ -34,6 +34,7 @@ import java.util.Objects;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.integration.api.v1.graph.Properties;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 
 public class LegacyEdge extends AbstractEdge {
@@ -43,6 +44,8 @@ public class LegacyEdge extends AbstractEdge {
     public LegacyEdge(GenericEdge edge) {
         super(Objects.requireNonNull(edge).getNamespace(), edge.getId(), createVertexRef(edge.getSource()), createVertexRef(edge.getTarget()));
         this.properties = edge.getProperties();
+        String tooltip = edge.getProperty(Properties.Edge.TOOLTIP_TEXT, edge.getLabel());
+        setTooltipText(tooltip);
     }
 
     public Map<String, Object> getProperties() {

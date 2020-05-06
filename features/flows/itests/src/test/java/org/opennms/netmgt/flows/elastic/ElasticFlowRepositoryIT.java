@@ -31,18 +31,22 @@ package org.opennms.netmgt.flows.elastic;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.netmgt.flows.classification.ClassificationEngine;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.flows.api.FlowSource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -71,22 +75,20 @@ public class ElasticFlowRepositoryIT {
 
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-        final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         // Verify exception is thrown
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine,
+                    client, IndexStrategy.MONTHLY, documentEnricher,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
                     new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    3, 12000);
+                    mock(SmartQueryService.class));
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }
     }
-
 }

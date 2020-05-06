@@ -379,6 +379,7 @@ include::text/telemetryd/protocols/netflow5.adoc[]
 include::text/telemetryd/protocols/netflow9.adoc[]
 include::text/telemetryd/protocols/nxos.adoc[]
 include::text/telemetryd/protocols/sflow.adoc[]
+include::text/telemetryd/protocols/graphite.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration
@@ -399,6 +400,7 @@ include::text/elasticsearch/features/alarm-history.adoc[]
 include::text/flows/introduction.adoc[]
 include::text/flows/setup.adoc[]
 include::text/flows/classification-engine.adoc[]
+include::text/flows/aggregation.adoc[]
 
 [[ga-kafka-producer]]
 == Kafka Producer
@@ -411,3 +413,8 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 [[ga-meta-data]]
 == Meta-Data
 include::text/meta-data.adoc[]
+
+[[ga-admin]]
+== {opennms-product-name} Administration
+include::text/admin/introduction.adoc[]
+include::text/admin/restart.adoc[]

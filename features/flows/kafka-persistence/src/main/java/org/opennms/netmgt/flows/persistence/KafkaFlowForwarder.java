@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.persistence;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Objects;
@@ -40,7 +41,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.joda.time.Duration;
 import org.opennms.netmgt.flows.api.EnrichedFlow;
 import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
@@ -59,7 +59,7 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
     private String topicName;
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(1).every(Duration.standardSeconds(60))
+            .maxRate(1).every(Duration.ofSeconds(60))
             .build();
     private Properties producerConfig;
 

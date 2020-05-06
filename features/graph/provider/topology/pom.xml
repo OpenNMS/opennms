@@ -43,5 +43,19 @@
             <artifactId>org.opennms.features.topology.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.integration.api</groupId>
+            <artifactId>api</artifactId>
+            <version>${opennmsApiVersion}</version>
+        </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>sonatype.org-snapshot</id>
+            <name>Sonatype OSS Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
 </project>

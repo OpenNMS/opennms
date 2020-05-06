@@ -26,16 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.elastic.agg;
 
-import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
-import org.opennms.netmgt.flows.api.EnrichedFlow;
+/**
+ * Different ways metrics are grouped before top-k
+ * calculations are performed.
+ */
+public enum GroupedBy {
+    EXPORTER(null),
+    EXPORTER_INTERFACE(EXPORTER),
+    EXPORTER_INTERFACE_APPLICATION(EXPORTER_INTERFACE),
+    EXPORTER_INTERFACE_HOST(EXPORTER_INTERFACE),
+    EXPORTER_INTERFACE_CONVERSATION(EXPORTER_INTERFACE);
 
-public class MockDocumentForwarder implements EnrichedFlowForwarder {
+    private GroupedBy parent;
 
+    GroupedBy(GroupedBy parent) {
+        this.parent = parent;
+    }
 
-    @Override
-    public void forward(EnrichedFlow enrichedFlow) {
-
+    public GroupedBy getParent() {
+        return parent;
     }
 }

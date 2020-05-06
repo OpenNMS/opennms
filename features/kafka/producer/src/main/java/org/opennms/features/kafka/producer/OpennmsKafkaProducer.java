@@ -29,6 +29,7 @@
 package org.opennms.features.kafka.producer;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -50,7 +51,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -87,7 +87,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";

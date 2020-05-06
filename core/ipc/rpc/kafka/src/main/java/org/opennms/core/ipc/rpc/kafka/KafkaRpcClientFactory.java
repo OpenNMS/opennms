@@ -36,6 +36,7 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,6 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.KafkaTopicProvider;
@@ -124,7 +124,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcClientFactory.class);
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
     private String location;
     private KafkaProducer<String, byte[]> producer;

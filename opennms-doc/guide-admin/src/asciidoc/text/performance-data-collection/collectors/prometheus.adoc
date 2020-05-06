@@ -5,7 +5,7 @@
 [[ga-performance-mgmt-collectors-prometheus-collector]]
 ==== PrometheusCollector
 
-The _PrometheusCollector_ collects peformance metrics via HTTP(S) using the text-based link:https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
+The _PrometheusCollector_ collects performance metrics via HTTP(S) using the text-based link:https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
 This has been adopted by many applications and is in the process of being standardized in the link:https://openmetrics.io/[OpenMetrics] project.
 
 This collector provides tools for parsing and mapping the metrics to the collection model used by {opennms-product-name}.
@@ -21,7 +21,7 @@ This collector provides tools for parsing and mapping the metrics to the collect
 
 ===== Collector Parameters
 
-.Collector specific parameters for the PrometheusCollector
+.Collector-specific parameters for the PrometheusCollector
 [options="header, autowidth"]
 |===
 | Parameter       | Description                                    | Required | Default value
@@ -62,7 +62,7 @@ INFO[0000]  - zfs                                        source="node_exporter.g
 INFO[0000] Listening on :9100                            source="node_exporter.go:170"
 ----
 
-From the Karaf Shell, you can now issue an ad-hoc collection request against the `node_exporter` process 
+From the Karaf Shell, you can now issue an ad hoc collection request against the `node_exporter` process 
 [source]
 ----
 admin@opennms> opennms:collect org.opennms.netmgt.collectd.prometheus.PrometheusCollector 127.0.0.1 collection=node_exporter url='http://127.0.0.1:9100/metrics'
@@ -107,7 +107,7 @@ Let's look at an excerpt of the `node_exporter` collection:
 This group definition matches metrics that start the `node_memory_` prefix, extracts the suffix as the metric name and associates these metrics with the `node_exporter_memory` group in the node-level resource.
 
 Expression are written in link:https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
-The metric instance are used as the expression context which means you have access to the `name` and `label` properties.
+The metric instances are used as the expression context, which means you have access to the `name` and `label` properties.
 
 
 Here's another excerpt where we extract metrics grouped by CPU:
@@ -129,4 +129,4 @@ Here's another excerpt where we extract metrics grouped by CPU:
 </group>
 ----
 
-This group definition matches metrics that called 'node_cpu', groups these by the value of the `cpu` label and extracts the name of the `mode` for the name of the numeric attributes.
+This group definition matches metrics called 'node_cpu', groups them by the value of the `cpu` label and extracts the name of the `mode` for the name of the numeric attributes.

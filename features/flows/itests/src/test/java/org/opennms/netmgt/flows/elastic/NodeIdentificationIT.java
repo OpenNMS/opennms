@@ -76,7 +76,7 @@ import com.google.common.collect.Lists;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-public class NodeIdentificationTest {
+public class NodeIdentificationIT {
 
     @Autowired
     private DatabasePopulator databasePopulator;

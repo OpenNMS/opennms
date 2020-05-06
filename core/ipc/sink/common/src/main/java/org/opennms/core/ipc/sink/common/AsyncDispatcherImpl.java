@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.sink.common;
 
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +47,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
-import org.joda.time.Duration;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
@@ -81,7 +81,7 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     
     private final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     private final ExecutorService executor;

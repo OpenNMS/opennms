@@ -1016,6 +1016,10 @@
 	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
+    <feature name="opennms-telemetry-graphite" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
+        <feature>opennms-telemetry-collection</feature>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.graphite/org.opennms.features.telemetry.protocols.graphite.adapter/${project.version}</bundle>
+    </feature>
     <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
         <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
     </feature>

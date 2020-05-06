@@ -37,6 +37,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -49,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.joda.time.Duration;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
@@ -137,7 +137,7 @@ public class BmpParser implements TcpParser {
 
     public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     public final static long HEARTBEAT_INTERVAL = 4 * 60 * 60 * 1000;

@@ -2,6 +2,60 @@
 
 === Changelog
 
+[releasenotes-changelog-26.1.0]
+
+==== Release 26.1.0
+
+Release 26.1.0 is the third release in the Horizon 26 series.
+
+It is an enhancement release with a number of bug fixes and improvements,
+including updates to telemetry, provisioning, and more.
+
+The codename for 26.1.0 is _link:$$https://en.wikipedia.org/wiki/Surgical_mask$$[Surgical]_.
+
+===== Bug
+
+* Security vulnerability in io.netty:netty-handler < 4.1.45 (need upgrade) (Issue http://issues.opennms.org/browse/NMS-12541[NMS-12541])
+* NPE in KafkaFlowForwarder  (Issue http://issues.opennms.org/browse/NMS-12660[NMS-12660])
+* Add more context to Response Time resources (Kafka Producer) (Issue http://issues.opennms.org/browse/NMS-12661[NMS-12661])
+* BMP parse error for path attribute MP_UNREACH_NLRI (Issue http://issues.opennms.org/browse/NMS-12671[NMS-12671])
+* Reloading the Pollerd daemon causes multiple nodeDown messages (Issue http://issues.opennms.org/browse/NMS-12681[NMS-12681])
+* Streaming Telemetry is broken when using OpenJDK 11 and minion (Issue http://issues.opennms.org/browse/NMS-12688[NMS-12688])
+
+===== Enhancement
+
+* Document JDBCQueryMonitor "compare_string" Action (Issue http://issues.opennms.org/browse/NMS-9581[NMS-9581])
+* Add opentracing support for Provisiond (Issue http://issues.opennms.org/browse/NMS-12374[NMS-12374])
+* SystemExecuteMonitor fails with exit code 6 (Issue http://issues.opennms.org/browse/NMS-12564[NMS-12564])
+* Add an example for SystemExecuteMonitor into the docs (Issue http://issues.opennms.org/browse/NMS-12568[NMS-12568])
+* Prometheus collector (Issue http://issues.opennms.org/browse/NMS-12577[NMS-12577])
+* Timeseries Plugin Influx 1.x  (Issue http://issues.opennms.org/browse/NMS-12633[NMS-12633])
+* Update smoketests to support various Kafka compression codecs (Issue http://issues.opennms.org/browse/NMS-12647[NMS-12647])
+* Bump ES version used in Smoke Tests (Issue http://issues.opennms.org/browse/NMS-12648[NMS-12648])
+* Provide written procedures on the proper way to restart  (Issue http://issues.opennms.org/browse/NMS-12650[NMS-12650])
+* Aggregate flow metrics w/ stream processing (Issue http://issues.opennms.org/browse/NMS-12656[NMS-12656])
+* Provisiond: Add NodeScanStarted event for scheduled scans (Issue http://issues.opennms.org/browse/NMS-12658[NMS-12658])
+* Flow aggregation - alternate indices based on duration of time range filter (Issue http://issues.opennms.org/browse/NMS-12663[NMS-12663])
+* Flow aggregation - Identify minimal set of fields required for current queries (Issue http://issues.opennms.org/browse/NMS-12664[NMS-12664])
+* Enable node enrichment for Topology providers comming from the Integration Api (Issue http://issues.opennms.org/browse/NMS-12674[NMS-12674])
+* Add tooltip support to the LegacyGraphProvider (Issue http://issues.opennms.org/browse/NMS-12694[NMS-12694])
+* add a telemetry adapter for the Graphite plaintext protocol (Issue http://issues.opennms.org/browse/NMS-12695[NMS-12695])
+
+[releasenotes-changelog-26.0.1]
+
+==== Release 26.0.1
+
+Release 26.0.1 is the second release in the Horizon 26 series.
+
+It is an off-schedule release to fix a vulnerability in ActiveMQ and the Minion.
+Thanks to Florian Hauser of Code White for catching this one.
+
+The codename for 26.0.1 is _link:$$https://en.wikipedia.org/wiki/Lucha_libre#Masks$$[Luchador]_.
+
+===== Bug
+
+* Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
+
 [releasenotes-changelog-26.0.0]
 
 ==== Release 26.0.0

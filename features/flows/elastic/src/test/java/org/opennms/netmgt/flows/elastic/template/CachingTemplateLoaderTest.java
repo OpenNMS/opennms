@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer;
+import org.opennms.netmgt.flows.elastic.RawIndexInitializer;
 import org.opennms.features.jest.client.template.CachingTemplateLoader;
 import org.opennms.features.jest.client.template.DefaultTemplateLoader;
 import org.opennms.features.jest.client.template.TemplateLoader;
@@ -57,8 +57,8 @@ public class CachingTemplateLoaderTest {
         final TemplateLoader cachingTemplateLoader = new CachingTemplateLoader(actualTemplateLoader);
 
         // Ask the caching loader
-        cachingTemplateLoader.load(version, ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
-        cachingTemplateLoader.load(version, ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
+        cachingTemplateLoader.load(version, RawIndexInitializer.TEMPLATE_RESOURCE);
+        cachingTemplateLoader.load(version, RawIndexInitializer.TEMPLATE_RESOURCE);
         cachingTemplateLoader.load(version, "/netflow-template-merged");
         cachingTemplateLoader.load(version, "/netflow-template-merged");
 

@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
+import org.opennms.integration.api.v1.graph.Properties;
 import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
@@ -50,7 +51,8 @@ public class LegacyVertex extends AbstractVertex implements LevelAware {
         setLocked(Boolean.valueOf(genericVertex.getProperty("locked")));
         setSelected(Boolean.valueOf(genericVertex.getProperty("selected")));
         setStyleName(genericVertex.getProperty("styleName"));
-        setTooltipText(genericVertex.getProperty(genericVertex.getLabel()));
+        String tooltip = genericVertex.getProperty(Properties.Vertex.TOOLTIP_TEXT, genericVertex.getLabel());
+        setTooltipText(tooltip);
         if (genericVertex.getProperty("edge-path-offset") != null) {
             setEdgePathOffset(genericVertex.getProperty("edge-path-offset"));
         }

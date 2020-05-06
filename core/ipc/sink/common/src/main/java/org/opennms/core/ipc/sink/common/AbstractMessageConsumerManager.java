@@ -31,6 +31,9 @@ package org.opennms.core.ipc.sink.common;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -44,12 +47,19 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public abstract class AbstractMessageConsumerManager implements MessageConsumerManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMessageConsumerManager.class);
 
     public static final String SINK_INITIAL_SLEEP_TIME = "org.opennms.core.ipc.sink.initialSleepTime";
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("consumer-starter-%d")
+            .build();
+
+    protected final ExecutorService startupExecutor = Executors.newCachedThreadPool(threadFactory);
 
     private final Multimap<SinkModule<?, Message>, MessageConsumer<?, Message>> consumersByModule = LinkedListMultimap.create();
 
@@ -75,7 +85,7 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
                             LOG.warn(e.getMessage(), e);
                         }
                     }
-                });
+                }, startupExecutor);
             }
         } catch (NumberFormatException e) {
             LOG.warn("Invalid value for system property {}: {}", SINK_INITIAL_SLEEP_TIME, initialSleepString);
@@ -114,7 +124,7 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
                             LOG.error("Unexpected exception while trying to start consumer for module: {}", module.getId(), e);
                         }
                     }
-                });
+                }, startupExecutor);
             }
         }
     }
@@ -164,5 +174,9 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
             return defaultValue;
         }
         return configured;
+    }
+
+    public ExecutorService getStartupExecutor() {
+        return startupExecutor;
     }
 }

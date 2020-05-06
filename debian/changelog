@@ -1,3 +1,23 @@
+opennms (26.1.0-1) stable; urgency=medium
+
+  * New enhancement release. It contains a number of bug fixes and improvements,
+    including updates to telemetry, provisioning, and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/26.1.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 05 May 2020 13:52:00 -0400
+
+opennms (26.0.1-1) stable; urgency=high
+
+  * New minor release. It is an off-schedule release to fix a vulnerability in
+    ActiveMQ and the Minion.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/26.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 28 Apr 2020 13:58:00 -0400
+
 opennms (26.0.0-1) stable; urgency=high
 
   * New major release.  It contains a large number of bug

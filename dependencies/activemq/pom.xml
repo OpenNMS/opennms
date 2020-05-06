@@ -19,6 +19,10 @@
       <exclusions>
         <!-- Exclude all Felix, Karaf, Jetty, and Pax dependencies since they are part of the OSGi container -->
         <exclusion>
+          <groupId>org.apache.aries.blueprint</groupId>
+          <artifactId>org.apache.aries.blueprint.core</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.apache.felix</groupId>
           <artifactId>org.apache.felix.framework</artifactId>
         </exclusion>
