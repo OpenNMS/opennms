@@ -31,11 +31,11 @@ defaults: &defaults
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: release-26.1.0
+      default: release-26.1.1
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: release-26.1.0
+      default: release-26.1.1
     next_branch:
       description: the auto-merge target branch
       type: string
