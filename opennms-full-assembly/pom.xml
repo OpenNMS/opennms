@@ -593,7 +593,6 @@
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
                 <feature>opennms-core-ipc-grpc-server</feature>
-                <feature>opennms-remote-poller-ng</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
@@ -1058,13 +1057,6 @@
     <dependency>
       <groupId>org.opennms.features.graphml</groupId>
       <artifactId>org.opennms.features.graphml.rest</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <!-- Remote Poller NG -->
-    <dependency>
-      <groupId>org.opennms.features.remotepollerng</groupId>
-      <artifactId>org.opennms.features.remotepollerng.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -100,7 +100,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
             throw new IllegalStateException("applicationDao property not set");
         }
         if (m_locationSpecificStatusDao == null) {
-            throw new IllegalStateException("locationMonitorDao property not set");
+            throw new IllegalStateException("locationSpecificStatusDao property not set");
         }
     }
 
