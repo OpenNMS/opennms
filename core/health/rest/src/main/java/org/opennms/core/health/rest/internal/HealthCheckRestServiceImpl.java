@@ -56,8 +56,8 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response probeHealth(int timeoutInMs) {
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
+    public Response probeHealth(int timeoutInMs, String localChecksOnly) {
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, Boolean.parseBoolean(localChecksOnly));
         final Health health = healthWrapper.health;
         if (health.isSuccess()) {
             return Response.ok()
@@ -72,8 +72,8 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response getHealth(int timeoutInMs) {
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
+    public Response getHealth(int timeoutInMs, String localChecksOnly) {
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, Boolean.parseBoolean(localChecksOnly));
         final Health health = healthWrapper.health;
 
         // Create response object
@@ -97,7 +97,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs) {
+    private HealthWrapper getHealthInternally(int timeoutInMs, boolean localChecksOnly) {
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);
@@ -105,7 +105,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
             final HealthWrapper healthWrapper = new HealthWrapper();
             final AtomicReference<String> reference = new AtomicReference<>();
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
-                    context,
+                    context, localChecksOnly,
                     healthCheck -> reference.set(healthCheck.getDescription()), // remember description
                     response -> healthWrapper.descriptionMap.put(response, reference.get())); // apply description
             healthWrapper.health = future.get();

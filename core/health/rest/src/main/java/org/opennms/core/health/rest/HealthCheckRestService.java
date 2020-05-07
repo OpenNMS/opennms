@@ -42,9 +42,9 @@ public interface HealthCheckRestService {
     @GET
     @Path("probe")
     @Produces(MediaType.TEXT_PLAIN)
-    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("l") @DefaultValue("false") String localChecksOnly);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("l") @DefaultValue("false") String localChecksOnly);
 }
