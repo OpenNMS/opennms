@@ -52,7 +52,7 @@ cd $OPENNMS_HOME/bin
 image::service-assurance/04_send-event-WebUI.png[]
 
 [[ga-pollerd-configuration-meta-data]]
-===== Meta-Data-DSL
+==== Meta-Data-DSL
 Each parameter value can leverage dynamic configuration by using the link:#ga-meta-data-dsl[Meta-Data-DSL].
 
 During evaluation of an expression the following scopes are available:

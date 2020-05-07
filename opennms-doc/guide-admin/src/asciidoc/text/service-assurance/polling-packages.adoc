@@ -242,7 +242,7 @@ Important output lines are shown as the following:
 [source]
 ----
 Package: example1 <1>
-Service: ICMP <1>
+Service: ICMP <2>
 Monitor: org.opennms.netmgt.poller.monitors.IcmpMonitor <3>
 Parameter ds-name: icmp <4>
 Parameter retry: 2 <5>
@@ -250,7 +250,7 @@ Parameter rrd-base-name: icmp <4>
 Parameter rrd-repository: /opt/opennms/share/rrd/response <4>
 Parameter timeout: 3000 <5>
 
-Service is Up on 192.168.31.100 <6> using org.opennms.netmgt.poller.monitors.IcmpMonitor:
+Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMonitor: <6>
 	response-time: 407,0000 <7>
 ----
 <1> _Service_ and _Package_ of this test
@@ -258,7 +258,7 @@ Service is Up on 192.168.31.100 <6> using org.opennms.netmgt.poller.monitors.Icm
 <3> _Service Monitor_ used for this test
 <4> RRD configuration for response time measurement
 <5> Retry and timeout settings for this test
-<6> Polled _IP address_
+<6> Polling result for the service polled against the _IP address_
 <7> _Response time_
 
 ==== Test filters on Karaf Shell
