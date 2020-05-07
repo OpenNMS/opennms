@@ -710,7 +710,7 @@ jobs:
             - run:
                 name: Add Meridian remote if necessary
                 command: |
-                  REMOTE_MERIDIAN="$(git remote | grep -c -E '^meridian$')"
+                  REMOTE_MERIDIAN="$(git remote | grep -c -E '^meridian$' || :)"
                   if [ "$REMOTE_MERIDIAN" -eq 0 ]; then
                     git remote add meridian git@github.com:OpenNMS/opennms-prime.git
                   fi
