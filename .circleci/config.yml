@@ -381,6 +381,7 @@ workflows:
               only:
                 - master
                 - develop
+                - /^dependabot.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -395,6 +396,7 @@ workflows:
               ignore:
                 - master
                 - develop
+                - /^dependabot.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
