@@ -52,9 +52,10 @@ public interface HealthCheckService {
      * represent the value when calling {@link HealthCheck#perform(Context)} directly.
      *
      * @param context The context object
+     * @param localChecksOnly Only execute checks localized to the container
      * @param onStartConsumer Callback method which is invoked before the {@link HealthCheck#perform(Context)} method is invoked. May be null.
      * @param onFinishConsumer Callback method which is invoked after the {@link HealthCheck#perform(Context)} method is invoked. May be null.
      * @return The {@link CompletableFuture} to retrieve the {@link Health} from.
      */
-    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
+    CompletableFuture<Health> performAsyncHealthCheck(Context context, boolean localChecksOnly, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
 }

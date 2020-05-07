@@ -85,6 +85,16 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-verify-bundles";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return true;
+    }
+
+    @Override
     public Response perform(Context context) {
         // Don't check within this delay period, because the container may not be started yet
         if (ManagementFactory.getRuntimeMXBean().getUptime() <= 10000) {

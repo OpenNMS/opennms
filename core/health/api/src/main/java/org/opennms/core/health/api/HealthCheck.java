@@ -45,6 +45,22 @@ public interface HealthCheck {
     String getDescription();
 
     /**
+     * The name of the {@link HealthCheck}, e.g. "opennms-rest-api".
+     * This is used when ignoring certain health checks.
+     *
+     * @return The string, describing the name of the check.
+     */
+    String getName();
+
+    /**
+     * The external dependency check of the {@link HealthCheck}, e.g. "rely on external data".
+     * This is used when determining if the health check is self contained or requires an external component.
+     *
+     * @return The boolean, indicating if the check is local only or not.
+     */
+    boolean isLocalCheck();
+
+    /**
      * Implements the check itself, e.g. Connecting to a HTTP Endpoint.
      *
      * As the method is called by the {@link HealthCheckService}, it is advised that all timeout restrictions

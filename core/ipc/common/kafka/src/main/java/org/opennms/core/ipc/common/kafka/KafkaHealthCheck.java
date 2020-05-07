@@ -55,6 +55,16 @@ public class KafkaHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-kafka-" + type;
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
+
+    @Override
     public Response perform(Context context) throws Exception {
         Properties kafkaConfig = kafkaConfigProvider.getProperties();
         int timeout = Math.toIntExact(context.getTimeout());

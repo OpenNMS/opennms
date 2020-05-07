@@ -28,10 +28,14 @@
 
 package org.opennms.core.health.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,6 +57,7 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -70,9 +75,11 @@ public class DefaultHealthCheckService implements HealthCheckService {
 
     // Context to load the services
     private BundleContext bundleContext;
+    private final List<String> ignoreHealthChecks;
 
-    public DefaultHealthCheckService(BundleContext bundleContext) {
+    public DefaultHealthCheckService(BundleContext bundleContext, String ignoreHealthChecks) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
+        this.ignoreHealthChecks = parse(ignoreHealthChecks);
     }
 
     // Resolve all HealthChecks from the OSGi registry
@@ -85,7 +92,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     @Override
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, boolean localChecksOnly, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
         final Consumer<Response> consumer = response -> {
@@ -98,7 +105,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
             } else {
-                runChecks(context, checks, onStartConsumer, consumer);
+                runChecks(context, localChecksOnly, checks, onStartConsumer, consumer);
             }
         } catch (InvalidSyntaxException ex) {
             health.setError("Error while performing health checks: " + ex.getMessage());
@@ -109,9 +116,17 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     // Asynchronously run all checks
-    private void runChecks(Context context, List<HealthCheck> checks, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
+    private void runChecks(Context context, boolean localChecksOnly, List<HealthCheck> checks, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
         Future<Response> currentFuture = null;
         for (HealthCheck check : checks) {
+            if (ignoreHealthChecks.contains(check.getName())) {
+                LOG.debug("Check {} is ignored while performing opennms:health-check", check.getName());
+                continue;
+            }
+            if (localChecksOnly && check.isLocalCheck()) {
+                LOG.debug("Check {} is ignored while performing opennms:health-check --local", check.getName());
+                continue;
+            }
             try {
                 if (onStartConsumer != null) {
                     onStartConsumer.accept(check);
@@ -145,5 +160,16 @@ public class DefaultHealthCheckService implements HealthCheckService {
                 onFinishConsumer.accept(new Response(ex));
             }
         }
+    }
+
+    private List<String> parse(String bundlesToIgnore) {
+        if (Strings.isNullOrEmpty(bundlesToIgnore)) {
+            return Collections.emptyList();
+        }
+        final Set<String> symbolicBundleNamesToIgnore = Arrays.stream(bundlesToIgnore.split(","))
+                .map(s -> s == null ? null : s.trim()) // remove spaces, to catch "x, y" or " x, y"
+                .filter(s -> s != null && !s.isEmpty()) // remove possible empty values, e.g. "x,,y"
+                .collect(Collectors.toSet());// remove duplicates
+        return new ArrayList<>(symbolicBundleNamesToIgnore);
     }
 }

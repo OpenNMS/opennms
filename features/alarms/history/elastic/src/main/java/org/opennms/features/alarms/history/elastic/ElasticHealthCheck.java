@@ -55,6 +55,16 @@ public class ElasticHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-es-alarmhistory";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
+
+    @Override
     public Response perform(Context context) {
         final long numAlarms = elasticAlarmHistoryRepository.getNumActiveAlarmsNow();
         // Any value is OK - a runtime exception is a failure

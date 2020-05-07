@@ -49,6 +49,16 @@ public class GrpcHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-grpc-ipc";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
+
+    @Override
     public Response perform(Context context) throws Exception {
         if (minionGrpcClient.getChannelState().equals(ConnectivityState.READY)) {
             return new Response(Status.Success);

@@ -50,6 +50,16 @@ public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms
             }
 
             @Override
+            public String getName() {
+                return healthCheck.getName();
+            }
+
+            @Override
+            public boolean isLocalCheck() {
+                return healthCheck.isLocalCheck();
+            }
+
+            @Override
             public org.opennms.core.health.api.Response perform(org.opennms.core.health.api.Context context) throws Exception {
                 final org.opennms.integration.api.v1.health.Response response = healthCheck.perform(new Context() {
                     @Override

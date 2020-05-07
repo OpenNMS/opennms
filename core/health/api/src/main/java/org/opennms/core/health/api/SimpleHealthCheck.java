@@ -40,15 +40,37 @@ import java.util.function.Supplier;
 public class SimpleHealthCheck implements HealthCheck {
 
     private final Supplier<String> descriptionSupplier;
+    private final Supplier<String> nameSupplier;
+    private final boolean isLocalCheck;
     private Response response = new Response(Status.Starting);
 
     public SimpleHealthCheck(Supplier<String> descriptionSupplier) {
+        this(descriptionSupplier, ()->"");
+    }
+
+    public SimpleHealthCheck(Supplier<String> descriptionSupplier, Supplier<String> nameSupplier) {
+        this(descriptionSupplier, nameSupplier, false);
+    }
+
+    public SimpleHealthCheck(Supplier<String> descriptionSupplier, Supplier<String> nameSupplier, boolean isLocalCheck) {
         this.descriptionSupplier = Objects.requireNonNull(descriptionSupplier);
+        this.nameSupplier = Objects.requireNonNull(nameSupplier);
+        this.isLocalCheck = Objects.requireNonNull(isLocalCheck);
     }
 
     @Override
     public String getDescription() {
         return descriptionSupplier.get();
+    }
+
+    @Override
+    public String getName() {
+        return nameSupplier.get();
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return isLocalCheck;
     }
 
     @Override

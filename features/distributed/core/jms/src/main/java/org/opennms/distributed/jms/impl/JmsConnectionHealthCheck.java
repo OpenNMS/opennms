@@ -64,6 +64,16 @@ public class JmsConnectionHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-jms-broker";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
+
+    @Override
     public Response perform(Context context) {
         final ServiceReference<ConnectionFactory> connectionFactoryRef = bundleContext.getServiceReference(ConnectionFactory.class);
         if (connectionFactoryRef != null) {

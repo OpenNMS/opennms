@@ -57,6 +57,16 @@ public class NettyDnsHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-netty-dns";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
+
+    @Override
     public Response perform(Context context) throws InterruptedException, ExecutionException, TimeoutException {
         final String hostnameToLookup = "www.opennms.com";
         final InetAddress ipAddressToReverseLookup = InetAddressUtils.getInetAddress("1.1.1.1");

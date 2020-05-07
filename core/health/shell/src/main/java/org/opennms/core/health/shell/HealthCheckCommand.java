@@ -59,6 +59,12 @@ public class HealthCheckCommand implements Action {
     @Option(name = "-t", description = "Maximum number of milliseconds to wait before failing when waiting for a check to complete (e.g. try to establish a JMS session.")
     public long timeout = 5L * 1000L;
 
+    @Option(name = "--local", description = "Specify that only local health checks with no external dependencies are executed")
+    public boolean localChecksOnly;
+
+    @Option(name = "--list", description = "List all the registered health checks")
+    public boolean listChecks;
+
     @Reference
     private BundleContext bundleContext;
 
@@ -67,25 +73,36 @@ public class HealthCheckCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
-        // Print header
-        System.out.println("Verifying the health of the container");
-        System.out.println();
+        if (listChecks) {
+            // Print header
+            System.out.println("Listing the registered health checks of the container");
+            System.out.println();
 
-        // Perform check
-        final Context context = new Context();
-        context.setTimeout(timeout);
-        final CompletableFuture<Health> future = performHealthCheck(bundleContext, context);
-        final Health health = future.get();
-
-        // Print results
-        System.out.println();
-        if (health.isSuccess()) {
-            System.out.println("=> Everything is awesome");
+            // List checks
+            final Context context = new Context();
+            listHealthChecks(bundleContext, context);
+            System.out.println();
         } else {
-            if (health.getErrorMessage() != null) {
-                System.out.println(Colorizer.colorize("Error: " +  health.getErrorMessage(), Color.Red));
+            // Print header
+            System.out.println("Verifying the health of the container");
+            System.out.println();
+
+            // Perform check
+            final Context context = new Context();
+            context.setTimeout(timeout);
+            final CompletableFuture<Health> future = performHealthCheck(bundleContext, context);
+            final Health health = future.get();
+
+            // Print results
+            System.out.println();
+            if (health.isSuccess()) {
+                System.out.println("=> Everything is awesome");
+            } else {
+                if (health.getErrorMessage() != null) {
+                    System.out.println(Colorizer.colorize("Error: " + health.getErrorMessage(), Color.Red));
+                }
+                System.out.println("=> Oh no, something is wrong");
             }
-            System.out.println("=> Oh no, something is wrong");
         }
         return null;
     }
@@ -102,7 +119,7 @@ public class HealthCheckCommand implements Action {
 
         // Run Health Checks
         final CompletableFuture<Health> future = healthCheckService
-                .performAsyncHealthCheck(context,
+                .performAsyncHealthCheck(context, localChecksOnly,
                         healthCheck -> System.out.print(String.format(descFormat, healthCheck.getDescription())),
                         response -> {
                             final Status status = response.getStatus();
@@ -117,6 +134,26 @@ public class HealthCheckCommand implements Action {
         return future;
     }
 
+    private void listHealthChecks(BundleContext bundleContext, Context context) throws InvalidSyntaxException {
+        // Determine attributes (e.g. max length) for visualization
+        final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
+        final List<HealthCheck> healthChecks = serviceReferences.stream().map(s -> bundleContext.getService(s)).collect(Collectors.toList());
+        final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).get().length();
+        final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).orElse("").length();
+        final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
+        final String descFormat = String.format(DESCRIPTION_FORMAT, maxDescriptionLength);
+        final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
+
+        for(HealthCheck healthCheck : healthChecks) {
+            System.out.print(String.format(descFormat, healthCheck.getDescription()));
+            final Color checkColor = determineColor(healthCheck.isLocalCheck());
+            final String localCheck = healthCheck.isLocalCheck() ? "Local" : "Remote";
+            final String statusText = String.format(statusFormat, Colorizer.colorize(localCheck, checkColor));
+            System.out.print(statusText);
+            System.out.println();
+        }
+    }
+
     private static Color determineColor(Status status) {
         switch (status) {
             case Failure: return Color.Red;
@@ -125,6 +162,14 @@ public class HealthCheckCommand implements Action {
             case Success: return Color.Green;
             case Unknown: return Color.Yellow;
             default:      return Color.NoColor;
+        }
+    }
+
+    private static Color determineColor(boolean isLocalCheck) {
+        if (isLocalCheck) {
+            return Color.Green;
+        } else {
+            return Color.Red;
         }
     }
 }

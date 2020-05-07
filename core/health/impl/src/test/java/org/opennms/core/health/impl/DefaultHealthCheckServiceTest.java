@@ -63,6 +63,16 @@ public class DefaultHealthCheckServiceTest {
         }
 
         @Override
+        public String getName() {
+            return getClass().getSimpleName();
+        }
+
+        @Override
+        public boolean isLocalCheck() {
+            return true;
+        }
+
+        @Override
         public Response perform(Context context) {
             long start = System.currentTimeMillis();
             long spent = 0;
@@ -86,9 +96,10 @@ public class DefaultHealthCheckServiceTest {
     public void verifyHealthCheckServiceDoesNotBlock() throws InvalidSyntaxException, ExecutionException, InterruptedException {
         final BlockingHealthCheck blockingHealthCheck = new BlockingHealthCheck();
         final SimpleHealthCheck successHealthCheck = new SimpleHealthCheck(() -> "Always green :)");
+        final String ignoreHealthChecks = "";
         successHealthCheck.markSucess();
 
-        final DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(EasyMock.createNiceMock(BundleContext.class)) {
+        final DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(EasyMock.createNiceMock(BundleContext.class), ignoreHealthChecks) {
             @Override
             protected List<HealthCheck> getHealthChecks() {
                 return Lists.newArrayList(blockingHealthCheck, successHealthCheck);
@@ -96,11 +107,12 @@ public class DefaultHealthCheckServiceTest {
         };
 
         final Context context = new Context();
+        final boolean localChecksOnly = false;
         context.setTimeout(1000); // ms
 
         for (int i=0; i<2; i++) {
             final CompletableFuture<Health> future = healthCheckService
-                    .performAsyncHealthCheck(context,
+                    .performAsyncHealthCheck(context, localChecksOnly,
                             healthCheck -> LOG.info("Executing: {}", healthCheck.getDescription()),
                             response -> LOG.info("=> {} : {}", response.getStatus().name(), response.getMessage()));
             final Health health = future.get();

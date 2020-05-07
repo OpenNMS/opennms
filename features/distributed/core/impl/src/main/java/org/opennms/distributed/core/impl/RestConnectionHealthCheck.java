@@ -57,4 +57,14 @@ public class RestConnectionHealthCheck implements HealthCheck {
     public String getDescription() {
         return "Connecting to OpenNMS ReST API";
     }
+
+    @Override
+    public String getName() {
+        return "opennms-core-api";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
 }

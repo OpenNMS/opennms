@@ -20,6 +20,7 @@
                 A common candidate i.e. is the nominatim geocoder plugin
             -->
             <cm:property name="ignoreBundleList" value="org.opennms.features.geocoder.nominatim,org.apache.karaf.diagnostic.boot,io.hawt.hawtio-karaf-terminal"/>
+            <cm:property name="ignoreHealthCheckList" value=""/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -38,6 +39,7 @@
     <service interface="org.opennms.core.health.api.HealthCheckService">
         <bean class="org.opennms.core.health.impl.DefaultHealthCheckService" >
             <argument ref="blueprintBundleContext"/>
+            <argument value="${ignoreHealthCheckList}" />
         </bean>
     </service>
 </blueprint>

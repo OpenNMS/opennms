@@ -67,6 +67,16 @@ public class ElasticHealthCheck implements HealthCheck {
     }
 
     @Override
+    public String getName() {
+        return "opennms-es-restapi";
+    }
+
+    @Override
+    public boolean isLocalCheck() {
+        return false;
+    }
+
+    @Override
     public Response perform(Context context) {
         final Ping ping = new Ping.Builder().build();
         try {
