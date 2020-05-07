@@ -28,6 +28,9 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_CONCURRENT_CALLS_PROPERTY;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_DURATION_BULK_HEAD;
+import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_WAIT_DURATION_BULK_HEAD;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
@@ -72,6 +75,7 @@ import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +87,8 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadConfig;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -125,6 +131,7 @@ public class KafkaRpcServerManager {
     private Map<String, Integer> currentChunkCache = new ConcurrentHashMap<>();
     private final TracerRegistry tracerRegistry;
     private KafkaTopicProvider kafkaRpcTopicProvider = new KafkaTopicProvider();
+    private Bulkhead bulkhead;
 
     public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity, TracerRegistry tracerRegistry) {
         this.kafkaConfigProvider = configProvider;
@@ -146,6 +153,8 @@ public class KafkaRpcServerManager {
         producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<String, byte[]>(kafkaConfig), KafkaProducer.class.getClassLoader());
         // Configurable cache config.
         maxBufferSize = KafkaRpcConstants.getMaxBufferSize(kafkaConfig);
+        int maxConcurrentCalls = PropertiesUtils.getProperty(kafkaConfig, MAX_CONCURRENT_CALLS_PROPERTY, KafkaRpcConstants.MAX_CONCURRENT_CALLS);
+        int maxWaitDuration = PropertiesUtils.getProperty(kafkaConfig, MAX_DURATION_BULK_HEAD, KafkaRpcConstants.MAX_WAIT_DURATION_BULK_HEAD);
         kafkaRpcTopicProvider = new KafkaTopicProvider(Boolean.parseBoolean(kafkaConfig.getProperty(SINGLE_TOPIC_FOR_ALL_MODULES)));
         // Thread to expire RpcId from rpcIdQueue.
         delayQueueExecutor.execute(() -> {
@@ -162,6 +171,11 @@ public class KafkaRpcServerManager {
         });
         tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
 
+        BulkheadConfig bulkheadConfig = BulkheadConfig.custom()
+                .maxConcurrentCalls(maxConcurrentCalls)
+                .maxWaitDuration(java.time.Duration.ofMillis(maxWaitDuration))
+                .build();
+        bulkhead = Bulkhead.of("ipc-rpc-kafka", bulkheadConfig);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -287,8 +301,12 @@ public class KafkaRpcServerManager {
                             }
                             // Should have complete message by this point.
                             final ByteString requestMessage = rpcContent;
+                            // Incoming RPC requests are gated to restrict number of threads used by Kafka RPC.
+                            // Need to process the requests after timeout even though permission acquisition fails.
+                            bulkhead.tryAcquirePermission();
                             // Handle unmarshalling and execution in a separate thread.
                             requestExecutor.execute(() -> handleRequest(rpcMessage, requestMessage, module));
+
                         } catch (InvalidProtocolBufferException e) {
                             LOG.error("error while parsing the request", e);
                         }
@@ -329,9 +347,11 @@ public class KafkaRpcServerManager {
                 }
                 // Finish minion Span
                 minionSpan.finish();
+                bulkhead.onComplete();
                 sendResponse(rpcRequestProto.getRpcId(), response, module);
             });
         }
+
 
         @SuppressWarnings("unchecked")
         private void sendResponse(String rpcId, RpcResponse response, RpcModule module) {
@@ -511,5 +531,9 @@ public class KafkaRpcServerManager {
 
     public KafkaTopicProvider getKafkaRpcTopicProvider() {
         return kafkaRpcTopicProvider;
+    }
+
+    Bulkhead getBulkhead() {
+        return bulkhead;
     }
 }
