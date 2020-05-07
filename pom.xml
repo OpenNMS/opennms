@@ -1299,8 +1299,8 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <karafVersion>4.2.6</karafVersion>
-    <kafkaBundleVersion>2.4.0_1</kafkaBundleVersion>
-    <kafkaVersion>2.4.0</kafkaVersion>
+    <kafkaBundleVersion>2.5.0_1</kafkaBundleVersion>
+    <kafkaVersion>2.5.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
