@@ -157,5 +157,23 @@
       <feature>opennms-core-ipc-rpc-api</feature>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.client/${project.version}</bundle>
     </feature>
+    
+    <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
+        <feature>opennms-core-ipc-grpc-osgi</feature>
+        <feature>minion-core-api</feature>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavagRPCVersion}</bundle>
+        <bundle>mvn:org.opennms.features.minion/dominion-grpc-client/${project.version}</bundle>
+    </feature>
+
+    <feature name="dominion-secure-credentials-vault" description="Dominion :: Secure Credentials Vault" version="${project.version}">
+        <feature>scv-api</feature>
+        <feature>dominion-grpc-client</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-identity" description="Minion :: Identity" version="${project.version}">
+        <feature>opennms-distributed-core-impl</feature>
+        <bundle>mvn:org.opennms.features.minion/minion-identity-impl/${project.version}</bundle>
+    </feature>
 
 </features>

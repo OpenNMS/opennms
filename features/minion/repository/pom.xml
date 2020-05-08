@@ -51,6 +51,7 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-send-event-command</feature>
                                 <feature>opennms-events-sink-dispatcher</feature>
+                                <feature>minion-identity</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
@@ -67,6 +68,12 @@
                                 <feature>opennms-dnsresolver-netty</feature>
                                 <feature>opennms-core-ipc-grpc-osgi</feature>
                                 <feature>opennms-core-ipc-grpc-client</feature>
+                                <feature>opennms-distributed-core-impl</feature>
+                                <feature>scv-api</feature>
+                                <feature>scv-shell</feature>
+                                <feature>scv-jceks-impl</feature>
+                                <feature>dominion-grpc-client</feature>
+                                <feature>dominion-secure-credentials-vault</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -142,6 +149,11 @@
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>minion-identity-impl</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
@@ -381,6 +393,26 @@
         <dependency>
             <groupId>org.opennms.core.ipc.grpc</groupId>
             <artifactId>org.opennms.core.ipc.grpc.osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>dominion-grpc-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.dominion-grpc-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

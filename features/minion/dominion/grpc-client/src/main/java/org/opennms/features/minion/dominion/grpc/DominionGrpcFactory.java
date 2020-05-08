@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.core.impl;
+package org.opennms.features.minion.dominion.grpc;
 
-import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.distributed.core.shell.AbstractIdCommand;
+public interface DominionGrpcFactory {
 
-@Command(scope = "opennms", name = "id", description="Shows the id of the current instance.")
-@Service
-public class MinionIdCommand extends AbstractIdCommand {
+    DominionScvGrpcClient scvClient();
 
 }
-
-

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.minion.core.impl;
+package org.opennms.minion.core.identity;
 
-import org.opennms.distributed.core.api.MinionIdentity;
-import org.opennms.distributed.core.api.SystemType;
-import org.opennms.distributed.core.impl.IdentityImpl;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.distributed.core.shell.AbstractIdCommand;
 
-public class MinionIdentityImpl extends IdentityImpl implements MinionIdentity {
+@Command(scope = "opennms", name = "id", description="Shows the id of the current instance.")
+@Service
+public class MinionIdCommand extends AbstractIdCommand {
 
-    public MinionIdentityImpl(String location, String id) {
-        super(id, location, SystemType.Minion);
-    }
 }
+
+

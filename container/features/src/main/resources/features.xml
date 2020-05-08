@@ -361,6 +361,10 @@
     <feature name="opennms-distributed-core-api" version="${project.version}" description="OpenNMS :: Distributed :: Core :: API">
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
     </feature>
+    <feature name="opennms-distributed-core-impl" description="OpenNMS :: Distributed :: Core :: Impl" version="${project.version}">
+        <feature>opennms-distributed-core-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
+    </feature>
     <feature name="opennms-model" version="${project.version}" description="OpenNMS :: Model">
         <feature version="[4.2,4.3)">spring</feature>
         <feature version="[4.2,4.3)">spring-jdbc</feature>
@@ -1106,12 +1110,18 @@
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.container/extender/${project.version}</bundle>
     </feature>
-    <feature name="scv" version="${project.version}" description="Secure Credentials Vault">
+    <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+    </feature>
+    <feature name="scv-shell" version="${project.version}" description="Secure Credentials Vault Shell">
+        <feature>scv-api</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
+    </feature>
+    <feature name="scv-jceks-impl" version="${project.version}" description="Secure Credentials Vault JCEKS Impl">
+        <feature>scv-api</feature>
         <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-osgi-core-rest" version="${project.version}" description="OpenNMS :: Features :: OSGI :: Core :: Rest">
         <details>Core module which provides features to install to listen for rest related services,

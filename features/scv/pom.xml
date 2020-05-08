@@ -15,5 +15,6 @@
     <module>jceks-impl</module>
     <module>shell</module>
     <module>scvcli</module>
+    <module>dominion-grpc-impl</module>
   </modules>
 </project>

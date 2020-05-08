@@ -70,6 +70,10 @@ public class Credentials implements Serializable {
         return m_attributes.keySet();
     }
 
+    public Map<String, String> getAttributes() {
+        return Collections.unmodifiableMap(m_attributes);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_attributes, m_password, m_username);

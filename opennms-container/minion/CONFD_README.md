@@ -192,3 +192,12 @@ jetty:
         port: 8181
 ```
 Config specified will be written to `etc/org.ops4j.pax.web.cfg`
+
+### Secure Credentials Vault Provider
+```
+--- 
+scv:
+    provider: "dominion"
+```
+Can be used to override the default SCV provider from the JCEKS implementation (which uses the file system) to a gRPC
+based implementation which requests credentials from Dominion. If not specified the default JCEKS will be used.

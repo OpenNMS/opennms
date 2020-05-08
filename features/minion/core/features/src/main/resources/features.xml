@@ -12,6 +12,8 @@
         <feature>camel-blueprint</feature>
         <feature>camel-jaxb</feature>
         <feature>opennms-health</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>scv-api</feature>
 
         <!-- Used for the REST client -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
@@ -19,8 +21,6 @@
         <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
 
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
     </feature>
 
