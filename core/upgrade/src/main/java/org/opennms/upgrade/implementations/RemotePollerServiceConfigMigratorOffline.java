@@ -126,7 +126,7 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
 
 
                 if (REMOTE_POLLER_NG_SERVICENAME.equals(name)) {
-                    // if a deprecated RemotePollerNg entry exists, do not touch it's configuration
+                    // if a existing RemotePollerNg entry exists, do not touch it's configuration
                     skipRemovePollerNgEntryCreation = true;
                 }
             }
