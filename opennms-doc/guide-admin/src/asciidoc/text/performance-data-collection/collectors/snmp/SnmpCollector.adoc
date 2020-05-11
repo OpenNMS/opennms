@@ -5,7 +5,7 @@
 ==== SnmpCollector
 
 The _SnmpCollector_ collects performance data through the _SNMP protocol_.
-Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the _Web User Interface_. #TODO: add links to UI procedures#
+Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web UI (<<provisioning/getting-started.adoc#provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
 
 ===== Collector Facts
 
@@ -68,10 +68,8 @@ image::performance-management/collectors/01_snmp-datacollection-configuration.pn
 
 ====== SnmpCollectorNG
 
-#TODO: has this been validated?#
-
 The `SnmpCollectorNG` provides an alternate implementation to the `SnmpCollector` that takes advantages of new _APIs_ in the platform.
-It is provided as a separate collector while #we work to validate its functionality and run-time characteristics#, with the goal of eventually having it replace the `SnmpCollector`.
+It is provided as a separate collector while we work to validate its functionality and run-time characteristics, with the goal of eventually having it replace the `SnmpCollector`.
 
 Use this new collector by updating existing references from `org.opennms.netmgt.collectd.SnmpCollector` to `org.opennms.netmgt.collectd.SnmpCollectorNG`.
 
