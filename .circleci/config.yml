@@ -77,6 +77,18 @@ commands:
             key: source-v1-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
+  cached-checkout-for-pushing:
+      description: "Configure a cached checkout that can push upstream"
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        - cached-checkout
+        - run:
+            name: Create git identity
+            command: |
+              git config user.email "cicd-system@opennms.com"
+              git config user.name "CI/CD System"
   restore-maven-cache:
       description: "Maven: Calculate cache key and restore cache"
       steps:
@@ -710,15 +722,7 @@ jobs:
       - when:
           condition: << parameters.next_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
-            - cached-checkout
-            - run:
-                name: Create git identity
-                command: |
-                  git config user.email "cicd-system@opennms.com"
-                  git config user.name "CI/CD System"
+            - cached-checkout-for-pushing
             - run:
                 name: Checkout target branch and merge from source
                 command: |
@@ -746,15 +750,7 @@ jobs:
       - when:
           condition: << parameters.previous_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
-            - cached-checkout
-            - run:
-                name: Create git identity
-                command: |
-                  git config user.email "cicd-system@opennms.com"
-                  git config user.name "CI/CD System"
+            - cached-checkout-for-pushing
             - run:
                 name: Checkout target and merge with merge branch
                 command: |
@@ -774,15 +770,12 @@ jobs:
       - when:
           condition: << parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
             - restore_cache:
                 keys:
                   - meridian-v1-{{ .Branch }}-{{ .Revision }}
                   - meridian-v1-{{ .Branch }}-
                   - meridian-v1-
-            - cached-checkout
+            - cached-checkout-for-pushing
             - run:
                 name: Add Meridian remote if necessary
                 command: |
@@ -798,11 +791,6 @@ jobs:
                 key: meridian-v1-{{ .Branch }}-{{ .Revision }}
                 paths:
                   - ".git"
-            - run:
-                name: Create git identity
-                command: |
-                  git config user.email "cicd-system@opennms.com"
-                  git config user.name "CI/CD System"
             - run:
                 name: Checkout target branch and merge from source
                 command: |
