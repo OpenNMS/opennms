@@ -448,6 +448,10 @@ workflows:
           filters:
             branches:
               only: /^foundation.*/
+      - merge-meridian-branch:
+          filters:
+            branches:
+              only: /^from-foundation.*/
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -725,6 +729,26 @@ jobs:
             - run:
                 name: Push to Meridian github
                 command: git push -f meridian from-<< parameters.main_branch >>:from-<< parameters.main_branch >>
+
+  merge-meridian-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - cached-checkout-for-pushing
+      - run:
+          name: Checkout from-foundation-YYYY and merge to release-YYYY.x
+          command: |
+            export GIT_MERGE_AUTOEDIT=no
+            TARGET_VERSION="$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,')"
+            git fetch --all
+            git checkout "release-${TARGET_VERSION}.x"
+            git reset --hard "origin/release-${TARGET_VERSION}.x"
+            git merge "origin/from-foundation-${TARGET_VERSION}"
+      - run:
+          name: Push to github
+          command: |
+            TARGET_BRANCH="release-$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,').x"
+            git push origin "${TARGET_BRANCH}:${TARGET_BRANCH}"
 
   publish-cloudsmith:
     executor: cloudsmith/default
