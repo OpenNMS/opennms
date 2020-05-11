@@ -490,6 +490,17 @@ workflows:
           filters:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: /^foundation.*/
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -923,6 +934,53 @@ jobs:
             - run:
                 name: Push to github
                 command: git push origin << parameters.main_branch >>:<< parameters.main_branch >>
+
+  create-merge-meridian-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << parameters.main_branch >>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+            - restore_cache:
+                keys:
+                  - meridian-v1-{{ .Branch }}-{{ .Revision }}
+                  - meridian-v1-{{ .Branch }}-
+                  - meridian-v1-
+            - cached-checkout
+            - run:
+                name: Add Meridian remote if necessary
+                command: |
+                  REMOTE_MERIDIAN="$(git remote | grep -c -E '^meridian$' || :)"
+                  if [ "$REMOTE_MERIDIAN" -eq 0 ]; then
+                    git remote add meridian git@github.com:OpenNMS/opennms-prime.git
+                  fi
+            - run:
+                name: git fetch meridian
+                command: |
+                  git fetch meridian
+            - save_cache:
+                key: meridian-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
+            - run:
+                name: Create git identity
+                command: |
+                  git config user.email "cicd-system@opennms.com"
+                  git config user.name "CI/CD System"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git checkout from-<< parameters.main_branch >>
+                  git reset --hard meridian/from-<< parameters.main_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to Meridian github
+                command: git push -f meridian from-<< parameters.main_branch >>:from-<< parameters.main_branch >>
 
   publish-cloudsmith:
     executor: cloudsmith/default
