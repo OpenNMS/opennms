@@ -11,9 +11,40 @@ executors:
   docker-executor:
     docker:
       - image: docker:19.03.0-git
+  integration-test-executor:
+    machine: true
   smoke-test-executor:
     machine:
       image: ubuntu-1604:201903-01
+
+## NOTE: the "_label" versions of these are for the case when your source or target
+## branches have slashes in them, that way the merge branch gets created properly
+#defaults: &defaults
+#  parameters:
+#    previous_branch:
+#      description: the previous branch, if any
+#      type: string
+#      default: ""
+#    previous_branch_label:
+#      description: the previous branch, if any (escaped, no slashes)
+#      type: string
+#      default: ""
+#    main_branch:
+#      description: the auto-merge main branch
+#      type: string
+#      default: foundation-2016
+#    main_branch_label:
+#      description: the auto-merge main branch (escaped, no slashes)
+#      type: string
+#      default: foundation-2016
+#    next_branch:
+#      description: the auto-merge target branch
+#      type: string
+#      default: foundation-2017
+#    next_branch_label:
+#      description: the auto-merge target branch (escaped, no slashes)
+#      type: string
+#      default: foundation-2017
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -46,6 +77,18 @@ commands:
             key: source-v1-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
+  cached-checkout-for-pushing:
+      description: "Configure a cached checkout that can push upstream"
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        - cached-checkout
+        - run:
+            name: Create git identity
+            command: |
+              git config user.email "cicd-system@opennms.com"
+              git config user.name "CI/CD System"
   restore-maven-cache:
       description: "Maven: Calculate cache key and restore cache"
       steps:
@@ -205,8 +248,17 @@ commands:
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
-              install --batch-mode --builder smart --threads << parameters.number-vcpu >> \
-              -Psmoke
+              -Psmoke \
+              install --batch-mode
+            pushd opennms-doc
+              ../compile.pl \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=1 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -DskipPdfGeneration=false \
+                -P'!jdk7+' \
+                install --batch-mode
+            popd
       - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
@@ -285,7 +337,25 @@ commands:
             .circleci/scripts/publish-cloudsmith.sh
 
 workflows:
+#  weekly-coverage:
+#    triggers:
+#      - schedule:
+#          # Saturday at 12:00 AM
+#          cron: "0 0 * * 6"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#    jobs:
+#      - build
+#      - integration-test-with-coverage:
+#          requires:
+#            - build
+#      - code-coverage:
+#          requires:
+#            - integration-test-with-coverage
   build-deploy:
+#    <<: *defaults
     jobs:
       - build:
           filters:
@@ -307,6 +377,8 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
           requires:
@@ -317,6 +389,8 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
                 - /.*smoke.*/
 #      - meridian-publish-oci:
 #          requires:
@@ -326,11 +400,63 @@ workflows:
 #              only:
 #                - master
 #                - develop
+      # These don't actually require `integration-test` but we shouldn't bother
+      # spending cycles unless everything else passed
+#      - meridian-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#      - create-merge-foundation-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: << parameters.main_branch >>
+#      - merge-foundation-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+#      - create-merge-meridian-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: /^foundation.*/
+#      - merge-meridian-branch:
+#          filters:
+#            branches:
+#              only: /^from-foundation.*/
 #      - publish-cloudsmith:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-rpm-build
+#            - meridian-deb-build
 #            - smoke-test-full
 #          filters:
 #            branches:
@@ -338,6 +464,7 @@ workflows:
 #                - master
 #                - develop
 #                - /^release-.*/
+#                - /^foundation.*/
 
 jobs:
   build:
@@ -388,6 +515,59 @@ jobs:
           paths:
             - project/target/rpm/RPMS/noarch/
             - project/opennms-container/meridian/images/
+  meridian-deb-build:
+    executor: debian-build-executor
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/install-deb-dependencies:
+          skip_if_forked_pr: true
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
+          name: Build Debian Packages
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=2
+            .circleci/scripts/makedeb.sh opennms
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/build-results/system-logs/ps 2>&1
+            free -m || : > ~/build-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/target/debs/
   meridian-publish-oci:
     executor: centos-build-executor
     steps:
@@ -404,7 +584,7 @@ jobs:
             ./tag.sh
             ./publish.sh
   integration-test:
-    executor: smoke-test-executor
+    executor: integration-test-executor
     parallelism: 4
     steps:
       - attach_workspace:
@@ -412,7 +592,7 @@ jobs:
       - run-integration-tests:
           rerun-failtest-count: 1
   integration-test-with-coverage:
-    executor: smoke-test-executor
+    executor: integration-test-executor
     parallelism: 12
     steps:
       - attach_workspace:
@@ -459,6 +639,116 @@ jobs:
           at: ~/
       - run-smoke-tests:
           minimal: true
+  create-merge-foundation-branch:
+#    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.next_branch >>
+          steps:
+            - cached-checkout-for-pushing
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.next_branch >>
+                  git reset --hard origin/<< parameters.next_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to github
+                command: git push -f origin << parameters.next_branch >>:merge-foundation/<< parameters.main_branch_label >>-to-<< parameters.next_branch_label >>
+
+  # note, this is always run as part of the _next_ branch
+  # for example, if main_branch is `foundation-2016` and next_branch is `foundation-2017`,
+  # it will include the contents of the `foundation-2017` branch, thus we need to actually
+  # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
+  merge-foundation-branch:
+#    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.previous_branch >>
+          steps:
+            - cached-checkout-for-pushing
+            - run:
+                name: Checkout target and merge with merge branch
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.main_branch >>
+                  git reset --hard origin/<< parameters.main_branch >>
+                  git merge origin/merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+            - run:
+                name: Push to github
+                command: git push origin << parameters.main_branch >>:<< parameters.main_branch >>
+
+  create-merge-meridian-branch:
+#    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - meridian-v1-{{ .Branch }}-{{ .Revision }}
+                  - meridian-v1-{{ .Branch }}-
+                  - meridian-v1-
+            - cached-checkout-for-pushing
+            - run:
+                name: Add Meridian remote if necessary
+                command: |
+                  REMOTE_MERIDIAN="$(git remote | grep -c -E '^meridian$' || :)"
+                  if [ "$REMOTE_MERIDIAN" -eq 0 ]; then
+                    git remote add meridian git@github.com:OpenNMS/opennms-prime.git
+                  fi
+            - run:
+                name: git fetch meridian
+                command: |
+                  git fetch meridian
+            - save_cache:
+                key: meridian-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git checkout from-<< parameters.main_branch >>
+                  git reset --hard meridian/from-<< parameters.main_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to Meridian github
+                command: git push -f meridian from-<< parameters.main_branch >>:from-<< parameters.main_branch >>
+
+  merge-meridian-branch:
+#    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - cached-checkout-for-pushing
+      - run:
+          name: Checkout from-foundation-YYYY and merge to release-YYYY.x
+          command: |
+            export GIT_MERGE_AUTOEDIT=no
+            TARGET_VERSION="$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,')"
+            git fetch --all
+            git checkout "release-${TARGET_VERSION}.x"
+            git reset --hard "origin/release-${TARGET_VERSION}.x"
+            git merge "origin/from-foundation-${TARGET_VERSION}"
+      - run:
+          name: Push to github
+          command: |
+            TARGET_BRANCH="release-$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,').x"
+            git push origin "${TARGET_BRANCH}:${TARGET_BRANCH}"
 
   publish-cloudsmith:
     executor: cloudsmith/default
@@ -467,3 +757,4 @@ jobs:
       - attach_workspace:
           at: ~/
       - publish-cloudsmith
+
