@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[ga-performance-mgmt-adhoc-collection]]
-===== Ad-hoc collection
+===== Ad hoc collection
 
 The `opennms:collect` _Karaf Shell_ command can be used to trigger and perform a collection on any of the available collectors.
 

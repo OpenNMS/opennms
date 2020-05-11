@@ -46,7 +46,7 @@ Use these parameters in the <<collection-packages.adoc,_collectd-configuration.x
 |===
 
 NOTE: The deprecated parameters `port`, `protocol`, `urlPath`, `rmiServerPort` and `remoteJMX` should be replaced with the `url` parameter.
-If `url` is not defined the collector falls back to legacy mode #TODO: what is legacy mode in this context?# and the deprecated parameters are used instead to build the connection url.
+If `url` is not defined the collector falls back to legacy mode and the deprecated parameters are used instead to build the connection url.
 
 NOTE: If a service requires different configuration, an entry in `$OPENNMS_HOME/etc/jmx-config.xml` can overwrite it.
 

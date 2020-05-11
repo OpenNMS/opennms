@@ -25,7 +25,7 @@ You may also want to change how _collectd_ works: when, how, and what data it co
 
 Learn how to manage performance data collection:
 
-* xref:configuration.adoc#ga-collectd-configuration[configure _collectd_]
-* <<collectors.adoc,configure collection for specific protocols>>
-* <<resource-types.adoc, manage resource types>>
+* xref:configuration.adoc#ga-collectd-configuration[_collectd_ configuration]
+* <<collectors.adoc,collection for specific protocols>>
+* <<resource-types.adoc, resource type management>>
 * <<collect-admin.adoc, _collectd_ administration>> (logging, graphing, and event properties)
