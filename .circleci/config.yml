@@ -40,11 +40,11 @@ executors:
 #    next_branch:
 #      description: the auto-merge target branch
 #      type: string
-#      default: release-26.1.1
+#      default: release-26.x
 #    next_branch_label:
 #      description: the auto-merge target branch (escaped, no slashes)
 #      type: string
-#      default: release-26.1.1
+#      default: release-26.x
 
 docker_container_config: &docker_container_config
   executor: docker-executor
