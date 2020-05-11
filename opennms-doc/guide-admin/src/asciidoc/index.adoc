@@ -151,7 +151,6 @@ include::text/performance-data-collection/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
