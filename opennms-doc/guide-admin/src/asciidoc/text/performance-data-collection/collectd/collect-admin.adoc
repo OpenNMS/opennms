@@ -4,7 +4,6 @@
 ==== Collectd Administration
 
 This section describes reference and administrative information associated with collectd. 
-#TODO: do we need to document the ones without cross references in greater detail?#
 
 .Configuration and log files related to Collectd
 [options="header, autowidth"]

@@ -8,7 +8,7 @@
 The _collectd-configuration.xml_ file defines the nodes, services and parameters on which _collectd_ collects metrics. 
 It also specifies the list of available collectors. 
 
-The file is located in `$OPENNMS_HOME/etc/collectd-configuration.xml`.
+The file is located in `$OPENNMS_HOME`.
 
 Edit the _collectd-configuration.xml_ file to:
 
@@ -17,8 +17,6 @@ Edit the _collectd-configuration.xml_ file to:
 * <<collection-packages.adoc#ga-collector-list-edit, specify collectors to use>>
 
 In addtion to editing the _collectd-configuration.xml_, you need to <<collectors.adoc,configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
-
-#TODO: Do we need a graphic of the file with the sections highlighted?#
 
 [[ga-thread-pool-edit]]
 ==== Setting the Thread Pool
