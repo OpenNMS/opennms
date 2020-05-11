@@ -795,7 +795,11 @@ jobs:
                 name: Checkout target branch and merge from source
                 command: |
                   export GIT_MERGE_AUTOEDIT=no
-                  git checkout from-<< parameters.main_branch >>
+                  if git rev-parse from-<< parameters.main_branch >> >/dev/null 2>&1; then
+                    git checkout from-<< parameters.main_branch >>
+                  else
+                    git checkout -b from-<< parameters.main_branch >> meridian/from-<< parameters.main_branch >>
+                  fi
                   git reset --hard meridian/from-<< parameters.main_branch >>
                   git merge origin/<< parameters.main_branch >>
             - run:
