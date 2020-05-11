@@ -66,6 +66,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
 
     public static final Logger LOG = LoggerFactory.getLogger(ParameterSubstitutingMonitor.class);
 
+    private static final Pattern LOOKS_LIKE_SUBSTITUTION = Pattern.compile(".*[{][a-zA-Z0-9]*[}].*");
     private static Map<String, Pattern> subPatterns = new HashMap<>();
     private static Pattern substitutionPattern;
     private static final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
@@ -82,7 +83,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
         } catch (IntrospectionException ie) {
             LOG.warn("Failed to introspect OnmsAssetRecord when initializing due to {}", ie.getLocalizedMessage());
         }
-        patternBuilder.append("[}]).*");
+        patternBuilder.append(")[}].*");
         substitutionPattern = Pattern.compile(patternBuilder.toString());
 
         Pattern p = Pattern.compile("(.*)[{]ipAddr(?:ess)?[}](.*)");
@@ -111,6 +112,8 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
             Matcher m = substitutionPattern.matcher(v.toString());
             if (m.matches()) {
                 subbedParams.put("subbed-" + k, parseString(v.toString(), m, svc));
+            } else if (LOOKS_LIKE_SUBSTITUTION.matcher(v.toString()).matches()){
+                LOG.error("unknown substitution found: {}. Possible substitutions: {}", v.toString(), substitutionPattern.toString());
             }
         });
         return subbedParams;
@@ -124,7 +127,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
             return null;
         }
         Matcher n = p.matcher(unformattedString);
-        String formattedString = null;
+        String formattedString;
         if (n.matches()) {
             StringBuilder sb = new StringBuilder();
             sb.append(n.group(1));
@@ -158,6 +161,10 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
             }
             sb.append(n.group(2));
             formattedString = sb.toString();
+        } else {
+            // We should never end up here since we should have a match, see getSubstitutedParameters(): if(m.matches){...}
+            // If we get here something is wrong with the regexp => throw an exception
+            throw new IllegalStateException("Engineering mistake: the regular expression seems to be wrong.");
         }
         Matcher o = substitutionPattern.matcher(formattedString);
         if (o.matches()) {
