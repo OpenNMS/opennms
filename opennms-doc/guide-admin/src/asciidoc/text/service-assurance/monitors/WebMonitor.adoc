@@ -4,7 +4,8 @@
 
 ==== WebMonitor
 
-TODO: add proper description
+WebMonitor is a clone of HttpMonitor, that uses a different underlying library for doing HTTP connections. 
+WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, etc.) than HttpMonitor.  
 
 ===== Monitor facts
 
@@ -14,11 +15,29 @@ TODO: add proper description
 |===
 
 ===== Configuration and Usage
+Note that all parameters listed are optional. 
 
 .Configuration parameters
-[options="header, autowidth"]
+[options="header" cols="20%,60%,20%"]
 |===
-| Parameter        | Description                                                                                          | Required | Default value
-| `use-system-proxy` | Should the system wide proxy settings be used? The system proxy settings can be configured via
-                    link:#ga-opennms-system-properties[system properties]                                                 | optional | `false`
+| Parameter | Description | Default value
+| `use-system-proxy` | Specifies that system-wide proxy settings be used. The system proxy settings can be configured via
+                    link:#ga-opennms-system-properties[system properties].                                                 | `false`
+
+| `scheme` | Protocol/scheme to use. | `http, https`
+| `port`| The port to connect to. | 80
+| `path` | The path of the URL to request (e.g., `/store/index.html`).|
+| `queryString` | The query string to add to the URL after a `?` (e.g., foo=bar&baz=zot)|
+|`timeout` | The connection/socket timeout. |
+|`user-agent`| The `User-Agent:` header to send.|
+|`virtual-host` | The `Host:` header to send. |
+|`http-1.0`| True/false whether to use HTTP 1.0 or 1.1.|
+|`header_#/header_#_value`| Headers to add|
+|`use-ssl-filter` | Defaults to false, if true it will trust self-signed certificates. | false
+|`auth-enabled`| Whether to enable basic authentication. |
+|`auth-user`| The username for basic authentication. |
+|`auth-password` | The password |
+|`auth-preemptive` | Whether to send basic authentication even if the site did not ask for it. | true
+|`response-text`| The response text to look for. |
+|`response-range` | What HTTP status ranges are considered success. |100-399
 |===

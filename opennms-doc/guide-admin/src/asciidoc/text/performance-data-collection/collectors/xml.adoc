@@ -25,7 +25,7 @@ The following handlers are not currently supported on _Minion_:
 
 ===== Collector Parameters
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmlCollector
 [options="header, autowidth"]

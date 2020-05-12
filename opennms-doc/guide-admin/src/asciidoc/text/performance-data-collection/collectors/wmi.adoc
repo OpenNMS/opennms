@@ -17,7 +17,7 @@ The _WmiCollector_ collects peformance metrics from _Windows_ systems using Wind
 
 ===== Collector Parameters
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the WmiCollector
 [options="header, autowidth"]

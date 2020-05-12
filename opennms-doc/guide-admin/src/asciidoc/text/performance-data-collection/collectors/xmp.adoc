@@ -17,7 +17,7 @@ The _XmpCollector_ collects peformance metrics via the X/Open Management Protoco
 
 ===== Collector Parameters
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmpCollector
 [options="header, autowidth"]
