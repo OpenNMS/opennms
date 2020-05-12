@@ -74,7 +74,6 @@ public class LocationSpecificStatusDaoHibernate extends AbstractDaoHibernate<Onm
     @Override
     public void saveStatusChange(final OnmsLocationSpecificStatus locationSpecificStatus) {
         getHibernateTemplate().save(locationSpecificStatus);
-
     }
 
     @Override
