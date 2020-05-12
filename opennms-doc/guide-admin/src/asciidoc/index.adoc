@@ -146,15 +146,18 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
-include::text/performance-data-collection/configuration.adoc[]
-include::text/performance-data-collection/collection-packages.adoc[]
+include::text/performance-data-collection/collectd/configuration.adoc[]
+include::text/performance-data-collection/collectd/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
+=== Configuring Collectors
+include::text/performance-data-collection/collectors/collectors.adoc[]
+
 === Collectors
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/nsclient.adoc[]
 include::text/performance-data-collection/collectors/prometheus.adoc[]
 include::text/performance-data-collection/collectors/tca.adoc[]
@@ -165,12 +168,19 @@ include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
 include::text/performance-data-collection/collectors/xmp.adoc[]
 
+[[ga-resource-types]]
+=== Resource Types
+include::text/performance-data-collection/resource-types.adoc[]
+
 [[ga-performance-mgmt-shell]]
-=== Shell Commands
+=== Administration and Troubleshooting
+include::text/performance-data-collection/collectd/collect-admin.adoc[]
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+
 
 [[ga-performance-mgmt-thresholds]]
 == Thresholding
