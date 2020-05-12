@@ -55,7 +55,7 @@ In order to avoid pushing a new document every time a new event is reduced on to
 
 1. We have not recently pushed a document for that alarm. (See `alarmReindexDurationMs`.)
 2. The severity of the alarm has changed.
-3. The alarm has been acknowledged or un-acknowledged.
+3. The alarm has been acknowledged or unacknowledged.
 4. Either of the associated sticky or journal memos have changed.
 5. The state of the associated ticket has changed.
 6. The alarm has been associated with, or removed, from a situation.
