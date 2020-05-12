@@ -18,7 +18,7 @@ Attributes are extracted from the _HTTP_ responses using a regular expression.
 
 ===== Collector Parameters
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the HttpCollector
 [options="header, autowidth"]

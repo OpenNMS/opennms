@@ -22,12 +22,12 @@ Attributes are retrieved using _SQL_ queries.
 When running on _Minion_ the data sources in `opennms-datasources.xml` cannot be referenced.
 Instead, you must set the _JDBC_ connection settings using the service parameters.
 
-Also, the _JDBC_ driver must be properly loaded in the _Minion_ container. TODO: how to do this.
+Also, the _JDBC_ driver must be properly loaded in the _Minion_ container (see <<minion/jdbc-driver.adoc, Installing JDBC drivers in Minion>>)
 By default, only the _JDBC_ driver for _PostgreSQL_ is available.
 
 ===== Collector Parameters
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the JdbcCollector
 [options="header, autowidth"]

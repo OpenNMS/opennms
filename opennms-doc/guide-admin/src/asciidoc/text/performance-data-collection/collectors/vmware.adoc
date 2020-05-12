@@ -17,7 +17,7 @@ The _VmwareCollector_ collects peformance metrics for managed entities from _vCe
 
 ===== Collector Parameters
 
-Use these parameters in the used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the VmwareCollector
 [options="header, autowidth"]
