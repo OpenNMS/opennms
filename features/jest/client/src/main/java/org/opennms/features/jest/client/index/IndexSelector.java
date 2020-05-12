@@ -49,6 +49,8 @@ import java.util.TimeZone;
 
 import org.opennms.features.jest.client.template.IndexSettings;
 
+import com.google.common.base.Strings;
+
 public class IndexSelector {
 
     private final static ZoneId UTC = TimeZone.getTimeZone("UTC").toZoneId();
@@ -131,8 +133,8 @@ public class IndexSelector {
             // nothing to do
             return orgList;
         }
-
-        int collapseAfter = prefix.length() + strategy.getPattern().length() - 1 + offset;
+        int indexPrefixLen = Strings.isNullOrEmpty(indexSettings.getIndexPrefix()) ? 0 : indexSettings.getIndexPrefix().length();
+        int collapseAfter = indexPrefixLen + prefix.length() + strategy.getPattern().length() - 1 + offset;
         boolean beginningIsSameAsEnd = orgList.get(0).substring(0, collapseAfter)
                 .equals(orgList.get(orgList.size() - 1).substring(0, collapseAfter));
         boolean doCollapsingAtBeginning = !elementBeforeSequence.startsWith(orgList.get(0).substring(0, collapseAfter));
@@ -154,7 +156,8 @@ public class IndexSelector {
         }
 
         List<String> collapsedList = orgList;
-        int collapseAfter = prefix.length() + strategy.getPattern().length() - 1 + offset;
+        int indexPrefixLen = Strings.isNullOrEmpty(indexSettings.getIndexPrefix()) ? 0 : indexSettings.getIndexPrefix().length();
+        int collapseAfter = indexPrefixLen + prefix.length() + strategy.getPattern().length() - 1 + offset;
 
         collapsedList = StringCollapser
                 .forList(collapsedList).collapseAfterChars(collapseAfter)

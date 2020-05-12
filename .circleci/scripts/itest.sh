@@ -54,7 +54,9 @@ deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /et
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
             sudo apt-get update && \
-            sudo apt-get install -f nsis R-base rrdtool
+	    sudo apt-get -y install debconf-utils && \
+	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
 
 echo "#### Building Assembly Dependencies"
 mvn install -P'!checkstyle' \
@@ -65,6 +67,7 @@ mvn install -P'!checkstyle' \
            -DskipTests=true \
            -DskipITs=true \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
+           -Dnsis.makensis.bin="$(which makensis)" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \
            -am \
@@ -80,6 +83,7 @@ mvn install -P'!checkstyle' \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
+           -Dnsis.makensis.bin="$(which makensis)" \
            -B \
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \

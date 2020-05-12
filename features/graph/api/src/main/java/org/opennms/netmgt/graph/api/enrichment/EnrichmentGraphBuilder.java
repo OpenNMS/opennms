@@ -129,7 +129,8 @@ public final class EnrichmentGraphBuilder {
     public GenericGraph build() {
         final GenericGraph.GenericGraphBuilder genericGraphBuilder = GenericGraph.builder()
                 .properties(view.getProperties())
-                .properties(graphProperties);
+                .properties(graphProperties)
+                .focus(view.getDefaultFocus());
         view.getVertices().forEach(vertex -> {
             final GenericVertex enrichedVertex = GenericVertex.builder().vertex(vertex).properties(getVertexProperties(vertex.getVertexRef())).build();
             genericGraphBuilder.addVertex(enrichedVertex);

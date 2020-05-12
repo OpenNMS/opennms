@@ -1,13 +1,17 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../images
+:imagesdir: ../../images
 
 [[ga-threshd-introduction]]
 = Thresholding
 
 Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 
-== How Thresholding Works in {opennms-product-name} 
+* High
+* Low
+* Absolute Value
+* Relative Change
+=== How Thresholding Works in {opennms-product-name} 
 
 {opennms-product-name} uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
 You can specify configuration for a particular collector in a _collection package_: essentially the set of instructions that drives the behavior of the collector. 
@@ -19,7 +23,7 @@ You can further create notifications and alarms for threshold events.
 
 image::thresholding/thresholding-flow.png[thresholding, 400]
 
-=== What Triggers a Thresholding Event?
+==== What Triggers a Thresholding Event?
 
 _{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
 
@@ -37,7 +41,7 @@ NOTE: The basic walkthrough focuses on how to set simple thresholds using defaul
 For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see xref:performance-data-collection/introduction.adoc[Performance Management].
 
 [[threshold-bw]]
-== Basic Walk-through – Thresholding
+=== Basic Walk-through – Thresholding
 
 This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
 Our threshold will tell {opennms-product-name} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two. 
@@ -101,7 +105,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 |===
 
 [[threshold-test]]
-=== Testing the Threshold
+==== Testing the Threshold
 
 To test the threshold we just created, log a second person into the node you are monitoring. 
 Navigate to the `Events` page.
@@ -111,7 +115,7 @@ Log out the second user.
 The `Events` page should indicate that the system has re-armed. 
 
 [[thresh-cpu]]
-=== Creating a Threshold for CPU Usage
+==== Creating a Threshold for CPU Usage
 This procedure describes how to create an expression-based threshold when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 Expression-based thresholds are useful when you need to threshold on a percentage, not the actual value of the data collected. 
 
@@ -159,7 +163,7 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 . Click `Save`.
 
 [[datasource-determine]]
-=== Determining the Datasource
+==== Determining the Datasource
 Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
 Datasource names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
 

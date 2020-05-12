@@ -33,6 +33,7 @@ import java.util.Map;
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.graph.GraphContainer;
 import org.opennms.integration.api.v1.graph.GraphContainerProvider;
+import org.opennms.integration.api.v1.graph.Properties;
 import org.opennms.integration.api.v1.graph.configuration.GraphCacheStrategy;
 import org.opennms.integration.api.v1.graph.configuration.GraphConfiguration;
 import org.opennms.integration.api.v1.graph.configuration.TopologyConfiguration;
@@ -78,7 +79,8 @@ public class GraphContainerProviderManager extends InterfaceMapper<GraphContaine
         final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
             .put("expose-to-topology", Boolean.toString(topologyConfiguration.isLegacyTopology()))
             .put("expose-status-provider", Boolean.toString(topologyConfiguration.getLegacyStatusStrategy() == TopologyConfiguration.LegacyStatusStrategy.Default))
-            .put("resolve-node-ids", Boolean.toString(topologyConfiguration.shouldResolveNodes()));
+            .put("resolve-node-ids", Boolean.toString(topologyConfiguration.shouldResolveNodes())) // legacy: to be removed
+            .put(Properties.Enrichment.RESOLVE_NODES, Boolean.toString(topologyConfiguration.shouldResolveNodes()));;
 
         // In case the cache strategy is timed, it should be expose it accordingly
         if (graphConfiguration.getGraphCacheStrategy() instanceof GraphCacheStrategy.TimedGraphCacheStrategy) {

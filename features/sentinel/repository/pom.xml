@@ -64,6 +64,7 @@
                                 <feature>sentinel-jms</feature>
                                 <feature>sentinel-telemetry</feature>
                                 <feature>sentinel-telemetry-bmp</feature>
+                                <feature>sentinel-telemetry-graphite</feature>
                                 <feature>sentinel-telemetry-jti</feature>
                                 <feature>sentinel-telemetry-nxos</feature>
                                 <feature>sentinel-flows</feature>
@@ -361,6 +362,11 @@
         <dependency>
             <groupId>org.opennms.features.telemetry.protocols.sflow</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.sflow.adapter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.graphite</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.graphite.adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

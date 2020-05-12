@@ -23,11 +23,11 @@ defaults: &defaults
     previous_branch:
       description: the previous branch, if any
       type: string
-      default: release-26.1.0
+      default: release-26.x
     previous_branch_label:
       description: the previous branch, if any (escaped, no slashes)
       type: string
-      default: release-26.1.0
+      default: release-26.x
     main_branch:
       description: the auto-merge main branch
       type: string
@@ -188,10 +188,10 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg > ~/test-results/system-logs/dmesg
-            ps auxf > ~/test-results/system-logs/ps
-            free -m > ~/test-results/system-logs/free
-            docker stats --no-stream > ~/test-results/system-logs/docker_stats
+            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/test-results/system-logs/ps 2>&1
+            free -m || : > ~/test-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
             cp -R /tmp/jvmprocmon ~/test-results/system-logs/
             ls -alh ~/project/smoke-test/
       - run:
@@ -244,8 +244,8 @@ commands:
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
-              install --batch-mode --builder smart --threads << parameters.number-vcpu >> \
-              -Psmoke
+              -Psmoke \
+              install --batch-mode
             pushd opennms-doc
               ../compile.pl \
                 -Daether.connector.resumeDownloads=false \
@@ -728,8 +728,7 @@ jobs:
             - project/opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
-    # Larger memory footprint required to speed up builds using Takari smartbuilder
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/
@@ -739,16 +738,40 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
-            export CCI_MAXCPU=4
+            export CCI_MAXCPU=2
             .circleci/scripts/makedeb.sh opennms
       - sign-packages/sign-debs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
           gnupg_key: opennms@opennms.org
           packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
+            ps auxf || : > ~/build-results/system-logs/ps 2>&1
+            free -m || : > ~/build-results/system-logs/free 2>&1
+            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs

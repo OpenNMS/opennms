@@ -36,6 +36,7 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,6 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
 import org.opennms.core.ipc.common.kafka.KafkaTopicProvider;
@@ -124,7 +124,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcClientFactory.class);
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
     private String location;
     private KafkaProducer<String, byte[]> producer;
@@ -166,7 +166,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
                 }
-                Span span = tracer.buildSpan(module.getId()).start();
+
+                Span span = buildAndStartSpan(request);
                 String requestTopic = topicProvider.getRequestTopicAtLocation(request.getLocation(), module.getId());
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
@@ -245,12 +246,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             }
 
             private void addTracingInfo(RpcRequest request, Span span, RpcMessageProto.Builder builder) {
-                //Add tags to span.
-                span.setTag(TAG_LOCATION, request.getLocation());
-                if (request.getSystemId() != null) {
-                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
-                }
-                request.getTracingInfo().forEach(span::setTag);
+
                 TracingInfoCarrier tracingInfoCarrier = new TracingInfoCarrier();
                 tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
                 // Tracer adds it's own metadata.
@@ -267,6 +263,22 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             }
                         }
                 );
+            }
+
+            private Span buildAndStartSpan(S request) {
+                Span span = null;
+                if (request.getSpan() != null) {
+                    span = tracer.buildSpan(module.getId()).asChildOf(request.getSpan().context()).start();
+                } else {
+                    span = tracer.buildSpan(module.getId()).start();
+                }
+                //Add tags to span.
+                span.setTag(TAG_LOCATION, request.getLocation());
+                if (request.getSystemId() != null) {
+                    span.setTag(TAG_SYSTEM_ID, request.getSystemId());
+                }
+                request.getTracingInfo().forEach(span::setTag);
+                return span;
             }
 
         };

@@ -985,6 +985,7 @@ case "$COMMAND" in
 					echo "Unknown return code from doStatus: $__ret" >&2
 			esac
 		fi
+                exit "$__ret"
 		;;
 
 	configtest)

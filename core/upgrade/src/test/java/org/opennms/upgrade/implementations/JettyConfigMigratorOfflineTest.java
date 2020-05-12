@@ -68,6 +68,9 @@ public class JettyConfigMigratorOfflineTest {
      */
     @Before
     public void setUp() throws Exception {
+        // Don't load external DTDs
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
         FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
         System.setProperty("opennms.home", "target/home");
     }
