@@ -144,7 +144,7 @@ For more details on how to configure the plugin to use Elasticsearch refer to li
 
 |===
 
-Besides that the following default values have been changed:
+In addition the following default values have changed:
 
 [options="header, autowidth"]
 |===
