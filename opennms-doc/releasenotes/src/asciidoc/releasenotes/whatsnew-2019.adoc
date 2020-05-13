@@ -104,7 +104,7 @@ $ yum swap 'opennms-minion*' -- install opennms-minion
 All of the features that leverage integrations with Elasticsearch (i.e., event & alarm history, flows & situation feedback) have been updated to support Elasticsearch 7.x.
 Elasticsearch versions before 7.x are no longer supported.
 
-Given the pace of changes and the number of breaking changes between major versions of Elasticsearch, we will focus on supporting a single major version of Elasticsearch per release moving forward.
+Given the pace of change and the number of breaking changes between major versions of Elasticsearch, we will focus on supporting a single major version of Elasticsearch per release moving forward.
 
 ===== ReST Plugin Configuration
 
