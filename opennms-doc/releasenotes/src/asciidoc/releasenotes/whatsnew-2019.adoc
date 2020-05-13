@@ -88,7 +88,7 @@ If you are running on a distribution that does not provide PostgreSQL 10 package
 ==== Minion Packages Combined
 
 The Minion RPM and Debian/Ubuntu packages have been combined into a single package.
-Previously it was possible to just install the core container and optionally a set of features on top, but in the real world no one used this, and it's still possible to choose what features are used with configuration.
+Previously it was possible to just install the core container and optionally a set of features on top, but in the real world no one used this, and it's still possible to choose what features are used with the configuration.
 
 NOTE: If you were previously _only_ installing the sub-packages and not installing the wrapper `opennms-minion` RPM package, you may need to run this command to upgrade cleanly:
 
@@ -547,4 +547,3 @@ The codename for 2019.1.0 is _link:$$https://en.wikipedia.org/wiki/Mercury_(plan
 * Update CISCO-ENTITY-SENSOR-MIB threshold trap events to include alarm-data (Issue http://issues.opennms.org/browse/NMS-12362[NMS-12362])
 * switch core/web-assets from yarn to npm (Issue http://issues.opennms.org/browse/NMS-12363[NMS-12363])
 * Collect and display file descriptor statistics via JMX for OpenNMS and Minion (Issue http://issues.opennms.org/browse/NMS-12364[NMS-12364])
-
