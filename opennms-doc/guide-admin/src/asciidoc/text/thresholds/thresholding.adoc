@@ -11,6 +11,7 @@ Thresholding allows you to define limits against network performance metrics of 
 * Low
 * Absolute Value
 * Relative Change
+
 === How Thresholding Works in {opennms-product-name} 
 
 {opennms-product-name} uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
@@ -23,7 +24,7 @@ You can further create notifications and alarms for threshold events.
 
 image::thresholding/thresholding-flow.png[thresholding, 400]
 
-==== What Triggers a Thresholding Event?
+=== What Triggers a Thresholding Event?
 
 _{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
 
