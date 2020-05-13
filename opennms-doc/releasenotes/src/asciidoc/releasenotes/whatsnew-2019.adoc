@@ -293,9 +293,9 @@ This reduces the amount of code we run through trying to figure out date formats
   ** `init.widgetset` becomes `servlet.init.widgetset`
   ** `alias` becomes `osgi.http.whiteboard.servlet.pattern`
 
-==== Helm 4
+==== Helm 4/5
 
-Technically not a part of OpenNMS, but it's important to note that Helm 4 introduced a datasource that _replaces_ the "Faults" datasource.
+Technically not a part of OpenNMS, but it's important to note that as of Helm 4, we have replaced the "Faults" datasource with a new "Entities" datasource.
 Migration of existing dashboards requires a few manual steps; documentation on how to do so are available in link:https://docs.opennms.org/helm/releases/latest/helm/[the latest Helm documentation].
 
 === Other Improvements
