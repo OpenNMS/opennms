@@ -2,6 +2,7 @@
 
 The actual Meta-Data of nodes, interfaces and services can be queried, added, modified or deleted via ReST endpoints.
 
+[[rest-api-meta-data-get]]
 ===== GETs (Reading Meta-Data)
 
 [options="header", cols="5,10"]
@@ -18,6 +19,7 @@ The actual Meta-Data of nodes, interfaces and services can be queried, added, mo
 | `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}/{key}` | Get the entry for the given context and key associated with this service.
 |===
 
+[[rest-api-meta-data-post]]
 ===== POSTs (Adding Meta-Data)
 
 POST requires XML using application/xml as its Content-Type.
@@ -30,8 +32,7 @@ POST requires XML using application/xml as its Content-Type.
 | `api/v2/nodes/{id}/{ipInterface}/services/{service}/metadata` | Adds a meta-data entry to the given service.
 |===
 
-[[rest-api-nodes-put]]
-
+[[rest-api-meta-data-put]]
 ===== PUTs (Modifying Meta-Data)
 
 [options="header", cols="5,10"]
@@ -42,6 +43,7 @@ POST requires XML using application/xml as its Content-Type.
 | `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}/{key}/{value}` | Sets the given value for the service-level meta-data entry specified by the given context and key.
 |===
 
+[[rest-api-meta-data-delete]]
 ===== DELETEs (Removing Meta-Data)
 
 [options="header", cols="5,10"]
