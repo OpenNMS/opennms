@@ -276,7 +276,7 @@ For more complicated integrations, we also have a new API -- `AlarmLifecycleList
 ==== Event (and Alarm) Date/Time Formats
 
 Events and alarms previously used the current locale for formatting timestamps.
-As of Meridian 2019, we now format dates as ISO-8601 date-time with offsets (eg, `2011-12-03T10:15:30+01:00`) _and_ we expect dates in incoming events to be the same.
+As of Meridian 2019, we now format dates as ISO-8601 date-time with offsets (e.g., `2011-12-03T10:15:30+01:00`) _and_ we expect dates in incoming events to be the same.
 This reduces the amount of code we run through trying to figure out date formats while parsing events, and simplifies things to work no matter what locale you are using.
 
 ==== Developer Considerations
