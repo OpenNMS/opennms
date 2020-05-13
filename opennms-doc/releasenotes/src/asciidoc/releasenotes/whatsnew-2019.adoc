@@ -270,7 +270,7 @@ If you made any changes to `vacuumd-configuration.xml` related to alarms, it is 
 The Drools rules are in the `$OPENNMS_HOME/etc/alarmd/drools-rules.d/` directory.
 
 Also, we no longer generate `alarmCreated`, `alarmEscalated`, `alarmCleared`, `alarmUncleared`, `alarmUpdatedWithReducedEvent`, and `alarmDeleted` events.
-Instead, it is recommended that you add Drools rules to react to alarm changes.
+Instead, we recommend that you add Drools rules to react to alarm changes.
 For more complicated integrations, we also have a new API -- `AlarmLifecycleListener` -- for reacting to alarm changes.
 
 ==== Event (and Alarm) Date/Time Formats
