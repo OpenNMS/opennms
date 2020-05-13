@@ -256,7 +256,7 @@ IMPORTANT: If you have legacy SNMP agents which only support 32bit interface cou
 ==== Removed from Meridian 2019
 
 * The Centric Trouble Ticketer plugin has been removed.
-* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue link:https://issues.opennms.org/browse/HZN-1422[HZN-1422].
+* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue link:https://issues.opennms.org/browse/NMS-11493[NMS-11493].
 * The remote poller map has been removed.
 * The Alarm Change Notifier plugin has been removed due to performance problems.  Use the Alarm History function instead.
 * The `resourcecli` tool has been removed in favor of link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-performance-mgmt-measurements-shell[Karaf shell commands] to perform the same operations.
@@ -295,8 +295,8 @@ This reduces the amount of code we run through trying to figure out date formats
 
 ==== Helm 4
 
-Technically not a part of OpenNMS, but it's important to note that Helm 4 introduces a datasource that _replaces_ the "Faults" datasource.
-Migration of existing dashboards requires a few manual steps; documentation on how to do so will be available in link:https://docs.opennms.org/helm/releases/latest/helm/latest/welcome/index.html[the latest Helm documentation] once Helm 4 goes live.
+Technically not a part of OpenNMS, but it's important to note that Helm 4 introduced a datasource that _replaces_ the "Faults" datasource.
+Migration of existing dashboards requires a few manual steps; documentation on how to do so are available in link:https://docs.opennms.org/helm/releases/latest/helm/[the latest Helm documentation].
 
 === Other Improvements
 
