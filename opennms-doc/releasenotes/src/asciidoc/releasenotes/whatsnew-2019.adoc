@@ -74,12 +74,229 @@ There is now support for associating arbitrary metadata with nodes and interface
 
 For details on using the metadata APIs, see link:https://meridian.opennms.com/docs/2019/latest/guide-admin/guide-admin.html#ga-meta-data[the Admin Guide] and link:$$https://meridian.opennms.com/docs/2019/latest/guide-development/guide-development.html#_meta_data$$[the Developer Guide].
 
+=== Breaking Changes
+
+==== PostgreSQL 10
+
+OpenNMS Meridian 2019 is supported on PostgreSQL 10 or later.
+
+If you are upgrading from an OpenNMS using an older PostgreSQL version, you can use the `pg_upgrade` tool to migrate.
+For details on the migration process, see link:https://www.postgresql.org/docs/10/pgupgrade.html[the PostgreSQL `pg_upgrade` documentation].
+
+If you are running on a distribution that does not provide PostgreSQL 10 packages by default, you can link:https://www.postgresql.org/download/[download packages provided by PostgreSQL instead].
+
+==== Minion Packages Combined
+
+The Minion RPM and Debian/Ubuntu packages have been combined into a single package.
+Previously it was possible to just install the core container and optionally a set of features on top, but in the real world no one used this, and it's still possible to choose what features are used with configuration.
+
+NOTE: If you were previously _only_ installing the sub-packages and not installing the wrapper `opennms-minion` RPM package, you may need to run this command to upgrade cleanly:
+
+[source, shell]
+----
+$ yum swap 'opennms-minion*' -- install opennms-minion
+----
+
 ==== Elasticsearch 7.x Support
+
+===== Version Compatibility
 
 All of the features that leverage integrations with Elasticsearch i.e. event & alarm history, flows & situation feedback have been updated to support Elasticsearch 7.x.
 Elasticsearch versions before 7.x are no longer supported.
 
-Given the pace of changes and the number of breaking changes between major versions of Elastisearch, we will focus on supporting a single major version of Elasticsearch per release moving forward.
+Given the pace of changes and the number of breaking changes between major versions of Elasticsearch, we will focus on supporting a single major version of Elasticsearch per release moving forward.
+
+===== ReST Plugin Configuration
+
+The configuration of the _Elasticsearch ReST plugin_ has changed.
+
+Some properties have new defaults and have been renamed.
+It is now also possible to define index settings and provide a index strategy to have more control over the index creation.
+
+Some properties of the plugin have changed.
+The following table shows the old (no longer supported) and the new property name, as well as the new default, which is used if the configuration is not updated manually.
+Please update the configuration file `etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg` accordingly.
+For more details on how to configure the plugin to use elasticsearch refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
+
+[options="header, autowidth"]
+|===
+| Old parameter | New parameter | Default Value
+
+| `elasticsearchUrl`
+| `elasticUrl`
+| `http://localhost:9200`
+
+| `esusername`
+| `globalElasticUser`
+| `-`
+
+| `espassword`
+| `globalElasticPassword`
+| `-`
+
+| `timeout`
+| `connTimeout`
+| `5000`
+
+| `socketTimeout`
+| `readTimeout`
+| `30000`
+
+|===
+
+Besides that the following default values have been changed:
+
+[options="header, autowidth"]
+|===
+| Parameter | Old default | New default
+
+| `batchSize`
+| `1`
+| `200`
+
+| `batchInterval`
+| `0`
+| `500`
+
+|`connTimeout`
+| `3000`
+| `5000`
+
+| `readTimeout`
+| `3000`
+| `30000`
+
+|===
+
+===== Index Properties
+
+It is now possible to define index-related properties, e.g. the number of shards and replicas.
+It is also possible to define a property  `elasticIndexStrategy` to determine if a `hourly`, `daily`, `monthly` or `yearly` index should be created.
+It defaults to `monthly`.
+
+For more details please refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
+
+==== Karaf Container
+
+The embedded Karaf has been upgraded to 4.2.
+
+This changes the default `users.properties` file.
+Ensure that the `admingroup` in `${OPENNMS_HOME}/etc/users.properties` contains the role `ssh`.
+You can use the link:https://github.com/OpenNMS/opennms/blob/c51bddef095a0ad23e31be13c241dc9d862950b7/container/karaf/src/main/filtered-resources/etc/users.properties[new default users.properties file] for comparison.
+
+Other notable Karaf and OSGi-related changes include:
+
+* We now support link:https://issues.opennms.org/browse/HZN-1436[adding OSGi-capable code at runtime] by putting a `.kar` file in the `deploy/` directory and adding relevant features to boot files in `etc/featuresBoot.d/`.
+* The usage of `config:edit` has changed in some cases.
+  This affects all configuration edits, where the configuration contains a `-`, e.g. `org.opennms.features.telemetry.listeners-udp-50003`.
+  If you are using Minion, you may be affected (e.g. for Telemetry Listeners/Adapters).
++
+For example, this set of configuration commands:
++
+----
+config:edit org.opennms.features.telemetry.listeners-udp-50003
+config:property-set key value
+config:update
+----
++
+...should now be written as:
++
+----
+config:edit --alias udp-50003 --factory org.opennms.features.telemetry.listeners
+config:property-set key value
+config:update
+----
+
+==== Polling, Collection, Plugins, Parsers, and Services
+
+* *Cassandra JMX*: The `cassandra30x.xml` datacollection config for thread pool metrics has been modified to be of type `counter` rather than type `gauge`.  If you are using RRD or JRobin storage, you will need to delete any `.jrb` or `.rrd` files with both `path_request` and `CurrentlyBlockedTasks` in their filename (eg, `org_apache_cassandra_metrics_type_ThreadPools_path_request_scope_MutationStage_name_CurrentlyBlockedTasks.jrb`).
+* *Pollerd and Collectd*: Additional attributes for thread pool graphs have been added to the Pollerd and Collectd mbeans.
+  If you are using `storeByGroup=true` with RRD or JRobin, you will need to delete the `OpenNMS_Name_Pollerd` and `OpenNMS_Name_Collectd` `.jrb` or `.rrd` files and let them be reinitialized.
+  Newts and `storeByGroup=false` should be unaffected.
+* *Dhcpd*: The _Dhcpd_ plugin (and its configuration) was removed in favor of a Minion-capable implementation.
+  The new _DhcpMonitor_ options can be set in the `poller-configuration.xml` file.
+* *Syslog*: The default parser used for _Syslog_ messages has been switched from the `CustomSyslogParser` to the `RadixTreeSyslogParser`.
+* *Plugins*: The _Plugin Manager_ is no longer distributed with OpenNMS.
+  Features or bundles should be installed via the Karaf Shell.
+
+IMPORTANT: If you have legacy SNMP agents which only support 32bit interface counters, the data collection for this interfaces will stop after you upgraded to 22.0.0.
+  To get them enabled, you have to create a data collection package and add the `mib2-interfaces` data collection group manually for this devices with the example below.
+
+.Example to collect 32bit MIB-2 Interface counter from nodes in a category configured in collectd-configuration.xml
+[source, xml]
+----
+<package name="Legacy-MIB2-Interfaces" remote="false">
+    <filter>categoryName == 'Legacy-MIB2-Interfaces'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254"/>
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+
+    <service name="SNMP" interval="300000" user-defined="false" status="on">
+        <parameter key="collection" value="legacy-32bit-mib2"/>
+        <parameter key="thresholding-enabled" value="true"/>
+    </service>
+</package>
+----
+
+.Load the Legacy MIB-2 Interfaces metrics configured in the datacollection-config.xml
+[source, xml]
+----
+<snmp-collection name="legacy-32bit-mib2" snmpStorageFlag="select">
+    <rrd step="300">
+        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+        <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        <rra>RRA:AVERAGE:0.5:288:366</rra>
+        <rra>RRA:MAX:0.5:288:366</rra>
+        <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <include-collection dataCollectionGroup="Legacy_MIB2-Interfaces"/>
+    <include-collection dataCollectionGroup="REF_MIB2-Interfaces"/>
+</snmp-collection>
+----
+
+==== Removed from Meridian 2019
+
+* The Centric Trouble Ticketer plugin has been removed.
+* The NCS-Alarm page and the NCS-Topology-Plugin have been removed. See issue link:https://issues.opennms.org/browse/HZN-1422[HZN-1422].
+* The remote poller map has been removed.
+* The Alarm Change Notifier plugin has been removed due to performance problems.  Use the Alarm History function instead.
+* The `resourcecli` tool has been removed in favor of link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-performance-mgmt-measurements-shell[Karaf shell commands] to perform the same operations.
+
+==== Vacuumd Alarm Handling
+
+In previous OpenNMS releases, a large portion of the alarm workflow was handled by Vacuumd automations, triggers, and actions.
+As part of the work to implement alarm correlation, this logic has been moved to Drools, running inside Alarmd.
+
+If you made any changes to `vacuumd-configuration.xml` related to alarms, it is strongly recommended you port them to the new Alarmd Drools context.
+The Drools rules are in the `$OPENNMS_HOME/etc/alarmd/drools-rules.d/` directory.
+
+Also, we no longer generate `alarmCreated`, `alarmEscalated`, `alarmCleared`, `alarmUncleared`, `alarmUpdatedWithReducedEvent`, and `alarmDeleted` events.
+Instead, it is recommended that you add Drools rules to react to alarm changes.
+For more complicated integrations, we also have a new API -- `AlarmLifecycleListener` -- for reacting to alarm changes.
+
+==== Event (and Alarm) Date/Time Formats
+
+Events and alarms previously used the current locale for formatting timestamps.
+As of Meridian 2019, we now format dates as ISO-8601 date-time with offsets (eg, `2011-12-03T10:15:30+01:00`) _and_ we expect dates in incoming events to be the same.
+This reduces the amount of code we run through trying to figure out date formats while parsing events, and simplifies things to work no matter what locale you are using.
+
+==== Developer Considerations
+
+* The `HttpService` can no longer be consumed.
+  This will only affect custom implementations of HTTP Servlets and Resources, but only if they are exposed via `httpServices.register(...)`.
+  If you need those, please expose the according services via the OSGi Service Registration.
+  Refer to the link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
+
+* Exposing Servlets now follow the OSGi Specification.
+  Refer to the  link:https://osgi.org/specification/osgi.cmpn/7.0.0/service.http.whiteboard.html[OSGi Http Whiteboard Specification] for more details.
+
+* Properties to expose Vaadin Applications have changed:
+  ** `init.widgetset` becomes `servlet.init.widgetset`
+  ** `alias` becomes `osgi.http.whiteboard.servlet.pattern`
+
+==== Helm 4
+
+Technically not a part of OpenNMS, but it's important to note that Helm 4 introduces a datasource that _replaces_ the "Faults" datasource.
+Migration of existing dashboards requires a few manual steps; documentation on how to do so will be available in link:https://docs.opennms.org/helm/releases/latest/helm/latest/welcome/index.html[the latest Helm documentation] once Helm 4 goes live.
 
 === Other Improvements
 
