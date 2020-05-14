@@ -24,7 +24,7 @@ This is the data against which {opennms-product-name} applies thresholds.
 Thresholds trigger events when a specified threshold value is met. 
 You can further create notifications and alarms for threshold events. 
 
-image::thresholding/thresholding-flow.png[thresholding, 400]
+image:thresholding/thresholding-flow.png[]
 
 === What Triggers a Thresholding Event?
 
@@ -178,7 +178,7 @@ For example,
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold. 
 For example, "Number of Processes" or "System Uptime":
 +
-image:thresholding/thresholding/graphs.png[Thresholding graph, 200]
+image:thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
 
