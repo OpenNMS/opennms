@@ -21,7 +21,7 @@ A simple _REST_ API is also made available for the purposes of evaluating the re
 This feature requires _Elasticsearch_ v6.3.x or greater.
 
 [[ga-alarm-history-setup]]
-=== Setup
+==== Setup
 
 Alarm history indexing can be enabled as follows:
 
