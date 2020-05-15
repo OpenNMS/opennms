@@ -23,10 +23,7 @@ find_tests()
 }
 
 echo "#### Generate project structure .json"
-(cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
-      -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
-      -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0)
-mvn -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+mvn --batch-mode --fail-at-end --legacy-local-repository --offline -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
