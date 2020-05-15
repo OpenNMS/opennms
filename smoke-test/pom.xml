@@ -301,12 +301,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-elasticsearch</artifactId>
-      <version>${camelVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
       <artifactId>org.opennms.core.ipc.sink.common</artifactId>
       <version>${project.version}</version>
