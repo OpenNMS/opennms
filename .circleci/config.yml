@@ -120,7 +120,6 @@ commands:
                 -Psmoke \
                 --legacy-local-repository \
                 --batch-mode \
-                --threads 8 \
                 de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
   save-maven-cache:
     description: "Maven: Save cache"
