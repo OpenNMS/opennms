@@ -116,7 +116,7 @@ It is now also possible to define index settings and provide a index strategy to
 Some properties of the plugin have changed.
 The following table shows the old (no longer supported) and the new property name, as well as the new default, which is used if the configuration is not updated manually.
 Please update the configuration file `etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg` accordingly.
-For more details on how to configure the plugin to use Elasticsearch refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
+For more details on how to configure the plugin to use Elasticsearch refer to link:https://meridian.opennms.com/docs/2019/latest/guide-admin/#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
 
 [options="header, autowidth"]
 |===
