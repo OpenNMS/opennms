@@ -1434,13 +1434,11 @@ CREATE TABLE location_specific_status_changes (
     CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
-create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
-CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(location);
-CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(location, ifserviceid);
-CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(location, ifserviceid, statustime);
-create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
-
-
+CREATE INDEX location_specific_status_changes_ifserviceid ON location_specific_status_changes(ifserviceid);
+CREATE INDEX location_specific_status_changes_location ON location_specific_status_changes(location);
+CREATE UNIQUE INDEX location_specific_status_changes_location_if_time ON location_specific_status_changes(location, ifserviceid, statustime);
+CREATE INDEX location_specific_status_changes_location_ifserviceid ON location_specific_status_changes(location, ifserviceid);
+CREATE INDEX location_specific_status_changes_statustime ON location_specific_status_changes(statustime);
 
 --########################################################################
 --# applications table - Contains list of applications for services

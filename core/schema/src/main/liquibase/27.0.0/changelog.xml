@@ -17,6 +17,17 @@
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+        <createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_location">
+            <column name="location"></column>
+        </createIndex>
+        <createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_location_ifserviceid">
+            <column name="location"></column>
+            <column name="ifserviceid"></column>
+        </createIndex>
+        <createIndex unique="true" tableName="location_specific_status_changes" indexName="location_specific_status_changes_location_if_time">
+            <column name="location"></column>
+            <column name="ifserviceid"></column>
+            <column name="statustime"></column>
+        </createIndex>
     </changeSet>
-    
 </databaseChangeLog>
