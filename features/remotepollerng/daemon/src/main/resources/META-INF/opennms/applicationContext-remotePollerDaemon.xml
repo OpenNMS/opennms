@@ -22,6 +22,7 @@
   <onmsgi:reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
   <onmsgi:reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient"/>
   <onmsgi:reference id="locationSpecificStatusDao" interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao"/>
+  <onmsgi:reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
 
@@ -32,8 +33,9 @@
     <constructor-arg index="3" ref="monitoredServiceDao"/>
     <constructor-arg index="4" ref="locationAwarePollerClient"/>
     <constructor-arg index="5" ref="locationSpecificStatusDao"/>
-    <constructor-arg index="6" ref="persisterFactory"/>
-    <constructor-arg index="7" ref="eventForwarder"/>
+    <constructor-arg index="6" ref="collectionAgentFactory" />
+    <constructor-arg index="7" ref="persisterFactory"/>
+    <constructor-arg index="8" ref="eventForwarder"/>
   </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">

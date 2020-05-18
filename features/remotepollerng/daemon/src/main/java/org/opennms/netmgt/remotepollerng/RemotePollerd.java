@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,14 +43,13 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.CollectionStatus;
-import org.opennms.netmgt.collection.api.LatencyCollectionAttribute;
-import org.opennms.netmgt.collection.api.LatencyCollectionAttributeType;
-import org.opennms.netmgt.collection.api.LatencyCollectionResource;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
+import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.RemoteLatencyResource;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -69,6 +67,7 @@ import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -93,13 +92,8 @@ import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * TODO:
- *  * Support dynamically scheduling/rescheduling services
- *  * RP model associates state with individual RPs, whereas this doesn't work with our Minion model
- *    - the state should be associated with locations instead
- *  * Save the state using m_locMonDao.saveStatusChange
- */
+import com.google.common.collect.Maps;
+
 @EventListener(name=RemotePollerd.NAME, logPrefix=RemotePollerd.LOG_PREFIX)
 public class RemotePollerd implements SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(RemotePollerd.class);
@@ -116,6 +110,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final MonitoredServiceDao monSvcDao;
     private final LocationAwarePollerClient locationAwarePollerClient;
     private final LocationSpecificStatusDao locationSpecificStatusDao;
+    private final CollectionAgentFactory collectionAgentFactory;
     private final PersisterFactory persisterFactory;
     private final EventForwarder eventForwarder;
 
@@ -127,6 +122,7 @@ public class RemotePollerd implements SpringServiceDaemon {
                          final MonitoredServiceDao monSvcDao,
                          final LocationAwarePollerClient locationAwarePollerClient,
                          final LocationSpecificStatusDao locationSpecificStatusDao,
+                         final CollectionAgentFactory collectionAgentFactory,
                          final PersisterFactory persisterFactory,
                          final EventForwarder eventForwarder) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
@@ -135,6 +131,7 @@ public class RemotePollerd implements SpringServiceDaemon {
         this.monSvcDao = Objects.requireNonNull(monSvcDao);
         this.locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         this.locationSpecificStatusDao = Objects.requireNonNull(locationSpecificStatusDao);
+        this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
     }
@@ -355,7 +352,7 @@ public class RemotePollerd implements SpringServiceDaemon {
 
             try {
                 if (pollResult.getResponseTime() != null) {
-                    saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult.getResponseTime(), polledService.getPkg());
+                    saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult, polledService.getPkg());
                 }
             } catch (final Exception e) {
                 LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
@@ -384,9 +381,11 @@ public class RemotePollerd implements SpringServiceDaemon {
         eventForwarder.sendNow(builder.getEvent());
     }
 
-    public void saveResponseTimeData(final String locationName, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
+    public void saveResponseTimeData(final String locationName, final OnmsMonitoredService monSvc, final PollStatus pollStatus, final Package pkg) {
         final String svcName = monSvc.getServiceName();
-        final Service svc = pollerConfig.getServiceInPackage(svcName, pkg);
+        final Service svc = this.pollerConfig.getServiceInPackage(svcName, pkg);
+
+        final String residentLocationName = monSvc.getIpInterface().getNode().getLocation().getLocationName();
 
         String dsName = getServiceParameter(svc, "ds-name");
         if (dsName == null) {
@@ -403,25 +402,52 @@ public class RemotePollerd implements SpringServiceDaemon {
             return;
         }
 
-        // FIXME: We don't need to recompute this everytime
-        RrdRepository repository = new RrdRepository();
-        repository.setStep(pollerConfig.getStep(pkg));
-        repository.setHeartBeat(repository.getHeartBeat());
-        repository.setRraList(pollerConfig.getRRAList(pkg));
+        // TODO: Apply thresholding
+
+        final RrdRepository repository = new RrdRepository();
+        repository.setStep(this.pollerConfig.getStep(pkg));
+        repository.setHeartBeat(repository.getStep() * 2);
+        repository.setRraList(this.pollerConfig.getRRAList(pkg));
         repository.setRrdBaseDir(new File(rrdRepository));
 
-        // FIXME: Use collectionset builder for this
-        LatencyCollectionResource latencyResource = new LatencyCollectionResource(monSvc.getServiceName(), InetAddressUtils.toIpAddrString(monSvc.getIpAddress()), locationName);
-        LatencyCollectionAttributeType latencyType = new LatencyCollectionAttributeType(rrdBaseName, dsName);
-        latencyResource.addAttribute(new LatencyCollectionAttribute(latencyResource,
-                latencyType, dsName, responseTime));
+        // Prefer ds-name over "response-time" for primary response-time value
+        final Map<String, Number> properties = Maps.newHashMap(pollStatus.getProperties());
+        if (!properties.containsKey(dsName) && properties.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
+            properties.put(dsName, properties.get(PollStatus.PROPERTY_RESPONSE_TIME));
+            properties.remove(PollStatus.PROPERTY_RESPONSE_TIME);
+        }
 
-        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
-        CollectionSetVisitor persister = persisterFactory.createPersister(params, repository, false, true, true);
+        // Build collection agent
+        final CollectionAgentDTO agent = new CollectionAgentDTO();
+        agent.setAddress(monSvc.getIpAddress());
+        agent.setForeignId(monSvc.getForeignId());
+        agent.setForeignSource(monSvc.getForeignSource());
+        agent.setNodeId(monSvc.getNodeId());
+        agent.setNodeLabel(monSvc.getIpInterface().getNode().getLabel());
+        agent.setLocationName(locationName);
+        agent.setStorageResourcePath(ResourcePath.get(LocationUtils.isDefaultLocationName(residentLocationName)
+                                                      ? ResourcePath.get()
+                                                      : ResourcePath.get(ResourcePath.sanitize(residentLocationName)),
+                                                      InetAddressUtils.str(monSvc.getIpAddress())));
+        agent.setStoreByForeignSource(false);
 
-        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(latencyResource, new Date());
-        collectionSet.setStatus(CollectionStatus.SUCCEEDED);
-        collectionSet.visit(persister);
+        // Create collection set from response times as gauges and persist
+        final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
+        final RemoteLatencyResource resource = new RemoteLatencyResource(locationName, InetAddressUtils.str(monSvc.getIpAddress()), svcName);
+        for (final Map.Entry<String, Number> e: properties.entrySet()) {
+            final String key = PollStatus.PROPERTY_RESPONSE_TIME.equals(e.getKey())
+                               ? dsName
+                               : e.getKey();
+
+            collectionSetBuilder.withGauge(resource, rrdBaseName, key, e.getValue());
+        }
+
+        collectionSetBuilder.build()
+                            .visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
+                                                                         repository,
+                                                                         false,
+                                                                         true,
+                                                                         true));
     }
 
     private String getServiceParameter(final Service svc, final String key) {
