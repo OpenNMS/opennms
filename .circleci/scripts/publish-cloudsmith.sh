@@ -31,7 +31,7 @@ publishPackage() {
   return "$ret"
 }
 
-for FILE in /tmp/rpm-meridian/*.rpm; do
+for FILE in /tmp/rpm-meridian/*.rpm /tmp/rpm-minion/*.rpm; do
   # give it 3 tries then die
   publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
   publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||

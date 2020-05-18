@@ -185,6 +185,8 @@ commands:
             cat /proc/sys/vm/swappiness
       - restore-workflow-assets:
           cache_prefix: oci-meridian
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
       - run:
           name: Load Meridian OCI image
           command: |
@@ -194,7 +196,7 @@ commands:
           name: Load Minion OCI image
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-minion/container.oci
       - run:
           name: Monitor JVM processes
           background: true
@@ -578,6 +580,12 @@ jobs:
           command: |
             cd opennms-container/meridian
             ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/meridian/images/container.oci
+          destination: meridian.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
       - cache-workflow-assets:
           cache_prefix: rpm-meridian
           source_path: target/rpm/RPMS/noarch
@@ -622,11 +630,12 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/minion/images/
+      - cache-workflow-assets:
+          cache_prefix: rpm-minion
+          source_path: target/rpm/RPMS/noarch
+      - cache-workflow-assets:
+          cache_prefix: oci-minion
+          source_path: opennms-container/minion/images/
   meridian-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -698,8 +707,9 @@ jobs:
   minion-publish-oci:
     executor: centos-build-executor
     steps:
-      - attach_workspace:
-          at: ~/
+      - cached-checkout
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -707,7 +717,7 @@ jobs:
           name: Load Minion OCI image, tag it and publish to registry
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-minion/container.oci
             ./tag.sh
             ./publish.sh
   integration-test:
@@ -892,6 +902,8 @@ jobs:
           cache_prefix: deb-meridian
       - restore-workflow-assets:
           cache_prefix: rpm-meridian
+      - restore-workflow-assets:
+          cache_prefix: rpm-minion
       - run:
           name: Publish Packages
           command: |

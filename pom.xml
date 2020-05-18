@@ -848,6 +848,12 @@
             <DynamicDependency>
               <groupId>com.google.code.gson</groupId>
               <artifactId>gson</artifactId>
+              <version>2.8.0</version> <!-- minion-core -->
+              <repositoryType>MAIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>com.google.code.gson</groupId>
+              <artifactId>gson</artifactId>
               <version>2.8.5</version> <!-- smoke-tests -->
               <repositoryType>MAIN</repositoryType>
             </DynamicDependency>
@@ -1243,7 +1249,7 @@
     <!-- other plugin versions -->
     <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
-    <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.6.2</maven.compiler.plugin.version>
     <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
     <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
 
