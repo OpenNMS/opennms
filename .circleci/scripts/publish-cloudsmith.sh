@@ -15,12 +15,10 @@ case "${CIRCLE_BRANCH}" in
     ;;
 esac
 
-find target -type f | sort -u
-
 publishPackage() {
   local _tmpdir;
   _tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t 'publish_cloudsmith_')"
-  echo "$@"
+  echo "publishing:" "$@"
   "$@" >"${_tmpdir}/publish.log" 2>&1
   ret="$?"
   cat "${_tmpdir}/publish.log"
@@ -33,13 +31,13 @@ publishPackage() {
   return "$ret"
 }
 
-for FILE in target/rpm/RPMS/noarch/*.rpm; do
+for FILE in /tmp/rpm-meridian/*.rpm; do
   # give it 3 tries then die
   publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
   publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
   publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" || exit 1
 done
-for FILE in target/debs/*.deb; do
+for FILE in /tmp/deb-meridian/*.deb; do
   # give it 3 tries then die
   publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
   publishPackage cloudsmith push deb --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
