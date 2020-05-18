@@ -98,13 +98,28 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-        - run:
-            name: Remove OpenNMS artifacts from cache
-            command: |
-              rm -rf ~/.m2/repository/org/opennms
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+        - run:
+            name: Collect Maven Dependencies
+            command: |
+              ./compile.pl -t \
+                -Dbuild.skip.tarball=true \
+                -DupdatePolicy=never \
+                --update-plugins \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=8 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -Pbuild-bamboo \
+                -Prun-expensive-tasks \
+                -Psmoke \
+                --legacy-local-repository \
+                --batch-mode \
+                de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -165,21 +180,27 @@ commands:
             sudo swapon /swapfile
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
+      - restore-workflow-assets:
+          cache_prefix: oci-horizon
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
+      - restore-workflow-assets:
+          cache_prefix: oci-sentinel
+      - run:
+          name: List OCI images
+          command: find /tmp/oci-* -type f | sort -u
       - run:
           name: Load Horizon OCI image
           command: |
-            cd opennms-container/horizon
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-horizon/container.oci
       - run:
           name: Load Minion OCI image
           command: |
-            cd opennms-container/minion
-            docker image load -i images/minion.oci
+            docker image load -i /tmp/oci-minion/minion.oci
       - run:
           name: Load Sentinel OCI image
           command: |
-            cd opennms-container/sentinel
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-sentinel/container.oci
       - run:
           name: Monitor JVM processes
           background: true
@@ -243,6 +264,8 @@ commands:
       - cached-checkout
       - extract-pom-version
       - restore-maven-cache
+      - update-maven-cache
+      - save-maven-cache
       - restore-nodejs-cache
       - run:
           name: Compile OpenNMS
@@ -251,7 +274,8 @@ commands:
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never -Daether.connector.resumeDownloads=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
@@ -260,6 +284,7 @@ commands:
               install --batch-mode
             pushd opennms-doc
               ../compile.pl \
+                -DupdatePolicy=never \
                 -Daether.connector.resumeDownloads=false \
                 -Daether.connector.basic.threads=1 \
                 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -267,7 +292,6 @@ commands:
                 -P'!jdk7+' \
                 install --batch-mode
             popd
-      - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
           root: ~/
@@ -335,14 +359,48 @@ commands:
           when: always
           path: ~/generated-tests
           destination: generated-tests
-  publish-cloudsmith:
+  cache-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      source_path:
+        description: the source path to cache
+        type: string
     steps:
-      - cloudsmith/ensure-api-key
-      - cloudsmith/install-cli
       - run:
-          name: Publish Packages
+          name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
           command: |
-            .circleci/scripts/publish-cloudsmith.sh
+            TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
+            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
+            find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
+      - save_cache:
+          key: << parameters.cache_prefix >>-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          paths:
+            - "/tmp/<< parameters.cache_prefix >>"
+  restore-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      target_path:
+        description: the target path to restore into
+        type: string
+        default: ""
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache_prefix >>-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+      - when:
+          condition: << parameters.target_path >>
+          steps:
+            - run:
+                name: Restoring assets to << parameters.target_path >> from cached prefix << parameters.cache_prefix >>
+                command: |
+                  SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
+                  mkdir -p "<< parameters.target_path >>"
+                  rsync -ar "${SOURCE_PATH}/" "$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')/"
 
 workflows:
   weekly-coverage:
@@ -516,6 +574,7 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - smoke-test-minimal
             - smoke-test-full
           filters:
             branches:
@@ -626,11 +685,13 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/minion.oci
           destination: minion.oci
+      - cache-workflow-assets:
+          cache_prefix: oci-minion
+          source_path: opennms-container/minion/images/
       - persist_to_workspace:
           root: ~/
           paths:
             - project/target/tarballs
-            - project/opennms-container/minion/images
 
   horizon-rpm-build:
     executor: centos-build-executor
@@ -668,11 +729,12 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/horizon/images/
+      - cache-workflow-assets:
+          cache_prefix: rpm-horizon
+          source_path: target/rpm/RPMS/noarch
+      - cache-workflow-assets:
+          cache_prefix: oci-horizon
+          source_path: opennms-container/horizon/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -701,10 +763,9 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch/
+      - cache-workflow-assets:
+          cache_prefix: rpm-minion
+          source_path: target/rpm/RPMS/noarch
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -743,11 +804,12 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/sentinel/images/
+      - cache-workflow-assets:
+          cache_prefix: rpm-sentinel
+          source_path: target/rpm/RPMS/noarch
+      - cache-workflow-assets:
+          cache_prefix: oci-sentinel
+          source_path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -797,10 +859,9 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/debs/
+      - cache-workflow-assets:
+          cache_prefix: deb-horizon
+          source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -827,10 +888,9 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/debs/
+      - cache-workflow-assets:
+          cache_prefix: deb-minion
+          source_path: target/debs
   sentinel-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -857,15 +917,15 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/debs/
+      - cache-workflow-assets:
+          cache_prefix: deb-sentinel
+          source_path: target/debs
   horizon-publish-oci:
     executor: centos-build-executor
     steps:
-      - attach_workspace:
-          at: ~/
+      - cached-checkout
+      - restore-workflow-assets:
+          cache_prefix: oci-horizon
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -873,14 +933,15 @@ jobs:
           name: Load Horizon OCI image, tag it and publish to registry
           command: |
             cd opennms-container/horizon
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-horizon/container.oci
             ./tag.sh
             ./publish.sh
   sentinel-publish-oci:
     executor: centos-build-executor
     steps:
-      - attach_workspace:
-          at: ~/
+      - cached-checkout
+      - restore-workflow-assets:
+          cache_prefix: oci-sentinel
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -888,7 +949,7 @@ jobs:
           name: Load Sentinel OCI image, tag it and publish to registry
           command: |
             cd opennms-container/sentinel
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-sentinel/container.oci
             ./tag.sh
             ./publish.sh
   integration-test:
@@ -1046,7 +1107,23 @@ jobs:
     executor: cloudsmith/default
     resource_class: small
     steps:
-      - attach_workspace:
-          at: ~/
-      - publish-cloudsmith
+      - checkout
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - restore-workflow-assets:
+          cache_prefix: deb-horizon
+      - restore-workflow-assets:
+          cache_prefix: deb-minion
+      - restore-workflow-assets:
+          cache_prefix: deb-sentinel
+      - restore-workflow-assets:
+          cache_prefix: rpm-horizon
+      - restore-workflow-assets:
+          cache_prefix: rpm-minion
+      - restore-workflow-assets:
+          cache_prefix: rpm-sentinel
+      - run:
+          name: Publish Packages
+          command: |
+            .circleci/scripts/publish-cloudsmith.sh
 
