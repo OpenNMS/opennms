@@ -41,6 +41,7 @@ import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
@@ -91,6 +92,8 @@ public class RemotePollerdIT implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager eventIpcManager;
+
+    private CollectionAgentFactory collectionAgentFactory;
 
     @Autowired
     private DatabasePopulator databasePopulator;
@@ -189,6 +192,7 @@ public class RemotePollerdIT implements InitializingBean {
                 this.databasePopulator.getMonitoredServiceDao(),
                 new LocationAwarePollerClientImpl(new MockRpcClientFactory()),
                 this.databasePopulator.getLocationSpecificStatusDao(),
+                this.collectionAgentFactory,
                 this.persisterFactory,
                 this.eventIpcManager
         );
