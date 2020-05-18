@@ -28,7 +28,7 @@ const RequisitionService = require('../model/RequisitionService');
   *
   * @description The controller for manage the modal dialog for add/edit IP interfaces of requisitioned nodes
   */
-  .controller('InterfaceController', ['$scope', '$uibModalInstance', 'RequisitionsService', 'foreignSource', 'foreignId', 'requisitionInterface', 'ipBlackList', 'isPrimaryExists', function($scope, $uibModalInstance, RequisitionsService, foreignSource, foreignId, requisitionInterface, ipBlackList, isPrimaryExists) {
+  .controller('InterfaceController', ['$scope', '$uibModalInstance', 'RequisitionsService', 'foreignSource', 'foreignId', 'requisitionInterface', 'ipBlackList', 'primaryInterface', function($scope, $uibModalInstance, RequisitionsService, foreignSource, foreignId, requisitionInterface, ipBlackList, primaryInterface) {
 
     /**
     * @description The foreign source (a.k.a the name of the requisition).
@@ -71,7 +71,7 @@ const RequisitionService = require('../model/RequisitionService');
     $scope.ipBlackList = ipBlackList;
 
 
-    $scope.isPrimaryExists = isPrimaryExists;
+    $scope.primaryInterface = primaryInterface;
 
     /**
     * @description An array map with the valid values for snmp-primary
@@ -108,9 +108,9 @@ const RequisitionService = require('../model/RequisitionService');
       $uibModalInstance.close($scope.requisitionInterface);
     };
 
-    $scope.getSnmpPrimaryValues = function() {
-
-      if($scope.isPrimaryExists) {
+    $scope.getSnmpPrimaryValues = function(ipAddress) {
+      const isPrimaryExists = $scope.primaryInterface !== null ? true : false;
+      if(isPrimaryExists && ipAddress !== $scope.primaryInterface) {
         const snmpPrimary = $scope.snmpPrimaryFields.filter(field => field.id !== 'P');
         return snmpPrimary;
       }

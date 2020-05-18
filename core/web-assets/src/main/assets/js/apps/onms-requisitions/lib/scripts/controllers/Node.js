@@ -387,7 +387,6 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
       var foreignSource = $scope.foreignSource;
       var foreignId = $scope.foreignId;
       var ipBlackList = [];
-      const isPrimaryExists = $scope.getPrimaryAddress() ? true : false;
       angular.forEach($scope.node.interfaces, function(intf) {
         ipBlackList.push(intf.ipAddress);
       });
@@ -402,7 +401,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
           foreignSource: function() { return foreignSource; },
           requisitionInterface: function() { return angular.copy(intfToEdit); },
           ipBlackList: function() { return ipBlackList; },
-          isPrimaryExists : function() { return isPrimaryExists;}
+          primaryInterface : function() { return $scope.getPrimaryAddress();}
         }
       });
 
