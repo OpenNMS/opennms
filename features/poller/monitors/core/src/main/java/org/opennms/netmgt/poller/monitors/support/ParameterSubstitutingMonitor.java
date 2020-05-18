@@ -164,7 +164,8 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
         } else {
             // We should never end up here since we should have a match, see getSubstitutedParameters(): if(m.matches){...}
             // If we get here something is wrong with the regexp => throw an exception
-            throw new IllegalStateException("Engineering mistake: the regular expression seems to be wrong.");
+            throw new IllegalStateException(
+                    String.format("Engineering mistake: we should never end up here, the regular expression seems to have a problem: %s", substitutionPattern.toString()));
         }
         Matcher o = substitutionPattern.matcher(formattedString);
         if (o.matches()) {
