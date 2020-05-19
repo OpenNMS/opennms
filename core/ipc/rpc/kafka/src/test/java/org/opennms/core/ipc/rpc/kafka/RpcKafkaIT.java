@@ -41,8 +41,12 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcServerManager.ACTIVE_RPC_REQUESTS;
+import static org.opennms.core.ipc.rpc.kafka.KafkaRpcServerManager.AVAILABLE_CONCURRENT_CALLS;
 
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -76,6 +80,8 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 
 import io.opentracing.Tracer;
@@ -136,7 +142,7 @@ public class RpcKafkaIT {
         rpcClient.start();
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
-                minionIdentity,tracerRegistry);
+                minionIdentity,tracerRegistry, new MetricRegistry());
         kafkaRpcServer.init();
         kafkaRpcServer.bind(getEchoRpcModule());
     }
@@ -259,9 +265,17 @@ public class RpcKafkaIT {
             sendRequestAndVerifyResponse(request, 0);
         }
         await().atMost(5, TimeUnit.SECONDS).until(() -> getKafkaRpcServer().getBulkhead().getMetrics().getAvailableConcurrentCalls(), is(0));
-
+        Optional<Map.Entry<String, Gauge>> activeRpcThreads = getKafkaRpcServer().getMetrics().getGauges().entrySet().stream().filter(entry -> entry.getKey().contains(ACTIVE_RPC_REQUESTS)).findFirst();
+        assertTrue(activeRpcThreads.isPresent());
+        assertThat((Integer)activeRpcThreads.get().getValue().getValue(), greaterThanOrEqualTo(500));
+        Optional<Map.Entry<String, Gauge>> availableConcurrentCalls = getKafkaRpcServer().getMetrics().getGauges().entrySet().stream().filter(entry -> entry.getKey().contains(AVAILABLE_CONCURRENT_CALLS)).findFirst();
+        assertTrue(availableConcurrentCalls.isPresent());
+        assertThat(availableConcurrentCalls.get().getValue().getValue(), equalTo(0));
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
-        assertThat(getKafkaRpcServer().getBulkhead().getMetrics().getAvailableConcurrentCalls(), greaterThanOrEqualTo(500));
+        assertThat(getKafkaRpcServer().getBulkhead().getMetrics().getAvailableConcurrentCalls(), equalTo(500));
+        activeRpcThreads = getKafkaRpcServer().getMetrics().getGauges().entrySet().stream().filter(entry -> entry.getKey().contains(ACTIVE_RPC_REQUESTS)).findFirst();
+        assertTrue(activeRpcThreads.isPresent());
+        assertThat(activeRpcThreads.get().getValue().getValue(), equalTo(0));
     }
 
 

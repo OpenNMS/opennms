@@ -339,6 +339,7 @@ include::text/minion/aws-sqs.adoc[]
 include::text/minion/offheap.adoc[]
 include::text/minion/jdbc-driver.adoc[]
 include::text/minion/ttl.adoc[]
+include::text/minion/kafka-rpc.adoc[]
 
 [[ga-sentinel]]
 == Sentinel

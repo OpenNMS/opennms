@@ -1,0 +1,20 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+===  Tuning Kafka RPC on Minion
+
+To avoid too many requests hogging the system at once, Kafka RPC on Minion limits the maximum number of concurrent RPC requests.
+Currently max number of concurrent requests is set to 1000 with maximum wait time of 100ms.
+With these settings when concurrent requests reach 1000, it only allow 10 extra requests per sec.
+
+These settings can be tuned as below
+
+[source, sh]
+----
+echo 'max.concurrent.calls=1000' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+----
+
+[source, sh]
+----
+echo 'max.wait.time=100' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+----

@@ -47,6 +47,8 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -109,7 +111,7 @@ public class RpcKafkaWithSingleTopicIT extends RpcKafkaIT {
         rpcClient.start();
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
-                minionIdentity,tracerRegistry);
+                minionIdentity,tracerRegistry, new MetricRegistry());
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
 
