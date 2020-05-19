@@ -120,8 +120,24 @@ public class RemotePollerdIT implements InitializingBean {
 
         this.eventSubscriber.getEventAnticipator().reset();
         this.eventSubscriber.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(2).setInterface(InetAddressUtils.getInetAddress("192.168.2.2")).setService("ICMP").setParam("location", "RDU").getEvent());
-        this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable());
+        this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable("old reason"));
         Assert.assertEquals(2, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
+        this.eventSubscriber.getEventAnticipator().verifyAnticipated();
+
+        this.eventSubscriber.getEventAnticipator().reset();
+        this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable("old reason"));
+        Assert.assertEquals(2, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
+        this.eventSubscriber.getEventAnticipator().verifyAnticipated();
+
+        this.eventSubscriber.getEventAnticipator().reset();
+        this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable()); // reason is null
+        Assert.assertEquals(2, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
+        this.eventSubscriber.getEventAnticipator().verifyAnticipated();
+
+        this.eventSubscriber.getEventAnticipator().reset();
+        this.eventSubscriber.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(2).setInterface(InetAddressUtils.getInetAddress("192.168.2.2")).setService("ICMP").setParam("location", "RDU").getEvent());
+        this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable("new reason"));
+        Assert.assertEquals(3, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
         this.eventSubscriber.getEventAnticipator().verifyAnticipated();
     }
 
