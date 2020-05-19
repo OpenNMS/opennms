@@ -27,7 +27,8 @@
     </onmsgi:service-properties>
   </onmsgi:service>
 
-  <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" >
+  <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager"
+        destroy-method="shutdown">
     <property name="metricRegistry" ref="kafkaSinkMetricRegistry"/>
   </bean>
   <onmsgi:service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
