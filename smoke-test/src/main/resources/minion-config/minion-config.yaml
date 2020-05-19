@@ -22,3 +22,8 @@ telemetry:
 netmgt:
   traps:
     trapd.listen.interface: "0.0.0.0"
+
+karaf:
+  shell:
+    ssh:
+      host: "0.0.0.0"
