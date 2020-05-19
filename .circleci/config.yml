@@ -100,13 +100,28 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-        - run:
-            name: Remove OpenNMS artifacts from cache
-            command: |
-              rm -rf ~/.m2/repository/org/opennms
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+        - run:
+            name: Collect Maven Dependencies
+            command: |
+              ./compile.pl -t \
+                -Dbuild.skip.tarball=true \
+                -DupdatePolicy=never \
+                --update-plugins \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=8 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -Pbuild-bamboo \
+                -Prun-expensive-tasks \
+                -Psmoke \
+                --legacy-local-repository \
+                --batch-mode \
+                de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -168,16 +183,20 @@ commands:
             sudo swapon /swapfile
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
+      - restore-workflow-assets:
+          cache_prefix: oci-meridian
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
       - run:
           name: Load Meridian OCI image
           command: |
             cd opennms-container/meridian
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-meridian/container.oci
       - run:
           name: Load Minion OCI image
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-minion/container.oci
       - run:
           name: Monitor JVM processes
           background: true
@@ -241,6 +260,8 @@ commands:
       - cached-checkout
       - extract-pom-version
       - restore-maven-cache
+      - update-maven-cache
+      - save-maven-cache
       - restore-nodejs-cache
       - run:
           name: Compile OpenNMS
@@ -249,7 +270,8 @@ commands:
             mvn clean -DskipTests=true
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
-              -DupdatePolicy=never -Daether.connector.resumeDownloads=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
@@ -258,6 +280,7 @@ commands:
               install --batch-mode
             pushd opennms-doc
               ../compile.pl \
+                -DupdatePolicy=never \
                 -Daether.connector.resumeDownloads=false \
                 -Daether.connector.basic.threads=1 \
                 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -265,7 +288,6 @@ commands:
                 -P'!jdk7+' \
                 install --batch-mode
             popd
-      - save-maven-cache
       - save-nodejs-cache
       - persist_to_workspace:
           root: ~/
@@ -333,14 +355,48 @@ commands:
           when: always
           path: ~/generated-tests
           destination: generated-tests
-  publish-cloudsmith:
+  cache-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      source_path:
+        description: the source path to cache
+        type: string
     steps:
-      - cloudsmith/ensure-api-key
-      - cloudsmith/install-cli
       - run:
-          name: Publish Packages
+          name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
           command: |
-            .circleci/scripts/publish-cloudsmith.sh
+            TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
+            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
+            find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
+      - save_cache:
+          key: << parameters.cache_prefix >>-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          paths:
+            - "/tmp/<< parameters.cache_prefix >>"
+  restore-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      target_path:
+        description: the target path to restore into
+        type: string
+        default: ""
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache_prefix >>-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+      - when:
+          condition: << parameters.target_path >>
+          steps:
+            - run:
+                name: Restoring assets to << parameters.target_path >> from cached prefix << parameters.cache_prefix >>
+                command: |
+                  SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
+                  mkdir -p "<< parameters.target_path >>"
+                  rsync -ar "${SOURCE_PATH}/" "$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')/"
 
 workflows:
 #  weekly-coverage:
@@ -478,6 +534,7 @@ workflows:
 #            - meridian-rpm-build
 #            - minion-rpm-build
 #            - meridian-deb-build
+#            - smoke-test-minimal
 #            - smoke-test-full
 #          filters:
 #            branches:
@@ -531,11 +588,12 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/meridian/images/
+      - cache-workflow-assets:
+          cache_prefix: rpm-meridian
+          source_path: target/rpm/RPMS/noarch
+      - cache-workflow-assets:
+          cache_prefix: oci-meridian
+          source_path: opennms-container/meridian/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -574,11 +632,12 @@ jobs:
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/rpm/RPMS/noarch/
-            - project/opennms-container/minion/images/
+      - cache-workflow-assets:
+          cache_prefix: rpm-minion
+          source_path: target/rpm/RPMS/noarch
+      - cache-workflow-assets:
+          cache_prefix: oci-minion
+          source_path: opennms-container/minion/images/
   meridian-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -628,15 +687,15 @@ jobs:
       - store_artifacts:
           path: ~/project/target/debs
           destination: debs
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/debs/
+      - cache-workflow-assets:
+          cache_prefix: deb-meridian
+          source_path: target/debs
   meridian-publish-oci:
     executor: centos-build-executor
     steps:
-      - attach_workspace:
-          at: ~/
+      - cached-checkout
+      - restore-workflow-assets:
+          cache_prefix: oci-meridian
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -644,14 +703,15 @@ jobs:
           name: Load Meridian OCI image, tag it and publish to registry
           command: |
             cd opennms-container/meridian
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-meridian/container.oci
             ./tag.sh
             ./publish.sh
   minion-publish-oci:
     executor: centos-build-executor
     steps:
-      - attach_workspace:
-          at: ~/
+      - cached-checkout
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
@@ -659,7 +719,7 @@ jobs:
           name: Load Minion OCI image, tag it and publish to registry
           command: |
             cd opennms-container/minion
-            docker image load -i images/container.oci
+            docker image load -i /tmp/oci-minion/container.oci
             ./tag.sh
             ./publish.sh
   integration-test:
@@ -837,7 +897,17 @@ jobs:
     executor: cloudsmith/default
     resource_class: small
     steps:
-      - attach_workspace:
-          at: ~/
-      - publish-cloudsmith
+      - checkout
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - restore-workflow-assets:
+          cache_prefix: deb-meridian
+      - restore-workflow-assets:
+          cache_prefix: rpm-meridian
+      - restore-workflow-assets:
+          cache_prefix: rpm-minion
+      - run:
+          name: Publish Packages
+          command: |
+            .circleci/scripts/publish-cloudsmith.sh
 
