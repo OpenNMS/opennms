@@ -490,11 +490,25 @@ workflows:
 #                - /^features.*/
 #                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
+#      - minion-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - master
+#                - develop
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
 #      - create-merge-foundation-branch:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
 #            - meridian-deb-build
+#            - minion-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
@@ -506,6 +520,7 @@ workflows:
 #          # if everything passes
 #          requires:
 #            - meridian-deb-build
+#            - minion-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
@@ -531,9 +546,8 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-rpm-build
-#            - minion-rpm-build
 #            - meridian-deb-build
+#            - minion-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #          filters:
@@ -689,6 +703,9 @@ jobs:
           destination: debs
       - cache-workflow-assets:
           cache_prefix: deb-meridian
+          source_path: target/debs
+      - cache-workflow-assets:
+          cache_prefix: deb-minion
           source_path: target/debs
   meridian-publish-oci:
     executor: centos-build-executor
@@ -904,6 +921,8 @@ jobs:
           cache_prefix: deb-meridian
       - restore-workflow-assets:
           cache_prefix: rpm-meridian
+      - restore-workflow-assets:
+          cache_prefix: deb-minion
       - restore-workflow-assets:
           cache_prefix: rpm-minion
       - run:

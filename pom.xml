@@ -798,13 +798,7 @@
             <DynamicDependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-assembly-plugin</artifactId>
-              <version>2.5.5</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-resources-plugin</artifactId>
-              <version>2.5</version> <!-- pulled in by assembly plugin -->
+              <version>3.0.0</version>
               <repositoryType>PLUGIN</repositoryType>
             </DynamicDependency>
             <DynamicDependency>
