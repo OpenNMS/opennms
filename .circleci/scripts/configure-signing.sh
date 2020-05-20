@@ -16,6 +16,14 @@ if [ -n "$JAVA_KEYSTORE" ]; then
 
   cat <<END >"$HOME/.m2/settings.xml"
 <settings>
+ <mirrors>
+  <mirror>
+   <id>central-https</id>
+   <mirrorOf>central</mirrorOf>
+   <name>Maven Central Override</name>
+   <url>https://repo1.maven.org/maven2/</url>
+  </mirror>
+ </mirrors>
  <profiles>
   <profile>
    <id>codesign</id>
