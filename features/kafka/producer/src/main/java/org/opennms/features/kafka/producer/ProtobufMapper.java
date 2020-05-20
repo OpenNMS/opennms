@@ -42,7 +42,6 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -236,8 +235,7 @@ public class ProtobufMapper {
             if (parm.getParmName() == null || parm.getValue() == null) {
                 continue;
             }
-            String value = EventDatabaseConstants.escape(parm.getValue().getContent() == null ? "" :
-                    parm.getValue().getContent(), EventDatabaseConstants.NAME_VAL_DELIM);
+            String value = parm.getValue().getContent() == null ? "" : parm.getValue().getContent();
             builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
                     .setName(parm.getParmName())
                     .setValue(value));
