@@ -192,12 +192,12 @@ commands:
           name: Load Meridian OCI image
           command: |
             cd opennms-container/meridian
-            docker image load -i /tmp/oci-meridian/container.oci
+            docker image load -i /tmp/oci-meridian/*.oci
       - run:
           name: Load Minion OCI image
           command: |
             cd opennms-container/minion
-            docker image load -i /tmp/oci-minion/container.oci
+            docker image load -i /tmp/oci-minion/*.oci
       - run:
           name: Monitor JVM processes
           background: true
@@ -381,7 +381,7 @@ commands:
           name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
           command: |
             TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
-            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            rsync -avr "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
@@ -714,7 +714,7 @@ jobs:
           name: Load Meridian OCI image, tag it and publish to registry
           command: |
             cd opennms-container/meridian
-            docker image load -i /tmp/oci-meridian/container.oci
+            docker image load -i /tmp/oci-meridian/*.oci
             ./tag.sh
             ./publish.sh
   minion-publish-oci:
@@ -730,7 +730,7 @@ jobs:
           name: Load Minion OCI image, tag it and publish to registry
           command: |
             cd opennms-container/minion
-            docker image load -i /tmp/oci-minion/container.oci
+            docker image load -i /tmp/oci-minion/*.oci
             ./tag.sh
             ./publish.sh
   integration-test:
