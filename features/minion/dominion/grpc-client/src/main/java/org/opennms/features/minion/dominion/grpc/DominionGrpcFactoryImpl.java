@@ -41,9 +41,8 @@ public class DominionGrpcFactoryImpl implements DominionGrpcFactory {
     private final String clientId;
     private final String clientSecret;
 
-    public DominionGrpcFactoryImpl(String host, String port, MinionIdentity minionIdentity) {
-        this(host, port, Objects.requireNonNull(minionIdentity).getId(),
-                System.getenv("DOMINION_GRPC_CLIENT_SECRET"));
+    public DominionGrpcFactoryImpl(String host, String port, String clientSecret, MinionIdentity minionIdentity) {
+        this(host, port, Objects.requireNonNull(minionIdentity).getId(), clientSecret);
     }
 
     public DominionGrpcFactoryImpl(String host, String port, String clientId, String clientSecret) {
@@ -52,6 +51,10 @@ public class DominionGrpcFactoryImpl implements DominionGrpcFactory {
         Objects.requireNonNull(clientId);
         Objects.requireNonNull(clientSecret);
 
+        if (clientSecret.isEmpty()) {
+            throw new IllegalArgumentException("The client secret cannot be empty");
+        }
+        
         this.clientId = clientId;
         this.clientSecret = clientSecret;
 

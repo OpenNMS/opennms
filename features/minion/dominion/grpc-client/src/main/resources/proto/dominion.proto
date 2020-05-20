@@ -1,0 +1,48 @@
+// Copied from the Dominion repo for reference
+syntax = "proto3";
+
+package dominion.v1;
+
+option java_package = "org.opennms.dominion.local.rpc.grpc";
+option java_outer_classname = "DominionGrpc";
+
+message ClientCredentials {
+    string clientId = 1;
+    string clientSecret = 2;
+}
+
+service SecureCredentialsVault {
+    rpc ScvGetSupportedAliases (ScvSupportedAliasesRequest) returns (ScvSupportedAliasesResponse);
+    rpc ScvGetCredentials (ScvGetCredentialsRequest) returns (ScvGetCredentialsResponse);
+    rpc ScvSetCredentials (ScvSetCredentialsRequest) returns (ScvSetCredentialsResponse);
+}
+
+message ScvSupportedAliasesRequest {
+      ClientCredentials clientCredentials = 1;
+}
+
+message ScvSupportedAliasesResponse {
+    repeated string aliases = 1;
+}
+
+message ScvGetCredentialsRequest {
+    ClientCredentials clientCredentials = 1;
+    string alias = 2;
+}
+
+message ScvGetCredentialsResponse {
+    string user = 1;
+    string password = 2;
+    map<string, string> attributes = 3;
+}
+
+message ScvSetCredentialsRequest {
+    ClientCredentials clientCredentials = 1;
+    string alias = 2;
+    string user = 3;
+    string password = 4;
+    map<string, string> attributes = 5;
+}
+
+message ScvSetCredentialsResponse {
+}

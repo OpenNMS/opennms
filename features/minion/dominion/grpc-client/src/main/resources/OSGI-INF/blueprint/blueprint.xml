@@ -21,6 +21,7 @@
         <cm:default-properties>
             <cm:property name="host" value="localhost"/>
             <cm:property name="port" value="8083"/>
+            <cm:property name="clientSecret" value=""/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -29,6 +30,7 @@
           destroy-method="destroy">
         <argument value="[[host]]"/>
         <argument value="[[port]]"/>
+        <argument value="[[clientSecret]]"/>
         <argument ref="minionIdentity"/>
     </bean>
     <service ref="dominionGrpcFactory" interface="org.opennms.features.minion.dominion.grpc.DominionGrpcFactory"/>
