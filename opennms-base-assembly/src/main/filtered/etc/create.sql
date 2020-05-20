@@ -343,7 +343,7 @@ CREATE TABLE scanreports (
     CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
+CREATE UNIQUE INDEX scanreports_id_idx on scanreports(id);
 
 --#####################################################
 --# scanreportproperties Table - Contains an arbitrary collection of properties associated with a scan report
@@ -1423,7 +1423,7 @@ create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathSe
 --#############################################################################
 CREATE TABLE location_specific_status_changes (
     id INTEGER,
-    systemId TEXT NOT NULL,
+    location TEXT NOT NULL,
     ifServiceId INTEGER NOT NULL,
     statusCode INTEGER NOT NULL,
     statusTime timestamp with time zone NOT NULL,
@@ -1431,14 +1431,13 @@ CREATE TABLE location_specific_status_changes (
     responseTime DOUBLE PRECISION,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
-    CONSTRAINT location_specific_status_changes_systemid_fkey FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
 create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
-CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);
-CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(systemId, ifserviceid);
-CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(systemId, ifserviceid, statustime);
+CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(location);
+CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(location, ifserviceid);
+CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(location, ifserviceid, statustime);
 create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
 
 

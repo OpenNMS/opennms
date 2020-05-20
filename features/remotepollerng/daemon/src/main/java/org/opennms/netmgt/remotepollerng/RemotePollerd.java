@@ -259,32 +259,41 @@ public class RemotePollerd implements SpringServiceDaemon {
     }
 
     protected void reportResult(final String locationName, final RemotePolledService polledService, final PollStatus pollResult) {
-        final OnmsMonitoringLocation location = this.monitoringLocationDao.get(locationName);
+        sessionUtils.withTransaction(() -> {
+            final OnmsMonitoringLocation location = this.monitoringLocationDao.get(locationName);
 
-        final OnmsLocationSpecificStatus status = new OnmsLocationSpecificStatus();
-        status.setLocation(location);
-        status.setMonitoredService(polledService.getMonSvc());
-        status.setPollResult(pollResult);
+            final OnmsLocationSpecificStatus oldLocationSpecificStatus = this.locationSpecificStatusDao.getMostRecentStatusChange(location, polledService.getMonSvc());
 
-        this.locationSpecificStatusDao.saveStatusChange(status);
+            if (oldLocationSpecificStatus == null || oldLocationSpecificStatus.getPollResult().getStatusCode() != pollResult.getStatusCode() ||
+                    (pollResult.getReason() != null && !pollResult.getReason().equals(oldLocationSpecificStatus.getPollResult().getReason()))) {
+                final OnmsLocationSpecificStatus status = new OnmsLocationSpecificStatus();
+                status.setLocation(location);
+                status.setMonitoredService(polledService.getMonSvc());
+                status.setPollResult(pollResult);
 
-        try {
-            if (pollResult.getResponseTime() != null) {
-                saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult.getResponseTime(), polledService.getPkg());
+                this.locationSpecificStatusDao.saveStatusChange(status);
+
+                try {
+                    sendRegainedOrLostServiceEvent(locationName, polledService.getMonSvc(), pollResult);
+                } catch (final Exception e) {
+                    LOG.error("Unable to save result for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
+                }
             }
-        } catch (final Exception e) {
-            LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
-        }
 
-        try {
-            sendRegainedOrLostServiceEvent(locationName, polledService.getMonSvc(), pollResult);
-        } catch (final Exception e) {
-            LOG.error("Unable to save result for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
-        }
+            try {
+                if (pollResult.getResponseTime() != null) {
+                    saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult.getResponseTime(), polledService.getPkg());
+                }
+            } catch (final Exception e) {
+                LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
+            }
+
+            return null;
+        });
     }
 
     private static EventBuilder createEventBuilder(final String locationName, final String uei) {
-        final EventBuilder eventBuilder = new EventBuilder(uei, "PollerBackEnd")
+        final EventBuilder eventBuilder = new EventBuilder(uei, "RemotePollerd")
                 .addParam(EventConstants.PARM_LOCATION, locationName);
         return eventBuilder;
     }
