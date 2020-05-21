@@ -182,22 +182,12 @@ commands:
             sudo swapon /swapfile
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
-      - restore-workflow-assets:
-          cache_prefix: oci-horizon
-      - restore-workflow-assets:
-          cache_prefix: oci-minion
-      - restore-workflow-assets:
-          cache_prefix: oci-sentinel
-      - run:
-          name: Load Horizon OCI image
-          command: |
-            cd opennms-container/horizon
-            docker image load -i /tmp/oci-horizon/container.oci
-      - run:
-          name: Load Minion OCI image
-          command: |
-            cd opennms-container/minion
-            docker image load -i /tmp/oci-minion/container.oci
+      - load-oci:
+          key: horizon
+      - load-oci:
+          key: minion
+      - load-oci:
+          key: sentinel
       - run:
           name: Load Sentinel OCI image
           command: |
@@ -379,7 +369,7 @@ commands:
         description: the cache prefix
         type: string
       source_path:
-        description: the source path to cache
+        description: the source directory to cache
         type: string
     steps:
       - run:
@@ -399,7 +389,7 @@ commands:
         description: the cache prefix
         type: string
       target_path:
-        description: the target path to restore into
+        description: the target directory to restore into
         type: string
         default: ""
     steps:
@@ -415,6 +405,38 @@ commands:
                   SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
                   mkdir -p "<< parameters.target_path >>"
                   rsync -ar "${SOURCE_PATH}/" "$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')/"
+  cache-oci:
+    parameters:
+      key:
+        description: the cache key for storing the OCI
+        type: string
+      path:
+        description: the path to the directory containing the OCI
+        type: string
+    steps:
+      - cache-workflow-assets:
+          cache_prefix: oci-<< parameters.key >>
+          source_path: << parameters.path >>
+  load-oci:
+    parameters:
+      key:
+        description: the OCI cache key to restore
+        type: string
+    steps:
+      - restore-workflow-assets:
+          cache_prefix: oci-<< parameters.key >>
+      - run:
+          name: Load Docker Image(s) in oci-<< parameters.key >>
+          command: |
+            cd "/tmp/oci-<< parameters.key >>"
+            if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
+              echo "ERROR: No OCI files to load. Something probably went wrong earlier."
+              exit 1
+            fi
+            for FILE in *.oci; do
+              echo "Loading ${FILE} into Docker..."
+              docker image load -i "$FILE"
+            done
 
 workflows:
   weekly-coverage:
@@ -649,9 +671,9 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-horizon
           source_path: target/rpm/RPMS/noarch
-      - cache-workflow-assets:
-          cache_prefix: oci-horizon
-          source_path: opennms-container/horizon/images/
+      - cache-oci:
+          key: horizon
+          path: opennms-container/horizon/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -693,9 +715,9 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-minion
           source_path: target/rpm/RPMS/noarch
-      - cache-workflow-assets:
-          cache_prefix: oci-minion
-          source_path: opennms-container/minion/images/
+      - cache-oci:
+          key: minion
+          path: opennms-container/minion/images/
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
@@ -737,9 +759,9 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: rpm-sentinel
           source_path: target/rpm/RPMS/noarch
-      - cache-workflow-assets:
-          cache_prefix: oci-sentinel
-          source_path: opennms-container/sentinel/images/
+      - cache-oci:
+          key: sentinel
+          path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
     resource_class: large
@@ -854,48 +876,45 @@ jobs:
     executor: centos-build-executor
     steps:
       - cached-checkout
-      - restore-workflow-assets:
-          cache_prefix: oci-horizon
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
+      - load-oci:
+          key: horizon
       - run:
-          name: Load Horizon OCI image, tag it and publish to registry
+          name: tag horizon Docker image and publish to registry
           command: |
             cd opennms-container/horizon
-            docker image load -i /tmp/oci-horizon/container.oci
             ./tag.sh
             ./publish.sh
   minion-publish-oci:
     executor: centos-build-executor
     steps:
       - cached-checkout
-      - restore-workflow-assets:
-          cache_prefix: oci-minion
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
+      - load-oci:
+          key: minion
       - run:
-          name: Load Minion OCI image, tag it and publish to registry
+          name: tag minion Docker image and publish to registry
           command: |
             cd opennms-container/minion
-            docker image load -i /tmp/oci-minion/container.oci
             ./tag.sh
             ./publish.sh
   sentinel-publish-oci:
     executor: centos-build-executor
     steps:
       - cached-checkout
-      - restore-workflow-assets:
-          cache_prefix: oci-sentinel
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
+      - load-oci:
+          key: sentinel
       - run:
-          name: Load Sentinel OCI image, tag it and publish to registry
+          name: tag sentinel Docker image and publish to registry
           command: |
             cd opennms-container/sentinel
-            docker image load -i /tmp/oci-sentinel/container.oci
             ./tag.sh
             ./publish.sh
   integration-test:
