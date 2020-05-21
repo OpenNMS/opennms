@@ -171,9 +171,14 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-identity" description="Minion :: Identity" version="${project.version}">
-        <feature>opennms-distributed-core-impl</feature>
-        <bundle>mvn:org.opennms.features.minion/minion-identity-impl/${project.version}</bundle>
+    <feature name="minion-rest-client" description="Minion :: ReST Client" version="${project.version}">
+        <feature>opennms-health</feature>
+        <feature>scv-api</feature>
+
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
+        <bundle>mvn:org.opennms.features.minion/minion-rest-client/${project.version}</bundle>
     </feature>
 
 </features>

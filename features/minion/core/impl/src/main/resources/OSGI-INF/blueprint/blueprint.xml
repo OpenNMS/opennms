@@ -12,6 +12,8 @@
 
     <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
         <cm:default-properties>
+            <cm:property name="location" value="MINION"/>
+            <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
             <cm:property name="http-url" value="http://127.0.0.1:8980/opennms"/>
             <cm:property name="broker-url" value="failover:tcp://127.0.0.1:61616"/>
             <cm:property name="broker-max-connections" value="8"/>
@@ -27,23 +29,19 @@
         <property name="brokerMaxConnections" value="[[broker-max-connections]]"/>
         <property name="brokerConcurrentConsumers" value="[[broker-concurrent-consumers]]"/>
         <property name="brokerIdleTimeout" value="[[broker-idle-timeout]]"/>
+        <property name="httpUrl" value="[[http-url]]"/>
     </bean>
     <service ref="controllerConfig" interface="org.opennms.distributed.core.api.ControllerConfig"/>
 
-    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
-
-    <!-- REST Client used to communicate with the OpenNMS controller -->
-    <bean id="restClient" class="org.opennms.distributed.core.impl.ScvEnabledRestClientImpl">
-        <argument value="[[http-url]]"/>
-        <argument ref="secureCredentialsVault"/>
-        <argument value="opennms.http"/>
+    <!-- A canonical source for this Minion's identity -->
+    <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
+       <argument value="[[location]]"/>
+       <argument value="[[id]]"/>
     </bean>
-    <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
-
-    <!-- ReST Health Check -->
-    <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
-            <argument ref="restClient"/>
-        </bean>
+    <service ref="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
+    <service ref="minionIdentity" interface="org.opennms.distributed.core.api.Identity">
+        <service-properties>
+            <entry key="systemType" value="Minion"/>
+        </service-properties>
     </service>
 </blueprint>

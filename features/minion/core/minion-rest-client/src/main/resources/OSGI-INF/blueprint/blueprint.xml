@@ -1,0 +1,34 @@
+<blueprint
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
+
+    <!-- Retrieve the httpUrl from the controller configuration service since
+         we can't reliably reference the same PID from multiple bundles -->
+    <reference id="controllerConfig" interface="org.opennms.distributed.core.api.ControllerConfig" />
+    <bean id="httpUrl" factory-ref="controllerConfig" factory-method="getHttpUrl"/>
+
+    <!-- REST Client used to communicate with the OpenNMS controller -->
+    <bean id="restClient" class="org.opennms.distributed.core.impl.ScvEnabledRestClientImpl">
+        <argument ref="httpUrl"/>
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.http"/>
+    </bean>
+    <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
+
+    <!-- ReST Health Check -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
+            <argument ref="restClient"/>
+        </bean>
+    </service>
+</blueprint>

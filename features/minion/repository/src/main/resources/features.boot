@@ -11,7 +11,7 @@ opennms-trapd-listener
 opennms-events-sink-dispatcher
 opennms-send-event-command
 opennms-dnsresolver-netty
-minion-identity
+minion-rest-client
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy

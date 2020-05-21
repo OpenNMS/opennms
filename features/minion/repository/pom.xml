@@ -51,7 +51,7 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-send-event-command</feature>
                                 <feature>opennms-events-sink-dispatcher</feature>
-                                <feature>minion-identity</feature>
+                                <feature>minion-rest-client</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
@@ -152,7 +152,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
-            <artifactId>minion-identity-impl</artifactId>
+            <artifactId>minion-rest-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
