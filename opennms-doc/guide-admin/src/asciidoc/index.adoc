@@ -353,10 +353,6 @@ include::text/minion/ttl.adoc[]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
 
-== Internal Plugins
-include::text/plugins/introduction.adoc[]
-include::text/plugins/opennms-es-rest.adoc[]
-
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
 include::text/workarounds/snmp.adoc[]

@@ -21,9 +21,9 @@
       <label class="col-form-label" for="snmpPrimary">SNMP Primary</label>
       <input class="form-control" type="text" id="snmpPrimary" name="snmpPrimary" placeholder="SNMP Primary Flag (choose one from the list)"
              ng-model="requisitionInterface.snmpPrimary" typeahead-editable="false" typeahead-min-length="0"
-             uib-typeahead="a.id as a.title for a in snmpPrimaryFields | filter:$viewValue" required
+             uib-typeahead="a.id as a.title for a in getSnmpPrimaryValues(requisitionInterface.ipAddress) | filter:$viewValue" required
              ng-class="{ 'is-invalid' : intfForm.snmpPrimary.$invalid }">
-      <p ng-show="intfForm.snmpPrimary.$invalid" class="invalid-feedback">A valid SNMP Primary Flag is required.</p>
+      <p ng-show="intfForm.snmpPrimary.$invalid" class="invalid-feedback">A valid SNMP Primary Flag is required, only one primary interface is allowed within the node.</p>
     </div>
     <label ng-show="requisitionInterface.services.length > 0">Services</label>
     <ng-form name="serviceForm" ng-repeat="service in requisitionInterface.services">
