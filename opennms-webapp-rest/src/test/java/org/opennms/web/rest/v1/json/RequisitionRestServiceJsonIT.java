@@ -244,11 +244,11 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals("VPN interface", intf.getString("descr"));
 
         // set attributes
-        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 202, "/nodes/4243/interfaces/192.0.2.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=N", 202, "/nodes/4243/interfaces/192.0.2.204");
         json = sendRequest(GET, url, 200);
         intf = new JSONObject(json);
         assertEquals("Total Crap", intf.getString("descr"));
-        assertEquals("P", intf.getString("snmp-primary"));
+        assertEquals("N", intf.getString("snmp-primary"));
         assertEquals(3, intf.getInt("status"));
 
         // delete interface
