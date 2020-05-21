@@ -737,8 +737,6 @@ jobs:
     executor: centos-build-executor
     steps:
       - cached-checkout
-      - restore-workflow-assets:
-          cache_prefix: oci-minion
       - setup_remote_docker:
           docker_layer_caching: true
       - dockerhub-login
