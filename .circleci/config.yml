@@ -606,21 +606,22 @@ workflows:
 #          filters:
 #            branches:
 #              only: /^from-foundation.*/
-#      - publish-cloudsmith:
-#          # technically only requires the RPM/deb builds, but only publish
-#          # if everything passes
-#          requires:
+      - publish-cloudsmith:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
 #            - meridian-deb-build
 #            - minion-deb-build
 #            - sentinel-deb-build
-#            - smoke-test-minimal
-#            - smoke-test-full
-#          filters:
-#            branches:
-#              only:
-#                - master
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only:
+                - /^master-.*/
 #                - develop
-#                - /^release-.*/
+                - /^release-.*/
 #                - /^foundation.*/
 
 jobs:
@@ -1095,18 +1096,24 @@ jobs:
       - checkout
       - cloudsmith/ensure-api-key
       - cloudsmith/install-cli
-      - restore-workflow-assets:
-          cache_prefix: deb-meridian
-      - restore-workflow-assets:
-          cache_prefix: deb-minion
-      - restore-workflow-assets:
-          cache_prefix: deb-sentinel
+#      - restore-workflow-assets:
+#          cache_prefix: deb-meridian
       - restore-workflow-assets:
           cache_prefix: rpm-meridian
+#      - restore-workflow-assets:
+#          cache_prefix: deb-minion
       - restore-workflow-assets:
           cache_prefix: rpm-minion
+#      - restore-workflow-assets:
+#          cache_prefix: deb-sentinel
       - restore-workflow-assets:
           cache_prefix: rpm-sentinel
+      - restore-workflow-assets:
+          cache_prefix: oci-meridian
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
+      - restore-workflow-assets:
+          cache_prefix: oci-sentinel
       - run:
           name: Publish Packages
           command: |
