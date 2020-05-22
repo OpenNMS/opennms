@@ -184,9 +184,9 @@ public class HeartbeatSinkPerfIT extends CamelBlueprintTest {
         super.tearDown();
     }
 
-    @Test
+    @Test(timeout=60000)
     public void quickRun() throws Exception {
-        await().atMost(30, TimeUnit.SECONDS).until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
+        await().atMost(60, TimeUnit.SECONDS).until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
     }
 
     @Ignore
