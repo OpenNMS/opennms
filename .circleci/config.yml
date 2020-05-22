@@ -547,19 +547,20 @@ workflows:
 #          filters:
 #            branches:
 #              only: /^from-foundation.*/
-#      - publish-cloudsmith:
-#          # technically only requires the RPM/deb builds, but only publish
-#          # if everything passes
-#          requires:
+      - publish-cloudsmith:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
 #            - meridian-deb-build
-#            - smoke-test-minimal
-#            - smoke-test-full
-#          filters:
-#            branches:
-#              only:
-#                - master
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only:
+                - /^master-.*/
 #                - develop
-#                - /^release-.*/
+                - /^release-.*/
 #                - /^foundation.*/
 
 jobs:
@@ -857,10 +858,12 @@ jobs:
       - checkout
       - cloudsmith/ensure-api-key
       - cloudsmith/install-cli
-      - restore-workflow-assets:
-          cache_prefix: deb-meridian
+#      - restore-workflow-assets:
+#          cache_prefix: deb-meridian
       - restore-workflow-assets:
           cache_prefix: rpm-meridian
+      - restore-workflow-assets:
+          cache_prefix: oci-meridian
       - run:
           name: Publish Packages
           command: |
