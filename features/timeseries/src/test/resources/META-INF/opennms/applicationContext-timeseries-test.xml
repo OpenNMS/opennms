@@ -76,11 +76,7 @@
   <bean id="timeseriesStorageImpl" class="org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage" />
   <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
-
-  <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
+  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader" />
 
   <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.timeseries.integration.persistence;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -35,9 +36,13 @@ import javax.inject.Inject;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.newts.api.Context;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Factory for {@link TimeseriesPersister}.
@@ -47,13 +52,19 @@ import org.opennms.newts.api.Context;
 public class TimeseriesPersisterFactory implements PersisterFactory {
 
     private final TimeseriesWriter timeseriesWriter;
-
     private final Context context;
+    private final MetaTagDataLoader metaTagDataLoader;
+    private final Map<ResourcePath, Map<String, String>> metaCache;
 
     @Inject
-    public TimeseriesPersisterFactory(Context context, TimeseriesWriter timeseriesWriter) {
+    public TimeseriesPersisterFactory(final Context context, final TimeseriesWriter timeseriesWriter, final MetaTagDataLoader metaTagDataLoader) {
         this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
+        this.metaTagDataLoader = metaTagDataLoader;
+        Cache<ResourcePath, Map<String, String>> cache = CacheBuilder // TODO Patrick: define with Jesse the eviction policy
+                .newBuilder()
+                .build();
+        this.metaCache = cache.asMap();
     }
 
     @Override
@@ -66,7 +77,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, context);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, context, metaTagDataLoader, metaCache);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

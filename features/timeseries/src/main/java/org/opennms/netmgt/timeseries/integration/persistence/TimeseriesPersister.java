@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.timeseries.integration.persistence;
 
+import java.util.Map;
+
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -49,13 +51,25 @@ public class TimeseriesPersister extends AbstractPersister {
     private final RrdRepository repository;
     private final TimeseriesWriter writer;
     private final Context context;
+    private final MetaTagDataLoader metaDataLoader;
+    private final Map<ResourcePath, Map<String, String>> metaTagsByResourceCache;
     private TimeseriesPersistOperationBuilder builder;
 
-    protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter, Context context) {
+    protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
+                                  Context context, MetaTagDataLoader metaDataLoader, Map<ResourcePath, Map<String, String>> metaTagsByResourceCache) {
         super(params, repository);
         this.repository = repository;
         writer = timeseriesWriter;
         this.context = context;
+        this.metaDataLoader = metaDataLoader;
+        this.metaTagsByResourceCache = metaTagsByResourceCache;
+    }
+
+    @Override
+    public void visitResource(CollectionResource resource) {
+        super.visitResource(resource);
+        // compute meta data for this resource
+        this.metaTagsByResourceCache.computeIfAbsent(resource.getPath(), (id) -> metaDataLoader.load(resource));
     }
 
     /** {@inheritDoc} */
@@ -65,7 +79,8 @@ public class TimeseriesPersister extends AbstractPersister {
         if (shouldPersist()) {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
-            builder = new TimeseriesPersistOperationBuilder(writer, context, repository, resource, group.getName());
+            Map<String, String> metaTags = metaTagsByResourceCache.get(resource.getParent());
+            builder = new TimeseriesPersistOperationBuilder(writer, context, repository, resource, group.getName(), metaTags);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());
             }

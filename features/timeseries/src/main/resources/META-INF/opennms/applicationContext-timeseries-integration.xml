@@ -78,6 +78,8 @@
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
+  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader" />
+
   <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />

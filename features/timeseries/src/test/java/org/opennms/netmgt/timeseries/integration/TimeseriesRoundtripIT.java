@@ -33,16 +33,22 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.MetaTagKey;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PREFIX;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PropertyKey;
 
+import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -66,11 +72,16 @@ import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader;
 import org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -94,7 +105,13 @@ public class TimeseriesRoundtripIT {
     private TimeseriesPersisterFactory persisterFactory;
 
     @Autowired
+    private MonitoringLocationDao locationDao;
+
+    @Autowired
     private NodeDao nodeDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Autowired
     private ResourceDao resourceDao;
@@ -106,9 +123,22 @@ public class TimeseriesRoundtripIT {
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
 
+    @Autowired
+    private MetaTagDataLoader metaTagDataLoader;
+
+    @Before
+    public void setUp() {
+        Map<String, String> config = new HashMap<>();
+        config.put(PREFIX + "." + PropertyKey.tags, String.join(",", MetaTagKey.sysObjectID.name(), MetaTagKey.nodeLabel.name()));
+        config.put(PREFIX + "." + PropertyKey.categories, "myCategory");
+        metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
+    }
 
     @Test
-    public void canPersist() throws InterruptedException, StorageException {
+    public void canPersist() throws InterruptedException, StorageException, UnknownHostException {
+
+        createAndSaveNode();
+
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
         RrdRepository repo = new RrdRepository();
         // Only the last element of the path matters here
@@ -171,6 +201,11 @@ public class TimeseriesRoundtripIT {
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "idx-m6", "m6"); // Identified
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
+
+        // test for additional meta tags that are provided to the plugin for external use
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", MetaTagKey.sysObjectID.name(), "abc");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", MetaTagConfiguration.MetaTagKey.nodeLabel.name(),"myNodeLabel");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "category_1","myCategory");
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
@@ -196,6 +231,39 @@ public class TimeseriesRoundtripIT {
     private void testForStringAttribute(String resourcePath, String name, String expectedValue) throws StorageException {
         Map<String, String> stringAttributes = metaDataDao.getForResourcePath(ResourcePath.fromString(resourcePath));
         assertEquals(expectedValue, stringAttributes.get(name));
+    }
+
+    private void createAndSaveNode() throws UnknownHostException {
+        OnmsCategory category = new OnmsCategory("myCategory");
+        categoryDao.save(category);
+        OnmsNode node = new OnmsNode(locationDao.getDefaultLocation(), "myNodeLabel");
+        node.setForeignSource("TestGroup");
+        node.setForeignId("1");
+        node.setSysObjectId("abc");
+        node.addCategory(category);
+
+//        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
+//        snmpInterface.setId(1);
+//        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+//        snmpInterface.setIfDescr("en1");
+//        snmpInterface.setIfName("en1/0");
+//        snmpInterface.setPhysAddr("00:00:00:00:00:01");
+//
+//        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
+//        InetAddress address = InetAddress.getByName("10.0.1.1");
+//        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+//        onmsIf.setSnmpInterface(snmpInterface);
+//        onmsIf.setId(1);
+//        onmsIf.setIfIndex(1);
+//        onmsIf.setIpHostName("p-brane");
+//        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+//
+//        ipInterfaces.add(onmsIf);
+//
+//        node.setIpInterfaces(ipInterfaces);
+        int nodeId = nodeDao.save(node);
+        nodeDao.flush();
+        assertEquals(1, nodeId); // we expect 1, otherwise we need to change the hardcoded paths above
     }
 
 }
