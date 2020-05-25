@@ -11,6 +11,7 @@ opennms-trapd-listener
 opennms-events-sink-dispatcher
 opennms-send-event-command
 opennms-dnsresolver-netty
+minion-rest-client
 minion-shell
 minion-heartbeat-producer
 minion-snmp-proxy
@@ -21,3 +22,6 @@ minion-collection
 minion-icmp-proxy
 minion-telemetryd-receivers
 opennms-core-ipc-sink-offheap
+# Default SCV implementation
+scv-jceks-impl
+scv-shell

@@ -57,6 +57,10 @@
                                 <feature>opennms-spring-extender</feature>
                                 <feature>opennms-blobstore-shell</feature>
                                 <feature>opennms-jsonstore-shell</feature>
+                                <feature>opennms-distributed-core-impl</feature>
+                                <feature>scv-api</feature>
+                                <feature>scv-shell</feature>
+                                <feature>scv-jceks-impl</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
@@ -522,6 +526,16 @@
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.thresholding.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

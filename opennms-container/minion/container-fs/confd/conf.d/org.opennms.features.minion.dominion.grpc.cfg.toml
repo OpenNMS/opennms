@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.features.minion.dominion.grpc.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.features.minion.dominion.grpc.cfg"
+keys = [
+    "/dominion/grpc"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.features.minion.dominion.grpc.cfg"

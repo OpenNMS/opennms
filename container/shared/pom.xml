@@ -90,7 +90,9 @@
 
                         <!-- OPENNMS: Add our enhancements to the container -->
                         <feature>karaf-extender</feature>
-                        <feature>scv</feature>
+                        <feature>scv-api</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>scv-shell</feature>
 
                         <!-- OPENNMS: Additional tools -->
                         <feature>hawtio-offline</feature>
