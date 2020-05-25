@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.integration.persistence;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -61,8 +62,9 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
         this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
         this.metaTagDataLoader = metaTagDataLoader;
-        Cache<ResourcePath, Map<String, String>> cache = CacheBuilder // TODO Patrick: define with Jesse the eviction policy
+        Cache<ResourcePath, Map<String, String>> cache = CacheBuilder
                 .newBuilder()
+                .expireAfterWrite(5, TimeUnit.MINUTES) // TODO Patrick: make configurable
                 .build();
         this.metaCache = cache.asMap();
     }

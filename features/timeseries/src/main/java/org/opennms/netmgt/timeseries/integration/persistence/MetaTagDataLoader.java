@@ -120,8 +120,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
             node.get().getCategories().stream()
                     .map(OnmsCategory::getName)
                     .filter(config::isCategoryEnabled)
-                    // TODO: Patrick: is this acceptable? Or would we rather create Tags instead of a HashMap?
-                    .forEach(catName -> tags.put("category_" + n.getAndIncrement(), catName));
+                    .forEach(catName -> tags.put("cat_" + catName , catName));
         }
 
         // assets
