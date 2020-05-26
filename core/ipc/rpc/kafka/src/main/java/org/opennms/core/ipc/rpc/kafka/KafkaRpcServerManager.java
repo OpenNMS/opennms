@@ -31,8 +31,8 @@ package org.opennms.core.ipc.rpc.kafka;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_CONCURRENT_CALLS_PROPERTY;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.MAX_DURATION_BULK_HEAD;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES;
-import static org.opennms.core.rpc.api.RpcClientFactory.RPC_COUNT;
 import static org.opennms.core.rpc.api.RpcClientFactory.RPC_FAILED;
+import static org.opennms.core.rpc.api.RpcClientFactory.RPC_REQUESTS_RECEIVED;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
@@ -368,7 +368,7 @@ public class KafkaRpcServerManager {
             setTagsOnMinion(rpcRequestProto, request, minionSpan);
             // Modules may run the execution in their own thread pool.
             CompletableFuture<RpcResponse> future = module.execute(request);
-            final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+            final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(module.getId(), RPC_REQUESTS_RECEIVED));
             requestSentMeter.mark();
             future.whenComplete((res, ex) -> {
                 final RpcResponse response;
@@ -378,7 +378,7 @@ public class KafkaRpcServerManager {
                     response = module.createResponseWithException(ex);
                     minionSpan.log(ex.getMessage());
                     minionSpan.setTag(TAG_RPC_FAILED, "true");
-                    Meter failedMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_FAILED));
+                    Meter failedMeter = getMetrics().meter(MetricRegistry.name(module.getId(), RPC_FAILED));
                     failedMeter.mark();
                 } else {
                     // No exception occurred, use the given response
