@@ -2,7 +2,7 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="1.8.0.242.b08-b3766"
+ARG BASE_IMAGE_VERSION="1.8.0.252.b09-b4094"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-base
 
