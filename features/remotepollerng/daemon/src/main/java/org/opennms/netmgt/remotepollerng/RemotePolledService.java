@@ -121,4 +121,19 @@ public class RemotePolledService {
                 .add("ipAddress", InetAddressUtils.str(monSvc.getIpAddress()))
                 .toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RemotePolledService that = (RemotePolledService) o;
+        return Objects.equals(monSvc.getId(), that.monSvc.getId()) &&
+                Objects.equals(pkg, that.pkg) &&
+                Objects.equals(service, that.service);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(monSvc.getId(), pkg, service);
+    }
 }

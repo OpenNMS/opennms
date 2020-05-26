@@ -29,14 +29,19 @@
 package org.opennms.netmgt.remotepollerng;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
@@ -51,8 +56,9 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -75,12 +81,14 @@ import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +119,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final PersisterFactory persisterFactory;
     private final EventForwarder eventForwarder;
 
-    private Scheduler scheduler;
+    Scheduler scheduler;
 
     public RemotePollerd(final SessionUtils sessionUtils,
                          final MonitoringLocationDao monitoringLocationDao,
@@ -152,12 +160,7 @@ public class RemotePollerd implements SpringServiceDaemon {
             this.scheduler = null;
         }
     }
-
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(IEvent e) {
-//        DaemonTools.handleReloadEvent(e, RemotePollerd.NAME, (event) -> handleConfigurationChanged());
-    }
-
+    
     /**
      * One or more polling packages may be assigned to monitoring locations via the UI
      * From there we retrieve the matching packages stored in etc/poller-configuration.xml
@@ -191,6 +194,88 @@ public class RemotePollerd implements SpringServiceDaemon {
                     }
                 }
 
+            }
+            return null;
+        });
+    }
+
+    private Map<JobKey, RemotePolledService> getMapOfScheduledServices(final String locationName) {
+        final Map<JobKey, RemotePolledService> mapOfScheduledServices = new TreeMap<>();
+        try {
+            for(final JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(locationName))) {
+                try {
+                    final JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+
+                    if (locationName.equals(jobDetail.getJobDataMap().get(RemotePollJob.LOCATION_NAME)) &&
+                        jobDetail.getJobDataMap().get(RemotePollJob.REMOTE_POLLER_BACKEND) == this) {
+                        mapOfScheduledServices.put(jobKey, (RemotePolledService) jobDetail.getJobDataMap().get(RemotePollJob.POLLED_SERVICE));
+                    }
+                } catch (SchedulerException e) {
+                    LOG.warn("Failed to retrieve job details {}.", jobKey, e);
+                }
+            }
+        } catch (SchedulerException e) {
+            LOG.warn("Failed to query scheduled jobs.", e);
+        }
+
+        return mapOfScheduledServices;
+    }
+
+    public void handleConfigurationChanged() {
+        final Map<String, List<RemotePolledService>> servicesByPackage = new HashMap<>();
+
+        try {
+            this.pollerConfig.update();
+        } catch (IOException e) {
+            LOG.warn("Error reloading poller-configuration.xml");
+        }
+
+        LOG.info("Re-scheduling all services...");
+        sessionUtils.withReadOnlyTransaction(() -> {
+            for (final OnmsMonitoringLocation loc : monitoringLocationDao.findAll()) {
+                final List<String> pollingPackageNames = loc.getPollingPackageNames();
+                LOG.debug("Location '{}' has polling packages: {}", loc.getLocationName(), pollingPackageNames);
+
+                final Set<RemotePolledService> servicesToBeScheduled = new HashSet<>();
+
+                for (final String pollingPackageName : pollingPackageNames) {
+                    final List<RemotePolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> {
+                        final Package pkg = pollerConfig.getPackage(pollingPackageName);
+                        if (pkg == null) {
+                            LOG.warn("Polling package '{}' is associated with location '{}', but the package was not found." +
+                                    " Using an empty set of services.", pollingPackageName, loc.getLocationName());
+                            return Collections.emptyList();
+                        }
+                        return getServicesForPackage(pkg);
+                    });
+
+                    servicesToBeScheduled.addAll(servicesForPackage);
+                }
+
+                final Map<JobKey, RemotePolledService> mapOfScheduledServices = getMapOfScheduledServices(loc.getLocationName());
+                final Set<RemotePolledService> scheduledServices = mapOfScheduledServices.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toSet());
+
+                // remove services that will not be scheduled anymore
+                for (final Map.Entry<JobKey, RemotePolledService> entry : mapOfScheduledServices.entrySet()) {
+                    if (!servicesToBeScheduled.contains(entry.getValue())) {
+                        try {
+                            scheduler.deleteJob(entry.getKey());
+                        } catch (SchedulerException e) {
+                            LOG.warn("Failed to delete job {} for service {}.", entry.getKey(), entry.getValue(), e);
+                        }
+                    }
+                }
+
+                // add missing services that are not scheduled yet
+                for (final RemotePolledService polledService : servicesToBeScheduled) {
+                    if (!scheduledServices.contains(polledService)) {
+                        try {
+                            scheduleService(loc.getLocationName(), polledService);
+                        } catch (SchedulerException e) {
+                            LOG.warn("Failed to schedule {}.", polledService, e);
+                        }
+                    }
+                }
             }
             return null;
         });
@@ -366,5 +451,10 @@ public class RemotePollerd implements SpringServiceDaemon {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+    }
+
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void reloadDaemonConfig(final IEvent e) {
+        DaemonTools.handleReloadEvent(e, RemotePollerd.NAME, (event) -> handleConfigurationChanged());
     }
 }
