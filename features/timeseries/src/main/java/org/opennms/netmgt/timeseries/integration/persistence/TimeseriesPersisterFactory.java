@@ -64,7 +64,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
         this.metaTagDataLoader = metaTagDataLoader;
         Cache<ResourcePath, Map<String, String>> cache = CacheBuilder
                 .newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES) // TODO Patrick: make configurable
+                .expireAfterWrite(5, TimeUnit.MINUTES) // TODO Patrick: make configurable - can use CacheBuilder.from(cacheConfig).build();
                 .build();
         this.metaCache = cache.asMap();
     }

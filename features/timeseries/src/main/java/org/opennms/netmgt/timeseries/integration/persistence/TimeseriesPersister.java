@@ -79,7 +79,7 @@ public class TimeseriesPersister extends AbstractPersister {
         if (shouldPersist()) {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
-            Map<String, String> metaTags = metaTagsByResourceCache.get(resource.getParent());
+            Map<String, String> metaTags = metaTagsByResourceCache.get(resource.getPath());
             builder = new TimeseriesPersistOperationBuilder(writer, context, repository, resource, group.getName(), metaTags);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());

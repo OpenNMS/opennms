@@ -29,6 +29,7 @@
 package org.opennms.core.rpc.utils.mate;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -36,11 +37,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
@@ -53,11 +56,16 @@ import com.google.common.base.Strings;
 
 public class EntityScopeProviderImpl implements EntityScopeProvider {
 
+    private static final String INTERFACE = "interface";
+
     @Autowired
     private NodeDao nodeDao;
 
     @Autowired
     private IpInterfaceDao ipInterfaceDao;
+
+    @Autowired
+    private SnmpInterfaceDao snmpInterfaceDao;
 
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
@@ -190,15 +198,51 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             }
 
             return new FallbackScope(transform(ipInterface.getMetaData()),
-                    new ObjectScope<>(ipInterface)
-                            .map("interface", "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
-                            .map("interface", "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
-                            .map("interface", "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
-                            .map("interface", "if-index", (i) -> Optional.ofNullable(i.getIfIndex()).map(Object::toString))
-                            .map("interface", "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
-                            .map("interface", "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
-                            .map("interface", "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr))
+                    mapIpIntefaceKeys(new ObjectScope<>(ipInterface))
+                            .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
+                            .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
+                            .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr))
             );
+        });
+
+        return metaDataScope;
+    }
+
+    private static ObjectScope<OnmsIpInterface> mapIpIntefaceKeys(ObjectScope<OnmsIpInterface> scope) {
+        return scope.map(INTERFACE, "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
+                .map(INTERFACE, "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
+                .map(INTERFACE, "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
+                .map(INTERFACE, "if-index", (i) -> Optional.ofNullable(i.getIfIndex()).map(Object::toString));
+    }
+
+    @Override
+    public Scope getScopeForInterfaceByIfIndex(final Integer nodeId, final int ifIndex) {
+        if (nodeId == null) {
+            return EmptyScope.EMPTY;
+        }
+
+        final Scope metaDataScope = this.sessionUtils.withReadOnlyTransaction(() -> {
+            final OnmsSnmpInterface snmpInterface = this.snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
+            if (snmpInterface == null) {
+                return EmptyScope.EMPTY;
+            }
+
+            ArrayList<Scope> scopes = new ArrayList<>();
+
+            // SNMP interface facts
+            scopes.add(new ObjectScope<>(snmpInterface)
+                    .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(snmpInterface.getIfAlias()))
+                    .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(snmpInterface.getIfDescr()))
+                    .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(snmpInterface.getPhysAddr())));
+
+            // IP interface facts w/ meta-data extracted from IP interface
+            Optional.ofNullable(snmpInterface.getPrimaryIpInterface())
+                    .ifPresent(ipInterface -> {
+                        scopes.add(transform(ipInterface.getMetaData()));
+                        scopes.add(mapIpIntefaceKeys(new ObjectScope<>(ipInterface)));
+                    });
+
+            return new FallbackScope(scopes.toArray(new Scope[0]));
         });
 
         return metaDataScope;

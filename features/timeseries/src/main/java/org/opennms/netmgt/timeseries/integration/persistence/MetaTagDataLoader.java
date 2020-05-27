@@ -56,6 +56,7 @@ import org.opennms.netmgt.timeseries.integration.MetaTagConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
 
@@ -94,17 +95,18 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
             Optional<OnmsNode> nodeOptional = getNode(nodeCriteria);
             if(nodeOptional.isPresent()) {
                 OnmsNode node = nodeOptional.get();
-                String interfaceAddress = null; // TODO Patrick
-                String serviceName = null; // TODO Patrick
                 scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
                 scopes.add(this.entityScopeProvider.getScopeForAssets(node.getId()));
-                scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), interfaceAddress));
-                scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.getInetAddress(interfaceAddress), serviceName));
-            }
-
-            if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
-                // mapResponseTimeResource(resource, tags);
-                // TODO: Patrick: check with @Jesse how we get the data
+                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
+                    // We expect #getInstance to return the ifIndex for interface-level resources
+                    try {
+                        int ifIndex = Integer.parseInt(resource.getInstance());
+                        scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfIndex(node.getId(), ifIndex));
+                    } catch(NumberFormatException nfe) {
+                        // pass
+                    }
+                }
+                // We cannot retrieve service meta-data - resource time resources contain the IP address and service name, but not the node
             }
 
             // create tags for scopes
@@ -112,13 +114,15 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
             Map<String, String> configuredMetaTags = this.config.getConfiguredMetaTags();
             for(Map.Entry<String, String> entry: configuredMetaTags.entrySet()) {
                 final String value = Interpolator.interpolate(entry.getValue(), scope);
+                // Ignore tags with empty values
+                if (Strings.isNullOrEmpty(value)) {
+                    continue;
+                }
                 tags.put(entry.getKey(), value);
             }
 
             // create tags for categories
-            if(nodeOptional.isPresent()) {
-                mapCategories(tags, nodeOptional.get());
-            }
+            nodeOptional.ifPresent(onmsNode -> mapCategories(tags, onmsNode));
 
             return tags;
         });
