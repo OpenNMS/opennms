@@ -51,7 +51,9 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.netmgt.rrd.model.AbstractDS;
+import org.opennms.netmgt.rrd.model.AbstractRRA;
 import org.opennms.netmgt.rrd.model.AbstractRRD;
+import org.opennms.netmgt.rrd.model.Row;
 import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.Gauge;
@@ -78,12 +80,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Properties;
 import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * The Class NewtsConverter.
@@ -538,7 +545,7 @@ public class NewtsConverter implements AutoCloseable {
             this.injectSamplesToNewts(resourcePath,
                                       group,
                                       rrd.getDataSources(),
-                                      rrd.generateSamples());
+                                      generateSamples(rrd));
 
         } catch (final Exception e) {
             LOG.error("Failed to convert file: {}", file, e);
@@ -664,7 +671,7 @@ public class NewtsConverter implements AutoCloseable {
             !relativeResourceDir.startsWith(Paths.get("snmp", "fs"))) {
 
             // The part after snmp/ is considered the node ID
-            final int nodeId = Integer.valueOf(relativeResourceDir.getName(1).toString());
+            final int nodeId = Integer.parseInt(relativeResourceDir.getName(1).toString());
 
             // Get the foreign source for the node
             final ForeignId foreignId = foreignIds.get(nodeId);
@@ -696,5 +703,98 @@ public class NewtsConverter implements AutoCloseable {
         }
 
         this.context.close();
+    }
+
+    public static SortedMap<Long, List<Double>> generateSamples(final AbstractRRD rrd) {
+        final NavigableSet<AbstractRRA> rras = rrd.getRras()
+                                                  .stream()
+                                                  .filter(AbstractRRA::hasAverageAsCF)
+                                                  .collect(Collectors.toCollection(() -> new TreeSet<>((rra1, rra2) -> rra1.getPdpPerRow().compareTo(rra2.getPdpPerRow()))));
+        final SortedMap<Long, List<Double>> collected = new TreeMap<>();
+
+        for (final AbstractRRA rra : rras) {
+            NavigableMap<Long, List<Double>> samples = generateSamples(rrd, rra);
+
+            final AbstractRRA lowerRra = rras.lower(rra);
+            if (lowerRra != null) {
+                final long lowerRraStart = rrd.getLastUpdate() - lowerRra.getPdpPerRow() * rrd.getStep() * lowerRra.getRows().size();
+                final long rraStep = rra.getPdpPerRow() * rrd.getStep();
+                samples = samples.headMap((int) Math.ceil(((double) lowerRraStart) / ((double) rraStep)) * rraStep, false);
+            }
+
+            final AbstractRRA higherRra = rras.higher(rra);
+            if (higherRra != null) {
+                final long higherRraStep = higherRra.getPdpPerRow() * rrd.getStep();
+                samples = samples.tailMap((int) Math.ceil(((double) samples.firstKey()) / ((double) higherRraStep)) * higherRraStep, true);
+            }
+
+            collected.putAll(samples);
+        }
+
+        return collected;
+    }
+
+    public static NavigableMap<Long, List<Double>> generateSamples(final AbstractRRD rrd, final AbstractRRA rra) {
+        final long step = rra.getPdpPerRow() * rrd.getStep();
+        final long start = rrd.getStartTimestamp(rra);
+        final long end = rrd.getEndTimestamp(rra);
+
+        // Initialize Values Map
+        final NavigableMap<Long, List<Double>> valuesMap = new TreeMap<>();
+        for (long ts = start; ts <= end; ts += step) {
+            final List<Double> values = new ArrayList<>();
+            for (int i = 0; i < rrd.getDataSources().size(); i++) {
+                values.add(Double.NaN);
+            }
+            valuesMap.put(ts, values);
+        }
+
+        // Initialize Last Values
+        final List<Double> lastValues = new ArrayList<>();
+        for (final AbstractDS ds : rrd.getDataSources()) {
+            final double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
+            lastValues.add(v - v % step);
+        }
+
+        // Set Last-Value for Counters
+        for (int i = 0; i < rrd.getDataSources().size(); i++) {
+            if (rrd.getDataSource(i).isCounter()) {
+                valuesMap.get(end).set(i, lastValues.get(i));
+            }
+        }
+
+        // Process
+        // Counters must be processed in reverse order (from latest to oldest) in order to recreate the counter raw values
+        // The first sample is processed separated because the lastValues must be updated after adding each sample.
+        long ts = end - step;
+        for (int j = rra.getRows().size() - 1; j >= 0; j--) {
+            final Row row = rra.getRows().get(j);
+
+            for (int i = 0; i < rrd.getDataSources().size(); i++) {
+                if (rrd.getDataSource(i).isCounter()) {
+                    if (j > 0) {
+                        final Double last = lastValues.get(i);
+                        final Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
+
+                        Double value = last - (current * step);
+                        if (value < 0) { // Counter-Wrap emulation
+                            value += Math.pow(2, 64);
+                        }
+                        lastValues.set(i, value);
+                        if (!row.getValue(i).isNaN()) {
+                            valuesMap.get(ts).set(i, value);
+                        }
+                    }
+                } else {
+                    if (!row.getValue(i).isNaN()) {
+                        valuesMap.get(ts + step).set(i, row.getValue(i));
+                    }
+                }
+            }
+
+            ts -= step;
+        }
+
+        return valuesMap;
     }
 }
