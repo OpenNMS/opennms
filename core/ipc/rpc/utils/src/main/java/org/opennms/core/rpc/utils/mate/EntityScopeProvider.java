@@ -33,6 +33,8 @@ import java.net.InetAddress;
 public interface EntityScopeProvider {
     Scope getScopeForNode(final Integer nodeId);
 
+    Scope getScopeForAssets(final Integer nodeId);
+
     Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
 
     Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName);

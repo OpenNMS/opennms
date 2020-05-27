@@ -47,14 +47,16 @@ public class MetaTagConfigurationTest {
     @Before
     public void setUp() {
         Map<String, String> properties = new HashMap<>();
-        properties.put(CONFIG_PREFIX_FOR_TAGS + "admin", "node:admin");
+        properties.put(CONFIG_PREFIX_FOR_TAGS + "label", "node:label");
+        properties.put(CONFIG_PREFIX_FOR_TAGS + "admin", "asset:admin");
         properties.put(CONFIG_PREFIX + "." + PropertyKey.categories, "myCategory");
         this.metaTagConfiguration = new MetaTagConfiguration(properties);
     }
 
     @Test
     public void shouldReturnEnabledMetaTags() {
-        assertEquals("node:admin", metaTagConfiguration.getConfiguredMetaTags().get("admin"));
+        assertEquals("node:label", metaTagConfiguration.getConfiguredMetaTags().get("label"));
+        assertEquals("asset:admin", metaTagConfiguration.getConfiguredMetaTags().get("admin"));
     }
 
     @Test

@@ -13,7 +13,7 @@ The meta-data can be used to dynamically configure service monitoring, performan
 They all use a link:#ga-meta-data-dsl[simple DSL] which allows to access the meta-data associated to the elements they are working on.
 
 === Special contexts
-In relation to nodes, interfaces and services, there are special contexts available which expose details about those objects.
+In relation to nodes, assets, interfaces and services, there are special contexts available which expose details about those objects.
 
 The `node` context provides details about the node currently processed.
 The following keys are available under this context:
@@ -29,11 +29,84 @@ The following keys are available under this context:
 | `node:os`              | The node's operating system
 | `node:sys-name`        | The system name of the node
 | `node:sys-location`    | The system location of the node
+| `node:sys-objectid`    | The system id of the node
 | `node:sys-contact`     | The system contact specified for the node
 | `node:sys-description` | The system description of the node
 | `node:location`        | The node's monitoring location name
 | `node:area`            | The node's monitoring location area
 |===
+
+The `asset` context provides meta data about the node currently processed.
+The following keys are available under this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key                       | Description
+| `asset:category`                  |
+| `asset:vendor`                    |
+| `asset:manufacturer`              |
+| `asset:vendor`                    |
+| `asset:model-number`              |
+| `asset:serial-number`             |
+| `asset:description`               |
+| `asset:circuit-id`                |
+| `asset:asset-number`              |
+| `asset:operating-system`          |
+| `asset:rack`                      |
+| `asset:slot`                      |
+| `asset:port`                      |
+| `asset:region`                    |
+| `asset:division`                  |
+| `asset:department`                |
+| `asset:building`                  |
+| `asset:floor`                     |
+| `asset:room`                      |
+| `asset:vendor-phone`              |
+| `asset:vendor-fax`                |
+| `asset:vendor-asset-number`       |
+| `asset:username`                  |
+| `asset:password`                  |
+| `asset:enable`                    |
+| `asset:connection`                |
+| `asset:autoenable`                |
+| `asset:last-modified-by`          |
+| `asset:last-modified-date`        |
+| `asset:date-installed`            |
+| `asset:lease`                     |
+| `asset:lease-expires`             |
+| `asset:support-phone`             |
+| `asset:maintcontract`             |
+| `asset:maint-contract-expiration` |
+| `asset:display-category`          |
+| `asset:notify-category`           |
+| `asset:poller-category`           |
+| `asset:threshold-category`        |
+| `asset:comment`                   |
+| `asset:cpu`                       |
+| `asset:ram`                       |
+| `asset:storagectrl`               |
+| `asset:hdd1`                      |
+| `asset:hdd2`                      |
+| `asset:hdd3`                      |
+| `asset:hdd4`                      |
+| `asset:hdd5`                      |
+| `asset:hdd6`                      |
+| `asset:numpowersupplies`          |
+| `asset:inputpower`                |
+| `asset:additionalhardware`        |
+| `asset:admin`                     |
+| `asset:snmpcommunity`             |
+| `asset:rackunitheight`            |
+| `asset:managed-object-type`       |
+| `asset:managed-object-instance`   |
+| `asset:geolocation`               |
+| `asset:vmware-managed-object-id`  |
+| `asset:vmware-managed-entity-type`|
+| `asset:vmware-management-server`  |
+| `asset:vmware-topology-info`      |
+| `asset:vmware-state`              |
+|===
+
 
 The `interface` context provides details about the interface currently processed.
 The following keys are available under this context:

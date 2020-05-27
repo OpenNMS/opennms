@@ -97,6 +97,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
                 String interfaceAddress = null; // TODO Patrick
                 String serviceName = null; // TODO Patrick
                 scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
+                scopes.add(this.entityScopeProvider.getScopeForAssets(node.getId()));
                 scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), interfaceAddress));
                 scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.getInetAddress(interfaceAddress), serviceName));
             }

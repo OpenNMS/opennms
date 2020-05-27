@@ -129,7 +129,7 @@ public class TimeseriesRoundtripIT {
     public void setUp() {
         Map<String, String> config = new HashMap<>();
         config.put(CONFIG_PREFIX_FOR_TAGS + "nodelabel", "${node:label}");
-        config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${node:sys-objectid}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${asset:sys-objectid}");
         config.put(CONFIG_KEY_FOR_CATEGORIES, "myCategory");
         metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
     }
