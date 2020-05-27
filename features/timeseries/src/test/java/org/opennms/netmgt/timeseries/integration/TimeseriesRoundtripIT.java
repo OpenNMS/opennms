@@ -33,9 +33,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.MetaTagKey;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PREFIX;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PropertyKey;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_KEY_FOR_CATEGORIES;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS;
 
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
@@ -129,8 +128,9 @@ public class TimeseriesRoundtripIT {
     @Before
     public void setUp() {
         Map<String, String> config = new HashMap<>();
-        config.put(PREFIX + "." + PropertyKey.tags, String.join(",", MetaTagKey.sysObjectID.name(), MetaTagKey.nodeLabel.name()));
-        config.put(PREFIX + "." + PropertyKey.categories, "myCategory");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "nodelabel", "${node:label}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${node:sys-objectid}");
+        config.put(CONFIG_KEY_FOR_CATEGORIES, "myCategory");
         metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
     }
 
@@ -203,9 +203,9 @@ public class TimeseriesRoundtripIT {
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
 
         // test for additional meta tags that are provided to the plugin for external use
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", MetaTagKey.sysObjectID.name(), "abc");
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", MetaTagConfiguration.MetaTagKey.nodeLabel.name(),"myNodeLabel");
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "category_1","myCategory");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "sysObjectID", "abc");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "nodelabel","myNodeLabel");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "cat_myCategory","myCategory");
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {

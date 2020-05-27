@@ -29,150 +29,66 @@ package org.opennms.netmgt.timeseries.integration;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Defines which additional meta tags should be exposed to the timeseries integration plugin. */
+/**
+ * Defines which additional meta tags should be exposed to the timeseries integration plugin.
+ */
 public class MetaTagConfiguration {
 
-    final static String PREFIX = "org.opennms.timeseries.tin.metatags";
+    final static String CONFIG_PREFIX = "org.opennms.timeseries.tin.metatags";
+    final static String CONFIG_KEY_FOR_CATEGORIES = CONFIG_PREFIX + ".categories";
+    final static String CONFIG_PREFIX_FOR_TAGS = CONFIG_PREFIX + ".tag.";
 
-    /** properties defined in opennms.properties */
+    /**
+     * properties defined in opennms.properties
+     */
     public enum PropertyKey {
         assets,
-        tags,
+        tag,
         categories
     }
-
-    public enum MetaTagKey {
-        nodeLabel,
-        location,
-        sysObjectID,
-        foreignSource,
-        foreignId,
-        nodeCriteria,
-        ipAddress, // for response time resources
-        service, // for response time resources
-        ifDescr, // for interface resources
-        ifAlias, // for interface resources
-        resourceLabel
-    }
-
-    // TODO: Patrick: do we want to merge MetaTagKey & AssetTagKey?
-    public enum AssetTagKey {
-        id,
-        category,
-        manufacturer,
-        vendor,
-        modelNumber,
-        serialNumber,
-        description,
-        circuitId,
-        assetNumber,
-        operatingSystem,
-        rack,
-        slot,
-        port,
-        region,
-        division,
-        department,
-        building,
-        floor,
-        room,
-        vendorPhone,
-        vendorFax,
-        vendorAssetNumber,
-        username,
-        password,
-        enable,
-        connection,
-        autoenable,
-        lastModifiedBy,
-        lastModifiedDate,
-        dateInstalled,
-        lease,
-        leaseExpires,
-        supportPhone,
-        maintcontract,
-        maintContractExpiration,
-        displayCategory,
-        notifyCategory,
-        pollerCategory,
-        thresholdCategory,
-        comment,
-        cpu,
-        ram,
-        storagectrl,
-        hdd1,
-        hdd2,
-        hdd3,
-        hdd4,
-        hdd5,
-        hdd6,
-        numpowersupplies,
-        inputpower,
-        additionalhardware,
-        admin,
-        snmpcommunity,
-        rackunitheight,
-        managedObjectType,
-        managedObjectInstance,
-        geolocation,
-        vmwareManagedObjectId,
-        vmwareManagedEntityType,
-        vmwareManagementServer,
-        vmwareTopologyInfo,
-        vmwareState;
-    }
-
-    private final Set<MetaTagKey> enabledMetaTags;
     private final Set<String> enabledCategories;
-    private final Set<AssetTagKey> enabledAssets;
+
+    private final Map<String, String> configuredMetaTags;
 
     public MetaTagConfiguration(final Map<String, String> properties) {
 
-        final Set<String> configuredAssets = getAsList(getProperty(properties, PropertyKey.assets));
-        enabledAssets = Arrays
-                .stream(AssetTagKey.values())
-                .filter(key -> configuredAssets.contains(key.name()))
-                .collect(Collectors.toSet());
-
-        enabledCategories = getAsList(getProperty(properties, PropertyKey.categories));
-
-        final Set<String> configuredTags = getAsList(getProperty(properties, PropertyKey.tags));
-        enabledMetaTags = Arrays
-                .stream(MetaTagKey.values())
-                .filter(key -> configuredTags.contains(key.name()))
-                .collect(Collectors.toSet());
-
-        // TODO: Patrick Meta-Data DSL expressions to build tags
+        this.enabledCategories = findConfiguredCategories(properties);
+        this.configuredMetaTags = findConfiguredMetaTags(properties);
     }
 
-    public boolean isEnabled(final AssetTagKey key) {
-        return enabledAssets.contains(key);
-    }
-
-    public boolean isEnabled(final MetaTagKey key) {
-        return enabledMetaTags.contains(key);
+    public Map<String, String> getConfiguredMetaTags() {
+        return this.configuredMetaTags;
     }
 
     public boolean isCategoryEnabled(final String category) {
         return this.enabledCategories.contains(category);
     }
 
-    private Set<String> getAsList(final String value) {
-        if(value == null || value.trim().isEmpty()) {
+    private Map<String, String> findConfiguredMetaTags(final Map<String, String> properties) {
+        Map<String, String> filteredMap = new HashMap<>();
+        properties
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey().startsWith(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS))
+                .forEach((entry) -> filteredMap.put(entry.getKey().substring(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS.length()), entry.getValue()));
+        return filteredMap;
+    }
+
+    private Set<String> findConfiguredCategories(final Map<String, String> properties) {
+        String value = properties.get(CONFIG_KEY_FOR_CATEGORIES);
+
+        if (value == null || value.trim().isEmpty()) {
             return Collections.emptySet();
         }
         return Arrays
                 .stream(value.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-        .collect(Collectors.toSet());
-    }
-
-    private String getProperty(final Map<String, String> properties, final PropertyKey property) {
-        return properties.get(PREFIX + "." + property.name());
+                .collect(Collectors.toSet());
     }
 }

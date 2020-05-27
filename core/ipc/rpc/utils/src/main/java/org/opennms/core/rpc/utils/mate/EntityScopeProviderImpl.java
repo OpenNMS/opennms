@@ -30,6 +30,7 @@ package org.opennms.core.rpc.utils.mate;
 
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -87,11 +89,73 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                             .map("node", "sys-location", (n) -> Optional.ofNullable(n.getSysLocation()))
                             .map("node", "sys-contact", (n) -> Optional.ofNullable(n.getSysContact()))
                             .map("node", "sys-description", (n) -> Optional.ofNullable(n.getSysDescription()))
+                            .map("node", "sys-objectid", (n) -> Optional.ofNullable(n.getSysObjectId()))
                             .map("node", "location", (n) -> Optional.ofNullable(n.getLocation().getLocationName()))
                             .map("node", "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()))
-            );
+                            .map("node", "category" , (n) -> Optional.ofNullable(node.getAssetRecord()).map(OnmsAssetRecord::getCategory))
+                            .map("node", "vendor" , (n) -> Optional.ofNullable(node.getAssetRecord()).map(OnmsAssetRecord::getVendor))
+                            .map("node", "manufacturer" , (n) -> Optional.ofNullable(node.getAssetRecord()).map(OnmsAssetRecord::getManufacturer))
+                            .map("node", "vendor" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVendor))
+                            .map("node", "model-number" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getModelNumber))
+                            .map("node", "serial-number" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getSerialNumber))
+                            .map("node", "description" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getDescription))
+                            .map("node", "circuit-id" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getCircuitId))
+                            .map("node", "asset-number" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getAssetNumber))
+                            .map("node", "operating-system" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getOperatingSystem))
+                            .map("node", "rack" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getRack))
+                            .map("node", "slot" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getSlot))
+                            .map("node", "port" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getPort))
+                            .map("node", "region" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getRegion))
+                            .map("node", "division" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getDivision))
+                            .map("node", "department" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getDepartment))
+                            .map("node", "building" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getBuilding))
+                            .map("node", "floor" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getFloor))
+                            .map("node", "room" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getRoom))
+                            .map("node", "vendor-phone" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVendorPhone))
+                            .map("node", "vendor-fax" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVendorFax))
+                            .map("node", "vendor-asset-number" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVendorAssetNumber))
+                            .map("node", "username" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getUsername))
+                            .map("node", "password" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getPassword))
+                            .map("node", "enable" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getEnable))
+                            .map("node", "connection" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getConnection))
+                            .map("node", "autoenable" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getAutoenable))
+                            .map("node", "last-modified-by" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getLastModifiedBy))
+                            .map("node", "last-modified-date", (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getLastModifiedDate).map(Date::toString))
+                            .map("node", "date-installed" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getDateInstalled))
+                            .map("node", "lease" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getLease))
+                            .map("node", "lease-expires" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getLeaseExpires))
+                            .map("node", "support-phone" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getSupportPhone))
+                            .map("node", "maintcontract" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getMaintcontract))
+                            .map("node", "maint-contract-expiration" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getMaintContractExpiration))
+                            .map("node", "display-category" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getDisplayCategory))
+                            .map("node", "notify-category" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getNotifyCategory))
+                            .map("node", "poller-category" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getPollerCategory))
+                            .map("node", "threshold-category" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getThresholdCategory))
+                            .map("node", "comment" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getComment))
+                            .map("node", "cpu" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getCpu))
+                            .map("node", "ram" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getRam))
+                            .map("node", "storagectrl" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getStoragectrl))
+                            .map("node", "hdd1" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getHdd1))
+                            .map("node", "hdd2" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getHdd2))
+                            .map("node", "hdd3" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getHdd3))
+                            .map("node", "hdd4" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getHdd4))
+                            .map("node", "hdd5" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getHdd5))
+                            .map("node", "hdd6" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getHdd6))
+                            .map("node", "numpowersupplies" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getNumpowersupplies))
+                            .map("node", "inputpower" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getInputpower))
+                            .map("node", "additionalhardware" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getAdditionalhardware))
+                            .map("node", "admin" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getAdmin))
+                            .map("node", "snmpcommunity" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getSnmpcommunity))
+                            .map("node", "rackunitheight" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getRackunitheight))
+                            .map("node", "managed-object-type" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getManagedObjectType))
+                            .map("node", "managed-object-instance" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getManagedObjectInstance))
+                            .map("node", "geolocation", (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getGeolocation).map(Object::toString))
+                            .map("node", "vmware-managed-object-id" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVmwareManagedObjectId))
+                            .map("node", "vmware-managed-entity-type" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVmwareManagedEntityType))
+                            .map("node", "vmware-management-server" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVmwareManagementServer))
+                            .map("node", "vmware-topology-info" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVmwareTopologyInfo))
+                            .map("node", "vmware-state" , (n) -> Optional.ofNullable(n.getAssetRecord()).map(OnmsAssetRecord::getVmwareState)));
         });
-
         return metaDataScope;
     }
 

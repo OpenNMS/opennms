@@ -27,11 +27,11 @@
  *******************************************************************************/
 package org.opennms.netmgt.timeseries.integration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.AssetTagKey;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.MetaTagKey;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PREFIX;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_PREFIX;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS;
 import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PropertyKey;
 
 import java.util.HashMap;
@@ -47,18 +47,14 @@ public class MetaTagConfigurationTest {
     @Before
     public void setUp() {
         Map<String, String> properties = new HashMap<>();
-        properties.put(PREFIX + "." + PropertyKey.assets, String.join(",", AssetTagKey.admin.name(), AssetTagKey.assetNumber.name()));
-        properties.put(PREFIX + "." + PropertyKey.categories, "myCategory");
-        properties.put(PREFIX + "." + PropertyKey.tags, String.join(",", MetaTagKey.nodeLabel.name(), MetaTagKey.foreignId.name()));
+        properties.put(CONFIG_PREFIX_FOR_TAGS + "admin", "node:admin");
+        properties.put(CONFIG_PREFIX + "." + PropertyKey.categories, "myCategory");
         this.metaTagConfiguration = new MetaTagConfiguration(properties);
     }
 
     @Test
-    public void shouldReturnEnabledAsset() {
-        assertTrue(metaTagConfiguration.isEnabled(AssetTagKey.admin));
-        assertTrue(metaTagConfiguration.isEnabled(AssetTagKey.assetNumber));
-        assertFalse(metaTagConfiguration.isEnabled(AssetTagKey.additionalHardware));
-        assertFalse(metaTagConfiguration.isEnabled((AssetTagKey) null));
+    public void shouldReturnEnabledMetaTags() {
+        assertEquals("node:admin", metaTagConfiguration.getConfiguredMetaTags().get("admin"));
     }
 
     @Test
@@ -67,13 +63,5 @@ public class MetaTagConfigurationTest {
         assertFalse(metaTagConfiguration.isCategoryEnabled("notConfiguredCategory"));
         assertFalse(metaTagConfiguration.isCategoryEnabled(""));
         assertFalse(metaTagConfiguration.isCategoryEnabled(null));
-    }
-
-    @Test
-    public void shouldReturnEnabledMetaTag() {
-        assertTrue(metaTagConfiguration.isEnabled(MetaTagKey.nodeLabel));
-        assertTrue(metaTagConfiguration.isEnabled(MetaTagKey.foreignId));
-        assertFalse(metaTagConfiguration.isEnabled(MetaTagKey.sysObjectID));
-        assertFalse(metaTagConfiguration.isEnabled((MetaTagKey) null));
     }
 }
