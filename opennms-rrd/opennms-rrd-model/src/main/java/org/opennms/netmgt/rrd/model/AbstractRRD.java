@@ -29,14 +29,10 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -354,7 +350,7 @@ public abstract class AbstractRRD {
         if (getDataSources().size() <= 1) {
             throw new IllegalArgumentException("Cannot split an RRD composed by 1 or less data-sources.");
         }
-        List<AbstractRRD> rrds = new ArrayList<AbstractRRD>();
+        List<AbstractRRD> rrds = new ArrayList<>();
         for (int i = 0; i < getDataSources().size(); i++) {
             AbstractRRD rrd = createRRD();
             rrd.addDataSource(getDataSource(i));
@@ -441,109 +437,6 @@ public abstract class AbstractRRD {
             row.getValues().forEach(d -> values.add(Double.NaN));
             row.setValues(values);
         });
-    }
-
-    /**
-     * Generate raw samples.
-     *
-     * @return the all samples
-     */
-    public SortedMap<Long, List<Double>> generateSamples() {
-        final NavigableSet<AbstractRRA> rras = this.getRras()
-                                                   .stream()
-                                                   .filter(AbstractRRA::hasAverageAsCF)
-                                                   .collect(Collectors.toCollection(() -> new TreeSet<>((rra1, rra2) -> rra1.getPdpPerRow().compareTo(rra2.getPdpPerRow()))));
-        final SortedMap<Long, List<Double>> collected = new TreeMap<>();
-
-        for (final AbstractRRA rra : rras) {
-            NavigableMap<Long, List<Double>> samples = this.generateSamples(rra);
-
-            final AbstractRRA lowerRra = rras.lower(rra);
-            if (lowerRra != null) {
-                final long lowerRraStart = this.getLastUpdate() - lowerRra.getPdpPerRow() * this.getStep() * lowerRra.getRows().size();
-                final long rraStep = rra.getPdpPerRow() * this.getStep();
-                samples = samples.headMap((int) Math.ceil(((double) lowerRraStart) / ((double) rraStep)) * rraStep, false);
-            }
-
-            final AbstractRRA higherRra = rras.higher(rra);
-            if (higherRra != null) {
-                final long higherRraStep = higherRra.getPdpPerRow() * this.getStep();
-                samples = samples.tailMap((int) Math.ceil(((double) samples.firstKey()) / ((double) higherRraStep)) * higherRraStep, true);
-            }
-
-            collected.putAll(samples);
-        }
-
-        return collected;
-    }
-
-    /**
-     * Generate raw samples.
-     *
-     * @param rra the source RRA to be used (it must have AVERAGE for its consolidation function)
-     * @return the samples for the given RRA
-     */
-    public NavigableMap<Long, List<Double>> generateSamples(AbstractRRA rra) {
-        long step = rra.getPdpPerRow() * getStep();
-        long start = getStartTimestamp(rra);
-        long end = getEndTimestamp(rra);
-
-        // Initialize Values Map
-        NavigableMap<Long, List<Double>> valuesMap = new TreeMap<>();
-        for (long ts = start; ts <= end; ts+= step) {
-            List<Double> values = new ArrayList<>();
-            for (int i=0; i<getDataSources().size(); i++) {
-                values.add(Double.NaN);
-            }
-            valuesMap.put(ts, values);
-        }
-
-        // Initialize Last Values
-        List<Double> lastValues = new ArrayList<>();
-        for (AbstractDS ds : getDataSources()) {
-            Double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
-            lastValues.add(v - v % step);
-        }
-
-        // Set Last-Value for Counters
-        for (int i = 0; i < getDataSources().size(); i++) {
-            if (getDataSource(i).isCounter()) {
-                valuesMap.get(end).set(i, lastValues.get(i));
-            }
-        }
-
-        // Process
-        // Counters must be processed in reverse order (from latest to oldest) in order to recreate the counter raw values
-        // The first sample is processed separated because the lastValues must be updated after adding each sample.
-        long ts = end - step;
-        for (int j = rra.getRows().size() - 1; j >= 0; j--) {
-            final Row row = rra.getRows().get(j);
-
-            for (int i = 0; i < getDataSources().size(); i++) {
-                if (getDataSource(i).isCounter()) {
-                    if (j > 0) {
-                        Double last = lastValues.get(i);
-                        Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
-                        Double value = last - (current * step);
-                        if (value < 0) { // Counter-Wrap emulation
-                            value += Math.pow(2, 64);
-                        }
-                        lastValues.set(i, value);
-                        if (!row.getValue(i).isNaN()) {
-                            valuesMap.get(ts).set(i, value);
-                        }
-                    }
-                } else {
-                    if (!row.getValue(i).isNaN()) {
-                        valuesMap.get(ts + step).set(i, row.getValue(i));
-                    }
-                }
-            }
-
-            ts -= step;
-        }
-
-        return valuesMap;
     }
 
     /**
