@@ -127,4 +127,17 @@ public class NewtsConverterTest {
         final int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
         Assert.assertEquals(size - 3 - 1, samples.size()); // There are 3 timestamps that exist in both RRAs and the last one is incomplete
     }
+
+    @Test
+    public void testSamplesMixedCF() throws Exception {
+        final File source = new File("src/test/resources/sample-counter-mixed-cf.xml");
+        final RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
+        Assert.assertNotNull(rrd);
+
+        final SortedMap<Long, List<Double>> samples = NewtsConverter.generateSamples(rrd);
+        Assert.assertFalse(samples.isEmpty());
+
+        // Using 5 from the coarser RRA and 18 of 20 from the finer one as the last 2 are leaking into the upper RRA
+        Assert.assertEquals(23, samples.size());
+    }
 }

@@ -78,6 +78,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -91,6 +92,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The Class NewtsConverter.
@@ -706,10 +708,21 @@ public class NewtsConverter implements AutoCloseable {
     }
 
     public static SortedMap<Long, List<Double>> generateSamples(final AbstractRRD rrd) {
-        final NavigableSet<AbstractRRA> rras = rrd.getRras()
-                                                  .stream()
-                                                  .filter(AbstractRRA::hasAverageAsCF)
-                                                  .collect(Collectors.toCollection(() -> new TreeSet<>((rra1, rra2) -> rra1.getPdpPerRow().compareTo(rra2.getPdpPerRow()))));
+        // When having pdpPerRow = 1, the correlation function does not change the generated samples as the correlation
+        // functions are reflexive wen applied to a single sample - `sample == cf([sample])` holds for all possible cf.
+        // Therefore we use RRA with pdpPerRow = 1 which covers the longest time range regardless of its correlation
+        // function. To fill up remaining samples, we only use RRA with AVERAGE correlation function.
+        final NavigableSet<AbstractRRA> rras = Stream.concat(rrd.getRras()
+                                                                .stream()
+                                                                .filter(rra -> rra.getPdpPerRow() == 1L)
+                                                                .max(Comparator.comparingInt(rra -> rra.getRows().size()))
+                                                                .map(Stream::of)
+                                                                .orElseGet(Stream::empty),
+                                                             rrd.getRras()
+                                                                .stream()
+                                                                .filter(AbstractRRA::hasAverageAsCF))
+                                                     .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(AbstractRRA::getPdpPerRow))));
+
         final SortedMap<Long, List<Double>> collected = new TreeMap<>();
 
         for (final AbstractRRA rra : rras) {
