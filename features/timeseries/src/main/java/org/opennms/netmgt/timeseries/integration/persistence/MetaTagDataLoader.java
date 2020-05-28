@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.timeseries.integration.persistence;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +43,6 @@ import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.ObjectScope;
 import org.opennms.core.rpc.utils.mate.Scope;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -123,7 +120,6 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
 
             // create tags for categories
             nodeOptional.ifPresent(onmsNode -> mapCategories(tags, onmsNode));
-
             return tags;
         });
     }
@@ -180,40 +176,6 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
             return true;
         } catch (NumberFormatException e) {
             // not a number
-            return false;
-        }
-    }
-
-    private void mapResponseTimeResource(final CollectionResource resource, final Map<String, String> tags) {
-        boolean validIp = false;
-        // Check if resource parent is an IpAddress.
-        if (resource.getParent() != null && resource.getParent().elements().length == 1) {
-            String[] resourcePathArray = resource.getParent().elements();
-            validIp = checkForValidIpAddress(resourcePathArray[0]);
-        }
-        if (resource.getPath() != null && validIp) {
-            // extract path which consists of location and IpAddress.
-            String[] resourcePathArray = resource.getPath().elements();
-
-            if (resourcePathArray.length == 2) {
-                // first element is location, 2nd IpAddress.
-                tags.put("location", resourcePathArray[0]);
-                tags.put("ipAddress", resourcePathArray[1]);
-            } else if (resourcePathArray.length == 1) {
-                tags.put("ipAddress", resourcePathArray[0]);
-            }
-        }
-
-        // TODO: Patrick: from where do we get the service?
-        // tags.put(MetaTagKey.service.name(), );
-    }
-
-    private boolean checkForValidIpAddress(String resourcePath) {
-        try {
-            InetAddress.getByName(resourcePath);
-            return true;
-        } catch (UnknownHostException e) {
-            // not an ipaddress.
             return false;
         }
     }
