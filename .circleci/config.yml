@@ -542,6 +542,19 @@ workflows:
           filters:
             branches:
               only: /^foundation.*/
+      - merge-poweredby-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only:
+                - jira/BP-8
+                - /^foundation.*/
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -824,6 +837,27 @@ jobs:
             - run:
                 name: Push to Meridian github
                 command: git push -f meridian from-<< parameters.main_branch >>:from-<< parameters.main_branch >>
+
+  merge-poweredby-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                  - poweredby-v1-{{ .Branch }}-
+                  - poweredby-v1-
+            - cached-checkout-for-pushing
+            - run:
+                name: Merge Foundation to PoweredBy
+                command: .circleci/scripts/merge-poweredby.sh
+            - save_cache:
+                key: poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
 
   publish-cloudsmith:
     executor: cloudsmith/default
