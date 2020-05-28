@@ -89,7 +89,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                             .map("node", "sys-location", (n) -> Optional.ofNullable(n.getSysLocation()))
                             .map("node", "sys-contact", (n) -> Optional.ofNullable(n.getSysContact()))
                             .map("node", "sys-description", (n) -> Optional.ofNullable(n.getSysDescription()))
-                            .map("node", "sys-objectid", (n) -> Optional.ofNullable(n.getSysObjectId()))
+                            .map("node", "sys-object-id", (n) -> Optional.ofNullable(n.getSysObjectId()))
                             .map("node", "location", (n) -> Optional.ofNullable(n.getLocation().getLocationName()))
                             .map("node", "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea())));
         });

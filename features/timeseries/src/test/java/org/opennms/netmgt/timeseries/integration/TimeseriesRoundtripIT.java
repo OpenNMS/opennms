@@ -71,10 +71,11 @@ import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
@@ -113,8 +114,7 @@ public class TimeseriesRoundtripIT {
     private CategoryDao categoryDao;
 
     @Autowired
-    private ResourceDao resourceDao;
-
+    private AssetRecordDao assetDao;
 
     @Autowired
     private TimeseriesStorageManager timeseriesStorageManager;
@@ -129,7 +129,8 @@ public class TimeseriesRoundtripIT {
     public void setUp() {
         Map<String, String> config = new HashMap<>();
         config.put(CONFIG_PREFIX_FOR_TAGS + "nodelabel", "${node:label}");
-        config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${asset:sys-objectid}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${node:sys-object-id}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "vendor", "${asset:vendor}");
         config.put(CONFIG_KEY_FOR_CATEGORIES, "myCategory");
         metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
     }
@@ -205,6 +206,7 @@ public class TimeseriesRoundtripIT {
         // test for additional meta tags that are provided to the plugin for external use
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "sysObjectID", "abc");
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "nodelabel","myNodeLabel");
+        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "vendor","myVendor");
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "cat_myCategory","myCategory");
     }
 
@@ -242,6 +244,16 @@ public class TimeseriesRoundtripIT {
         node.setSysObjectId("abc");
         node.addCategory(category);
 
+
+
+        OnmsAssetRecord assets = new OnmsAssetRecord();
+        assets.setVendor("myVendor");
+        assetDao.save(assets);
+        node.setAssetRecord(assets);
+
+        int nodeId = nodeDao.save(node);
+        nodeDao.flush();
+
 //        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
 //        snmpInterface.setId(1);
 //        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
@@ -261,8 +273,7 @@ public class TimeseriesRoundtripIT {
 //        ipInterfaces.add(onmsIf);
 //
 //        node.setIpInterfaces(ipInterfaces);
-        int nodeId = nodeDao.save(node);
-        nodeDao.flush();
+
         assertEquals(1, nodeId); // we expect 1, otherwise we need to change the hardcoded paths above
     }
 
