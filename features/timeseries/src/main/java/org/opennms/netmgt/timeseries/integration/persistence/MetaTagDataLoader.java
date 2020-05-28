@@ -126,10 +126,11 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
 
     private void mapCategories(final Map<String, String> tags, final OnmsNode node) {
         Objects.requireNonNull(node);
-        node.getCategories().stream()
+        if(config.isCategoriesEnabled()) {
+            node.getCategories().stream()
                     .map(OnmsCategory::getName)
-                    .filter(config::isCategoryEnabled)
-                    .forEach(catName -> tags.put("cat_" + catName , catName));
+                    .forEach(catName -> tags.put("cat_" + catName, catName));
+        }
     }
 
     public Scope getScopeForResource(final CollectionResource resource) {

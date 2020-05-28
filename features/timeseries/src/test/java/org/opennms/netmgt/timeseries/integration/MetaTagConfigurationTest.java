@@ -28,11 +28,9 @@
 package org.opennms.netmgt.timeseries.integration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_PREFIX;
+import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_KEY_FOR_CATEGORIES;
 import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS;
-import static org.opennms.netmgt.timeseries.integration.MetaTagConfiguration.PropertyKey;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +47,7 @@ public class MetaTagConfigurationTest {
         Map<String, String> properties = new HashMap<>();
         properties.put(CONFIG_PREFIX_FOR_TAGS + "label", "node:label");
         properties.put(CONFIG_PREFIX_FOR_TAGS + "admin", "asset:admin");
-        properties.put(CONFIG_PREFIX + "." + PropertyKey.categories, "myCategory");
+        properties.put(CONFIG_KEY_FOR_CATEGORIES, "true");
         this.metaTagConfiguration = new MetaTagConfiguration(properties);
     }
 
@@ -61,9 +59,6 @@ public class MetaTagConfigurationTest {
 
     @Test
     public void shouldReturnEnabledCategory() {
-        assertTrue(metaTagConfiguration.isCategoryEnabled("myCategory"));
-        assertFalse(metaTagConfiguration.isCategoryEnabled("notConfiguredCategory"));
-        assertFalse(metaTagConfiguration.isCategoryEnabled(""));
-        assertFalse(metaTagConfiguration.isCategoryEnabled(null));
+        assertTrue(metaTagConfiguration.isCategoriesEnabled());
     }
 }

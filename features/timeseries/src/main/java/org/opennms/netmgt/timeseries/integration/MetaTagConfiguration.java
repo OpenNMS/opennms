@@ -27,12 +27,9 @@
  *******************************************************************************/
 package org.opennms.netmgt.timeseries.integration;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Defines which additional meta tags should be exposed to the timeseries integration plugin.
@@ -40,7 +37,7 @@ import java.util.stream.Collectors;
 public class MetaTagConfiguration {
 
     final static String CONFIG_PREFIX = "org.opennms.timeseries.tin.metatags";
-    final static String CONFIG_KEY_FOR_CATEGORIES = CONFIG_PREFIX + ".categories";
+    final static String CONFIG_KEY_FOR_CATEGORIES = CONFIG_PREFIX + ".exposeCategories";
     final static String CONFIG_PREFIX_FOR_TAGS = CONFIG_PREFIX + ".tag.";
 
     /**
@@ -51,13 +48,12 @@ public class MetaTagConfiguration {
         tag,
         categories
     }
-    private final Set<String> enabledCategories;
+    private final boolean categoriesEnabled;
 
     private final Map<String, String> configuredMetaTags;
 
     public MetaTagConfiguration(final Map<String, String> properties) {
-
-        this.enabledCategories = findConfiguredCategories(properties);
+        this.categoriesEnabled = Optional.ofNullable(properties.get(CONFIG_KEY_FOR_CATEGORIES)).map(Boolean::valueOf).orElse(false);
         this.configuredMetaTags = findConfiguredMetaTags(properties);
     }
 
@@ -65,8 +61,8 @@ public class MetaTagConfiguration {
         return this.configuredMetaTags;
     }
 
-    public boolean isCategoryEnabled(final String category) {
-        return this.enabledCategories.contains(category);
+    public boolean isCategoriesEnabled() {
+        return this.categoriesEnabled;
     }
 
     private Map<String, String> findConfiguredMetaTags(final Map<String, String> properties) {
@@ -77,18 +73,5 @@ public class MetaTagConfiguration {
                 .filter(e -> e.getKey().startsWith(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS))
                 .forEach((entry) -> filteredMap.put(entry.getKey().substring(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS.length()), entry.getValue()));
         return filteredMap;
-    }
-
-    private Set<String> findConfiguredCategories(final Map<String, String> properties) {
-        String value = properties.get(CONFIG_KEY_FOR_CATEGORIES);
-
-        if (value == null || value.trim().isEmpty()) {
-            return Collections.emptySet();
-        }
-        return Arrays
-                .stream(value.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toSet());
     }
 }

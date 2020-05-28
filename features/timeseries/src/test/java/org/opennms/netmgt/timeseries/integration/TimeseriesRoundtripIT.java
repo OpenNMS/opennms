@@ -146,7 +146,7 @@ public class TimeseriesRoundtripIT {
         config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${node:sys-object-id}");
         config.put(CONFIG_PREFIX_FOR_TAGS + "vendor", "${asset:vendor}");
         config.put(CONFIG_PREFIX_FOR_TAGS + "if-description", "${interface:if-description}");
-        config.put(CONFIG_KEY_FOR_CATEGORIES, "myCategory");
+        config.put(CONFIG_KEY_FOR_CATEGORIES, "true");
         metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
     }
 
