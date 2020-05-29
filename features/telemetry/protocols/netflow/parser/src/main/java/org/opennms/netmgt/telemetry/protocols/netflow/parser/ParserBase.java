@@ -148,7 +148,7 @@ public abstract class ParserBase implements Parser {
                 // corePoolSize must be > 0 since we use the RejectedExecutionHandler to block when the queue is full
                 1, threads,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<>(true),
+                new SynchronousQueue<>(),
                 threadFactory,
                 (r, executor) -> {
                     // We enter this block when the queue is full and the caller is attempting to submit additional tasks
@@ -217,7 +217,8 @@ public abstract class ParserBase implements Parser {
     }
 
     protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) {
-        LOG.trace("Got packet: {}", packet);
+        // The packets are coming in hot - performance here is critical
+        //   LOG.trace("Got packet: {}", packet);
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
         final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
