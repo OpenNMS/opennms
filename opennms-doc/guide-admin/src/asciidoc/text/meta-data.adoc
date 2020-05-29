@@ -29,7 +29,7 @@ The following keys are available under this context:
 | `node:os`              | The node's operating system
 | `node:sys-name`        | The system name of the node
 | `node:sys-location`    | The system location of the node
-| `node:sys-objectid`    | The system id of the node
+| `node:sys-object-id`    | The system id of the node
 | `node:sys-contact`     | The system contact specified for the node
 | `node:sys-description` | The system description of the node
 | `node:location`        | The node's monitoring location name
