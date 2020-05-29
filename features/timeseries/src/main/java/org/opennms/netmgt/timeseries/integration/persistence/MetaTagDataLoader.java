@@ -135,7 +135,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
         try {
             return Optional.ofNullable(nodeDao.get(nodeCriteria));
         } catch (Exception e) {
-            LOG.error("error while trying to match node from {}", nodeCriteria);
+            LOG.error("Error while trying to load node for criteria: {}. No node will be returned.", nodeCriteria, e);
         }
         return Optional.empty();
     }
@@ -167,4 +167,3 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
         }
     }
 }
-
