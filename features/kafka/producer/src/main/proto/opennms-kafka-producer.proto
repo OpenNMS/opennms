@@ -14,6 +14,23 @@ enum Severity {
   CRITICAL = 6;
 }
 
+enum TroubleTicketState {
+  OPEN = 0;
+  CREATE_PENDING = 1;
+  CREATE_FAILED = 2;
+  UPDATE_PENDING = 3;
+  UPDATE_FAILED = 4;
+  CLOSED = 5;
+  CLOSE_PENDING = 6;
+  CLOSE_FAILED = 7;
+  RESOLVED = 8;
+  RESOLVE_PENDING = 9;
+  RESOLVE_FAILED = 10;
+  CANCELLED = 11;
+  CANCEL_PENDING = 12;
+  CANCEL_FAILED = 13;
+}
+
 message NodeCriteria {
   uint64 id = 1;
   string foreign_source = 2;
@@ -71,6 +88,8 @@ message Alarm {
   string managed_object_instance = 20;
   string managed_object_type = 21;
   repeated Alarm relatedAlarm = 22;
+  string trouble_ticket_id = 23;
+  TroubleTicketState trouble_ticket_state = 24;
 }
 
 message AlarmFeedback {
