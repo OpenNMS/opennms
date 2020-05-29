@@ -6,9 +6,6 @@ set -e
 YEAR=""
 
 case "${CIRCLE_BRANCH}" in
-  jira/BP-8)
-    YEAR=2016
-    ;;
   foundation)
     YEAR=2015
     ;;

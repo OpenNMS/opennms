@@ -553,7 +553,6 @@ workflows:
           filters:
             branches:
               only:
-                - jira/BP-8
                 - /^foundation.*/
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
