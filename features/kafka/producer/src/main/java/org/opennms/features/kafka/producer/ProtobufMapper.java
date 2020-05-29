@@ -369,7 +369,10 @@ public class ProtobufMapper {
         if (alarm.getServiceType() != null) {
             builder.setServiceName(alarm.getServiceType().getName());
         }
-
+        getString(alarm.getTTicketId()).ifPresent(builder::setTroubleTicketId);
+        if(alarm.getTTicketState() != null) {
+            builder.setTroubleTicketStateValue(alarm.getTTicketState().getValue());
+        }
         setTimeIfNotNull(alarm.getFirstEventTime(), builder::setFirstEventTime);
         setTimeIfNotNull(alarm.getLastEventTime(), builder::setLastEventTime);
         setTimeIfNotNull(alarm.getAckTime(), builder::setAckTime);
