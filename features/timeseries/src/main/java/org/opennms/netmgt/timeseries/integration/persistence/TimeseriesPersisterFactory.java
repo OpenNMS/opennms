@@ -30,10 +30,12 @@ package org.opennms.netmgt.timeseries.integration.persistence;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheBuilder;
+import org.opennms.core.cache.CacheConfig;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -41,9 +43,6 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.newts.api.Context;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 /**
  * Factory for {@link TimeseriesPersister}.
@@ -55,18 +54,18 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
     private final TimeseriesWriter timeseriesWriter;
     private final Context context;
     private final MetaTagDataLoader metaTagDataLoader;
-    private final Map<ResourcePath, Map<String, String>> metaCache;
+    private final Cache<ResourcePath, Map<String, String>> metaCache;
 
     @Inject
-    public TimeseriesPersisterFactory(final Context context, final TimeseriesWriter timeseriesWriter, final MetaTagDataLoader metaTagDataLoader) {
+    public TimeseriesPersisterFactory(final Context context, final TimeseriesWriter timeseriesWriter,
+                                      final MetaTagDataLoader metaTagDataLoader, final CacheConfig cacheConfig) {
         this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
         this.metaTagDataLoader = metaTagDataLoader;
-        Cache<ResourcePath, Map<String, String>> cache = CacheBuilder
-                .newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES) // TODO Patrick: make configurable - can use CacheBuilder.from(cacheConfig).build();
+        this.metaCache = new CacheBuilder<>()
+                .withConfig(cacheConfig)
+                .withCacheLoader(metaTagDataLoader)
                 .build();
-        this.metaCache = cache.asMap();
     }
 
     @Override

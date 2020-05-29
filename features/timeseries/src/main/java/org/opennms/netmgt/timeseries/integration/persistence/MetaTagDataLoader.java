@@ -37,11 +37,9 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.opennms.core.rpc.utils.mate.EmptyScope;
 import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
-import org.opennms.core.rpc.utils.mate.ObjectScope;
 import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -83,9 +81,6 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
 
             final Map<String, String> tags = new HashMap<>();
             List<Scope> scopes = new ArrayList<>();
-
-            // resource related scope
-            scopes.add(getScopeForResource(resource));
 
             // node related scopes
             String nodeCriteria = getNodeCriteriaFromResource(resource);
@@ -131,15 +126,6 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
                     .map(OnmsCategory::getName)
                     .forEach(catName -> tags.put("cat_" + catName, catName));
         }
-    }
-
-    public Scope getScopeForResource(final CollectionResource resource) {
-        if (resource == null) {
-            return EmptyScope.EMPTY;
-        }
-        return new ObjectScope<>(resource)
-                .map("resource", "criteria", (r) -> Optional.ofNullable(getNodeCriteriaFromResource(resource)))
-                .map("resource", "label", (r) -> Optional.ofNullable(r.getInterfaceLabel()));
     }
 
     private Optional<OnmsNode> getNode(String nodeCriteria) {

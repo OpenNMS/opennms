@@ -37,7 +37,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -87,6 +86,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             return new FallbackScope(transform(node.getMetaData()),
                     new ObjectScope<>(node)
+                            .map("node", "criteria", this::getNodeCriteria)
                             .map("node", "label", (n) -> Optional.ofNullable(n.getLabel()))
                             .map("node", "foreign-source", (n) -> Optional.ofNullable(n.getForeignSource()))
                             .map("node", "foreign-id", (n) -> Optional.ofNullable(n.getForeignId()))
@@ -102,6 +102,15 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                             .map("node", "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea())));
         });
         return metaDataScope;
+    }
+
+    private Optional<String> getNodeCriteria(final OnmsNode node) {
+        Objects.requireNonNull(node, "Node can not be null");
+        if (node.getForeignSource() != null) {
+            return Optional.of(node.getForeignSource() + ":" + node.getForeignId());
+        } else {
+            return Optional.of(Integer.toString(node.getId()));
+        }
     }
 
     @Override

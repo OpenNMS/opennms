@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.timeseries.integration.persistence;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.cache.Cache;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -52,11 +55,11 @@ public class TimeseriesPersister extends AbstractPersister {
     private final TimeseriesWriter writer;
     private final Context context;
     private final MetaTagDataLoader metaDataLoader;
-    private final Map<ResourcePath, Map<String, String>> metaTagsByResourceCache;
+    private final Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache;
     private TimeseriesPersistOperationBuilder builder;
 
     protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
-                                  Context context, MetaTagDataLoader metaDataLoader, Map<ResourcePath, Map<String, String>> metaTagsByResourceCache) {
+                                  Context context, MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache) {
         super(params, repository);
         this.repository = repository;
         writer = timeseriesWriter;
@@ -69,7 +72,7 @@ public class TimeseriesPersister extends AbstractPersister {
     public void visitResource(CollectionResource resource) {
         super.visitResource(resource);
         // compute meta data for this resource
-        this.metaTagsByResourceCache.computeIfAbsent(resource.getPath(), (id) -> metaDataLoader.load(resource));
+        this.metaTagsByResourceCache.put(resource.getPath(), metaDataLoader.load(resource));
     }
 
     /** {@inheritDoc} */
@@ -79,13 +82,22 @@ public class TimeseriesPersister extends AbstractPersister {
         if (shouldPersist()) {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
-            Map<String, String> metaTags = metaTagsByResourceCache.get(resource.getPath());
+            Map<String, String> metaTags = getMetaTags(resource);
             builder = new TimeseriesPersistOperationBuilder(writer, context, repository, resource, group.getName(), metaTags);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());
             }
             setBuilder(builder);
         }
+    }
+
+    private Map<String, String> getMetaTags(final CollectionResource resource) {
+        try {
+            return metaTagsByResourceCache.get(resource.getPath());
+        } catch (ExecutionException e) {
+            LOG.warn("An exception occurred while trying to retrieve meta tags for {}", resource.getPath(), e);
+        }
+        return Collections.emptyMap();
     }
 
     @Override
