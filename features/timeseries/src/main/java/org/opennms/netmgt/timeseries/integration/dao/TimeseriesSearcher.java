@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.timeseries.integration.dao;
 
+import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.WILDCARD_INDEX_NO;
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
@@ -50,6 +55,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class TimeseriesSearcher {
 
@@ -61,6 +68,20 @@ public class TimeseriesSearcher {
     @Autowired
     private TimeSeriesMetaDataDao metaDataDao;
 
+    private final Cache<String, List<Metric>> metricsUnderResource;
+
+    public TimeseriesSearcher() {
+        metricsUnderResource = CacheBuilder.newBuilder()
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .build(); // TODO: config Patrick
+    }
+
+    /** Gets all metrics that reside under the given path */
+    private List<Metric> getMetricsBelowWildcardPath(final String wildcardPath) throws StorageException {
+        String wildcardValue = String.format("(%s,*)", wildcardPath);
+        return timeseriesStorageManager.get().getMetrics(Collections.singletonList(new ImmutableTag("_idx" + WILDCARD_INDEX_NO + "*", wildcardValue)));
+    }
+
     public Map<String, String> getResourceAttributes(ResourcePath path) {
         try {
             return metaDataDao.getForResourcePath(path);
@@ -70,7 +91,7 @@ public class TimeseriesSearcher {
         return new HashMap<>();
     }
 
-    public SearchResults search(ResourcePath path, int depth, boolean fetchMetrics) throws StorageException {
+    public SearchResults search(ResourcePath path, int depth) throws StorageException {
 
         // Numeric suffix for the index name, based on the length of parent path
         int idxSuffix = path.elements().length - 1;
@@ -81,11 +102,32 @@ public class TimeseriesSearcher {
         String value = String.format("(%s,%d)", toResourceId(path), targetLen);
         Tag indexTag = new ImmutableTag(key, value);
 
-        List<Metric> metrics = timeseriesStorageManager.get().getMetrics(Collections.singletonList(indexTag));
+        // in order not to call the TimeseriesStorage implementation for every resource, we query all resources below a certain
+        // depth (defined as WILDCARD_INDEX_NO). We have a special index, the "wildcard" index for that. We cache all metrics under
+        // that index
+        List<Metric> metrics;
+        if(path.elements().length >= WILDCARD_INDEX_NO) {
+            String wildcardPath = String.join(":", Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO));
+            List<Metric> metricsFromWildcard;
+            try {
+                metricsFromWildcard = this.metricsUnderResource.get(wildcardPath, () -> getMetricsBelowWildcardPath(wildcardPath));
+            } catch(ExecutionException ex) {
+                throw new StorageException(ex);
+            }
+            // filter out only the relevant metrics: must contain the tag we are looking for
+            // TODO: Patrick: check if that is sufficient, otherwise we can optimize for faster computing but more memory by caching per tag
+            metrics = metricsFromWildcard.stream()
+                    .filter(metric -> metric.getMetaTags().contains(indexTag))
+                    .collect(Collectors.toList());
+            // TODO Patrick: remove commented code
+//            if(!metrics.equals(timeseriesStorageManager.get().getMetrics(Collections.singletonList(indexTag)))) {
+//                LOG.warn("Cached version doesn't match live version");
+//            }
+        } else {
+            metrics = timeseriesStorageManager.get().getMetrics(Collections.singletonList(indexTag));
+        }
 
         Map<String, SearchResults.Result> resultPerResources = new HashMap<>();
-
-
         for(Metric metric : metrics) {
             String resourceId = metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue();
             SearchResults.Result result = resultPerResources.get(resourceId);

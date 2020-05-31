@@ -109,7 +109,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
             return true; // cache hit!
         }
 
-        return searchFor(path, depth, false).size() > 0;
+        return searchFor(path, depth).size() > 0;
     }
 
     @Override
@@ -124,7 +124,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         // additional indices to avoid this, but it's not worth the additional
         // writes, since the specified depth should be relatively small.
         return IntStream.rangeClosed(0, depth)
-            .anyMatch(i -> searchFor(path, i, false).size() > 0);
+            .anyMatch(i -> searchFor(path, i).size() > 0);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
         Set<ResourcePath> matches = Sets.newTreeSet();
 
-        SearchResults results = searchFor(path, depth, false);
+        SearchResults results = searchFor(path, depth);
         for (Result result : results) {
             // Relativize the path
             ResourcePath child = toChildResourcePath(path, result.getResource().getId());
@@ -150,7 +150,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public boolean delete(ResourcePath path) {
-        final SearchResults results = searchFor(path, 0, true);
+        final SearchResults results = searchFor(path, 0);
 
         if (results.isEmpty()) {
             return false;
@@ -183,7 +183,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                 .submit(getResourceAttributesCallable(path));
 
         // Gather the list of metrics available under the resource path
-        SearchResults results = searchFor(path, 0, true);
+        SearchResults results = searchFor(path, 0);
         for (Result result : results) {
             final String resourceId = result.getResource().getId();
             final ResourcePath resultPath = toResourcePath(resourceId);
@@ -281,13 +281,13 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         return false;
     }
 
-    private SearchResults searchFor(ResourcePath path, int depth, boolean fetchMetrics) {
+    private SearchResults searchFor(ResourcePath path, int depth) {
         final SearchResults results;
         try {
-            results = searcher.search(path, depth, fetchMetrics);
+            results = searcher.search(path, depth);
             LOG.trace("Found {} results.", results.size());
         } catch (StorageException e) {
-            LOG.error("An error occured while querying for {}", path, e);
+            LOG.error("An error occurred while querying for {}", path, e);
             throw new RuntimeException(e);
         }
         return results;

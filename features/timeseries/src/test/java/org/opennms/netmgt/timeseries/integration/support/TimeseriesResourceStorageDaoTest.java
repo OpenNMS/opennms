@@ -216,7 +216,7 @@ public class TimeseriesResourceStorageDaoTest {
     }
 
     private void replay() throws StorageException {
-        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt(), EasyMock.anyBoolean())).andAnswer(new IAnswer<SearchResults>() {
+        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt())).andAnswer(new IAnswer<SearchResults>() {
             public SearchResults
             answer() {
                 ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];

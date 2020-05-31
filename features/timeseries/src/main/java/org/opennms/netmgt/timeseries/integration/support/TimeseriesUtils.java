@@ -41,11 +41,6 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
-import org.opennms.newts.api.search.BooleanQuery;
-import org.opennms.newts.api.search.Operator;
-import org.opennms.newts.api.search.Query;
-import org.opennms.newts.api.search.Term;
-import org.opennms.newts.api.search.TermQuery;
 import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
@@ -61,6 +56,8 @@ public abstract class TimeseriesUtils {
 
     public static final int TTL = SystemProperties.getInteger("org.opennms.timeseries.config.ttl", 31536000);
 
+    public static final int WILDCARD_INDEX_NO = 2; // => node level
+
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
 
     // Constants used when building mock samples in createSampleForIndexingStrings()
@@ -74,35 +71,20 @@ public abstract class TimeseriesUtils {
      * <ul>
      * <li> _idx1: (a, 4)
      * <li> _idx2: (a:b, 4)
+     * <li> _idx2*=(a:b,*) // wildcard index to query for all resources under that resource
      * <li> _idx3: (a:b:c, 4)
      */
     public static void addIndicesToAttributes(ResourcePath path, Map<String, String> attributes) {
-        final List<String> els = Arrays.asList(path.elements());
-        final int N = els.size();
-        for (int i = 0; i < N; i++) {
-            final String id = s_splitter.joinElementsToId(els.subList(0, i+1));
-            attributes.put("_idx" + i, String.format("(%s,%d)", id, N));
+        final List<String> elements = Arrays.asList(path.elements());
+        final int n = elements.size();
+        for (int i = 0; i < n; i++) {
+            final String id = s_splitter.joinElementsToId(elements.subList(0, i+1));
+            attributes.put("_idx" + i, String.format("(%s,%d)", id, n));
         }
-    }
-
-    /**
-     * Constructs a query used to find all of the resources that have
-     * one or more metrics at the given depth bellow the path.
-     *
-     * Requires resources to have been indexed using {@link #addIndicesToAttributes}.
-     */
-    public static Query findResourcesWithMetricsAtDepth(ResourcePath path, int depth) {
-        // Numeric suffix for the index name, based on the length of parent path
-        int idxSuffix = path.elements().length - 1;
-        // The length of the resource ids we're interested in finding
-        int targetLen = idxSuffix + depth + 2;
-        TermQuery tq = new TermQuery(new Term(
-                        "_idx"+idxSuffix, // key
-                        String.format("(%s,%d)", toResourceId(path), targetLen) // value
-                        ));
-        BooleanQuery q = new BooleanQuery();
-        q.add(tq, Operator.OR);
-        return q;
+        if(elements.size() >= WILDCARD_INDEX_NO) {
+            final String id = s_splitter.joinElementsToId(elements.subList(0, WILDCARD_INDEX_NO));
+            attributes.put(String.format("_idx%s*", WILDCARD_INDEX_NO), String.format("(%s,*)", id));
+        }
     }
 
     /**
