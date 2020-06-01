@@ -238,6 +238,20 @@ The following is a sample of how the threshold appears in the _thresholds.xml_ f
 ==== Create a Notification on a Threshold Event
 A custom UEI for each threshold makes it easier to xref:notificatioins/introduction.adoc[create notifications]. 
 
+==== Metadata DSL
+
+The link:#ga-meta-data-dsl[Metadata DSL] (domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
+
+The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata
+
+
+
 === Thresholding Service
 
 The Thresholding Service is the component responsible for maintaining the state of the performance metrics and for generating alarms from these when thresholds are triggered (armed) or cleared (unarmed).

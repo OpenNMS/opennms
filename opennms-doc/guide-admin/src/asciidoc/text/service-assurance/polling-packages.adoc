@@ -162,13 +162,13 @@ The _RegEx_ pattern allows to specify named capture groups.
 There can be multiple capture groups inside of a pattern, but each must have a unique name.
 Please note, that the _RegEx_ must be escaped or be wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
 
-If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Meta-Data-DSL] using the context `pattern` and the capture group name as key.
+If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Metadata DSL] using the context `pattern` and the capture group name as key.
 
 Examples:
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`::
 Matches all services which names starts with `HTTP-` followed by a host name.
-If the services is called `HTTP-www.example.com`, the Meta-DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
+If the services is called `HTTP-www.example.com`, the Metadata DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*?):(?<port>[0-9]+)$]]></pattern>"`::
 Matches all services which names starts with `HTTP-` followed by a hostname and a port.
