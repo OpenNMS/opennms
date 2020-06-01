@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
@@ -68,33 +69,35 @@ public class TimeSeriesMetaDataDao {
 
     private final DataSource dataSource;
 
-    private final Map<String, Map<String, String>> cache; // resourceId, Map<name, value>
+    private final Cache<String, Map<String, String>> cache; // resourceId, Map<name, value>
 
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource,
                                  @Named("timeseries.metadata.cache_size") long cacheSize,
                                  @Named("timeseries.metadata.cache_duration") long cacheDuration) {
         this.dataSource = dataSource;
-        Cache<String, Map<String, String>> cache = CacheBuilder.newBuilder()
+        this.cache = CacheBuilder.newBuilder()
                 .maximumSize(cacheSize)
                 .expireAfterWrite(cacheDuration, TimeUnit.SECONDS) // to make sure cache and db are in sync
                 .build();
-        this.cache = cache.asMap();
     }
 
-    public void store(final Collection<MetaData> metaDataCollection) throws SQLException {
+    public void store(final Collection<MetaData> metaDataCollection) throws SQLException, ExecutionException {
         Objects.requireNonNull(metaDataCollection);
         Set<MetaData> writeToDb = new HashSet<>();
 
         // find all MetaData that is not present in the cache
         for(MetaData meta : metaDataCollection) {
-            Map<String, String> attributesForResource = cache.computeIfAbsent(meta.getResourceId(), (key) -> new HashMap<>());
+            Map<String, String> attributesForResource = cache.get(meta.getResourceId(), HashMap::new);
             if(attributesForResource.get(meta.getName()) == null) {
                 writeToDb.add(meta);
                 attributesForResource.put(meta.getName(), meta.getValue()); // add to cache
             }
         }
-        storeUncached(writeToDb);
+        // store the uncached meta data
+        if(!writeToDb.isEmpty()) {
+            storeUncached(writeToDb);
+        }
     }
 
     public void storeUncached(final Collection<MetaData> metaDataCollection) throws SQLException {
@@ -129,7 +132,7 @@ public class TimeSeriesMetaDataDao {
         String resourceId = toResourceId(path);
 
         // check cache first
-        Map<String, String> cachedEntry = this.cache.get(resourceId);
+        Map<String, String> cachedEntry = this.cache.getIfPresent(resourceId);
         if(cachedEntry != null) {
             return cachedEntry;
         }
