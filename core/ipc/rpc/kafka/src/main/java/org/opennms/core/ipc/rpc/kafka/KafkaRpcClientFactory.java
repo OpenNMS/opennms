@@ -239,7 +239,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             }
 
             private void addMetrics(RpcRequest request, int messageLen) {
-                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SENT));
                 requestSentMeter.mark();
                 final Histogram rpcRequestSize = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
                 rpcRequestSize.update(messageLen);

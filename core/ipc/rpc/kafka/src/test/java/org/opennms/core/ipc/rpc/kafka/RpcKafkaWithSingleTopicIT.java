@@ -47,6 +47,8 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -98,6 +100,8 @@ public class RpcKafkaWithSingleTopicIT extends RpcKafkaIT {
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         kafkaConfig.put(KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES, "true");
+        kafkaConfig.put(KafkaRpcConstants.MAX_CONCURRENT_CALLS_PROPERTY, MAX_CONCURRENT_CALLS);
+        kafkaConfig.put(KafkaRpcConstants.MAX_DURATION_BULK_HEAD, MAX_DURATION_BULK_HEAD);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
@@ -107,7 +111,7 @@ public class RpcKafkaWithSingleTopicIT extends RpcKafkaIT {
         rpcClient.start();
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
-                minionIdentity,tracerRegistry);
+                minionIdentity,tracerRegistry, new MetricRegistry());
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
 

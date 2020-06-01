@@ -546,6 +546,7 @@
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-core-ipc-kafka-shell</feature>
+        <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>

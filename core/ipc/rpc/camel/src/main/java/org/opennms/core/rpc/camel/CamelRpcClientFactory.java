@@ -214,7 +214,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                     // Ensure that future log statements on this thread are routed properly
                     Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 }
-                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_COUNT));
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SENT));
                 requestSentMeter.mark();
                 return future;
             }
