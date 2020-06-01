@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -85,18 +84,17 @@ public class TimeSeriesMetaDataDao {
 
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException {
         Objects.requireNonNull(metaDataCollection);
-        Set<MetaData> uncached = new HashSet<>();
+        Set<MetaData> writeToDb = new HashSet<>();
 
         // find all MetaData that is not present in the cache
         for(MetaData meta : metaDataCollection) {
-            if(!Optional
-                    .ofNullable(cache.get(meta.getResourceId()))
-                    .map(entry -> entry.get(meta.getName()))
-                    .isPresent()) {
-                uncached.add(meta);
+            Map<String, String> attributesForResource = cache.computeIfAbsent(meta.getResourceId(), (key) -> new HashMap<>());
+            if(attributesForResource.get(meta.getName()) == null) {
+                writeToDb.add(meta);
+                attributesForResource.put(meta.getName(), meta.getValue()); // add to cache
             }
         }
-        storeUncached(uncached);
+        storeUncached(writeToDb);
     }
 
     public void storeUncached(final Collection<MetaData> metaDataCollection) throws SQLException {
