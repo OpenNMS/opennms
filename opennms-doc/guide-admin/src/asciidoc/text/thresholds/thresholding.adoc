@@ -163,6 +163,19 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 
 . Click `Save`.
 
+==== Using Metadata in a Threshold
+
+Using metadata in expression-based thresholds can streamline threshold creation. 
+The link:#ga-meta-data-dsl[Metadata DSL] (domain specific language) allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+A single expression can behave differently based on the node being tested against.  
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata
+
+
 [[datasource-determine]]
 ==== Determining the Datasource
 Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
@@ -237,20 +250,6 @@ The following is a sample of how the threshold appears in the _thresholds.xml_ f
 [[threshold-notification]]
 ==== Create a Notification on a Threshold Event
 A custom UEI for each threshold makes it easier to xref:notificatioins/introduction.adoc[create notifications]. 
-
-==== Metadata DSL
-
-The link:#ga-meta-data-dsl[Metadata DSL] (domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
-
-The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
-
-During evaluation of an expression, the following scopes are available:
-
-* Node metadata
-* Interface metadata
-* Service metadata
-
-
 
 === Thresholding Service
 
