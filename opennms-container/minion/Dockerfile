@@ -1,6 +1,6 @@
 ##
 # Pre-stage image to extract and manipulate Minion directory structure
-# Normally we install to /opt/minion and not /opt/minion-26.1.1
+# Normally we install to /opt/minion and not /opt/minion-26.1.2-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
