@@ -75,6 +75,7 @@ public class PropertyTreeTest {
         assertEquals(Optional.empty(), props.getOptionalInteger("b", "b", "y", "z"));
 
         assertEquals(ImmutableMap.of("a", "6", "b", "7"), props.getMap("b", "c"));
+        assertEquals(ImmutableMap.of("a.b.c", "0"), props.getMapR("x", "y", "z"));
         assertEquals(Collections.emptyMap(), props.getMap("b", "x"));
         assertEquals(Collections.emptyMap(), props.getMap("b", "y", "z"));
 

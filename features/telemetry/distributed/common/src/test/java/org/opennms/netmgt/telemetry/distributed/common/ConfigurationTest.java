@@ -43,6 +43,7 @@ public class ConfigurationTest {
         properties.put("name", "Example");
         properties.put("class-name", "com.example.Adapter");
         properties.put("parameters.test", "success");
+        properties.put("parameters.dotted.key", "success");
 
         final PropertyTree tree = PropertyTree.from(properties);
 
@@ -51,5 +52,6 @@ public class ConfigurationTest {
         Assert.assertEquals("Example", adapter.getName());
         Assert.assertEquals("com.example.Adapter", adapter.getClassName());
         Assert.assertEquals("success", adapter.getParameterMap().get("test"));
+        Assert.assertEquals("success", adapter.getParameterMap().get("dotted.key"));
     }
 }

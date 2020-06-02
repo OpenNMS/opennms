@@ -61,7 +61,6 @@ public class MapBasedAdapterDef implements AdapterDefinition {
 
     @Override
     public Map<String, String> getParameterMap() {
-        parameters.keySet().forEach(k -> System.out.println("out: "+k+" = "+parameters.get(k)));
         return parameters;
     }
 
