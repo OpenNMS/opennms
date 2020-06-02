@@ -1,3 +1,13 @@
+opennms-minion (26.1.1-1) stable; urgency=low
+
+  * New enhancement release. It contains a number of documentation and bug fixes
+    including improvements to Kafka event and alarm publishing.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/26.1.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 02 Jun 2020 10:44:00 -0400
+
 opennms-minion (26.1.0-1) stable; urgency=medium
 
   * New enhancement release. It contains a number of bug fixes and improvements,
