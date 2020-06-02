@@ -171,29 +171,20 @@ public class RemotePollerd implements SpringServiceDaemon {
 
         LOG.info("Scheduling all services...");
         sessionUtils.withReadOnlyTransaction(() -> {
-            for (OnmsMonitoringLocation loc : monitoringLocationDao.findAll()) {
-                final List<String> pollingPackageNames = loc.getPollingPackageNames();
-                LOG.debug("Location '{}' has polling packages: {}", loc.getLocationName(), pollingPackageNames);
+            for (OnmsMonitoringLocation location : monitoringLocationDao.findAll()) {
+                final List<String> pollingPackageNames = location.getPollingPackageNames();
+                LOG.debug("Location '{}' has polling packages: {}", location.getLocationName(), pollingPackageNames);
                 for (String pollingPackageName : pollingPackageNames) {
-                    final List<RemotePolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> {
-                        final Package pkg = pollerConfig.getPackage(pollingPackageName);
-                        if (pkg == null) {
-                            LOG.warn("Polling package '{}' is associated with location '{}', but the package was not found." +
-                                    " Using an empty set of services.", pollingPackageName, loc.getLocationName());
-                            return Collections.emptyList();
-                        }
-                        return getServicesForPackage(pkg);
-                    });
+                    final List<RemotePolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> getServicesForPackage(location, pkgName));
 
                     for (RemotePolledService polledService : servicesForPackage) {
                         try {
-                            scheduleService(loc.getLocationName(), polledService);
+                            scheduleService(location.getLocationName(), polledService);
                         } catch (SchedulerException e) {
                             LOG.warn("Failed to schedule {}.", polledService, e);
                         }
                     }
                 }
-
             }
             return null;
         });
@@ -232,27 +223,17 @@ public class RemotePollerd implements SpringServiceDaemon {
 
         LOG.info("Re-scheduling all services...");
         sessionUtils.withReadOnlyTransaction(() -> {
-            for (final OnmsMonitoringLocation loc : monitoringLocationDao.findAll()) {
-                final List<String> pollingPackageNames = loc.getPollingPackageNames();
-                LOG.debug("Location '{}' has polling packages: {}", loc.getLocationName(), pollingPackageNames);
+            for (final OnmsMonitoringLocation location : monitoringLocationDao.findAll()) {
+                final List<String> pollingPackageNames = location.getPollingPackageNames();
+                LOG.debug("Location '{}' has polling packages: {}", location.getLocationName(), pollingPackageNames);
 
                 final Set<RemotePolledService> servicesToBeScheduled = new HashSet<>();
 
                 for (final String pollingPackageName : pollingPackageNames) {
-                    final List<RemotePolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> {
-                        final Package pkg = pollerConfig.getPackage(pollingPackageName);
-                        if (pkg == null) {
-                            LOG.warn("Polling package '{}' is associated with location '{}', but the package was not found." +
-                                    " Using an empty set of services.", pollingPackageName, loc.getLocationName());
-                            return Collections.emptyList();
-                        }
-                        return getServicesForPackage(pkg);
-                    });
-
-                    servicesToBeScheduled.addAll(servicesForPackage);
+                    servicesToBeScheduled.addAll(servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> getServicesForPackage(location, pkgName)));
                 }
 
-                final Map<JobKey, RemotePolledService> mapOfScheduledServices = getMapOfScheduledServices(loc.getLocationName());
+                final Map<JobKey, RemotePolledService> mapOfScheduledServices = getMapOfScheduledServices(location.getLocationName());
                 final Set<RemotePolledService> scheduledServices = mapOfScheduledServices.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toSet());
 
                 // remove services that will not be scheduled anymore
@@ -270,7 +251,7 @@ public class RemotePollerd implements SpringServiceDaemon {
                 for (final RemotePolledService polledService : servicesToBeScheduled) {
                     if (!scheduledServices.contains(polledService)) {
                         try {
-                            scheduleService(loc.getLocationName(), polledService);
+                            scheduleService(location.getLocationName(), polledService);
                         } catch (SchedulerException e) {
                             LOG.warn("Failed to schedule {}.", polledService, e);
                         }
@@ -316,7 +297,14 @@ public class RemotePollerd implements SpringServiceDaemon {
         return locationAwarePollerClient;
     }
 
-    private List<RemotePolledService> getServicesForPackage(Package pkg) {
+    private List<RemotePolledService> getServicesForPackage(final OnmsMonitoringLocation location, final String pollingPackageName) {
+        final Package pkg = pollerConfig.getPackage(pollingPackageName);
+        if (pkg == null) {
+            LOG.warn("Polling package '{}' is associated with location '{}', but the package was not found." +
+                    " Using an empty set of services.", pollingPackageName, location.getLocationName());
+            return Collections.emptyList();
+        }
+
         final ServiceSelector selector = pollerConfig.getServiceSelectorForPackage(pkg);
         final Collection<OnmsMonitoredService> services = monSvcDao.findMatchingServices(selector);
         LOG.debug("Found {} services in polling package {}", services.size(), pkg.getName());
