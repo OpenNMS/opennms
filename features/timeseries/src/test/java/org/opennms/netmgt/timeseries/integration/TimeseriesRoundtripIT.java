@@ -48,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
@@ -176,8 +177,8 @@ public class TimeseriesRoundtripIT {
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
 
         List<Metric> metrics = timeseriesStorageManager.get().getMetrics(Arrays.asList(
-                new ImmutableTag(CommonTagNames.resourceId, resourceId),
-                new ImmutableTag(CommonTagNames.name, name)));
+                new ImmutableTag(IntrinsicTagNames.resourceId, resourceId),
+                new ImmutableTag(IntrinsicTagNames.name, name)));
         assertEquals(1, metrics.size());
 
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
