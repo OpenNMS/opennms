@@ -309,6 +309,29 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.8]
+
+==== Release Meridian-2019.1.8
+
+Release 2019.1.8 is the ninth release in the Meridian 2019 series.
+
+It contains a number of bug and documentation fixes as well as a few small enhancements.
+
+The codename for 2019.1.8 is _link:$$https://en.wikipedia.org/wiki/Neptune$$[Neptune]_
+
+===== Bug
+
+* SSLCertMonitor server-name parameter results in NPE (Issue http://issues.opennms.org/browse/NMS-12332[NMS-12332])
+* Fix warnings during documentation build (Issue http://issues.opennms.org/browse/NMS-12702[NMS-12702])
+* Images are broken in admin guide (Issue http://issues.opennms.org/browse/NMS-12713[NMS-12713])
+* Cleanup removed Elasticsearch REST plugin and hint to Plugin Manager (Issue http://issues.opennms.org/browse/NMS-12716[NMS-12716])
+* Events forwarded by Kafka Producer doesn't have any parameters set (Issue http://issues.opennms.org/browse/NMS-12723[NMS-12723])
+
+===== New Feature
+
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* Send trouble ticket id to kafka alarm topic (Issue http://issues.opennms.org/browse/NMS-12725[NMS-12725])
+
 [releasenotes-changelog-Meridian-2019.1.7]
 
 ==== Release Meridian-2019.1.7
