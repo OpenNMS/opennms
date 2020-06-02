@@ -15,9 +15,12 @@ source ../version-tags.sh
 # OpenNMS Minion packages
 MINION_PACKAGES="opennms-minion"
 
-for PKG in ${MINION_PACKAGES}; do 
-  cp ../.././opennms-assemblies/minion/target/*-minion.tar.gz tarball/minion.tar.gz
-done
+MINION_TARBALL="$(find ../.. -name \*-minion.tar.gz -type f | grep opennms-assemblies | head -n 1)"
+if [ -z "${MINION_TARBALL}" ]; then
+  echo "unable to find minion tarball in opennms-assemblies"
+  exit 1
+fi
+cp "${MINION_TARBALL}" tarball/minion.tar.gz
 
 docker build -t minion \
   --build-arg BUILD_DATE="$(date -u +\"%Y-%m-%dT%H:%M:%S%z\")" \

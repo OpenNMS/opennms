@@ -32,7 +32,7 @@
     </service>
 
     <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager"
-          init-method="start" >
+          init-method="start" destroy-method="shutdown">
         <argument ref="sinkServer"/>
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>

@@ -19,7 +19,8 @@
     <constructor-arg ref="awqSqsConfig"/>
   </bean>
 
-  <bean id="awsMessageConsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager">
+  <bean id="awsMessageConsumerManager" class="org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager"
+        destroy-method="shutdown">
     <property name="awsSqsManager" ref="awsSqsManager"/>
   </bean>
   <onmsgi:service ref="awsMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />

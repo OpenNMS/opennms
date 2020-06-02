@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.scv</artifactId>
-        <version>26.1.0</version>
+        <version>26.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.scv</groupId>
@@ -16,7 +16,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>foobar</id>

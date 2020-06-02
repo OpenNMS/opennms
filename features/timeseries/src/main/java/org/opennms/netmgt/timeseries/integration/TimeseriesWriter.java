@@ -215,11 +215,15 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         // Decrement our entry counter
         numEntriesOnRingBuffer.decrementAndGet();
 
-        if (event.isIndexOnly()) {
-            storeMetadata(event);
-        } else {
-            storeTimeseriesData(event);
-            storeMetadata(event);
+        try {
+            if (event.isIndexOnly()) {
+                storeMetadata(event);
+            } else {
+                storeTimeseriesData(event);
+                storeMetadata(event);
+            }
+        } catch (Throwable t) {
+            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
         }
     }
 

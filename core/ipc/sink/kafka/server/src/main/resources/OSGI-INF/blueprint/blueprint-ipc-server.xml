@@ -33,7 +33,8 @@
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
 
     <!-- ConsumerManager -->
-    <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" init-method="afterPropertiesSet">
+    <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" init-method="afterPropertiesSet"
+          destroy-method="shutdown">
         <argument ref="kafkaConfigProvider" />
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>

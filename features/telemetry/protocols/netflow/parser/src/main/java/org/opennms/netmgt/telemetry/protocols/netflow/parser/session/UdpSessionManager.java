@@ -87,13 +87,11 @@ public class UdpSessionManager {
                                                                                                         Objects.equals(e.getKey().observationDomainId, this.observationDomainId))) {
                     final Template template = UdpSessionManager.this.templates.get(e.getKey()).template;
 
-                    final Set<String> scopes = template.scopes.stream().map(Scope::getName).collect(Collectors.toSet());
-
-                    if (scoped.containsAll(scopes)) {
+                    if (scoped.containsAll(template.scopeNames)) {
                         // Found option template where scoped fields is subset of actual data fields
 
                         final Set<Value<?>> scopeValues = values.stream()
-                                .filter(s -> scopes.contains(s.getName()))
+                                .filter(s -> template.scopeNames.contains(s.getName()))
                                 .collect(Collectors.toSet());
 
                         for (final Value<?> value : e.getValue().getOrDefault(scopeValues, Collections.emptyList())) {
