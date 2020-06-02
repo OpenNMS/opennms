@@ -51,7 +51,7 @@ public class MapBasedAdapterDef implements AdapterDefinition {
     public MapBasedAdapterDef(final PropertyTree definition) {
         this.name = definition.getRequiredString("name");
         this.className = definition.getRequiredString("class-name");
-        this.parameters = definition.getMap("parameters");
+        this.parameters = definition.getMapR("parameters");
     }
 
     @Override
@@ -61,6 +61,7 @@ public class MapBasedAdapterDef implements AdapterDefinition {
 
     @Override
     public Map<String, String> getParameterMap() {
+        parameters.keySet().forEach(k -> System.out.println("out: "+k+" = "+parameters.get(k)));
         return parameters;
     }
 

@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -158,6 +159,40 @@ public class PropertyTree {
                 .map(node -> Maps.transformValues(node.children, c -> c.getValue().get()))
                 .orElseGet(Collections::emptyMap);
     }
+
+    /**
+     * Get the values of all child nodes at the given path, enumerating any subtrees and converting their
+     * paths into dot-separated property names. This is intended to handle parameter keys containing dots -
+     * see NMS-12738.
+     *
+     * @param path the path of the node to return split into its elements
+     * @return the {@link Map} from the children node names to its values. If one of the nodes in the path does not exist this will return an empty {@link Map}
+     */
+
+    public Map<String, String> getMapR(final String... path) {
+        Map<String,String> outmap = new HashMap<String,String>();
+        Optional<Node> node = this.find(path);
+        if(node.isPresent()) {
+            for(String k: node.get().children.keySet()) {
+                getChildKeys(node.get().children.get(k), new String(k), outmap);
+            }
+        }
+        return outmap;
+    }
+
+    public String getChildKeys(Node n, String s, Map<String,String> m) {
+        if(n.value.isPresent()) {
+            m.put(s, n.value.get());
+            return "";
+        }
+
+        // recurse to the leaves
+        for(String k: n.children.keySet()) {
+            getChildKeys(n.children.get(k), s+"."+k, m);
+        }
+        return s;
+    }
+
 
     /**
      * Get the children nodes at the given path represented as sub-trees. The sub-trees are mapped by the children node names.
