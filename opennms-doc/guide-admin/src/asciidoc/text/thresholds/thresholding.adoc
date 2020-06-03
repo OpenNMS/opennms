@@ -165,9 +165,34 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 
 ==== Using Metadata in a Threshold
 
-Using metadata in expression-based thresholds can streamline threshold creation. 
+Metadata in expression-based thresholds can streamline threshold creation. 
 The link:#ga-meta-data-dsl[Metadata DSL] (domain specific language) allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
-A single expression can behave differently based on the node being tested against.  
+A single expression can behave differently based on the node being tested against.
+
+IMPORTANT: Never attempt to use metatdata with basic thresholds. 
+Metadata works only with expression-based thresholds.
+Using metadata with a basic threshold will break the web UI, making it unusable.  
+
+This procedure uses metadata to create a threshold to ...
+
+
+
+. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
+. Under `Performance Measurement`, choose `Configure Thresholds`.
+. Click `Edit` beside the `netsnmp` group. 
+. Click `Create New Expression-based Threshold`. 
+. Fill in the following information:
+
++
+* Type: High
+* Expression: `hrSystemNumUsers / ${requisition:userLimit|1}`
+* Datasource type: Node
+* Value: 1
+* Rearm: 1
+* Description: Too many logged-in users
+
+
+
 
 During evaluation of an expression, the following scopes are available:
 
