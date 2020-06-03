@@ -32,7 +32,7 @@ import java.net.InetAddress;
 
 public interface EntityScopeProvider {
 
-    interface ScopeId {
+    interface Contexts {
         String ASSET = "asset";
         String INTERFACE = "interface";
         String NODE = "node";
