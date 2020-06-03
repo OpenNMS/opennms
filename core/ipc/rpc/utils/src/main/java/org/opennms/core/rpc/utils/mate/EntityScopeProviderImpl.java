@@ -28,9 +28,10 @@
 
 package org.opennms.core.rpc.utils.mate;
 
-import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.ScopeId.ASSET;
-import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.ScopeId.NODE;
-import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.ScopeId.SERVICE;
+import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.Contexts.ASSET;
+import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.Contexts.INTERFACE;
+import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.Contexts.NODE;
+import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.Contexts.SERVICE;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -202,19 +203,19 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             return new FallbackScope(transform(ipInterface.getMetaData()),
                     mapIpInterfaceKeys(ipInterface)
-                            .map(ScopeId.INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
-                            .map(ScopeId.INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
-                            .map(ScopeId.INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr))
+                            .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
+                            .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
+                            .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr))
             );
         });
     }
 
     private static ObjectScope<OnmsIpInterface> mapIpInterfaceKeys(OnmsIpInterface ipInterface) {
         return new ObjectScope<>(ipInterface)
-                .map(ScopeId.INTERFACE, "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
-                .map(ScopeId.INTERFACE, "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
-                .map(ScopeId.INTERFACE, "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
-                .map(ScopeId.INTERFACE, "if-index", (i) -> Optional.ofNullable(i.getIfIndex()).map(Object::toString));
+                .map(INTERFACE, "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
+                .map(INTERFACE, "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
+                .map(INTERFACE, "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
+                .map(INTERFACE, "if-index", (i) -> Optional.ofNullable(i.getIfIndex()).map(Object::toString));
     }
 
     @Override
@@ -233,9 +234,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             // SNMP interface facts
             scopes.add(new ObjectScope<>(snmpInterface)
-                    .map(ScopeId.INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getIfAlias()))
-                    .map(ScopeId.INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getIfDescr()))
-                    .map(ScopeId.INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getPhysAddr())));
+                    .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getIfAlias()))
+                    .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getIfDescr()))
+                    .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getPhysAddr())));
 
             // IP interface facts w/ meta-data extracted from IP interface
             Optional.ofNullable(snmpInterface.getPrimaryIpInterface())
