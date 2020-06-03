@@ -31,9 +31,14 @@ package org.opennms.core.rpc.utils.mate;
 import java.net.InetAddress;
 
 public interface EntityScopeProvider {
-    Scope getScopeForNode(final Integer nodeId);
 
-    Scope getScopeForAssets(final Integer nodeId);
+    interface ScopeId {
+        String ASSET = "asset";
+        String NODE = "node";
+        String INTERFACE = "interface";
+    }
+
+    Scope getScopeForNode(final Integer nodeId);
 
     Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
 

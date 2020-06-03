@@ -66,9 +66,10 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
 
     @Inject
     public MetaTagDataLoader(final NodeDao nodeDao, final SessionUtils sessionUtils, final EntityScopeProvider entityScopeProvider) {
-        this.nodeDao = nodeDao;
-        this.sessionUtils = sessionUtils;
-        this.entityScopeProvider = entityScopeProvider;
+
+        this.nodeDao = Objects.requireNonNull(nodeDao, "nodeDao must not be null");
+        this.sessionUtils = Objects.requireNonNull(sessionUtils, "sessionUtils must not be null");
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider, "entityScopeProvider must not be null");
         setConfig(new MetaTagConfiguration(Maps.fromProperties(System.getProperties())));
     }
 
@@ -88,7 +89,6 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
             if(nodeOptional.isPresent()) {
                 OnmsNode node = nodeOptional.get();
                 scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
-                scopes.add(this.entityScopeProvider.getScopeForAssets(node.getId()));
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
                     // We expect #getInstance to return the ifIndex for interface-level resources
                     try {

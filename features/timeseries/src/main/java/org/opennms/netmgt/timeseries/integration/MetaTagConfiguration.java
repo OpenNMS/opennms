@@ -40,14 +40,6 @@ public class MetaTagConfiguration {
     final static String CONFIG_KEY_FOR_CATEGORIES = CONFIG_PREFIX + ".exposeCategories";
     final static String CONFIG_PREFIX_FOR_TAGS = CONFIG_PREFIX + ".tag.";
 
-    /**
-     * properties defined in opennms.properties
-     */
-    public enum PropertyKey {
-        assets,
-        tag,
-        categories
-    }
     private final boolean categoriesEnabled;
 
     private final Map<String, String> configuredMetaTags;
