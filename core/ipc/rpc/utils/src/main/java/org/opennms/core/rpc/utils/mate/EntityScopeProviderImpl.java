@@ -106,7 +106,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     .map(NODE, "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()));
             scopes.add(nodeScope);
 
-            if (node.getAssetRecord() == null) {
+            if (node.getAssetRecord() != null) {
                 Scope assetScope = new ObjectScope<>(node.getAssetRecord())
                         .map(ASSET, "category", (a) -> Optional.ofNullable(a.getCategory()))
                         .map(ASSET, "vendor", (a) -> Optional.ofNullable(a.getVendor()))
