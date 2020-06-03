@@ -41,11 +41,6 @@ public final class MockEntityScopeProvider implements EntityScopeProvider {
     }
 
     @Override
-    public Scope getScopeForAssets(Integer nodeId) {
-        return EmptyScope.EMPTY;
-    }
-
-    @Override
     public Scope getScopeForInterface(final Integer nodeId, final String ipAddress) {
         return EmptyScope.EMPTY;
     }
