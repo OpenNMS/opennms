@@ -1102,7 +1102,7 @@ jobs:
             git push origin "${TARGET_BRANCH}:${TARGET_BRANCH}"
 
   merge-poweredby-branch:
-    <<: *defaults
+#    <<: *defaults
     <<: *docker_container_config
     steps:
       - when:
