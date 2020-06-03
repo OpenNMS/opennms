@@ -34,8 +34,9 @@ public interface EntityScopeProvider {
 
     interface ScopeId {
         String ASSET = "asset";
-        String NODE = "node";
         String INTERFACE = "interface";
+        String NODE = "node";
+        String SERVICE = "service";
     }
 
     Scope getScopeForNode(final Integer nodeId);

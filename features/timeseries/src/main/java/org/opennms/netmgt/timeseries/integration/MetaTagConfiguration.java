@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.integration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Defines which additional meta tags should be exposed to the timeseries integration plugin.
@@ -59,13 +60,10 @@ public class MetaTagConfiguration {
 
     private Map<String, String> findConfiguredMetaTags(final Map<String, String> properties) {
         Map<String, String> filteredMap = new HashMap<>();
-        properties
+        return properties
                 .entrySet()
                 .stream()
-                .flatMap((entry) -> StringUtils.truncatePrefix(entry.getKey(), MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS)
-                                               .map(Stream::of)
-                                               .orElseGet(Stream::empty))
-                .collect(Collectors.toMap((entry) -> entry.getKey(), (entry) -> entry.getValue()));
-        return filteredMap;
+                .filter(e -> e.getKey().startsWith(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS))
+                .collect(Collectors.toMap((entry) -> entry.getKey().substring(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS.length()), Map.Entry::getValue));
     }
 }

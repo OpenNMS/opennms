@@ -30,6 +30,7 @@ package org.opennms.core.rpc.utils.mate;
 
 import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.ScopeId.ASSET;
 import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.ScopeId.NODE;
+import static org.opennms.core.rpc.utils.mate.EntityScopeProvider.ScopeId.SERVICE;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -261,14 +262,14 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
 
             return new FallbackScope(transform(monitoredService.getMetaData()),
                     new ObjectScope<>(monitoredService)
-                            .map("service", "name", (s) -> Optional.of(s.getServiceName()))
+                            .map(SERVICE, "name", (s) -> Optional.of(s.getServiceName()))
             );
         });
     }
 
     private static MapScope transform(final Collection<OnmsMetaData> metaData) {
         final Map<ContextKey, String> map = metaData.stream()
-                .collect(Collectors.toMap(e -> new ContextKey(e.getContext(), e.getKey()), e -> e.getValue()));
+                .collect(Collectors.toMap(e -> new ContextKey(e.getContext(), e.getKey()), OnmsMetaData::getValue));
         return new MapScope(map);
     }
 
