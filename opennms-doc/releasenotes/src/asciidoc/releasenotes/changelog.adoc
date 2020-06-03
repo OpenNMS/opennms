@@ -2,6 +2,31 @@
 
 === Changelog
 
+[releasenotes-changelog-26.1.1]
+
+==== Release 26.1.1
+
+Release 26.1.1 is the fourth release in the Horizon 26 series.
+
+It contains a number of documentation and bug fixes including improvements to Kafka event and alarm publishing.
+
+The codename for 26.1.1 is _link:$$https://en.wikipedia.org/wiki/Facial#Facial_mask$$[Hydrating]_.
+
+===== Bug
+
+* SSLCertMonitor server-name parameter results in NPE (Issue http://issues.opennms.org/browse/NMS-12332[NMS-12332])
+* Provisiond accepts multiple primary SNMP interfaces (Issue http://issues.opennms.org/browse/NMS-12605[NMS-12605])
+* Fix warnings during documentation build (Issue http://issues.opennms.org/browse/NMS-12702[NMS-12702])
+* Cleanup removed Elasticsearch REST plugin and hint to Plugin Manager (Issue http://issues.opennms.org/browse/NMS-12716[NMS-12716])
+* The Alarm History feature is not working (Issue http://issues.opennms.org/browse/NMS-12718[NMS-12718])
+* Events forwarded by Kafka Producer doesn't have any parameters set (Issue http://issues.opennms.org/browse/NMS-12723[NMS-12723])
+* Netflow ingress performance regression (Issue http://issues.opennms.org/browse/NMS-12724[NMS-12724])
+
+===== Enhancement
+
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* Send trouble ticket id to kafka alarm topic (Issue http://issues.opennms.org/browse/NMS-12725[NMS-12725])
+
 [releasenotes-changelog-26.1.0]
 
 ==== Release 26.1.0
