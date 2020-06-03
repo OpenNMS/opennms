@@ -822,18 +822,6 @@
         <configuration>
           <dynamicDependencies>
             <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit4</artifactId>
-              <version>${maven.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit4</artifactId>
-              <version>${maven.smoke.surefire.plugin.version}</version>
-              <repositoryType>PLUGIN</repositoryType>
-            </DynamicDependency>
-            <DynamicDependency>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-antrun-plugin</artifactId>
               <version>${maven.antrun.plugin.version}</version>
@@ -1076,6 +1064,13 @@
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit47</artifactId>
+            <version>${maven.surefire.plugin.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -1084,7 +1079,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.19</version>
+        <version>${maven.failsafe.plugin.version}</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables/>
@@ -1100,6 +1095,13 @@
           <skipITs>${skipITs}</skipITs>
           <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit47</artifactId>
+            <version>${maven.failsafe.plugin.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1248,15 +1250,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <!-- 
-      CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the 
-      org.opennms.core.test.karaf.KarafTestCase classes are experiencing
-      the following bug in those versions (even thought it is claimed to
-      have been fixed in 2.19.1):
-
-      https://issues.apache.org/jira/browse/SUREFIRE-1193
-    -->
-    <maven.testing.plugin.version>2.18</maven.testing.plugin.version>
+    <maven.testing.plugin.version>2.22.2</maven.testing.plugin.version>
     <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
     <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
     <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
