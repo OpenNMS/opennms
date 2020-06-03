@@ -70,8 +70,10 @@ public class MetaTagConfiguration {
         properties
                 .entrySet()
                 .stream()
-                .filter(e -> e.getKey().startsWith(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS))
-                .forEach((entry) -> filteredMap.put(entry.getKey().substring(MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS.length()), entry.getValue()));
+                .flatMap((entry) -> StringUtils.truncatePrefix(entry.getKey(), MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS)
+                                               .map(Stream::of)
+                                               .orElseGet(Stream::empty))
+                .collect(Collectors.toMap((entry) -> entry.getKey(), (entry) -> entry.getValue()));
         return filteredMap;
     }
 }
