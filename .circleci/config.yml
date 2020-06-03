@@ -606,6 +606,18 @@ workflows:
 #          filters:
 #            branches:
 #              only: /^from-foundation.*/
+#      - merge-poweredby-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - horizon-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - /^foundation.*/
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -1088,6 +1100,27 @@ jobs:
           command: |
             TARGET_BRANCH="release-$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,').x"
             git push origin "${TARGET_BRANCH}:${TARGET_BRANCH}"
+
+  merge-poweredby-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                  - poweredby-v1-{{ .Branch }}-
+                  - poweredby-v1-
+            - cached-checkout-for-pushing
+            - run:
+                name: Merge Foundation to PoweredBy
+                command: .circleci/scripts/merge-poweredby.sh
+            - save_cache:
+                key: poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
 
   publish-cloudsmith:
     executor: cloudsmith/default
