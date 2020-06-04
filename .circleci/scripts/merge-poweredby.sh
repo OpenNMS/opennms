@@ -26,6 +26,7 @@ if [ "${YEAR}" = "${CIRCLE_BRANCH}" ]; then
 fi
 
 POWEREDBY="poweredby-${YEAR}"
+export GIT_MERGE_AUTOEDIT=no
 
 echo "=== Found an appropriate Foundation branch.  Merging ${CIRCLE_BRANCH} to ${POWEREDBY}."
 
@@ -36,6 +37,7 @@ else
   echo "=== adding origin ${POWEREDBY} to git"
   git remote add "${POWEREDBY}" "git@github.com:OpenNMS/${POWEREDBY}.git"
 fi
+git config merge.renameLimit 999999
 
 echo "=== fetching from origin"
 git fetch origin
