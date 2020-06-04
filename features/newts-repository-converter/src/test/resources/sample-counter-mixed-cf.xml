@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rrd SYSTEM "https://oss.oetiker.ch/rrdtool/rrdtool.dtd">
+<!-- Round Robin Database Dump -->
+<rrd>
+        <version>0003</version>
+        <step>900</step> <!-- Seconds -->
+        <lastupdate>1582000000</lastupdate>
+
+        <ds>
+                <name> CpuRawIdle </name>
+                <type> GAUGE </type>
+                <minimal_heartbeat>1800</minimal_heartbeat>
+                <min>NaN</min>
+                <max>NaN</max>
+
+                <!-- PDP Status -->
+                <last_ds>3140521024</last_ds>
+                <value>5.3852277114e+06</value>
+                <unknown_sec> 0 </unknown_sec>
+        </ds>
+
+        <!-- Round Robin Archives -->
+        <rra>
+                <cf>LAST</cf>
+                <pdp_per_row>1</pdp_per_row> <!-- 900 seconds -->
+
+                <params>
+                <xff>5.0000000000e-01</xff>
+                </params>
+                <cdp_prep>
+                        <ds>
+                        <primary_value>1.2345678900e+02</primary_value>
+                        <secondary_value>1.2345678900e+02</secondary_value>
+                        <value>NaN</value>
+                        <unknown_datapoints>0</unknown_datapoints>
+                        </ds>
+                </cdp_prep>
+                <database>
+                        <row><v>0.0000000000e+00</v></row>
+                        <row><v>1.0000000000e+00</v></row>
+                        <row><v>2.0000000000e+00</v></row>
+                        <row><v>3.0000000000e+00</v></row>
+                        <row><v>4.0000000000e+00</v></row>
+                        <row><v>5.0000000000e+00</v></row>
+                        <row><v>6.0000000000e+00</v></row>
+                        <row><v>7.0000000000e+00</v></row>
+                        <row><v>8.0000000000e+00</v></row>
+                        <row><v>9.0000000000e+00</v></row>
+                        <row><v>1.0000000000e+01</v></row>
+                        <row><v>1.1000000000e+01</v></row>
+                        <row><v>1.2000000000e+01</v></row>
+                        <row><v>1.3000000000e+01</v></row>
+                        <row><v>1.4000000000e+01</v></row>
+                        <row><v>1.5000000000e+01</v></row>
+                        <row><v>1.6000000000e+01</v></row>
+                        <row><v>1.7000000000e+01</v></row>
+                        <row><v>1.8000000000e+01</v></row>
+					    <row><v>1.9000000000e+01</v></row>
+				</database>
+		</rra>
+		<rra>
+                <cf>AVERAGE</cf>
+                <pdp_per_row>4</pdp_per_row> <!-- 3600 seconds -->
+
+                <params>
+                <xff>5.0000000000e-01</xff>
+                </params>
+                <cdp_prep>
+                        <ds>
+                        <primary_value>1.2345678900e+04</primary_value>
+                        <secondary_value>1.2345678900e+04</secondary_value>
+                        <value>1.2345678900e+04</value>
+                        <unknown_datapoints>0</unknown_datapoints>
+                        </ds>
+                </cdp_prep>
+                <database>
+						<row><v>9.0000000000e+03</v></row>
+                        <row><v>9.1000000000e+03</v></row>
+                        <row><v>9.2000000000e+03</v></row>
+                        <row><v>9.3000000000e+03</v></row>
+                        <row><v>9.4000000000e+03</v></row>
+                        <row><v>9.5000000000e+03</v></row>
+                        <row><v>9.6000000000e+03</v></row>
+                        <row><v>9.7000000000e+03</v></row>
+                        <row><v>9.8000000000e+03</v></row>
+                        <row><v>9.9000000000e+03</v></row>
+				</database>
+		</rra>
+</rrd>
