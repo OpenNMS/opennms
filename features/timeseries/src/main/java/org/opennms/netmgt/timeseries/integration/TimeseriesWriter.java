@@ -29,8 +29,8 @@
 package org.opennms.netmgt.timeseries.integration;
 
 import java.sql.SQLException;
-import java.time.Instant;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

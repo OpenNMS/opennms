@@ -80,12 +80,14 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
-    public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, Context context, RrdRepository repository, ResourceIdentifier resource, String name) {
+    public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, Context context, RrdRepository repository,
+                                             ResourceIdentifier resource, String name, Map<String, String> metaTags) {
         this.writer = writer;
         this.context = context;
         rrepository = repository;
         this.resource = resource;
         this.name = name;
+        metaData.putAll(metaTags);
     }
 
     @Override
