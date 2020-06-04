@@ -8,8 +8,6 @@ _{opennms-product-name}_ interfaces with _R_ via _stdin_ and _stdout_, and for t
 as _{opennms-product-name}_.
 Note that installing _R_ is optional, and not required by any of the core components.
 
-IMPORTANT: The _R_ integration is not supported on _Microsoft Windows_ systems.
-
 === Install R on RHEL
 
 .Ensure the dnf plugin config-manager is installed
