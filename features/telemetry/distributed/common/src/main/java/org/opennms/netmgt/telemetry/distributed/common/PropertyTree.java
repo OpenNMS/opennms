@@ -174,7 +174,7 @@ public class PropertyTree {
         Optional<Node> node = this.find(path);
         if(node.isPresent()) {
             for(String k: node.get().children.keySet()) {
-                getChildKeys(node.get().children.get(k), new String(k), outmap);
+                getChildKeys(node.get().children.get(k), k, outmap);
             }
         }
         return outmap;
