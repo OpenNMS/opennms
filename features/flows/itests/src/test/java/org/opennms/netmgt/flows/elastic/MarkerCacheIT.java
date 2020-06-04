@@ -64,6 +64,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -117,10 +118,10 @@ public class MarkerCacheIT {
         this.interfaceToNodeCache.dataSourceSync();
     }
 
-    private Flow getMockFlow() {
+    private Flow getMockFlow(final Flow.Direction direction) {
         final Flow flow = mock(Flow.class);
         when(flow.getNetflowVersion()).thenReturn(Flow.NetflowVersion.V5);
-        when(flow.getDirection()).thenReturn(Flow.Direction.INGRESS);
+        when(flow.getDirection()).thenReturn(direction);
         when(flow.getIpProtocolVersion()).thenReturn(4);
         when(flow.getSrcAddr()).thenReturn("192.168.1.2");
         when(flow.getInputSnmp()).thenReturn(2);
@@ -174,12 +175,57 @@ public class MarkerCacheIT {
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
 
-            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow()), getMockFlowSource());
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), contains(hasProperty("id", is(1))));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), containsInAnyOrder(
                     hasProperty("ifIndex", is(2)),
                     hasProperty("ifIndex", is(3))));
+        }
+    }
+
+    @Test
+    public void testNMS12740() throws Exception {
+        Assert.assertFalse(OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED);
+
+        stubFor(post("/_bulk")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")));
+
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
+                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build()
+        ), FilterService.NOOP);
+
+        final DocumentEnricher documentEnricher = new DocumentEnricher(
+                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new CacheConfigBuilder()
+                        .withName("flows.node")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build());
+
+        final JestClientFactory factory = new JestClientFactory();
+        factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
+
+        try (JestClient client = factory.getObject()) {
+            final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
+                    client, IndexStrategy.MONTHLY, documentEnricher,
+                    sessionUtils, nodeDao, snmpInterfaceDao,
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                    mock(SmartQueryService.class));
+
+            Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
+            Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
+
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
+
+            Assert.assertEquals(0,snmpInterfaceDao.findAllHavingIngressFlows(2).size());
+            Assert.assertEquals(0, snmpInterfaceDao.findAllHavingEgressFlows(2).size());
+
+            // the following call resulted to two wrong entries before, since the wrong query returned entries from other nodes with egress flows
+            Assert.assertEquals(0, snmpInterfaceDao.findAllHavingFlows(2).size());
         }
     }
 }
