@@ -474,46 +474,6 @@
               ]
             }
           ]
-        },
-        {
-          "class": "col-md-6",
-          "panels": [
-            {
-              "title": "VMWare",
-              "fields": [
-                {
-                  "label": "VMware managed object ID",
-                  "tooltip": "Internal id in VMware vCenter",
-                  "model": "vmwareManagedObjectId",
-                  "type": "text"
-                },
-                {
-                  "label": "VMware managed entity type",
-                  "tooltip": "Defines a VMware host system or virtual machine",
-                  "model": "vmwareManagedEntityType",
-                  "type": "text"
-                },
-                {
-                  "label": "VMware management server",
-                  "tooltip": "VMware vCenter host",
-                  "model": "vmwareManagementServer",
-                  "type": "text"
-                },
-                {
-                  "label": "VMware state",
-                  "tooltip": "VMware managed entity state",
-                  "model": "vmwareState",
-                  "type": "text"
-                },
-                {
-                  "label": "VMware Topology Info",
-                  "tooltip": "VMware topology information",
-                  "model": "vmwareTopologyInfo",
-                  "type": "textarea"
-                }
-              ]
-            }
-          ]
         }
       ]
     },

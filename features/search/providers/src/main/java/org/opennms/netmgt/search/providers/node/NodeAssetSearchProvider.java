@@ -117,10 +117,6 @@ public class NodeAssetSearchProvider implements SearchProvider {
                         Restrictions.ilike("assetRecord.rackunitheight", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.managedObjectType", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.managedObjectInstance", QueryUtils.ilike(input)),
-                        Restrictions.ilike("assetRecord.vmwareManagedObjectId", QueryUtils.ilike(input)),
-                        Restrictions.ilike("assetRecord.vmwareManagedEntityType", QueryUtils.ilike(input)),
-                        Restrictions.ilike("assetRecord.vmwareManagementServer", QueryUtils.ilike(input)),
-                        Restrictions.ilike("assetRecord.vmwareState", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.storagectrl", QueryUtils.ilike(input))
                     )
             )
@@ -179,10 +175,6 @@ public class NodeAssetSearchProvider implements SearchProvider {
                         new Matcher("RU Height", record.getRackunitheight()),
                         new Matcher("Managed Object Type", record.getManagedObjectType()),
                         new Matcher("Managed Object Instance", record.getManagedObjectInstance()),
-                        new Matcher("VMware Managed Object Id", record.getVmwareManagedObjectId()),
-                        new Matcher("VMware Managed Entity Type", record.getVmwareManagedEntityType()),
-                        new Matcher("VMware Managed Server", record.getVmwareManagementServer()),
-                        new Matcher("VMware State", record.getVmwareState()),
                         new Matcher("Storage Controller", record.getStoragectrl())
                 );
                 result.addMatches(matcherList, input);

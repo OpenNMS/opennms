@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.vmware.VmwareServer;
@@ -41,7 +42,9 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.dao.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
@@ -73,8 +76,8 @@ public class VmwareCimCollectorComplianceTest extends CollectorComplianceTest {
         NodeDao nodeDao = mock(NodeDao.class);
         when(nodeDao.get(anyInt())).thenReturn(node);
 
-        when(node.getAssetRecord().getVmwareManagementServer()).thenReturn("mdx");
-        when(node.getAssetRecord().getVmwareManagedEntityType()).thenReturn("tsx");
+        when(node.getMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGEMENT_SERVER)).thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "mdx")));
+        when(node.getMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGED_ENTITY_TYPE)).thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "tsx")));
         when(node.getForeignId()).thenReturn("rsx");
 
         VmwareCimCollection collection = new VmwareCimCollection();
