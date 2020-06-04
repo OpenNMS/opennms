@@ -31,7 +31,6 @@ package org.opennms.netmgt.rrd.model;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -173,7 +172,7 @@ public class RRDv3IT {
         Assert.assertEquals("tempA", multimetric.getDataSource(0).getName());
         Assert.assertEquals("tempB", multimetric.getDataSource(1).getName());
         multimetric.reset();
-        List<RRDv3> singleMetricArray = new ArrayList<RRDv3>();
+        List<RRDv3> singleMetricArray = new ArrayList<>();
         RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA-rrd.xml"));
         Assert.assertNotNull(tempA);
         Assert.assertEquals("tempA", tempA.getDataSource(0).getName());
@@ -186,65 +185,6 @@ public class RRDv3IT {
         JaxbUtils.marshal(multimetric, new FileWriter(targetFile));
         Assert.assertTrue(FileUtils.contentEquals(sourceFile, targetFile));
         targetFile.delete();
-    }
-
-    /**
-     * Test samples for a single RRA
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSamplesSingleRRA() throws Exception {
-        File source = new File("src/test/resources/sample-counter.xml");
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
-        Assert.assertNotNull(rrd);
-        NavigableMap<Long, List<Double>> samples = rrd.generateSamples(rrd.getRras().get(0));
-        Assert.assertFalse(samples.isEmpty());
-        long ts = 1441748400L;
-        Double v1 = 600.0;
-        Double v2 = 2.0;
-        Assert.assertEquals(rrd.getRras().get(0).getRows().size(), samples.size());
-        for (Map.Entry<Long, List<Double>> s : samples.entrySet()) {
-            System.out.println(s);
-            Assert.assertEquals(2, s.getValue().size());
-            Assert.assertEquals(ts, (long) s.getKey());
-            Assert.assertEquals(v1, s.getValue().get(0));
-            Assert.assertEquals(v2, s.getValue().get(1));
-            ts += 300L;
-            v1 += 300.0 * v2;
-            v2 += 1.0;
-        }
-    }
-
-    /**
-     * Test samples for multiple RRAs (1)
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSamplesMultipleRRAs1() throws Exception {
-        File source = new File("src/test/resources/sample-counter-rras.xml");
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
-        Assert.assertNotNull(rrd);
-        NavigableMap<Long, List<Double>> samples = rrd.generateSamples(rrd.getRras().get(1));
-        Assert.assertFalse(samples.isEmpty());
-        Assert.assertEquals(rrd.getRras().get(1).getRows().size(), samples.size());
-    }
-
-    /**
-     * Test samples for multiple RRAs (2)
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSamplesMultipleRRAs2() throws Exception {
-        File source = new File("src/test/resources/sample-counter-rras.xml");
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
-        Assert.assertNotNull(rrd);
-        SortedMap<Long, List<Double>> samples = rrd.generateSamples();
-        Assert.assertFalse(samples.isEmpty());
-        int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
-        Assert.assertEquals(size - 3 - 1, samples.size()); // There are 3 timestamps that exist in both RRAs and the last one is incomplete
     }
 
 }
