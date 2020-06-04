@@ -180,17 +180,16 @@ public class PropertyTree {
         return outmap;
     }
 
-    public String getChildKeys(Node n, String s, Map<String,String> m) {
+    public void getChildKeys(Node n, String s, Map<String,String> m) {
         if(n.value.isPresent()) {
             m.put(s, n.value.get());
-            return "";
+            return;
         }
 
         // recurse to the leaves
         for(String k: n.children.keySet()) {
             getChildKeys(n.children.get(k), s+"."+k, m);
         }
-        return s;
     }
 
 
