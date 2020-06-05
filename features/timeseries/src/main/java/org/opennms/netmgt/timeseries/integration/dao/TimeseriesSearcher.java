@@ -36,13 +36,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.newts.api.Resource;
 import org.slf4j.Logger;
@@ -87,17 +87,17 @@ public class TimeseriesSearcher {
 
 
         for(Metric metric : metrics) {
-            String resourceId = metric.getFirstTagByKey(CommonTagNames.resourceId).getValue();
+            String resourceId = metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue();
             SearchResults.Result result = resultPerResources.get(resourceId);
             if(result == null) {
                 Map<String, String> attributes = new HashMap<>();
                 metric.getMetaTags().forEach(entry -> attributes.put(entry.getKey(), entry.getValue()));
-                Resource resource = new Resource(metric.getFirstTagByKey(CommonTagNames.resourceId).getValue(),
+                Resource resource = new Resource(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(),
                         Optional.of(attributes));
                 result = new SearchResults.Result(resource, new ArrayList<>());
                 resultPerResources.put(resourceId, result);
             }
-            result.getMetrics().add(metric.getFirstTagByKey(CommonTagNames.name).getValue());
+            result.getMetrics().add(metric.getFirstTagByKey(IntrinsicTagNames.name).getValue());
         }
 
         SearchResults results = new SearchResults();

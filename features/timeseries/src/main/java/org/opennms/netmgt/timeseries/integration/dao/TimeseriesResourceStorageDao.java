@@ -43,6 +43,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -53,7 +54,6 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
 import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
@@ -159,8 +159,8 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         for (final Result result : results) {
             for(String metricName: result.getMetrics()) {
                 Metric metric = ImmutableMetric.builder()
-                        .intrinsicTag(CommonTagNames.resourceId, result.getResource().getId())
-                        .intrinsicTag(CommonTagNames.name, metricName)
+                        .intrinsicTag(IntrinsicTagNames.resourceId, result.getResource().getId())
+                        .intrinsicTag(IntrinsicTagNames.name, metricName)
                         .build();
                 try {
                     storageManager.get().delete(metric);
