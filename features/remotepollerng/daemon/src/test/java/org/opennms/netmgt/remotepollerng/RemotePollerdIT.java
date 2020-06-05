@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.remotepollerng;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
+import java.util.Collections;
 
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +48,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -51,12 +57,15 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
-import org.opennms.netmgt.poller.monitors.IcmpMonitor;
+import org.opennms.netmgt.threshd.ThresholdingServiceImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,7 +85,12 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-testRemotePollerDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-shared.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml",
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
@@ -93,6 +107,7 @@ public class RemotePollerdIT implements InitializingBean {
     @Autowired
     private MockEventIpcManager eventIpcManager;
 
+    @Autowired
     private CollectionAgentFactory collectionAgentFactory;
 
     @Autowired
@@ -102,20 +117,32 @@ public class RemotePollerdIT implements InitializingBean {
 
     private RemotePollerd remotePollerd;
 
+    @Autowired
+    private ThresholdingServiceImpl thresholdingService;
+
+    @Autowired
+    private OverrideableThreshdDao threshdDao;
+
+    @Autowired
+    private OverrideableThresholdingDao thresholdingDao;
+
     @Test
     @Transactional
     public void reportResultTest() {
-        final OnmsMonitoredService onmsMonitoredService = this.databasePopulator.getMonitoredServiceDao().findAll().get(0);
-        RemotePolledService remotePolledService = new RemotePolledService(onmsMonitoredService, new Package(), new Service(), new IcmpMonitor());
+        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
+        final Service service = PollerConfigFactory.getInstance().getServiceInPackage("ICMP", pkg);
+        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
+
+        final OnmsMonitoredService onmsMonitoredService = this.databasePopulator.getMonitoredServiceDao().findAll().stream().filter(s->"ICMP".equals(s.getServiceName())).findFirst().get();
+        RemotePolledService remotePolledService = new RemotePolledService(onmsMonitoredService, pkg, service, svcMon);
         Assert.assertEquals(0, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
 
         final int nodeId = onmsMonitoredService.getNodeId();
         final InetAddress ipAddress = onmsMonitoredService.getIpInterface().getIpAddress();
-        final String service = onmsMonitoredService.getServiceName();
         final String location = onmsMonitoredService.getIpInterface().getNode().getLocation().getLocationName();
 
         this.eventIpcManager.getEventAnticipator().reset();
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service).setParam("location", location).getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.available());
         Assert.assertEquals(1, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -126,7 +153,7 @@ public class RemotePollerdIT implements InitializingBean {
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service).setParam("location", location).getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable("old reason"));
         Assert.assertEquals(2, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -142,7 +169,7 @@ public class RemotePollerdIT implements InitializingBean {
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service).setParam("location", location).getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.unavailable("new reason"));
         Assert.assertEquals(3, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -194,11 +221,53 @@ public class RemotePollerdIT implements InitializingBean {
                 this.databasePopulator.getLocationSpecificStatusDao(),
                 this.collectionAgentFactory,
                 this.persisterFactory,
-                this.eventIpcManager
+                this.eventIpcManager,
+                this.thresholdingService
         );
 
         this.annotationBasedEventListenerAdapter = new AnnotationBasedEventListenerAdapter(this.remotePollerd, eventIpcManager);
         this.remotePollerd.start();
+    }
+
+    @Test
+    @Transactional
+    public void testRemotePollerThresholding() {
+        // this will return 192.168.1.1 for each call for active IPs
+        final FilterDao filterDao = EasyMock.createMock(FilterDao.class);
+        EasyMock.expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("192.168.1.1"))).anyTimes();
+        filterDao.flushActiveIpAddressListCache();
+        EasyMock.expectLastCall().anyTimes();
+        FilterDaoFactory.setInstance(filterDao);
+        EasyMock.replay(filterDao);
+
+        // load the thresholds.xml and thresd-configuration.xml configuration
+        this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));
+        this.threshdDao.overrideConfig(getClass().getResourceAsStream("/threshd-configuration.xml"));
+
+        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
+        final Service service = PollerConfigFactory.getInstance().getServiceInPackage("ICMP", pkg);
+        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
+
+        final OnmsMonitoredService onmsMonitoredService = this.databasePopulator.getMonitoredServiceDao().findAll().stream().filter(s->"ICMP".equals(s.getServiceName())).findFirst().get();
+        RemotePolledService remotePolledService = new RemotePolledService(onmsMonitoredService, pkg, service, svcMon);
+        Assert.assertEquals(0, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
+
+        final int nodeId = onmsMonitoredService.getNodeId();
+        final InetAddress ipAddress = onmsMonitoredService.getIpInterface().getIpAddress();
+        final String location = onmsMonitoredService.getIpInterface().getNode().getLocation().getLocationName();
+
+        // first, report PollStatus.available(), so RegainedService event is sent
+        this.remotePollerd.reportResult("RDU", remotePolledService, PollStatus.available());
+
+        // create a PollStatus instance with a response time higher than the defined threshold of 50
+        final PollStatus pollStatus = PollStatus.available();
+        pollStatus.setProperty(PollStatus.PROPERTY_RESPONSE_TIME, 51);
+
+        // report PollStatus and check for event
+        this.eventIpcManager.getEventAnticipator().reset();
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service.getName()).setParam("location", location).getEvent());
+        this.remotePollerd.reportResult("RDU", remotePolledService, pollStatus);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
     @After

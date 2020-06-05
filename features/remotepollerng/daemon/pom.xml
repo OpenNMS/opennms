@@ -67,6 +67,15 @@
           <groupId>org.opennms.core</groupId>
           <artifactId>org.opennms.core.daemon</artifactId>
       </dependency>
+      <dependency>
+          <groupId>org.opennms.features.collection</groupId>
+          <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.collection</groupId>
+          <artifactId>org.opennms.features.collection.thresholding.impl</artifactId>
+          <version>${project.version}</version>
+      </dependency>
 
       <dependency>
           <groupId>junit</groupId>
@@ -107,6 +116,18 @@
       <dependency>
           <groupId>org.opennms.features.poller</groupId>
           <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.distributed</groupId>
+          <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.distributed</groupId>
+          <artifactId>org.opennms.features.distributed.kv-store.blob.in-memory</artifactId>
+          <version>${project.version}</version>
           <scope>test</scope>
       </dependency>
   </dependencies>

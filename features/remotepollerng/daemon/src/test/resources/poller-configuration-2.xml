@@ -20,7 +20,7 @@
         <service name="ICMP" interval="300000" user-defined="false" status="on">
             <parameter key="retry" value="2" />
             <parameter key="timeout" value="3000" />
-            <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+            <parameter key="rrd-repository" value="target/rrd/response" />
             <parameter key="rrd-base-name" value="icmp" />
             <parameter key="ds-name" value="icmp" />
         </service>
@@ -29,7 +29,7 @@
             <parameter key="timeout" value="5000" />
             <parameter key="port" value="443" />
             <parameter key="url" value="/" />
-            <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+            <parameter key="rrd-repository" value="target/rrd/response" />
             <!--  an example of using a different dsName and rrd file name -->
             <parameter key="rrd-base-name" value="https" />
             <parameter key="ds-name" value="responseTime" />
@@ -61,7 +61,7 @@
             <parameter key="timeout" value="3000" />
             <parameter key="port" value="80" />
             <parameter key="url" value="/" />
-            <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+            <parameter key="rrd-repository" value="target/rrd/response" />
             <parameter key="rrd-base-name" value="http" />
             <parameter key="ds-name" value="http" />
         </service>

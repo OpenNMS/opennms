@@ -18,4 +18,7 @@
   <onmsgi:reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
 
+  <bean id="collectionAgentFactory" class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory" />
+  <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" ref="collectionAgentFactory" />
+
 </beans>

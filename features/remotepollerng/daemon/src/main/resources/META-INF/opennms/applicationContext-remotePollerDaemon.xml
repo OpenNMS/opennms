@@ -25,6 +25,7 @@
   <onmsgi:reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
+  <onmsgi:reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
 
   <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
     <constructor-arg index="0" ref="sessionUtils"/>
@@ -36,6 +37,7 @@
     <constructor-arg index="6" ref="collectionAgentFactory" />
     <constructor-arg index="7" ref="persisterFactory"/>
     <constructor-arg index="8" ref="eventForwarder"/>
+    <constructor-arg index="9" ref="thresholdingService"/>
   </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
