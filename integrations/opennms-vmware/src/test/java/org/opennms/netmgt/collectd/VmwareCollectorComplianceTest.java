@@ -76,8 +76,8 @@ public class VmwareCollectorComplianceTest extends CollectorComplianceTest {
         NodeDao nodeDao = mock(NodeDao.class);
         when(nodeDao.get(anyInt())).thenReturn(node);
 
-        when(node.getMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGEMENT_SERVER)).thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "mdx")));
-        when(node.getMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGED_ENTITY_TYPE)).thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "tsx")));
+        when(node.findMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGEMENT_SERVER)).thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "mdx")));
+        when(node.findMetaDataForContextAndKey(VmwareImporter.METADATA_CONTEXT, VmwareImporter.METADATA_MANAGED_ENTITY_TYPE)).thenReturn(Optional.of(new OnmsMetaData(VmwareImporter.METADATA_CONTEXT, "", "tsx")));
         when(node.getForeignId()).thenReturn("rsx");
 
         VmwareCollection collection = new VmwareCollection();

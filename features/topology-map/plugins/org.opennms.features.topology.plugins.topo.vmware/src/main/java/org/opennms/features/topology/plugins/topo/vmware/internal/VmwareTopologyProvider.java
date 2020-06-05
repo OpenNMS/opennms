@@ -331,7 +331,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     }
 
     private static String getMetaData(final OnmsNode node, final String key) {
-        final Optional<OnmsMetaData> metaData = node.getMetaDataForContextAndKey(METADATA_CONTEXT, key);
+        final Optional<OnmsMetaData> metaData = node.findMetaDataForContextAndKey(METADATA_CONTEXT, key);
         return metaData.map(onmsMetaData -> onmsMetaData.getValue().trim()).orElse("");
     }
 
