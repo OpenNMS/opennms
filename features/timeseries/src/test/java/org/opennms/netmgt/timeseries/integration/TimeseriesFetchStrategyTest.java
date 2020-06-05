@@ -50,6 +50,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
@@ -288,8 +289,8 @@ public class TimeseriesFetchStrategyTest {
 
         String name = ds != null ? ds : attr;
         ImmutableMetric metric = ImmutableMetric.builder()
-                .intrinsicTag(CommonTagNames.resourceId, newtsResourceId)
-                .intrinsicTag(CommonTagNames.name, name)
+                .intrinsicTag(IntrinsicTagNames.resourceId, newtsResourceId)
+                .intrinsicTag(IntrinsicTagNames.name, name)
                 .build();
         Sample sample = ImmutableSample.builder()
                 .metric(metric)

@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -277,8 +278,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     final boolean shouldAggregateNatively = storageManager.get().supportsAggregation(aggregation);
 
                     final ImmutableMetric metric = ImmutableMetric.builder()
-                            .intrinsicTag(CommonTagNames.resourceId, resourceId)
-                            .intrinsicTag(CommonTagNames.name, metricName)
+                            .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
+                            .intrinsicTag(IntrinsicTagNames.name, metricName)
                             .build();
 
                     Instant startInstant = Instant.ofEpochMilli(start.or(Timestamp.fromEpochMillis(0)).asMillis());

@@ -40,6 +40,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
@@ -56,7 +57,7 @@ public class SampleAggregatorTest {
     }
 
     private final ImmutableMetric metric = ImmutableMetric.builder()
-            .intrinsicTag(CommonTagNames.resourceId, "123").build();
+            .intrinsicTag(IntrinsicTagNames.resourceId, "123").build();
 
     @Test
     public void shouldAggregateToAverage() {
