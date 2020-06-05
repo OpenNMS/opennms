@@ -169,26 +169,24 @@ public class PropertyTree {
      * @return the {@link Map} from the children node names to its values. If one of the nodes in the path does not exist this will return an empty {@link Map}
      */
 
-    public Map<String, String> getMapR(final String... path) {
-        Map<String,String> outmap = new HashMap<String,String>();
-        Optional<Node> node = this.find(path);
-        if(node.isPresent()) {
-            for(String k: node.get().children.keySet()) {
-                getChildKeys(node.get().children.get(k), k, outmap);
+    public Map<String, String> getFlatMap(final String... path) {
+        Map<String,String> outmap = new HashMap<>();
+        this.find(path).ifPresent(n -> {
+            for(Map.Entry<String, Node> e: n.children.entrySet()) {
+                buildKeysRecursive(e.getValue(), e.getKey(), outmap);
             }
-        }
+        });
         return outmap;
     }
 
-    public void getChildKeys(Node n, String s, Map<String,String> m) {
-        if(n.value.isPresent()) {
-            m.put(s, n.value.get());
-            return;
-        }
+    private static void buildKeysRecursive(Node n, String prefix, Map<String,String> m) {
+        n.value.ifPresent(v -> {
+            m.put(prefix, v);
+        });
 
         // recurse to the leaves
-        for(String k: n.children.keySet()) {
-            getChildKeys(n.children.get(k), s+"."+k, m);
+        for(Map.Entry<String, Node> e: n.children.entrySet()) {
+            buildKeysRecursive(e.getValue(), prefix + "." + e.getKey(), m);
         }
     }
 
