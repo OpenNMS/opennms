@@ -64,7 +64,7 @@
 
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher" />
 
-  <bean id="resourceMetadataCache" class="${org.opennms.timeseries.config.cache.strategy:org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache}" />
+  <bean id="resourceMetadataCache" class="org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache" />
 
   <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 
