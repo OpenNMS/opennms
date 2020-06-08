@@ -121,6 +121,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         p.setProperty("log4j.logger.org.opennms.mock.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.core.test.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd", "DEBUG");
         p.setProperty("log4j.logger.org.springframework","WARN");
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
