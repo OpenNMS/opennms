@@ -29,18 +29,28 @@
 package org.opennms.netmgt.remotepollerng;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 
 public class RemotePolledService {
+    private static final Logger LOG = LoggerFactory.getLogger(RemotePolledService.class);
+    private static final ServiceParameters EMPTY_SERVICE_PARAMS = new ServiceParameters(Collections.emptyMap());
 
     private final OnmsMonitoredService monSvc;
 
@@ -50,6 +60,8 @@ public class RemotePolledService {
     private final ServiceMonitor serviceMonitor;
 
     private final MonitoredService monitoredService;
+
+    private ThresholdingSession thresholdingSession;
 
     public RemotePolledService(final OnmsMonitoredService monSvc,
                                final Package pkg,
@@ -135,5 +147,20 @@ public class RemotePolledService {
     @Override
     public int hashCode() {
         return Objects.hash(monSvc.getId(), pkg, service);
+    }
+
+    public void applyThresholds(final ThresholdingService thresholdingService, final CollectionSet collectionSet, final MonitoredService service, final String dsName, final RrdRepository repository) {
+        try {
+            if (this.thresholdingSession == null) {
+                thresholdingSession = thresholdingService.createSession(service.getNodeId(),
+                                                                        service.getIpAddr(),
+                                                                        service.getSvcName(),
+                                                                        repository,
+                                                                        EMPTY_SERVICE_PARAMS);
+            }
+            thresholdingSession.accept(collectionSet);
+        } catch (Throwable e) {
+            LOG.error("Failed to threshold on {} for {} because of an exception", service, dsName, e);
+        }
     }
 }

@@ -48,6 +48,7 @@ import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.RemoteLatencyResource;
 import org.opennms.netmgt.config.PollerConfig;
@@ -78,6 +79,7 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -113,6 +115,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final CollectionAgentFactory collectionAgentFactory;
     private final PersisterFactory persisterFactory;
     private final EventForwarder eventForwarder;
+    private final ThresholdingService thresholdingService;
 
     Scheduler scheduler;
 
@@ -124,7 +127,8 @@ public class RemotePollerd implements SpringServiceDaemon {
                          final LocationSpecificStatusDao locationSpecificStatusDao,
                          final CollectionAgentFactory collectionAgentFactory,
                          final PersisterFactory persisterFactory,
-                         final EventForwarder eventForwarder) {
+                         final EventForwarder eventForwarder,
+                         final ThresholdingService thresholdingService) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
@@ -134,6 +138,7 @@ public class RemotePollerd implements SpringServiceDaemon {
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
+        this.thresholdingService = Objects.requireNonNull(thresholdingService);
     }
 
     @Override
@@ -352,7 +357,7 @@ public class RemotePollerd implements SpringServiceDaemon {
 
             try {
                 if (pollResult.getResponseTime() != null) {
-                    saveResponseTimeData(locationName, polledService.getMonSvc(), pollResult, polledService.getPkg());
+                    saveResponseTimeData(locationName, polledService, pollResult);
                 }
             } catch (final Exception e) {
                 LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
@@ -381,7 +386,10 @@ public class RemotePollerd implements SpringServiceDaemon {
         eventForwarder.sendNow(builder.getEvent());
     }
 
-    public void saveResponseTimeData(final String locationName, final OnmsMonitoredService monSvc, final PollStatus pollStatus, final Package pkg) {
+    public void saveResponseTimeData(final String locationName, final RemotePolledService remotePolledService, final PollStatus pollStatus) {
+        final OnmsMonitoredService monSvc = remotePolledService.getMonSvc();
+        final Package pkg = remotePolledService.getPkg();
+
         final String svcName = monSvc.getServiceName();
         final Service svc = this.pollerConfig.getServiceInPackage(svcName, pkg);
 
@@ -401,8 +409,6 @@ public class RemotePollerd implements SpringServiceDaemon {
         if (rrdRepository == null) {
             return;
         }
-
-        // TODO: Apply thresholding
 
         final RrdRepository repository = new RrdRepository();
         repository.setStep(this.pollerConfig.getStep(pkg));
@@ -442,12 +448,15 @@ public class RemotePollerd implements SpringServiceDaemon {
             collectionSetBuilder.withGauge(resource, rrdBaseName, key, e.getValue());
         }
 
-        collectionSetBuilder.build()
-                            .visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
+        final CollectionSetDTO collectionSetDTO = collectionSetBuilder.build();
+
+        collectionSetDTO.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
                                                                          repository,
                                                                          false,
                                                                          true,
                                                                          true));
+
+        remotePolledService.applyThresholds(thresholdingService, collectionSetDTO, remotePolledService.getMonitoredService(), dsName, repository);
     }
 
     private String getServiceParameter(final Service svc, final String key) {
