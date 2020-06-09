@@ -33,6 +33,7 @@ import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -150,7 +151,7 @@ public class LldpRemTableTracker extends TableTracker {
             case LLDP_PORTID_SUBTYPE_INTERFACEALIAS:
             case LLDP_PORTID_SUBTYPE_INTERFACENAME:
             case LLDP_PORTID_SUBTYPE_LOCAL:
-                if (lldpportid.isDisplayable())
+                if (AbstractSnmpValue.allBytesUTF_8(lldpportid.getBytes()))
                     return lldpportid.toDisplayString();
                 else 
                     return lldpportid.toHexString();

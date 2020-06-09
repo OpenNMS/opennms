@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.ErrorStatus;
 import org.opennms.netmgt.snmp.ErrorStatusException;
@@ -92,7 +93,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     public static String getDisplayable(final SnmpValue snmpValue) {
         String decodedsnmpValue = snmpValue.toHexString();
         try {
-            if (snmpValue.isDisplayable())
+            if (AbstractSnmpValue.allBytesUTF_8(snmpValue.getBytes()))
                 decodedsnmpValue = snmpValue.toDisplayString();
         } catch (Exception e) {
             LOG.debug("getDisplayable: got not displayable Value {}", e.getMessage());
