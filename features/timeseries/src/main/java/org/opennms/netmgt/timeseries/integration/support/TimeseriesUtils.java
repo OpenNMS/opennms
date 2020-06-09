@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.newts.api.Context;
@@ -54,9 +53,8 @@ public abstract class TimeseriesUtils {
 
     public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.timeseries.disable.indexing");
 
-    public static final int TTL = SystemProperties.getInteger("org.opennms.timeseries.config.ttl", 31536000);
-
     public static final int WILDCARD_INDEX_NO = 2; // => node level
+    public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "*";
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
 

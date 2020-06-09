@@ -33,7 +33,6 @@ import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourcePath;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -46,7 +45,6 @@ import java.util.stream.IntStream;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -55,8 +53,6 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
-import org.opennms.netmgt.timeseries.integration.dao.SearchResults.Result;
-import org.opennms.netmgt.timeseries.integration.support.SearchableResourceMetadataCache;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -99,25 +95,15 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     @Autowired
     private TimeseriesWriter writer;
 
-    @Autowired
-    private SearchableResourceMetadataCache searchableCache;
-
     @Override
     public boolean exists(ResourcePath path, int depth) {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
-        if (hasCachedEntry(path, depth, depth)) {
-            return true; // cache hit!
-        }
-
         return searchFor(path, depth).size() > 0;
     }
 
     @Override
     public boolean existsWithin(final ResourcePath path, final int depth) {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
-        if (hasCachedEntry(path, 0, depth)) {
-            return true; // cache hit!
-        }
 
         // The indices are structured in such a way that we need specify the depth
         // so here we need to iterate over all the possibilities. We could add
@@ -132,43 +118,35 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
         Set<ResourcePath> matches = Sets.newTreeSet();
 
-        SearchResults results = searchFor(path, depth);
-        for (Result result : results) {
+        Set<Metric> metrics = searchFor(path, depth);
+        for (Metric metric : metrics) {
             // Relativize the path
-            ResourcePath child = toChildResourcePath(path, result.getResource().getId());
+            ResourcePath child = toChildResourcePath(path, metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue());
             if (child == null) {
                 // This shouldn't happen
                 LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. Ignoring resource.",
-                        result.getResource(), path, depth);
+                        metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), path, depth);
                 continue;
             }
             matches.add(child);
         }
-
         return matches;
     }
 
     @Override
     public boolean delete(ResourcePath path) {
-        final SearchResults results = searchFor(path, 0);
+        final Set<Metric> results = searchFor(path, 0);
 
         if (results.isEmpty()) {
             return false;
         }
 
-        for (final Result result : results) {
-            for(String metricName: result.getMetrics()) {
-                Metric metric = ImmutableMetric.builder()
-                        .intrinsicTag(IntrinsicTagNames.resourceId, result.getResource().getId())
-                        .intrinsicTag(IntrinsicTagNames.name, metricName)
-                        .build();
+        for (final Metric metric : results) {
                 try {
                     storageManager.get().delete(metric);
                 } catch (StorageException e) {
                     LOG.error("Could not delete {}, will ignore problem and continue ", metric, e);
                 }
-            }
-
         }
 
         return true;
@@ -183,9 +161,9 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                 .submit(getResourceAttributesCallable(path));
 
         // Gather the list of metrics available under the resource path
-        SearchResults results = searchFor(path, 0);
-        for (Result result : results) {
-            final String resourceId = result.getResource().getId();
+        Set<Metric> metrics = searchFor(path, 0);
+        for (Metric metric : metrics) {
+            final String resourceId = metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue();
             final ResourcePath resultPath = toResourcePath(resourceId);
             if (!path.equals(resultPath)) {
                 // The paths don't match exactly, but it is possible that they differ only by leading/trailing whitespace
@@ -196,7 +174,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                         .equals(Arrays.asList(resultPath.elements()))) {
                     // This shouldn't happen
                     LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. " +
-                                    "Ignoring resource.", result.getResource(), path, 0);
+                            "Ignoring resource.", resourceId, path, 0);
                     continue;
                 }
             }
@@ -206,19 +184,17 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
                 // Store the resource id in the rrdFile field
                 attributes.add(new RrdGraphAttribute(toMetricName(resourceId), "", resourceId));
             } else {
-                for (String metric : result.getMetrics()) {
-                    // Use the metric name as the dsName
-                    // Store the resource id in the rrdFile field
-                    attributes.add(new RrdGraphAttribute(metric, "", resourceId));
-                }
+                // Use the metric name as the dsName
+                // Store the resource id in the rrdFile field
+                attributes.add(new RrdGraphAttribute(metric.getFirstTagByKey(IntrinsicTagNames.name).getValue(), "", resourceId));
             }
         }
 
         // Add the resource level attributes to the result set
         try {
             stringAttributes.get().entrySet().stream()
-                .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
-                .forEach(attributes::add);
+                    .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
+                    .forEach(attributes::add);
         } catch (InterruptedException|ExecutionException e) {
             throw Throwables.propagate(e);
         }
@@ -269,20 +245,8 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         // These are already stored by the indexer
     }
 
-    private boolean hasCachedEntry(ResourcePath path, int minDepth, int maxDepth) {
-        List<String> cachedResourceIds = searchableCache.getResourceIdsWithPrefix(
-                context, toResourceId(path));
-        for (String resourceId : cachedResourceIds) {
-            int relativeDepth = path.relativeDepth(toResourcePath(resourceId));
-            if (relativeDepth >= minDepth && relativeDepth <= maxDepth) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private SearchResults searchFor(ResourcePath path, int depth) {
-        final SearchResults results;
+    private Set<Metric> searchFor(ResourcePath path, int depth) {
+        final Set<Metric> results;
         try {
             results = searcher.search(path, depth);
             LOG.trace("Found {} results.", results.size());
@@ -308,10 +272,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
-    }
-
-    public void setSearchableCache(SearchableResourceMetadataCache searchableCache) {
-        this.searchableCache = searchableCache;
     }
 
     public void setContext(Context context) {

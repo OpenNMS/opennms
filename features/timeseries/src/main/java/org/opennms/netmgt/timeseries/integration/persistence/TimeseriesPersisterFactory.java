@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
@@ -58,7 +59,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     @Inject
     public TimeseriesPersisterFactory(final Context context, final TimeseriesWriter timeseriesWriter,
-                                      final MetaTagDataLoader metaTagDataLoader, final CacheConfig cacheConfig) {
+                                      final MetaTagDataLoader metaTagDataLoader, @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig) {
         this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
         this.metaTagDataLoader = metaTagDataLoader;

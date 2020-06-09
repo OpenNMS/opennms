@@ -31,18 +31,6 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.writer_threads:16}" />
   </bean>
 
-  <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
-        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.max_entries:8192}" />
-  </bean>
-
-  <bean id="timeseries.metadata.cache_size" class="java.lang.Long"><!-- in entries -->
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.metadata.cache_size:1000}" />
-  </bean>
-
-  <bean id="timeseries.metadata.cache_duration" class="java.lang.Long"><!-- in seconds -->
-    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.metadata.cache_duration:300}" />
-  </bean>
-
   <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
 
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -64,8 +52,6 @@
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
   <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher" />
-
-  <bean id="resourceMetadataCache" class="org.opennms.netmgt.timeseries.integration.support.GuavaSearchableResourceMetadataCache" />
 
   <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
 
@@ -109,5 +95,8 @@
     <constructor-arg index="0" value="timeseriesPersisterMetaTagCache" />
     <property name="expireAfterRead" value="${cache.timeseriesPersisterMetaTagCache.expireAfterRead:1}" />
   </bean>
-
+  <bean id="timeseriesSearcherCache" class="org.opennms.core.cache.CacheConfig">
+    <constructor-arg index="0" value="timeseriesSearcherCache" />
+    <property name="expireAfterRead" value="${cache.timeseriesSearcherCache.expireAfterRead:300}" />
+  </bean>
 </beans>

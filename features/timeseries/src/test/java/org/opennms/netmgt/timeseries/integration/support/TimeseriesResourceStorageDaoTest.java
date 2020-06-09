@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -42,16 +43,18 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.integration.dao.SearchResults;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher;
-import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -67,7 +70,6 @@ import com.google.common.collect.Sets;
  */
 public class TimeseriesResourceStorageDaoTest {
 
-    private SearchableResourceMetadataCache cache = new MockSearchableResourceMetadataCache2();
     private TimeseriesResourceStorageDao resourceStorageDao;
     private TimeseriesSearcher searcher;
     private Map<ResourcePath, Set<String>> indexedPaths = Maps.newHashMap();
@@ -75,10 +77,8 @@ public class TimeseriesResourceStorageDaoTest {
     @Before
     public void setUp() {
         searcher = EasyMock.createNiceMock(TimeseriesSearcher.class);
-
         resourceStorageDao = new TimeseriesResourceStorageDao();
         resourceStorageDao.setSearcher(searcher);
-        resourceStorageDao.setSearchableCache(cache);
         resourceStorageDao.setContext(Context.DEFAULT_CONTEXT);
     }
 
@@ -212,12 +212,15 @@ public class TimeseriesResourceStorageDaoTest {
     }
 
     private void index(ResourcePath path, Set<String> metrics) {
+        if(metrics.isEmpty()) {
+            metrics.add("fake"); // we must have a metric to show up
+        }
         indexedPaths.put(path, metrics);
     }
 
     private void replay() throws StorageException {
-        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt())).andAnswer(new IAnswer<SearchResults>() {
-            public SearchResults
+        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt())).andAnswer(new IAnswer<Set<Metric>>() {
+            public Set<Metric>
             answer() {
                 ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
                 int depth = (Integer)EasyMock.getCurrentArguments()[1];
@@ -227,16 +230,27 @@ public class TimeseriesResourceStorageDaoTest {
                 String field = "_idx"+idxSuffix; // key
                 String value = String.format("(%s,%d)", toResourceId(resourcePath), targetLen); // value
 
-                SearchResults searchResults = new SearchResults();
+                Set<Metric> metrics = new HashSet<>();
                 for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
                     Map<String, String> attributes = Maps.newHashMap();
                     // Build the indexed attributes and attempt to match them against the given query
                     TimeseriesUtils.addIndicesToAttributes(entry.getKey(), attributes);
                     if (value.equals(attributes.get(field))) {
-                        searchResults.addResult(new Resource(toResourceId(entry.getKey())), entry.getValue());
+
+                        for(String name : entry.getValue()) {
+                            ImmutableMetric.MetricBuilder metric =
+                                    ImmutableMetric.builder()
+                                    .intrinsicTag(IntrinsicTagNames.resourceId, toResourceId(entry.getKey()))
+                                    .intrinsicTag(IntrinsicTagNames.name, name);
+                            attributes.entrySet().stream()
+                                    .map((e) -> new ImmutableTag(e.getKey(), e.getValue()))
+                                    .forEach(metric::metaTag);
+                            metrics.add(metric.build());
+                        }
                     }
                 }
-                return searchResults;
+
+                return new HashSet<>(metrics);
             }
         }).atLeastOnce();
         EasyMock.expect(searcher.getResourceAttributes(EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
