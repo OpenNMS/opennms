@@ -98,6 +98,18 @@ public class AbstractSnmpValueTest {
 		}
 	}
 
+	@Test
+	public void testHighIso8859CharDisplayable() throws UnsupportedEncodingException {
+		String highIso8859Char = "CF"; // Capital I with umlaut
+		assertTrue(new String(hexStringToBytes(highIso8859Char), "ISO-8859-1"), AbstractSnmpValue.allBytesDisplayable(hexStringToBytes(highIso8859Char)));
+
+		highIso8859Char = "EF"; // Lowercase i with umlaut
+		assertTrue(new String(hexStringToBytes(highIso8859Char), "ISO-8859-1"), AbstractSnmpValue.allBytesDisplayable(hexStringToBytes(highIso8859Char)));
+
+		highIso8859Char = "FF"; // Lowercase y with umlaut
+		assertTrue(new String(hexStringToBytes(highIso8859Char), "ISO-8859-1"), AbstractSnmpValue.allBytesDisplayable(hexStringToBytes(highIso8859Char)));
+	}
+
 	private static byte[] hexStringToBytes(String hexString) {
 		assertTrue(hexString.length() % 2 == 0);
 		byte[] retval = new byte[hexString.length() / 2];
