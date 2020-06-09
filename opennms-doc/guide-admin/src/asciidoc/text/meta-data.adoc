@@ -7,27 +7,26 @@ You can then use this metadata to dynamically configure service monitoring, perf
 
 The metadata is a simple triad of strings containing a context, a key and the associated value.
 Each node, each interface and each service can have an arbitrary number of metadata elements assigned to it.
-The only restriction is that each context/key/value must be unique in the entity with which it is associated.
+The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
 
 The association of metadata with nodes, interfaces and services happens during link:#ga-provisioning-meta-data[provisioning].
 Users can add, query, modify, or delete metadata through the requisition editor in the link:ga-metadata-webui[web UI], or through the xref:https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#_meta_data[ReST endpoints].
 
 A link:#ga-meta-data-dsl[simple domain-specific language] (DSL) allows users to access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions
-#QUESTION: Is there anything else they can use metadata in?# 
 There is no limitation in defining metadata: users can decide how to define it and use it in expressions. 
 
-View metadata currently assigned to nodes, interfaces and services, on the details page associated with that entity in the web UI. 
-#TODO: Insert image#
+View metadata currently assigned to nodes, interfaces and services, on the details page associated with that entity in the web UI:
+
+image:metadata/metadata-view.png[]
 
 === Contexts
 
 A context distinguishes different kinds of metadata use. 
 {opennms-product-name} uses several default contexts: pattern, requisition, network, node, interface, and service. 
-#QUESTION: is this correct? I might be getting contexts and scopes mixed up. If so, what are the scopes? Regardless, are there default keys for requisistion or does requisition include all the keys from node, interface, and service contexts?#
 
 Three special contexts provide details about nodes, interfaces and services objects.
 Each context has keys associated with it that you can use in a metadata expression. 
-You can create additional contexts by prefixing the context name with `X-`. #QUESTION: Where do they create contexts?#
+You can create additional contexts in the ReST API by prefixing the context name with `X-`. 
 
 ==== Node context
 
@@ -104,7 +103,7 @@ Each expression can contain multiple references to metadata that will be replace
 Placeholders start with `${` and end with `}` containing a reference to a context-key pair. 
 You may choose to define multiple fallback context-key pairs and and an optional trailing default value.
 Separate context and key by a `:`.
-Use a `|` to separate optiional fall back context-key pairs and default value.  
+Use a `|` to separate optional fall back context-key pairs and default value.  
 
 *Examples*
 
@@ -124,9 +123,12 @@ Will resolve to the `username` as defined in the requisitioning UI.
 If there is no such username defined, the fallback `account` will be used.
 If neither exist, the fallback value `admin` will be used.
 
-To resolve the value associated with context-key pair, the DSL uses scopes that will determine the resolution order.
+To resolve the value associated with context-key pair, the DSL uses scopes that determine the resolution order.
 The last scope will be queried first and if a scope does not contain the queried context-key tuple, the next one will be queried.
-#QUESTION: How does the user know what the last scope is? is there a default order depending on what scopes are being queried?#
+For example, the resolution of a query on a service entity would be service metadata->interface metatdata->node metadata.
+On an interface, it is metadata->interface metatdata->node metadata.
+On the node level, only the node is queried. 
+
 Which scopes are available depends on the environment for which an expression is evaluated and is documented in the corresponding places elsewhere in this guide.
 Some environments also provide additional scopes that are not backed by the persisted metadata but provide additional metadata related to the current evaluation.
 

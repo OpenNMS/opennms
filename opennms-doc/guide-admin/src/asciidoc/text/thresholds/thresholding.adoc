@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../images
 
 [[ga-threshd-introduction]]
 = Thresholding
@@ -183,7 +183,7 @@ Metadata works only with expression-based thresholds.
 Using metadata with a basic threshold will break the web UI, making it unusable.  
 
 This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
-#QUESTION: Is this correct? I feel like something is missing.#
+
 The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
 
 Before using metatdata in a threshold, you need to add the metatdata context pair, in this case, a requisition key called userLimit (see link:ga-metadata-webui[Adding Metadata through the Web UI]).
@@ -207,7 +207,6 @@ image:metadata/meta-expression1.png[]
 . Click *Save*.
 
 This expression will trigger an event when the number of logged-in users exceeds 1.
-#QUESTION: Is this correct? I feel like something is missing.#
 
 image:metadata/meta-expression2.png[]
 
