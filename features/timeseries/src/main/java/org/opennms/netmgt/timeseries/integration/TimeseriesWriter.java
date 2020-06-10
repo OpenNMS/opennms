@@ -30,7 +30,6 @@ package org.opennms.netmgt.timeseries.integration;
 
 import java.sql.SQLException;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,17 +44,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
-import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.Tag;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.MetaData;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
-import org.opennms.newts.api.MetricType;
-import org.opennms.newts.api.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -156,7 +149,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         final Executor executor = Executors.newCachedThreadPool(namedThreadFactory);
 
         @SuppressWarnings("unchecked")
-        final WorkHandler<SampleBatchEvent> handlers[] = new WorkHandler[numWriterThreads];
+        final WorkHandler<SampleBatchEvent>[] handlers = new WorkHandler[numWriterThreads];
         for (int i = 0; i < numWriterThreads; i++) {
             handlers[i] = this;
         }
@@ -197,7 +190,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
                             // We wrap this in a toString() method to avoid build the string
                             // unless the log message is actually printed
                             return samples.stream()
-                                    .map(s -> s.getResource().getId())
+                                    .map(s -> s.getMetric().getFirstTagByKey(CommonTagNames.resourceId).getValue())
                                     .distinct()
                                     .collect(Collectors.joining(", "));
                         }
@@ -221,7 +214,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             if (event.isIndexOnly()) {
                 storeMetadata(event);
             } else {
-                storeTimeseriesData(event);
+                this.storage.get().store(event.getSamples());
                 storeMetadata(event);
             }
         } catch (Throwable t) {
@@ -229,54 +222,15 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         }
     }
 
-    private void storeTimeseriesData(SampleBatchEvent event) throws StorageException {
-        List<org.opennms.integration.api.v1.timeseries.Sample> samples
-                = event.getSamples().stream().map(this::toApiSample).collect(Collectors.toList());
-        this.storage.get().store(samples);
-    }
-
     private void storeMetadata(SampleBatchEvent event) throws SQLException, ExecutionException {
         // dedouble attributes
         Set<MetaData> metaData = new HashSet<>();
         for(Sample sample : event.getSamples()) {
-
-            // attributes of sample
-            if(sample.getResource().getAttributes().isPresent()) {
-                sample.getResource().getAttributes().get().forEach((key, value) -> metaData.add(new MetaData(sample.getResource().getId(), key, value)));
-            }
+            Metric metric = sample.getMetric();
+            String resourceId = metric.getFirstTagByKey(CommonTagNames.resourceId).getValue();
+            metric.getMetaTags().forEach(tag -> metaData.add(new MetaData(resourceId, tag.getKey(), tag.getValue())));
         }
         this.timeSeriesMetaDataDao.store(metaData);
-    }
-
-    private org.opennms.integration.api.v1.timeseries.Sample toApiSample(final Sample sample) {
-
-        ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
-                .intrinsicTag(IntrinsicTagNames.resourceId, sample.getResource().getId())
-                .intrinsicTag(IntrinsicTagNames.name, sample.getName())
-                .metaTag(typeToTag(sample.getType()));
-
-        if(sample.getResource().getAttributes().isPresent()) {
-            sample.getResource().getAttributes().get().forEach(builder::metaTag);
-        }
-
-        final ImmutableMetric metric = builder.build();
-        final Instant time = Instant.ofEpochMilli(sample.getTimestamp().asMillis());
-        final Double value = sample.getValue().doubleValue();
-
-        return ImmutableSample.builder().metric(metric).time(time).value(value).build();
-    }
-
-    private Tag typeToTag (final MetricType type) {
-        ImmutableMetric.Mtype mtype;
-        if(type == MetricType.GAUGE){
-            mtype = ImmutableMetric.Mtype.gauge;
-        } else if(type == MetricType.COUNTER) {
-            mtype = ImmutableMetric.Mtype.count;
-        } else {
-            throw new IllegalArgumentException(String.format("I can't find a matching %s for %s",
-                    ImmutableMetric.Mtype.class.getSimpleName(), type.toString()));
-        }
-        return new ImmutableTag(IntrinsicTagNames.mtype, mtype.name());
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

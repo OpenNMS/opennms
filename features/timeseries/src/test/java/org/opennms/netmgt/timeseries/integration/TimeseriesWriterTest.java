@@ -31,6 +31,7 @@ package org.opennms.netmgt.timeseries.integration;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -41,18 +42,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
-import org.opennms.newts.api.Counter;
-import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.Timestamp;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -83,9 +84,12 @@ public class TimeseriesWriterTest {
         when(storageManager.get()).thenReturn(store);
         writer.setTimeSeriesStorage(storageManager);
 
+        Metric metric = createMetric().build();
         for (int i = 0; i < ringBufferSize*2; i++) {
-            Resource x = new Resource("x");
-            Sample s = new Sample(Timestamp.now(), x, "y", MetricType.COUNTER, new Counter(i));
+            Sample s = ImmutableSample.builder()
+            .metric(metric)
+            .time(Instant.now())
+            .value((double)i).build();
             writer.insert(Lists.newArrayList(s));
         }
     }
@@ -109,8 +113,12 @@ public class TimeseriesWriterTest {
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
 
         lock.lock();
+        Metric metric = createMetric().build();
         for (int i = 0; i < ringBufferSize; i++) {
-            Sample s = new Sample(Timestamp.now(), x, "y", MetricType.COUNTER, new Counter(i));
+            Sample s = ImmutableSample.builder()
+                    .metric(metric)
+                    .time(Instant.now())
+                    .value((double)i).build();
             writer.insert(Lists.newArrayList(s));
         }
 
@@ -120,7 +128,10 @@ public class TimeseriesWriterTest {
 
         // Attempt to insert another batch of samples
         for (int i = 0; i < 8; i++) {
-            Sample s = new Sample(Timestamp.now(), x, "y", MetricType.COUNTER, new Counter(i));
+            Sample s = ImmutableSample.builder()
+                    .metric(metric)
+                    .time(Instant.now())
+                    .value((double)i).build();
             writer.insert(Lists.newArrayList(s));
         };
 
@@ -141,7 +152,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public void store(List<org.opennms.integration.api.v1.timeseries.Sample> samples) {
+        public void store(List<Sample> samples) {
             latch.countDown();
             try {
                 latch.await();
@@ -169,7 +180,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public void store(List<org.opennms.integration.api.v1.timeseries.Sample> samples) throws StorageException {
+        public void store(List<Sample> samples) throws StorageException {
             numThreadsLocked.incrementAndGet();
             lock.lock();
             numSamplesInserted.addAndGet(samples.size());
@@ -178,10 +189,18 @@ public class TimeseriesWriterTest {
         }
     }
 
+    private ImmutableMetric.MetricBuilder createMetric() {
+        return ImmutableMetric
+                .builder()
+                .intrinsicTag(IntrinsicTagNames.resourceId, "a:b")
+                .intrinsicTag(IntrinsicTagNames.name, "c")
+                .intrinsicTag(IntrinsicTagNames.mtype, Metric.Mtype.counter.name());
+    }
+
     private static class MockTimeSeriesStorage implements TimeSeriesStorage {
 
         @Override
-        public void store(List<org.opennms.integration.api.v1.timeseries.Sample> samples) throws StorageException {
+        public void store(List<Sample> samples) throws StorageException {
             // Do nothing, we are a mock
         }
 
@@ -191,7 +210,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public List<org.opennms.integration.api.v1.timeseries.Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
+        public List<Sample> getTimeseries(TimeSeriesFetchRequest request) throws StorageException {
             return null;
         }
 

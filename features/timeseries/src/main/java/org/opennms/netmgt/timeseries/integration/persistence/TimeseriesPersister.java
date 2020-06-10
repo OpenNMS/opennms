@@ -41,7 +41,6 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
-import org.opennms.newts.api.Context;
 
 /**
  * TimeseriesPersister persistence strategy.
@@ -53,17 +52,15 @@ public class TimeseriesPersister extends AbstractPersister {
 
     private final RrdRepository repository;
     private final TimeseriesWriter writer;
-    private final Context context;
     private final MetaTagDataLoader metaDataLoader;
     private final Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache;
     private TimeseriesPersistOperationBuilder builder;
 
     protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
-                                  Context context, MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache) {
+                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache) {
         super(params, repository);
         this.repository = repository;
         writer = timeseriesWriter;
-        this.context = context;
         this.metaDataLoader = metaDataLoader;
         this.metaTagsByResourceCache = metaTagsByResourceCache;
     }
@@ -83,7 +80,7 @@ public class TimeseriesPersister extends AbstractPersister {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
             Map<String, String> metaTags = getMetaTags(resource);
-            builder = new TimeseriesPersistOperationBuilder(writer, context, repository, resource, group.getName(), metaTags);
+            builder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());
             }

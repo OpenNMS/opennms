@@ -29,7 +29,6 @@
 package org.opennms.netmgt.timeseries.integration.persistence;
 
 import java.util.Map;
-import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,7 +42,6 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
-import org.opennms.newts.api.Context;
 
 /**
  * Factory for {@link TimeseriesPersister}.
@@ -53,14 +51,12 @@ import org.opennms.newts.api.Context;
 public class TimeseriesPersisterFactory implements PersisterFactory {
 
     private final TimeseriesWriter timeseriesWriter;
-    private final Context context;
     private final MetaTagDataLoader metaTagDataLoader;
     private final Cache<ResourcePath, Map<String, String>> metaCache;
 
     @Inject
-    public TimeseriesPersisterFactory(final Context context, final TimeseriesWriter timeseriesWriter,
+    public TimeseriesPersisterFactory(final TimeseriesWriter timeseriesWriter,
                                       final MetaTagDataLoader metaTagDataLoader, @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig) {
-        this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
         this.metaTagDataLoader = metaTagDataLoader;
         this.metaCache = new CacheBuilder<>()
@@ -79,7 +75,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, context, metaTagDataLoader, metaCache);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, metaCache);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

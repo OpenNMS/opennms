@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher;
-import org.opennms.newts.api.Context;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -79,7 +78,6 @@ public class TimeseriesResourceStorageDaoTest {
         searcher = EasyMock.createNiceMock(TimeseriesSearcher.class);
         resourceStorageDao = new TimeseriesResourceStorageDao();
         resourceStorageDao.setSearcher(searcher);
-        resourceStorageDao.setContext(Context.DEFAULT_CONTEXT);
     }
 
     @Test

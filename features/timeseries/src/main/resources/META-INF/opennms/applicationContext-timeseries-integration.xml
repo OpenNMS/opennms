@@ -42,8 +42,6 @@
     <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.metadata.cache_duration:300}" />
   </bean>
 
-  <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
-
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
   <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">

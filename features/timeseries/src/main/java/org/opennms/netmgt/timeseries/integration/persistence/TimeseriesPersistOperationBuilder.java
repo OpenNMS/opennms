@@ -30,13 +30,19 @@ package org.opennms.netmgt.timeseries.integration.persistence;
 
 import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
-import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.PersistOperationBuilder;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.collection.api.TimeKeeper;
@@ -46,16 +52,10 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.MetricType;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.api.ValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -70,7 +70,6 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private final TimeseriesWriter writer;
     private final RrdRepository rrepository;
-    private final Context context;
     private final String name;
     private final ResourceIdentifier resource;
 
@@ -80,10 +79,9 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
-    public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, Context context, RrdRepository repository,
+    public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
                                              ResourceIdentifier resource, String name, Map<String, String> metaTags) {
         this.writer = writer;
-        this.context = context;
         rrepository = repository;
         this.resource = resource;
         this.name = name;
@@ -123,7 +121,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     @Override
-    public void commit() throws PersistException {
+    public void commit() {
         writer.insert(getSamplesToInsert());
         writer.index(getSamplesToIndex());
     }
@@ -134,13 +132,14 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
         // Add extra attributes that can be used to walk the resource tree.
         TimeseriesUtils.addIndicesToAttributes(path, metaData);
-        Resource resource = new Resource(TimeseriesUtils.toResourceId(path), Optional.of(metaData));
+        String resourceId = TimeseriesUtils.toResourceId(path);
 
         // Convert numeric attributes to samples
         Timestamp timestamp = Timestamp.fromEpochMillis(timeKeeper.getCurrentTime());
         for (Entry<CollectionAttributeType, Number> entry : declarations.entrySet()) {
             CollectionAttributeType attrType = entry.getKey();
-            MetricType type = mapType(attrType.getType());
+
+            Tag type = typeToTag(attrType.getType());
             if (type == null) {
                 // Skip attributes with no type
                 continue;
@@ -152,43 +151,45 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                 continue;
             }
 
-            samples.add(
-                new Sample(
-                    timestamp,
-                        context,
-                    resource,
-                    attrType.getName(),
-                    type,
-                    ValueType.compose(entry.getValue(), type)
-                )
-            );
+            ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
+                    .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
+                    .intrinsicTag(IntrinsicTagNames.name, attrType.getName())
+                    .metaTag(type);
+                metaData.forEach(builder::metaTag);
+
+            final ImmutableMetric metric = builder.build();
+            final Instant time = Instant.ofEpochMilli(timestamp.asMillis());
+            final Double sampleValue = value.doubleValue();
+            samples.add(ImmutableSample.builder().metric(metric).time(time).value(sampleValue).build());
         }
         return samples;
     }
+
 
     public List<Sample> getSamplesToIndex() {
         final List<Sample> samples = Lists.newLinkedList();
 
         // Convert string attributes to samples
         for (Entry<ResourcePath, Map<String, String>> entry : stringAttributesByPath.entrySet()) {
-            Resource resource = new Resource(toResourceId(entry.getKey()),
-                    Optional.of(entry.getValue()));
-            samples.add(TimeseriesUtils.createSampleForIndexingStrings(context, resource));
+            samples.add(TimeseriesUtils.createSampleForIndexingStrings(toResourceId(entry.getKey()), entry.getValue()));
         }
         return samples;
     }
 
-    public static MetricType mapType(AttributeType type) {
-        switch(type) {
-            case COUNTER:
-                return MetricType.COUNTER;
-            case GAUGE:
-                return MetricType.GAUGE;
-            case STRING:
-                return null;
-            default:
-                return MetricType.GAUGE;
+    private Tag typeToTag (final AttributeType type) {
+
+        ImmutableMetric.Mtype mtype;
+
+        if(type == AttributeType.COUNTER) {
+            mtype = ImmutableMetric.Mtype.count;
+        } else if (type == AttributeType.GAUGE) {
+            mtype = ImmutableMetric.Mtype.gauge;
+        } else if(type == AttributeType.STRING) {
+            return null;
+        } else {
+            mtype = ImmutableMetric.Mtype.gauge;
         }
+        return new ImmutableTag(IntrinsicTagNames.mtype, mtype.name());
     }
 
     /**

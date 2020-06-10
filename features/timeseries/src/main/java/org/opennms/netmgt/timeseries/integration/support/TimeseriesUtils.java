@@ -28,18 +28,17 @@
 
 package org.opennms.netmgt.timeseries.integration.support;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.MetricType;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.Timestamp;
-import org.opennms.newts.api.ValueType;
 import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
@@ -57,10 +56,6 @@ public abstract class TimeseriesUtils {
     public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "*";
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
-
-    // Constants used when building mock samples in createSampleForIndexingStrings()
-    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
-    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
 
     /**
      * Extends the attribute map with indices used by the {@link TimeseriesResourceStorageDao}.
@@ -130,8 +125,17 @@ public abstract class TimeseriesUtils {
      *
      * These should only be index and not be persisted.
      */
-    public static Sample createSampleForIndexingStrings(Context context, Resource resource) {
-        return new Sample(EPOCH, context, resource, "strings", MetricType.GAUGE, ZERO);
+    public static Sample createSampleForIndexingStrings(final String resourceId, Map<String, String> attributes) {
+        ImmutableMetric.MetricBuilder metric = ImmutableMetric.builder()
+                .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
+                .intrinsicTag(IntrinsicTagNames.name, "Not needed");
+        attributes.forEach(metric::metaTag);
+
+        return ImmutableSample.builder()
+                .time(Instant.EPOCH)
+                .value(0.0)
+                .metric(metric.build())
+                .build();
     }
 
 }

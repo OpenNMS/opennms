@@ -44,6 +44,7 @@ import java.util.stream.IntStream;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -54,14 +55,10 @@ import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.newts.api.Context;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Sample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
@@ -85,9 +82,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private TimeseriesStorageManager storageManager;
-
-    @Autowired
-    private Context context;
 
     @Autowired
     private TimeseriesSearcher searcher;
@@ -204,12 +198,12 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public void setStringAttribute(ResourcePath path, String key, String value) {
-        // Create a mock sample referencing the resource
+        // Create a mock sample referencing the resource. This is a bit of a miss use os the Sample class but it allows
+        // us to use the ring buffer
         Map<String, String> attributes = new ImmutableMap.Builder<String, String>()
                 .put(key, value)
                 .build();
-        Resource resource = new Resource(toResourceId(path), Optional.of(attributes));
-        Sample sample = TimeseriesUtils.createSampleForIndexingStrings(context, resource);
+        Sample sample = TimeseriesUtils.createSampleForIndexingStrings(toResourceId(path), attributes);
 
         // Index, but do not insert the sample(s)
         // The key/value pair specified in the attributes map will be merged with the others.
@@ -272,10 +266,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
     }
 
     public void setWriter(TimeseriesWriter writer) {

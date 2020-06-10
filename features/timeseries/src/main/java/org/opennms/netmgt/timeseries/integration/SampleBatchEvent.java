@@ -30,7 +30,7 @@ package org.opennms.netmgt.timeseries.integration;
 
 import java.util.List;
 
-import org.opennms.newts.api.Sample;
+import org.opennms.integration.api.v1.timeseries.Sample;
 
 /**
  * Wrapper class for a {@list java.util.List} of {@link org.opennms.newts.api.Sample} objects.
