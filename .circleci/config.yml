@@ -69,9 +69,11 @@ commands:
               - source-v1-
         - checkout
         - run:
+            name: git config merge.renameLimit
+            command: git config merge.renameLimit 999999
+        - run:
             name: git fetch origin
-            command: |
-              git fetch origin
+            command: git fetch origin
         - save_cache:
             key: source-v1-{{ .Branch }}-{{ .Revision }}
             paths:
