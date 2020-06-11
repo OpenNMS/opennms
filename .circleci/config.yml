@@ -479,6 +479,7 @@ workflows:
           requires:
             - build
       - sentinel-rpm-build:
+          context: "OpenNMS Build"
           requires:
             - build
       - integration-test:
@@ -534,6 +535,7 @@ workflows:
                 - master
                 - develop
       - sentinel-publish-oci:
+          context: "OpenNMS Build"
           requires:
             - sentinel-rpm-build
           filters:
@@ -572,6 +574,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
+          context: "OpenNMS Build"
           requires:
             - integration-test
           filters:
