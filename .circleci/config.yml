@@ -633,6 +633,15 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
+          name: Enable swap
+          command: |
+            fallocate -l 8G /swapfile
+            chmod 600 /swapfile
+            mkswap /swapfile
+            swapon /swapfile
+            sysctl vm.swappiness=5
+            cat /proc/sys/vm/swappiness
+      - run:
           name: Monitor JVM processes
           background: true
           command: |
