@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -94,6 +95,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private final int numWriterThreads;
 
     private final Meter droppedSamples;
+
+    private final Timer sampleWriteTsTimer;
 
     @Autowired
     private TimeseriesStorageManager storage;
@@ -136,6 +139,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
                 });
 
         droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
+        sampleWriteTsTimer = registry.timer("samples.write.ts");
 
         LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, this.ringBufferSize);
         setUpWorkerPool();
@@ -214,7 +218,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             if (event.isIndexOnly()) {
                 storeMetadata(event);
             } else {
-                this.storage.get().store(event.getSamples());
+                try(Timer.Context context = this.sampleWriteTsTimer.time()) {
+                    this.storage.get().store(event.getSamples());
+                }
                 storeMetadata(event);
             }
         } catch (Throwable t) {

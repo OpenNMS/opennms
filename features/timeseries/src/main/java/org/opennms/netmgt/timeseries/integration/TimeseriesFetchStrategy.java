@@ -50,6 +50,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
@@ -83,9 +86,10 @@ import org.opennms.newts.api.query.ResultDescriptor;
 import org.opennms.newts.api.query.StandardAggregationFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -120,7 +124,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
     public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.timeseries.query.parallelism", Runtime.getRuntime().availableProcessors());
 
-    @Autowired
     private ResourceDao resourceDao;
 
     private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("TimeseriesFetchStrateg-%d").build();
@@ -130,137 +133,143 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     // Used to limit the number of threads that are performing aggregation calculations in parallel
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
-    @Autowired
     private TimeseriesStorageManager storageManager;
+    private Timer sampleReadTsTimer;
+    private Timer sampleReadIntegrationTimer;
+
+    // we can only have a non args constructor in order for MeasurementFetchStrategyFactory to instantiate us
+    public TimeseriesFetchStrategy(){}
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
-        final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
-        final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
-        final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
-        final Map<String, Object> constants = Maps.newHashMap();
-        final List<QueryResource> resources = new ArrayList<>();
+        try (Timer.Context context = this.sampleReadIntegrationTimer.time()) {
+            final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
+            final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
+            final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
+            final Map<String, Object> constants = Maps.newHashMap();
+            final List<QueryResource> resources = new ArrayList<>();
 
-        // Group the sources by resource id to avoid calling the ResourceDao
-        // multiple times for the same resource
-        Map<ResourceId, List<Source>> sourcesByResourceId = sources.stream()
-                .collect(Collectors.groupingBy((source) -> ResourceId.fromString(source.getResourceId())));
+            // Group the sources by resource id to avoid calling the ResourceDao
+            // multiple times for the same resource
+            Map<ResourceId, List<Source>> sourcesByResourceId = sources.stream()
+                    .collect(Collectors.groupingBy((source) -> ResourceId.fromString(source.getResourceId())));
 
-        // Lookup the OnmsResources in parallel
-        Map<ResourceId, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-        for (ResourceId resourceId : sourcesByResourceId.keySet()) {
-            resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
-        }
-
-        // Gather the results, fail if any of the resources were not found
-        Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-        for (Entry<ResourceId, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
-            try {
-                OnmsResource resource = entry.getValue().get();
-                if (resource == null) {
-                    if (relaxed) continue;
-                    LOG.error("No resource with id: {}", entry.getKey());
-                    return null;
-                }
-                sourcesByResource.put(resource, sourcesByResourceId.get(entry.getKey()));
-            } catch (ExecutionException | InterruptedException e) {
-                throw Throwables.propagate(e);
-            }
-        }
-
-        // Now group the sources by Newts Resource ID, which differs from the OpenNMS Resource ID.
-        Map<String, List<Source>> sourcesByNewtsResourceId = Maps.newHashMap();
-        for (Entry<OnmsResource, List<Source>> entry : sourcesByResource.entrySet()) {
-            final OnmsResource resource = entry.getKey();
-            for (Source source : entry.getValue()) {
-                // Gather the values from strings.properties
-                Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
-
-                resources.add(getResourceInfo(resource, source));
-
-                // Grab the attribute that matches the source
-                RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
-
-                if (rrdGraphAttribute == null && !Strings.isNullOrEmpty(source.getFallbackAttribute())) {
-                    LOG.error("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
-                    source.setAttribute(source.getFallbackAttribute());
-                    source.setFallbackAttribute(null);
-                    rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
-                }
-
-                if (rrdGraphAttribute == null) {
-                    if (relaxed) continue;
-                    LOG.error("No attribute with name: {}", source.getAttribute());
-                    return null;
-                }
-
-                // The Newts Resource ID is stored in the rrdFile attribute
-                String newtsResourceId = rrdGraphAttribute.getRrdRelativePath();
-                // Remove the file separator prefix, added by the RrdGraphAttribute class
-                if (newtsResourceId.startsWith(File.separator)) {
-                    newtsResourceId = newtsResourceId.substring(File.separator.length(), newtsResourceId.length());
-                }
-
-                List<Source> listOfSources = sourcesByNewtsResourceId.get(newtsResourceId);
-                // Create the list if it doesn't exist
-                if (listOfSources == null) {
-                    listOfSources = Lists.newLinkedList();
-                    sourcesByNewtsResourceId.put(newtsResourceId, listOfSources);
-                }
-                listOfSources.add(source);
-            }
-        }
-
-        // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
-        // so we perform multiple queries in parallel, and aggregate the results.
-        Map<String, Future<Collection<Row<Measurement>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
-        for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
-            measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
-                    getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
-        }
-
-        long[] timestamps = null;
-        Map<String, double[]> columns = Maps.newHashMap();
-
-        for (Entry<String, Future<Collection<Row<Measurement>>>> entry : measurementsByNewtsResourceId.entrySet()) {
-            Collection<Row<Measurement>> rows;
-            try {
-                rows = entry.getValue().get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw Throwables.propagate(e);
+            // Lookup the OnmsResources in parallel
+            Map<ResourceId, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+            for (ResourceId resourceId : sourcesByResourceId.keySet()) {
+                resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
             }
 
-            final int N = rows.size();
-
-            if (timestamps == null) {
-                timestamps = new long[N];
-                int k = 0;
-                for (final Row<Measurement> row : rows) {
-                    timestamps[k] = row.getTimestamp().asMillis();
-                    k++;
-                }
-            }
-
-            int k = 0;
-            for (Row<Measurement> row : rows) {
-                for (Measurement measurement : row.getElements()) {
-                    double[] column = columns.get(measurement.getName());
-                    if (column == null) {
-                        column = new double[N];
-                        columns.put(measurement.getName(), column);
+            // Gather the results, fail if any of the resources were not found
+            Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+            for (Entry<ResourceId, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
+                try {
+                    OnmsResource resource = entry.getValue().get();
+                    if (resource == null) {
+                        if (relaxed) continue;
+                        LOG.error("No resource with id: {}", entry.getKey());
+                        return null;
                     }
-                    column[k] = measurement.getValue();
+                    sourcesByResource.put(resource, sourcesByResourceId.get(entry.getKey()));
+                } catch (ExecutionException | InterruptedException e) {
+                    throw Throwables.propagate(e);
                 }
-                k += 1;
             }
-        }
 
-        FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants, new QueryMetadata(resources));
-        if (relaxed) {
-            Utils.fillMissingValues(fetchResults, sources);
+            // Now group the sources by Newts Resource ID, which differs from the OpenNMS Resource ID.
+            Map<String, List<Source>> sourcesByNewtsResourceId = Maps.newHashMap();
+            for (Entry<OnmsResource, List<Source>> entry : sourcesByResource.entrySet()) {
+                final OnmsResource resource = entry.getKey();
+                for (Source source : entry.getValue()) {
+                    // Gather the values from strings.properties
+                    Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
+
+                    resources.add(getResourceInfo(resource, source));
+
+                    // Grab the attribute that matches the source
+                    RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+
+                    if (rrdGraphAttribute == null && !Strings.isNullOrEmpty(source.getFallbackAttribute())) {
+                        LOG.error("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
+                        source.setAttribute(source.getFallbackAttribute());
+                        source.setFallbackAttribute(null);
+                        rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+                    }
+
+                    if (rrdGraphAttribute == null) {
+                        if (relaxed) continue;
+                        LOG.error("No attribute with name: {}", source.getAttribute());
+                        return null;
+                    }
+
+                    // The Newts Resource ID is stored in the rrdFile attribute
+                    String newtsResourceId = rrdGraphAttribute.getRrdRelativePath();
+                    // Remove the file separator prefix, added by the RrdGraphAttribute class
+                    if (newtsResourceId.startsWith(File.separator)) {
+                        newtsResourceId = newtsResourceId.substring(File.separator.length(), newtsResourceId.length());
+                    }
+
+                    List<Source> listOfSources = sourcesByNewtsResourceId.get(newtsResourceId);
+                    // Create the list if it doesn't exist
+                    if (listOfSources == null) {
+                        listOfSources = Lists.newLinkedList();
+                        sourcesByNewtsResourceId.put(newtsResourceId, listOfSources);
+                    }
+                    listOfSources.add(source);
+                }
+            }
+
+            // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
+            // so we perform multiple queries in parallel, and aggregate the results.
+            Map<String, Future<Collection<Row<Measurement>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
+            for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
+                measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
+                        getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
+            }
+
+            long[] timestamps = null;
+            Map<String, double[]> columns = Maps.newHashMap();
+
+            for (Entry<String, Future<Collection<Row<Measurement>>>> entry : measurementsByNewtsResourceId.entrySet()) {
+                Collection<Row<Measurement>> rows;
+                try {
+                    rows = entry.getValue().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw Throwables.propagate(e);
+                }
+
+                final int N = rows.size();
+
+                if (timestamps == null) {
+                    timestamps = new long[N];
+                    int k = 0;
+                    for (final Row<Measurement> row : rows) {
+                        timestamps[k] = row.getTimestamp().asMillis();
+                        k++;
+                    }
+                }
+
+                int k = 0;
+                for (Row<Measurement> row : rows) {
+                    for (Measurement measurement : row.getElements()) {
+                        double[] column = columns.get(measurement.getName());
+                        if (column == null) {
+                            column = new double[N];
+                            columns.put(measurement.getName(), column);
+                        }
+                        column[k] = measurement.getValue();
+                    }
+                    k += 1;
+                }
+            }
+
+            FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants, new QueryMetadata(resources));
+            if (relaxed) {
+                Utils.fillMissingValues(fetchResults, sources);
+            }
+            LOG.trace("Fetch results: {}", fetchResults);
+            return fetchResults;
         }
-        LOG.trace("Fetch results: {}", fetchResults);
-        return fetchResults;
     }
 
     private Callable<Collection<Row<Measurement>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
@@ -294,9 +303,11 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                             .aggregation(aggregationToUse)
                             .build();
 
-                    LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
-                    List<Sample> samples = storageManager.get().getTimeseries(request);
-
+                    List<Sample> samples;
+                    try(Timer.Context context = sampleReadTsTimer.time()) {
+                        LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
+                        samples = storageManager.get().getTimeseries(request);
+                    }
                     // aggregate if timeseries implementation didn't do it natively)
                     if (!shouldAggregateNatively) {
                         final List<Source> currentSources = Collections.singletonList(source);
@@ -497,14 +508,20 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         return new LateAggregationParams(effectiveStep, effectiveInterval, effectiveHeartbeat);
     }
 
-    @VisibleForTesting
+    @Inject
     protected void setResourceDao(ResourceDao resourceDao) {
         this.resourceDao = resourceDao;
     }
 
-    @VisibleForTesting
+    @Inject
     protected void setTimeseriesStorageManager(final TimeseriesStorageManager timeseriesStorage) {
         this.storageManager = timeseriesStorage;
+    }
+
+    @Inject
+    protected void setMetricRegistry(@Named("timeseriesMetricRegistry") MetricRegistry registry) {
+        this.sampleReadTsTimer = registry.timer("samples.read.ts");
+        this.sampleReadIntegrationTimer = registry.timer("samples.read.integration");
     }
 
     private OnmsNode getNode(final OnmsResource resource, final Source source) {

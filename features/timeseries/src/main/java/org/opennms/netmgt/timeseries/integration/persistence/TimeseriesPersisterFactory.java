@@ -43,6 +43,8 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * Factory for {@link TimeseriesPersister}.
  *
@@ -53,16 +55,20 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
     private final TimeseriesWriter timeseriesWriter;
     private final MetaTagDataLoader metaTagDataLoader;
     private final Cache<ResourcePath, Map<String, String>> metaCache;
+    private final MetricRegistry registry;
 
     @Inject
     public TimeseriesPersisterFactory(final TimeseriesWriter timeseriesWriter,
-                                      final MetaTagDataLoader metaTagDataLoader, @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig) {
+                                      final MetaTagDataLoader metaTagDataLoader,
+                                      @Named("timeseriesPersisterMetaTagCache") final CacheConfig cacheConfig,
+                                      @Named("timeseriesMetricRegistry") MetricRegistry registry) {
         this.timeseriesWriter = timeseriesWriter;
         this.metaTagDataLoader = metaTagDataLoader;
         this.metaCache = new CacheBuilder<>()
                 .withConfig(cacheConfig)
                 .withCacheLoader(metaTagDataLoader)
                 .build();
+        this.registry = registry;
     }
 
     @Override
@@ -75,7 +81,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, metaCache);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, metaCache, registry);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

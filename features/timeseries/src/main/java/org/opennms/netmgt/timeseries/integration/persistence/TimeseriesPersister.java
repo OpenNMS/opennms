@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.integration.persistence;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.cache.Cache;
@@ -41,6 +42,8 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
+
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * TimeseriesPersister persistence strategy.
@@ -55,14 +58,17 @@ public class TimeseriesPersister extends AbstractPersister {
     private final MetaTagDataLoader metaDataLoader;
     private final Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache;
     private TimeseriesPersistOperationBuilder builder;
+    private final MetricRegistry metricRegistry;
 
     protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
-                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache) {
+                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache,
+                                  MetricRegistry metricRegistry) {
         super(params, repository);
         this.repository = repository;
         writer = timeseriesWriter;
         this.metaDataLoader = metaDataLoader;
         this.metaTagsByResourceCache = metaTagsByResourceCache;
+        this.metricRegistry = Objects.requireNonNull(metricRegistry, "metricRegistry can not be null");
     }
 
     @Override
@@ -80,7 +86,7 @@ public class TimeseriesPersister extends AbstractPersister {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
             Map<String, String> metaTags = getMetaTags(resource);
-            builder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags);
+            builder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags, this.metricRegistry);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());
             }

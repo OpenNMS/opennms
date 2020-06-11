@@ -52,10 +52,11 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils;
-import org.opennms.newts.api.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -76,16 +77,19 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     private final Map<CollectionAttributeType, Number> declarations = Maps.newLinkedHashMap();
     private final Map<String, String> metaData = Maps.newLinkedHashMap();
     private final Map<ResourcePath, Map<String, String>> stringAttributesByPath = Maps.newLinkedHashMap();
+    private final Timer commitTimer;
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
     public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
-                                             ResourceIdentifier resource, String name, Map<String, String> metaTags) {
+                                             ResourceIdentifier resource, String name, Map<String, String> metaTags,
+                                             MetricRegistry metricRegistry) {
         this.writer = writer;
         rrepository = repository;
         this.resource = resource;
         this.name = name;
         metaData.putAll(metaTags);
+        this.commitTimer = metricRegistry.timer("samples.write.integration");
     }
 
     @Override
@@ -122,8 +126,10 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     @Override
     public void commit() {
-        writer.insert(getSamplesToInsert());
-        writer.index(getSamplesToIndex());
+        try(final Timer.Context context = commitTimer.time()) {
+            writer.insert(getSamplesToInsert());
+            writer.index(getSamplesToIndex());
+        }
     }
 
     public List<Sample> getSamplesToInsert() {
@@ -135,7 +141,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         String resourceId = TimeseriesUtils.toResourceId(path);
 
         // Convert numeric attributes to samples
-        Timestamp timestamp = Timestamp.fromEpochMillis(timeKeeper.getCurrentTime());
+        final Instant time = Instant.ofEpochMilli(timeKeeper.getCurrentTime());
         for (Entry<CollectionAttributeType, Number> entry : declarations.entrySet()) {
             CollectionAttributeType attrType = entry.getKey();
 
@@ -158,7 +164,6 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                 metaData.forEach(builder::metaTag);
 
             final ImmutableMetric metric = builder.build();
-            final Instant time = Instant.ofEpochMilli(timestamp.asMillis());
             final Double sampleValue = value.doubleValue();
             samples.add(ImmutableSample.builder().metric(metric).time(time).value(sampleValue).build());
         }

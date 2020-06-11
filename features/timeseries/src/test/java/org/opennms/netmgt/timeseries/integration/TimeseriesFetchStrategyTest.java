@@ -75,6 +75,7 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.Timestamp;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -106,6 +107,7 @@ public class TimeseriesFetchStrategyTest {
         fetchStrategy = new TimeseriesFetchStrategy();
         fetchStrategy.setResourceDao(resourceDao);
         fetchStrategy.setTimeseriesStorageManager(storageManager);
+        fetchStrategy.setMetricRegistry(new MetricRegistry());
     }
 
     @After

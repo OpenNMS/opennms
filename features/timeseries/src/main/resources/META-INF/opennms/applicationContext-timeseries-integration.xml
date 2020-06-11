@@ -49,7 +49,7 @@
   </bean>
 
   <bean id="timeseriesMetricRegistryDomainedJmxReporterBuilder" factory-bean="timeseriesMetricRegistryJmxReporterBuilder" factory-method="inDomain">
-      <constructor-arg value="org.opennms.newts"/>
+      <constructor-arg value="org.opennms.timeseries"/>
   </bean>
 
   <bean id="timeseriesMetricRegistryJmxReporter"

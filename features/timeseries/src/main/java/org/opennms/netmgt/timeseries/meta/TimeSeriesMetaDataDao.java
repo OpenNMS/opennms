@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -67,19 +69,30 @@ public class TimeSeriesMetaDataDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeSeriesMetaDataDao.class);
 
+    final static String SQL_WRITE = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
+    final static String SQL_READ = "SELECT name, value FROM timeseries_meta where resourceid = ?";
+
     private final DataSource dataSource;
 
     private final Cache<String, Map<String, String>> cache; // resourceId, Map<name, value>
 
+    private final Timer metadataWriteTimer;
+    private final Timer metadataReadTimer;
+
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource,
                                  @Named("timeseries.metadata.cache_size") long cacheSize,
-                                 @Named("timeseries.metadata.cache_duration") long cacheDuration) {
-        this.dataSource = dataSource;
+                                 @Named("timeseries.metadata.cache_duration") long cacheDuration,
+                                 @Named("timeseriesMetricRegistry") MetricRegistry registry
+    ) {
+        this.dataSource = Objects.requireNonNull(dataSource, "dataSource cannot be null.");
+        Objects.requireNonNull(registry, "registry cannot be null.");
         this.cache = CacheBuilder.newBuilder()
                 .maximumSize(cacheSize)
                 .expireAfterWrite(cacheDuration, TimeUnit.SECONDS) // to make sure cache and db are in sync
                 .build();
+        this.metadataWriteTimer = registry.timer("metadata.write.db");
+        this.metadataReadTimer = registry.timer("metadata.read.db");
     }
 
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException, ExecutionException {
@@ -103,14 +116,13 @@ public class TimeSeriesMetaDataDao {
     public void storeUncached(final Collection<MetaData> metaDataCollection) throws SQLException {
         Objects.requireNonNull(metaDataCollection);
 
-        final String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
         final DBUtils db = new DBUtils(this.getClass());
-        try {
+        try (Timer.Context context = metadataWriteTimer.time()) {
 
             Connection connection = this.dataSource.getConnection();
             db.watch(connection);
 
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(SQL_WRITE);
             db.watch(ps);
 
             LOG.debug("Inserting {} attributes", metaDataCollection.size());
@@ -140,13 +152,11 @@ public class TimeSeriesMetaDataDao {
         // not in cache -> look in database
         Map<String, String> metaData;
         final DBUtils db = new DBUtils(this.getClass());
-        try {
-
-            String sql = "SELECT name, value FROM timeseries_meta where resourceid = ?";
+        try (Timer.Context context = metadataReadTimer.time()) {
 
             final Connection connection = this.dataSource.getConnection();
             db.watch(connection);
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(SQL_READ);
             db.watch(statement);
             statement.setString(1, toResourceId(path));
             ResultSet rs = statement.executeQuery();
