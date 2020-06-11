@@ -199,7 +199,7 @@
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils-core</artifactId>
+      <artifactId>commons-beanutils</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

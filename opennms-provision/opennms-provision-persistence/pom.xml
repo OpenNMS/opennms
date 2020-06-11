@@ -86,7 +86,7 @@
   <dependencies>
     <dependency>
       <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils-core</artifactId>
+      <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
