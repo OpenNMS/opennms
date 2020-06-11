@@ -53,7 +53,19 @@ COPY ./rpms /tmp/rpms
 SHELL ["/bin/bash", "-c"]
 
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then dnf -y install /tmp/rpms/*.rpm; else dnf -y install ${MINION_PACKAGES}; fi && \
+RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
+        echo "installing local RPMs from filesystem" && \
+        dnf -y install /tmp/rpms/*.rpm; \
+    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
+        echo "installing local RPMs over HTTP" && \
+        dnf -y install 'dnf-command(config-manager)' && \
+        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
+        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
+        dnf -y --disablerepo=opennms-repo-stable-common install ${MINION_PACKAGES}; \
+    else \
+        echo "installing remote RPMs from stable" && \
+        dnf -y install ${MINION_PACKAGES}; \
+    fi && \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms && \
     dnf clean all && \
