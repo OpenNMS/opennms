@@ -109,7 +109,7 @@ public class WebappIT {
     String sessionId = given().redirects().follow(false)
         .log().all()
         .get("admin/classification/index.jsp")
-        .getHeader("Set-Cookie").split("=")[1];
+        .getHeader("Set-Cookie").split("=")[1].split(";")[0];
 
     RequestSpecification noEncoding = new RequestSpecBuilder().setUrlEncodingEnabled(false).build();
     given()
