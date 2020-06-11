@@ -469,6 +469,7 @@ workflows:
           requires:
             - build
       - minion-rpm-build:
+          context: "OpenNMS Build"
           requires:
             - build
       - integration-test:
@@ -513,6 +514,7 @@ workflows:
                 - master
                 - develop
       - minion-publish-oci:
+          context: "OpenNMS Build"
           requires:
             - minion-rpm-build
           filters:
@@ -537,6 +539,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - create-merge-foundation-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -548,6 +551,7 @@ workflows:
             branches:
               only: << parameters.main_branch >>
       - merge-foundation-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -559,6 +563,7 @@ workflows:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - create-merge-meridian-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -570,6 +575,7 @@ workflows:
             branches:
               only: /^foundation.*/
       - merge-poweredby-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
