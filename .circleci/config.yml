@@ -207,12 +207,12 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
-            ps auxf || : > ~/test-results/system-logs/ps 2>&1
-            free -m || : > ~/test-results/system-logs/free 2>&1
-            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/
-            ls -alh ~/project/smoke-test/
+            (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
+            (free -m || :) > ~/test-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
+            ls -alh ~/project/smoke-test/ || :
       - run:
           name: Gather test artifacts
           when: always
@@ -623,7 +623,7 @@ jobs:
           path: opennms-container/horizon/images/
   horizon-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -632,20 +632,6 @@ jobs:
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
-      - run:
-          name: Enable swap
-          command: |
-            fallocate -l 8G /swapfile
-            chmod 600 /swapfile
-            mkswap /swapfile
-            swapon /swapfile
-            sysctl vm.swappiness=5
-            cat /proc/sys/vm/swappiness
-      - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
       - run:
           name: Monitor memory usage
           background: true
@@ -667,11 +653,11 @@ jobs:
           when: always
           command: |
             mkdir -p ~/build-results/system-logs
-            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
-            ps auxf || : > ~/build-results/system-logs/ps 2>&1
-            free -m || : > ~/build-results/system-logs/free 2>&1
-            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_artifacts:
           when: always
           path: ~/build-results
