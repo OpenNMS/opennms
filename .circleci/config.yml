@@ -539,6 +539,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
+          context: "OpenNMS Build"
           requires:
             - integration-test
           filters:
