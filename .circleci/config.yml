@@ -444,28 +444,35 @@ workflows:
               only:
                 - develop
     jobs:
-      - build
+      - build:
+          context: "OpenNMS Build"
       - integration-test-with-coverage:
+          context: "OpenNMS Build"
           requires:
             - build
       - code-coverage:
+          context: "OpenNMS Build"
           requires:
             - integration-test-with-coverage
   build-deploy:
     <<: *defaults
     jobs:
       - build:
+          context: "OpenNMS Build"
           filters:
             branches:
               ignore:
                 - /^from-foundation.*/
       - horizon-rpm-build:
+          context: "OpenNMS Build"
           requires:
             - build
       - integration-test:
+          context: "OpenNMS Build"
           requires:
             - build
       - smoke-test-full:
+          context: "OpenNMS Build"
           requires:
             - horizon-rpm-build
           filters:
@@ -478,6 +485,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
+          context: "OpenNMS Build"
           requires:
             - horizon-rpm-build
           filters:
@@ -490,6 +498,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
+          context: "OpenNMS Build"
           requires:
             - horizon-rpm-build
           filters:
@@ -500,6 +509,7 @@ workflows:
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
+          context: "OpenNMS Build"
           requires:
             - integration-test
           filters:
@@ -562,6 +572,7 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
