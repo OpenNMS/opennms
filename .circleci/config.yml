@@ -215,12 +215,12 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
-            ps auxf || : > ~/test-results/system-logs/ps 2>&1
-            free -m || : > ~/test-results/system-logs/free 2>&1
-            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/
-            ls -alh ~/project/smoke-test/
+            (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
+            (free -m || :) > ~/test-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
+            ls -alh ~/project/smoke-test/ || :
       - run:
           name: Gather test artifacts
           when: always
@@ -451,34 +451,42 @@ workflows:
               only:
                 - develop
     jobs:
-      - build
+      - build:
+          context: "OpenNMS Build"
       - integration-test-with-coverage:
+          context: "OpenNMS Build"
           requires:
             - build
       - code-coverage:
+          context: "OpenNMS Build"
           requires:
             - integration-test-with-coverage
   build-deploy:
     <<: *defaults
     jobs:
       - build:
+          context: "OpenNMS Build"
           filters:
             branches:
               ignore:
                 - /^from-foundation.*/
       - horizon-rpm-build:
+          context: "OpenNMS Build"
           requires:
             - build
       - minion-rpm-build:
+          context: "OpenNMS Build"
           requires:
             - build
       - sentinel-rpm-build:
           requires:
             - build
       - integration-test:
+          context: "OpenNMS Build"
           requires:
             - build
       - smoke-test-full:
+          context: "OpenNMS Build"
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -493,6 +501,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
+          context: "OpenNMS Build"
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -507,6 +516,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
+          context: "OpenNMS Build"
           requires:
             - horizon-rpm-build
           filters:
@@ -515,6 +525,7 @@ workflows:
                 - master
                 - develop
       - minion-publish-oci:
+          context: "OpenNMS Build"
           requires:
             - minion-rpm-build
           filters:
@@ -533,6 +544,7 @@ workflows:
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
+          context: "OpenNMS Build"
           requires:
             - integration-test
           filters:
@@ -546,6 +558,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
+          context: "OpenNMS Build"
           requires:
             - integration-test
           filters:
@@ -572,6 +585,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - create-merge-foundation-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -585,6 +599,7 @@ workflows:
             branches:
               only: << parameters.main_branch >>
       - merge-foundation-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -598,6 +613,7 @@ workflows:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - create-merge-meridian-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -609,6 +625,7 @@ workflows:
             branches:
               only: /^foundation.*/
       - merge-poweredby-branch:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -621,6 +638,7 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
+          context: "OpenNMS Build"
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -778,7 +796,7 @@ jobs:
           path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -787,11 +805,6 @@ jobs:
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
-      - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
       - run:
           name: Monitor memory usage
           background: true
@@ -813,11 +826,11 @@ jobs:
           when: always
           command: |
             mkdir -p ~/build-results/system-logs
-            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
-            ps auxf || : > ~/build-results/system-logs/ps 2>&1
-            free -m || : > ~/build-results/system-logs/free 2>&1
-            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_artifacts:
           when: always
           path: ~/build-results
