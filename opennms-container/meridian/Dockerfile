@@ -61,16 +61,28 @@ SHELL ["/bin/bash", "-c"]
 # To avoid different behavior, between a RPM or tarball installation,
 # the directory structure is unified, the links for /opt/opennms/share
 # and /opt/opennms/logs introduced by RPM installs are removed.
+
 RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
         mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
+        echo "installing local RPMs from filesystem" && \
         dnf -y install /tmp/rpms/*.rpm && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
         mv /var/opennms /opt/opennms/share && \
         mv /var/log/opennms /opt/opennms/logs; \
+    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
+        echo "installing local RPMs over HTTP" && \
+        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
+        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
+        dnf -y --disablerepo=opennms-repo-stable-common install ${ONMS_PACKAGES} && \
+        rm -rf /opt/opennms/logs \
+               /opt/opennms/share && \
+        mv /var/opennms /opt/opennms/share && \
+        mv /var/log/opennms /opt/opennms/logs; \
     else \
+        echo "installing remote RPMs from stable" && \
         dnf -y install ${ONMS_PACKAGES} && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
