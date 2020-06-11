@@ -1362,7 +1362,7 @@
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.14.1</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.9</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
