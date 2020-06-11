@@ -1324,7 +1324,7 @@
     <!-- Match Newts version -->
     <cassandraVersion>3.5.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
@@ -3265,17 +3265,6 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>${commonsBeanutilsVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-beanutils</groupId>
-        <artifactId>commons-beanutils-core</artifactId>
         <version>${commonsBeanutilsVersion}</version>
         <exclusions>
           <exclusion>
