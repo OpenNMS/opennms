@@ -29,13 +29,11 @@
 package org.opennms.netmgt.timeseries.integration;
 
 import static org.opennms.netmgt.timeseries.integration.NewtsConverterUtils.samplesToNewtsRowIterator;
-import static org.opennms.netmgt.timeseries.integration.Utils.asMap;
 
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,9 +73,7 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.aggregation.NewtsLikeSampleAggregator;
-import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.SampleSelectCallback;
 import org.opennms.newts.api.Timestamp;
@@ -151,29 +147,9 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
             // Group the sources by resource id to avoid calling the ResourceDao
             // multiple times for the same resource
-            Map<ResourceId, List<Source>> sourcesByResourceId = sources.stream()
-                    .collect(Collectors.groupingBy((source) -> ResourceId.fromString(source.getResourceId())));
-
-            // Lookup the OnmsResources in parallel
-            Map<ResourceId, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-            for (ResourceId resourceId : sourcesByResourceId.keySet()) {
-                resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
-            }
-
-            // Gather the results, fail if any of the resources were not found
-            Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-            for (Entry<ResourceId, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
-                try {
-                    OnmsResource resource = entry.getValue().get();
-                    if (resource == null) {
-                        if (relaxed) continue;
-                        LOG.error("No resource with id: {}", entry.getKey());
-                        return null;
-                    }
-                    sourcesByResource.put(resource, sourcesByResourceId.get(entry.getKey()));
-                } catch (ExecutionException | InterruptedException e) {
-                    throw Throwables.propagate(e);
-                }
+            Map<OnmsResource, List<Source>> sourcesByResource = loadOnmsResources(sources, relaxed);
+            if(sourcesByResource == null) {
+                return null;
             }
 
             // Now group the sources by Newts Resource ID, which differs from the OpenNMS Resource ID.
@@ -221,7 +197,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
             // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
             // so we perform multiple queries in parallel, and aggregate the results.
-            Map<String, Future<Collection<Row<Measurement>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
+            Map<String, Future<Map<Source, List<Sample>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
             for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
                 measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
                         getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
@@ -230,36 +206,25 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             long[] timestamps = null;
             Map<String, double[]> columns = Maps.newHashMap();
 
-            for (Entry<String, Future<Collection<Row<Measurement>>>> entry : measurementsByNewtsResourceId.entrySet()) {
-                Collection<Row<Measurement>> rows;
+            for (Entry<String, Future<Map<Source, List<Sample>>>> entry : measurementsByNewtsResourceId.entrySet()) {
+                Map<Source, List<Sample>> sampleList;
                 try {
-                    rows = entry.getValue().get();
+                    sampleList = entry.getValue().get();
                 } catch (InterruptedException | ExecutionException e) {
                     throw Throwables.propagate(e);
                 }
 
-                final int N = rows.size();
-
                 if (timestamps == null) {
-                    timestamps = new long[N];
-                    int k = 0;
-                    for (final Row<Measurement> row : rows) {
-                        timestamps[k] = row.getTimestamp().asMillis();
-                        k++;
-                    }
+                    timestamps = sampleList
+                            .values()
+                            .iterator().next().stream()
+                            .map(Sample::getTime)
+                            .mapToLong(Instant::toEpochMilli).toArray();
                 }
 
-                int k = 0;
-                for (Row<Measurement> row : rows) {
-                    for (Measurement measurement : row.getElements()) {
-                        double[] column = columns.get(measurement.getName());
-                        if (column == null) {
-                            column = new double[N];
-                            columns.put(measurement.getName(), column);
-                        }
-                        column[k] = measurement.getValue();
-                    }
-                    k += 1;
+                for (Entry<Source, List<Sample>> column : sampleList.entrySet()) {
+                    double[] values = column.getValue().stream().mapToDouble(Sample::getValue).toArray();
+                    columns.put(column.getKey().getLabel(), values);
                 }
             }
 
@@ -272,12 +237,43 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         }
     }
 
-    private Callable<Collection<Row<Measurement>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
-        return new Callable<Collection<Row<Measurement>>>() {
-            @Override
-            public Collection<Row<Measurement>> call() throws Exception {
+    private Map<OnmsResource, List<Source>> loadOnmsResources(final List<Source> sources, boolean relaxed) {
 
-                List<List<Sample>> allSamples = new ArrayList<>();
+        // Group the sources by resource id to avoid calling the ResourceDao
+        // multiple times for the same resource
+        Map<ResourceId, List<Source>> sourcesByResourceId = sources.stream()
+                .collect(Collectors.groupingBy((source) -> ResourceId.fromString(source.getResourceId())));
+
+        // Lookup the OnmsResources in parallel
+        Map<ResourceId, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+        for (ResourceId resourceId : sourcesByResourceId.keySet()) {
+            resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
+        }
+
+        // Gather the results, fail if any of the resources were not found
+        Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+        for (Entry<ResourceId, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
+            try {
+                OnmsResource resource = entry.getValue().get();
+                if (resource == null) {
+                    if (relaxed) continue;
+                    LOG.error("No resource with id: {}", entry.getKey());
+                    return null;
+                }
+                sourcesByResource.put(resource, sourcesByResourceId.get(entry.getKey()));
+            } catch (ExecutionException | InterruptedException e) {
+                throw Throwables.propagate(e);
+            }
+        }
+        return sourcesByResource;
+    }
+
+    private Callable<Map<Source, List<Sample>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
+        return new Callable<Map<Source, List<Sample>>>() {
+            @Override
+            public Map<Source, List<Sample>> call() throws Exception {
+
+                Map<Source, List<Sample>> allSamples = new HashMap<>(listOfSources.size());
 
                 // get results for all sources
                 for (Source source : listOfSources) {
@@ -308,7 +304,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
                         samples = storageManager.get().getTimeseries(request);
                     }
-                    // aggregate if timeseries implementation didn't do it natively)
+                    // aggregate if timeseries implementation didn't do it natively
                     if (!shouldAggregateNatively) {
                         final List<Source> currentSources = Collections.singletonList(source);
                         final ResultDescriptor resultDescriptor = createResultDescriptor(currentSources, lag);
@@ -321,34 +317,9 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                                 .metric(metric)
                                 .build().process(samplesToNewtsRowIterator(samples, currentSources));
                     }
-                    allSamples.add(samples);
+                    allSamples.put(source, samples);
                 }
-
-                // build Rows from the results. One row can contain multiple columns. A Sample represents a cell in the "table"
-                List<Row<Measurement>> rows =  new ArrayList<>();
-                for(int rowIndex = 0; rowIndex < allSamples.get(0).size(); rowIndex++) {
-                    Sample sampleOfFirstList = allSamples.get(0).get(rowIndex);
-
-                    Timestamp timestamp = Timestamp.fromEpochMillis(sampleOfFirstList.getTime().toEpochMilli());
-                    Optional<Map<String, String>> resourceAttributes = sampleOfFirstList.getMetric().getMetaTags().isEmpty() ?
-                            Optional.absent() : Optional.of(asMap(sampleOfFirstList.getMetric().getMetaTags()));
-                    Resource resource = new Resource(sampleOfFirstList.getMetric().getFirstTagByKey("resourceId").getValue(), resourceAttributes);
-                    Row<Measurement> row = new Row<>(timestamp, resource);
-
-                    // Let's iterate over all lists and add the samples of row i
-                    for(int columnIndex = 0; columnIndex < allSamples.size(); columnIndex++) {
-                        List<Sample> list = allSamples.get(columnIndex);
-                        Sample sampleOfCurrentList = list.get(rowIndex);
-                        final String name = listOfSources.get(columnIndex).getLabel();
-                        // final String name = sampleOfCurrentList.getMetric().getFirstTagByKey(CommonTagNames.name).getValue();
-                        row.addElement(new Measurement(timestamp, resource, name, sampleOfCurrentList.getValue(), new HashMap<>()));
-                    }
-
-                    rows.add(row);
-                }
-
-                LOG.debug("Found {} rows.", rows.size());
-                 return rows;
+                return allSamples;
             }
         };
     }
@@ -407,7 +378,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         };
     }
 
-    private SampleSelectCallback limitConcurrentAggregationsCallback = new SampleSelectCallback() {
+    private final SampleSelectCallback limitConcurrentAggregationsCallback = new SampleSelectCallback() {
 
         @Override
         public void beforeProcess() {
