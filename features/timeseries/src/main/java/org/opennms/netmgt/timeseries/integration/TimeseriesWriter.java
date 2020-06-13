@@ -215,13 +215,12 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         numEntriesOnRingBuffer.decrementAndGet();
 
         try {
-            if (event.isIndexOnly()) {
-                storeMetadata(event);
+            if (event.isMetadata()) {
+                storeMetadata(event); // Sample represents metadata, no "real" Samples. Metadata is stored in table.
             } else {
                 try(Timer.Context context = this.sampleWriteTsTimer.time()) {
                     this.storage.get().store(event.getSamples());
                 }
-                storeMetadata(event);
             }
         } catch (Throwable t) {
             RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
@@ -242,7 +241,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =
             new EventTranslatorOneArg<SampleBatchEvent, List<Sample>>() {
                 public void translateTo(SampleBatchEvent event, long sequence, List<Sample> samples) {
-                    event.setIndexOnly(false);
+                    event.setMetadata(false); // we are a "real" Sample
                     event.setSamples(samples);
                 }
             };
@@ -250,7 +249,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> INDEX_ONLY_TRANSLATOR =
             new EventTranslatorOneArg<SampleBatchEvent, List<Sample>>() {
                 public void translateTo(SampleBatchEvent event, long sequence, List<Sample> samples) {
-                    event.setIndexOnly(true);
+                    event.setMetadata(true); // we are a "fake" Sample carrying meta data
                     event.setSamples(samples);
                 }
             };

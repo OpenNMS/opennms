@@ -36,10 +36,12 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.core.cache.Cache;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistException;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 
@@ -115,5 +117,16 @@ public class TimeseriesPersister extends AbstractPersister {
             commitBuilder();
         }
         popShouldPersist();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void persistNumericAttribute(CollectionAttribute attribute) {
+        // override super class in order to persist the metric indentifiers in the meta data table
+        super.persistNumericAttribute(attribute);
+        if(attribute.getMetricIdentifier() != null) {
+            ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(repository, ResourcePath.get(attribute.getResource().getPath(), attribute.getAttributeType().getGroupType().getName()));
+            this.builder.persistStringAttribute(path, attribute.getMetricIdentifier(), attribute.getName());
+        }
     }
 }

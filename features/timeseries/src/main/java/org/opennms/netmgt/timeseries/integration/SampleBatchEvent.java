@@ -41,7 +41,7 @@ import org.opennms.integration.api.v1.timeseries.Sample;
  */
 public class SampleBatchEvent {
     private List<Sample> samples;
-    private boolean indexOnly;
+    private boolean metadata;
 
     public void setSamples(List<Sample> samples) {
         this.samples = samples;
@@ -51,11 +51,11 @@ public class SampleBatchEvent {
         return samples;
     }
 
-    public void setIndexOnly(boolean indexOnly) {
-        this.indexOnly = indexOnly;
+    public void setMetadata(boolean metadata) {
+        this.metadata = metadata;
     }
 
-    public boolean isIndexOnly() {
-        return indexOnly;
+    public boolean isMetadata() {
+        return metadata;
     }
 }

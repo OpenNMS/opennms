@@ -60,6 +60,7 @@ import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
@@ -202,31 +203,51 @@ public class TimeseriesRoundtripIT {
         // Wait for the sample(s) to be flushed
         Thread.sleep(5 * 1000);
 
+        // Tags contained in the Metric:
         testForNumericAttribute("snmp:1:metrics", "m1", 900d);
         testForNumericAttribute("snmp:1:metrics", "m2", 1000d);
+        // String attributes are stored in the OpenNMS Database:
         testForStringAttribute("snmp/1/metrics", "idx-m2", "m2"); // Identified
         testForStringAttribute("snmp/1", "sysname", "host1");
 
+        // Tags contained in the Metric:
         testForNumericAttribute("snmp:1:1:if-metrics", "m3", 44d);
         testForNumericAttribute("snmp:1:1:if-metrics", "m4", 55d);
+        // String attributes are stored in the OpenNMS Database:
         testForStringAttribute("snmp/1/1/if-metrics", "idx-m4", "m4"); // Identified
         testForStringAttribute("snmp/1/1", "ifname", "eth0");
 
+        // Tags contained in the Metric:
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m5", 66d);
         testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
+        // String attributes are stored in the OpenNMS Database:
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "idx-m6", "m6"); // Identified
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
 
-        // test for additional meta tags that are provided to the plugin for external use:
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "sysObjectID", "abc");
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "nodelabel","myNodeLabel");
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "vendor","myVendor");
-        testForStringAttribute("snmp/1/1/if-metrics", "if-description","myDescription");
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "cat_myCategory","myCategory");
+        // test for additional meta tags that are provided to the timeseries plugin for external use. They are stored as additional meta tags
+        // in the Metrics object
+        testForMetaTag("snmp:1:metrics", "m1", "sysObjectID", "abc");
+        testForMetaTag("snmp:1:metrics", "m1", "nodelabel","myNodeLabel");
+        testForMetaTag("snmp:1:metrics", "m1", "vendor","myVendor");
+        testForMetaTag("snmp:1:1:if-metrics", "m3",  "if-description","myDescription");
+        testForMetaTag("snmp:1:metrics", "m1",  "cat_myCategory","myCategory");
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
+        List<Sample> sample = retrieveSamples(resourceId, name);
+        assertEquals(1, sample.size());
+        assertEquals(expectedValue, sample.get(0).getValue());
 
+    }
+
+    private void testForMetaTag(String resourceId, String name, String tagKey, String tagValue) throws StorageException {
+        List<Sample> sample = retrieveSamples(resourceId, name) ;
+        assertEquals(1, sample.size());
+        Tag tag = new ImmutableTag(tagKey, tagValue);
+        assertEquals(tag, sample.get(0).getMetric().getFirstTagByKey(tagKey));
+    }
+
+    private List<Sample> retrieveSamples(final String resourceId, final String name) throws StorageException {
         List<Metric> metrics = timeseriesStorageManager.get().getMetrics(Arrays.asList(
                 new ImmutableTag(IntrinsicTagNames.resourceId, resourceId),
                 new ImmutableTag(IntrinsicTagNames.name, name)));
@@ -239,10 +260,7 @@ public class TimeseriesRoundtripIT {
                 .step(Duration.ofSeconds(1))
                 .metric(metrics.get(0)).build();
 
-        List<Sample> sample = timeseriesStorageManager.get().getTimeseries(request);
-        assertEquals(1, sample.size());
-        assertEquals(expectedValue, sample.get(0).getValue());
-
+        return timeseriesStorageManager.get().getTimeseries(request);
     }
 
     private void testForStringAttribute(String resourcePath, String name, String expectedValue) throws StorageException {
