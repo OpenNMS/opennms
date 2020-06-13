@@ -73,17 +73,12 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.aggregation.NewtsLikeSampleAggregator;
-import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.query.AggregationFunction;
-import org.opennms.newts.api.query.ResultDescriptor;
-import org.opennms.newts.api.query.StandardAggregationFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -108,12 +103,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeseriesFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = SystemProperties.getLong("org.opennms.timeseries.query.minimum_step", 5L * 60L * 1000L);
-
-    public static final int INTERVAL_DIVIDER = SystemProperties.getInteger("org.opennms.timeseries.query.interval_divider", 2);
-
-    public static final long DEFAULT_HEARTBEAT_MS = SystemProperties.getLong("org.opennms.timeseries.query.heartbeat", 450L * 1000L);
-
     public static final int PARALLELISM = SystemProperties.getInteger("org.opennms.timeseries.query.parallelism", Runtime.getRuntime().availableProcessors());
 
     private ResourceDao resourceDao;
@@ -135,7 +124,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
         try (Timer.Context context = this.sampleReadIntegrationTimer.time()) {
-            final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
+            final LateAggregationParams lag = LateAggregationParams.builder().step(step).interval(interval).heartbeat(heartbeat).build();
             final Instant startTs = Instant.ofEpochMilli(start);
             final Instant endTs = Instant.ofEpochMilli(end);
             final Map<String, Object> constants = Maps.newHashMap();
@@ -296,14 +285,13 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     // aggregate if timeseries implementation didn't do it natively
                     if (!shouldAggregateNatively) {
                         final List<Source> currentSources = Collections.singletonList(source);
-                        final ResultDescriptor resultDescriptor = createResultDescriptor(currentSources, lag);
                         samples = NewtsLikeSampleAggregator.builder()
-                                .resource(new Resource(resourceId))
+                                .resource(resourceId)
                                 .start(start)
                                 .end(end)
-                                .resolution(org.opennms.newts.api.Duration.millis(lag.getStep()))
-                                .resultDescriptor(resultDescriptor)
                                 .metric(metric)
+                                .currentSources(currentSources)
+                                .lag(lag)
                                 .build().process(samplesToNewtsRowIterator(samples, currentSources));
                     }
                     allSamples.put(source, samples);
@@ -313,20 +301,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         };
     }
 
-    private ResultDescriptor createResultDescriptor(final List<Source> listOfSources, final LateAggregationParams lag) {
-        ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
-        for (Source source : listOfSources) {
-            // Use the datasource as the metric name if set, otherwise use the name of the attribute
-            final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
-            final String name = source.getLabel();
-            final AggregationFunction fn = toAggregationFunction(source.getAggregation());
-
-            resultDescriptor.datasource(name, metricName, lag.getHeartbeat(), fn);
-            resultDescriptor.export(name);
-        }
-        return resultDescriptor;
-    }
-
     private static Aggregation toAggregation(String fn) {
         if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
             return Aggregation.AVERAGE;
@@ -334,19 +308,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             return Aggregation.MAX;
         } else if ("min".equalsIgnoreCase(fn)) {
             return Aggregation.MIN;
-        } else {
-            throw new IllegalArgumentException("Unsupported aggregation function: " + fn);
-        }
-    }
-
-    // Newts
-    private static AggregationFunction toAggregationFunction(String fn) {
-        if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
-            return StandardAggregationFunctions.AVERAGE;
-        } else if ("max".equalsIgnoreCase(fn)) {
-            return StandardAggregationFunctions.MAX;
-        } else if ("min".equalsIgnoreCase(fn)) {
-            return StandardAggregationFunctions.MIN;
         } else {
             throw new IllegalArgumentException("Unsupported aggregation function: " + fn);
         }
@@ -365,90 +326,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                 return resource;
             }
         };
-    }
-
-    @VisibleForTesting
-    protected static class LateAggregationParams {
-        final long step;
-        final long interval;
-        final long heartbeat;
-
-        public LateAggregationParams(long step, long interval, long heartbeat) {
-            this.step = step;
-            this.interval = interval;
-            this.heartbeat = heartbeat;
-        }
-
-        public long getStep() {
-            return step;
-        }
-
-        public long getInterval() {
-            return interval;
-        }
-
-        public long getHeartbeat() {
-            return heartbeat;
-        }
-    }
-
-    /**
-     * Calculates the parameters to use for late aggregation.
-     *
-     * Since we're in the process of transitioning from an RRD-world, most queries won't
-     * contain a specified interval or heartbeat. For this reason, we need to derive sensible
-     * values that will allow users to visualize the data on the graphs without too many NaNs.
-     *
-     * The given step size will be variable based on the time range and the pixel width of the
-     * graph, so we need to derive the interval and heartbeat accordingly.
-     *
-     * Let S = step, I = interval and H = heartbeat, the constraints are as follows:
-     *    0 < S
-     *    0 < I
-     *    0 < H
-     *    S = aI      for some integer a >= 2
-     *    H = bI      for some integer b >= 2
-     *
-     * While achieving these constraints, we also want to optimize for:
-     *    min(|S - S*|)
-     * where S* is the user supplied step and S is the effective step.
-     *
-     */
-    @VisibleForTesting
-    protected static LateAggregationParams getLagParams(long step, Long interval, Long heartbeat) {
-
-        // Limit the step with a lower bound in order to prevent extremely large queries
-        long effectiveStep = Math.max(MIN_STEP_MS, step);
-        if (effectiveStep != step) {
-            LOG.warn("Requested step size {} is too small. Using {}.", step, effectiveStep);
-        }
-
-        // If the interval is specified, and already a multiple of the step then use it as is
-        long effectiveInterval = 0;
-        if (interval != null && interval < effectiveStep && (effectiveStep % interval) == 0) {
-            effectiveInterval = interval;
-        } else {
-            // Otherwise, make sure the step is evenly divisible by the INTERVAL_DIVIDER
-            if (effectiveStep % INTERVAL_DIVIDER != 0) {
-                effectiveStep += effectiveStep % INTERVAL_DIVIDER;
-            }
-            effectiveInterval = effectiveStep / INTERVAL_DIVIDER;
-        }
-
-        // Use the given heartbeat if specified, fall back to the default
-        long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
-        if (effectiveInterval < effectiveHeartbeat) {
-            if (effectiveHeartbeat % effectiveInterval != 0) {
-                effectiveHeartbeat += effectiveInterval - (effectiveHeartbeat % effectiveInterval);
-            } else {
-                // Existing heartbeat is valid
-            }
-        } else {
-            effectiveHeartbeat = effectiveInterval + 1;
-            effectiveHeartbeat += effectiveHeartbeat % effectiveInterval;
-        }
-
-        return new LateAggregationParams(effectiveStep, effectiveInterval, effectiveHeartbeat);
     }
 
     @Inject

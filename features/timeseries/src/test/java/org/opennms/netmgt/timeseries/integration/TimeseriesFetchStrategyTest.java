@@ -69,7 +69,6 @@ import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.integration.TimeseriesFetchStrategy.LateAggregationParams;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
@@ -195,36 +194,6 @@ public class TimeseriesFetchStrategyTest {
         FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
-    }
-
-    @Test
-    public void canLimitStepSize() {
-        replay();
-        // Request a step size smaller than the lower bound
-        LateAggregationParams lag = TimeseriesFetchStrategy.getLagParams(TimeseriesFetchStrategy.MIN_STEP_MS - 1,
-                null, null);
-        assertEquals(TimeseriesFetchStrategy.MIN_STEP_MS, lag.step);
-    }
-
-    @Test
-    public void canCalculateLagParams() {
-        replay();
-
-        // Supply sane values and make sure the same values are returned
-        LateAggregationParams lag = TimeseriesFetchStrategy.getLagParams(300*1000L, 150*1000L, 450*1000L);
-        assertEquals(300*1000L, lag.step);
-        assertEquals(150*1000L, lag.interval);
-
-        // Supply a step that is not a multiple of the interval, make sure this is corrected
-        lag = TimeseriesFetchStrategy.getLagParams(310*1000L, 150*1000L, 450*1000L);
-        assertEquals(310000L, lag.step);
-        assertEquals(155000L, lag.interval);
-
-        // Supply an interval that is much larger than the step
-        lag = TimeseriesFetchStrategy.getLagParams(300*1000L, 1500*1000L, 45000*1000L);
-        assertEquals(300*1000L, lag.step);
-        // Interval should be reduced
-        assertEquals(150*1000L, lag.interval);
     }
 
     @Test
