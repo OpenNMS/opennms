@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -40,12 +41,19 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,9 +66,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("monitoringLocations")
 @Transactional
 public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,OnmsMonitoringLocation,String,String> {
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestService.class);
 
     @Autowired
     private MonitoringLocationDao m_dao;
+
+    @Autowired
+    @Qualifier("eventProxy")
+    private EventProxy m_eventProxy;
 
     @Override
     protected MonitoringLocationDao getDao() {
@@ -103,22 +116,76 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     }
 
     @Override
-    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation object) {
-        final String id = getDao().save(object);
+    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation location) {
+        boolean reloadRemotePollerd = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
+
+        final String id = getDao().save(location);
+
+        if (reloadRemotePollerd) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG");
+            try {
+                m_eventProxy.send(eventBuilder.getEvent());
+            } catch (final EventProxyException e) {
+                LOG.warn("Failed to send Event on creation of location " + e.getMessage(), e);
+            }
+        }
+
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
+    }
+
+    private boolean comparePollingPackageNames(final OnmsMonitoringLocation aLocation, final OnmsMonitoringLocation bLocation) {
+        if (aLocation != null && bLocation != null) {
+            final List<String> aPkgs = aLocation.getPollingPackageNames();
+            final List<String> bPkgs = bLocation.getPollingPackageNames();
+            if (aPkgs != null && bPkgs != null) {
+                return aPkgs.containsAll(bPkgs) && bPkgs.containsAll(aPkgs);
+            } else {
+                return (aPkgs == null && bPkgs == null);
+            }
+        }
+        return (aLocation == null && bLocation == null);
     }
 
     @Override
     protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, final OnmsMonitoringLocation targetObject) {
+        boolean reloadRemotePollerd = !comparePollingPackageNames(m_dao.get(key), targetObject);
+
         if (!key.equals(targetObject.getLocationName())) {
             throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getLocationName(), key);
         }
+
+        m_dao.clear();
+
         getDao().saveOrUpdate(targetObject);
+
+        if (reloadRemotePollerd) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG");
+            try {
+                m_eventProxy.send(eventBuilder.getEvent());
+            } catch (final EventProxyException e) {
+                LOG.warn("Failed to send Event on polling package modification " + e.getMessage(), e);
+            }
+        }
+
         return Response.noContent().build();
     }
 
     @Override
-    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation object) {
-        getDao().delete(object);
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation location) {
+        boolean reloadRemotePollerd = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
+
+        getDao().delete(location);
+
+        if (reloadRemotePollerd) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG");
+            try {
+                m_eventProxy.send(eventBuilder.getEvent());
+            } catch (final EventProxyException e) {
+                LOG.warn("Failed to send Event on deletion of location " + e.getMessage(), e);
+            }
+        }
     }
 }

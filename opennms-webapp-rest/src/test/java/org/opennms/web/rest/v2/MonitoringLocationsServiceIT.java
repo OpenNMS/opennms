@@ -30,18 +30,28 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collections;
 
+import javax.ws.rs.core.MediaType;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 /**
  * TODO
@@ -65,7 +75,10 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsServiceIT.class);
-    
+
+    @Autowired
+    private MockEventIpcManager eventIpcManager;
+
     public MonitoringLocationsServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
@@ -101,4 +114,65 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
         sendRequest(DELETE, "/monitoringLocations/Test", 204);
     }
 
+    @Test
+    @Transactional
+    public void testReloadOnUpdate() throws Exception {
+        this.eventIpcManager.getEventAnticipator().reset();
+
+        final OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        location.setLocationName("location1");
+        location.setMonitoringArea("monitoringarea1");
+        location.setPriority(100L);
+
+        // create a location
+        sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location), 201);
+
+        // modify monitoring area
+        location.setMonitoringArea("monitoringarea1-modified");
+        sendData(PUT, MediaType.APPLICATION_XML,"/monitoringLocations/location1", JaxbUtils.marshal(location), 204);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        // add polling package
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        location.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
+        sendData(PUT, MediaType.APPLICATION_XML,"/monitoringLocations/location1", JaxbUtils.marshal(location), 204);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        sendRequest(DELETE, "/monitoringLocations/location1", 204);
+    }
+
+    @Test
+    @Transactional
+    public void testReloadOnCreationAndDeletion() throws Exception {
+        this.eventIpcManager.getEventAnticipator().reset();
+
+        final OnmsMonitoringLocation location1 = new OnmsMonitoringLocation();
+        location1.setLocationName("location1");
+        location1.setMonitoringArea("monitoringarea1");
+        location1.setPriority(100L);
+
+        // create location without associated polling packages
+        sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location1), 201);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        final OnmsMonitoringLocation location2 = new OnmsMonitoringLocation();
+        location2.setLocationName("location2");
+        location2.setMonitoringArea("monitoringarea2");
+        location2.setPriority(100L);
+        location2.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
+
+        // create location with associated polling packages
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location2), 201);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        // delete the one without polling packages
+        sendRequest(DELETE, "/monitoringLocations/location1", 204);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+
+        // delete the one with polling packages
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        sendRequest(DELETE, "/monitoringLocations/location2", 204);
+        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+    }
 }
