@@ -32,6 +32,7 @@ package org.opennms.netmgt.timeseries.integration.aggregation;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.opennms.netmgt.timeseries.integration.aggregation.NewtsConverterUtils.toTimeseriesSample;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -98,13 +99,13 @@ public class NewtsLikeSampleAggregator {
             return this;
         }
 
-        public NewtsLikeSampleAggregatorBuilder start(Timestamp start) {
-            this.start = start;
+        public NewtsLikeSampleAggregatorBuilder start(Instant start) {
+            this.start = Timestamp.fromEpochMillis(start.toEpochMilli());
             return this;
         }
 
-        public NewtsLikeSampleAggregatorBuilder end(Timestamp end) {
-            this.end = end;
+        public NewtsLikeSampleAggregatorBuilder end(Instant end) {
+            this.end = Timestamp.fromEpochMillis(end.toEpochMilli());
             return this;
         }
 

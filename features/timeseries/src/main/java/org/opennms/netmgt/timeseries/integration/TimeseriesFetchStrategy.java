@@ -74,9 +74,6 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.integration.aggregation.NewtsLikeSampleAggregator;
 import org.opennms.newts.api.Resource;
-import org.opennms.newts.api.SampleRepository;
-import org.opennms.newts.api.SampleSelectCallback;
-import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.AggregationFunction;
 import org.opennms.newts.api.query.ResultDescriptor;
 import org.opennms.newts.api.query.StandardAggregationFunctions;
@@ -87,7 +84,6 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -95,10 +91,10 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
- * Used to retrieve measurements from {@link org.opennms.newts.api.SampleRepository}.
+ * Used to retrieve measurements from {@link org.opennms.integration.api.v1.timeseries.TimeSeriesStorage }.
  *
  * If a request to {@link #fetch} spans multiple resources, separate calls to
- * the {@link SampleRepository} will be performed in parallel.
+ * the {@link org.opennms.integration.api.v1.timeseries.TimeSeriesStorage} will be performed in parallel.
  *
  * Reading the samples and computing the aggregated values can be very CPU intensive.
  * The "parallelism" attribute is used to set an upper limit on how may concurrent threads
@@ -140,8 +136,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
         try (Timer.Context context = this.sampleReadIntegrationTimer.time()) {
             final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
-            final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
-            final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
+            final Instant startTs = Instant.ofEpochMilli(start);
+            final Instant endTs = Instant.ofEpochMilli(end);
             final Map<String, Object> constants = Maps.newHashMap();
             final List<QueryResource> resources = new ArrayList<>();
 
@@ -185,12 +181,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         newtsResourceId = newtsResourceId.substring(File.separator.length(), newtsResourceId.length());
                     }
 
-                    List<Source> listOfSources = sourcesByNewtsResourceId.get(newtsResourceId);
+                    List<Source> listOfSources = sourcesByNewtsResourceId.computeIfAbsent(newtsResourceId, k -> Lists.newLinkedList());
                     // Create the list if it doesn't exist
-                    if (listOfSources == null) {
-                        listOfSources = Lists.newLinkedList();
-                        sourcesByNewtsResourceId.put(newtsResourceId, listOfSources);
-                    }
                     listOfSources.add(source);
                 }
             }
@@ -268,7 +260,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         return sourcesByResource;
     }
 
-    private Callable<Map<Source, List<Sample>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
+    private Callable<Map<Source, List<Sample>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Instant start, final Instant end, final LateAggregationParams lag) {
         return new Callable<Map<Source, List<Sample>>>() {
             @Override
             public Map<Source, List<Sample>> call() throws Exception {
@@ -287,14 +279,11 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                             .intrinsicTag(IntrinsicTagNames.name, metricName)
                             .build();
 
-                    Instant startInstant = Instant.ofEpochMilli(start.or(Timestamp.fromEpochMillis(0)).asMillis());
-                    Instant endInstant = Instant.ofEpochMilli(end.or(Timestamp.now()).asMillis());
-
                     Aggregation aggregationToUse = shouldAggregateNatively ? aggregation : Aggregation.NONE;
                     TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                             .metric(metric)
-                            .start(startInstant)
-                            .end(endInstant)
+                            .start(start)
+                            .end(end)
                             .step(Duration.ofMillis(lag.getStep()))
                             .aggregation(aggregationToUse)
                             .build();
@@ -310,8 +299,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         final ResultDescriptor resultDescriptor = createResultDescriptor(currentSources, lag);
                         samples = NewtsLikeSampleAggregator.builder()
                                 .resource(new Resource(resourceId))
-                                .start(start.or(Timestamp.fromEpochMillis(0)))
-                                .end(end.or(Timestamp.now()))
+                                .start(start)
+                                .end(end)
                                 .resolution(org.opennms.newts.api.Duration.millis(lag.getStep()))
                                 .resultDescriptor(resultDescriptor)
                                 .metric(metric)
@@ -377,23 +366,6 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             }
         };
     }
-
-    private final SampleSelectCallback limitConcurrentAggregationsCallback = new SampleSelectCallback() {
-
-        @Override
-        public void beforeProcess() {
-            try {
-                availableAggregationThreads.acquire();
-            } catch (InterruptedException e) {
-                throw Throwables.propagate(e);
-            }
-        }
-
-        @Override
-        public void afterProcess() {
-            availableAggregationThreads.release();
-        }
-    };
 
     @VisibleForTesting
     protected static class LateAggregationParams {
