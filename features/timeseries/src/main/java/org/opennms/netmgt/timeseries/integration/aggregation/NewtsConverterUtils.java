@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.integration;
+package org.opennms.netmgt.timeseries.integration.aggregation;
 
 import static org.opennms.netmgt.timeseries.integration.Utils.asMap;
 

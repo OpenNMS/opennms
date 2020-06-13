@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.timeseries.integration;
 
-import static org.opennms.netmgt.timeseries.integration.NewtsConverterUtils.samplesToNewtsRowIterator;
+import static org.opennms.netmgt.timeseries.integration.aggregation.NewtsConverterUtils.samplesToNewtsRowIterator;
 
 import java.io.File;
 import java.time.Duration;

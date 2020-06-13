@@ -103,11 +103,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     public void persistStringAttribute(ResourcePath path, String key, String value) {
-        Map<String, String> stringAttributesForPath = stringAttributesByPath.get(path);
-        if (stringAttributesForPath == null) {
-            stringAttributesForPath = Maps.newLinkedHashMap();
-            stringAttributesByPath.put(path, stringAttributesForPath);
-        }
+        Map<String, String> stringAttributesForPath = stringAttributesByPath.computeIfAbsent(path, k -> Maps.newLinkedHashMap());
         stringAttributesForPath.put(key, value);
     }
 
@@ -195,15 +191,6 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             mtype = ImmutableMetric.Mtype.gauge;
         }
         return new ImmutableTag(IntrinsicTagNames.mtype, mtype.name());
-    }
-
-    /**
-     * <p>getTimeKeeper</p>
-     *
-     * @return a {@link org.opennms.netmgt.collection.api.TimeKeeper} object.
-     */
-    public TimeKeeper getTimeKeeper() {
-        return timeKeeper;
     }
 
     /**

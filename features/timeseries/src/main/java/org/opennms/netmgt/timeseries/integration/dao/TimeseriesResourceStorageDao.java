@@ -198,7 +198,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public void setStringAttribute(ResourcePath path, String key, String value) {
-        // Create a mock sample referencing the resource. This is a bit of a miss use os the Sample class but it allows
+        // Create a mock sample referencing the resource. This is a bit of a miss use of the Sample class but it allows
         // us to use the ring buffer
         Map<String, String> attributes = new ImmutableMap.Builder<String, String>()
                 .put(key, value)

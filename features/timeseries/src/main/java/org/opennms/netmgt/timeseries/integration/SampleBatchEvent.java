@@ -33,7 +33,7 @@ import java.util.List;
 import org.opennms.integration.api.v1.timeseries.Sample;
 
 /**
- * Wrapper class for a {@list java.util.List} of {@link org.opennms.newts.api.Sample} objects.
+ * Wrapper class for a {@link java.util.List} of {@link Sample} objects.
  *
  * Instances of this class are preallocated by the {@link com.lmax.disruptor.dsl.Disruptor}.
  *

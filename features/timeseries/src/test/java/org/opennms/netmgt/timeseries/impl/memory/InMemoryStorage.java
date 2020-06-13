@@ -48,7 +48,7 @@ import com.google.common.cache.CacheBuilder;
 
 /**
  * Simulates a timeseries storage in memory (Guava cache). The implementation is super simple and not very efficient.
- * For testing and evaluating purposes only, not for production.
+ * Used just for testing.
  */
 public class InMemoryStorage implements TimeSeriesStorage {
 

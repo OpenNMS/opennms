@@ -30,7 +30,7 @@
 package org.opennms.netmgt.timeseries.integration.aggregation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.opennms.netmgt.timeseries.integration.NewtsConverterUtils.toTimeseriesSample;
+import static org.opennms.netmgt.timeseries.integration.aggregation.NewtsConverterUtils.toTimeseriesSample;
 
 import java.util.ArrayList;
 import java.util.Iterator;

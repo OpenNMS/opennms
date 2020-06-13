@@ -69,7 +69,7 @@ import com.lmax.disruptor.WorkerPool;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
- * Used to write samples to the {@link org.opennms.newts.api.SampleRepository}.
+ * Used to write samples to the {@link org.opennms.integration.api.v1.timeseries.TimeSeriesStorage}.
  *
  * Calls to  publish the samples to a ring buffer so
  * that they don't block while the data is being persisted.
@@ -170,7 +170,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         if (workerPool != null) {
             workerPool.drainAndHalt();
         }
