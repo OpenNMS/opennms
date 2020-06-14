@@ -528,16 +528,6 @@ workflows:
                 - master
                 - develop
                 - /^release-.*/
-      - minion-publish-oci:
-          context: << parameters.context_name >>
-          requires:
-            - minion-rpm-build
-          filters:
-            branches:
-              only:
-                - master
-                - develop
-                - /^release-.*/
       - sentinel-publish-oci:
           context: << parameters.context_name >>
           requires:
