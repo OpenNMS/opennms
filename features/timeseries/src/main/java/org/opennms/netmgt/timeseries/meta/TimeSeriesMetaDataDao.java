@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.timeseries.meta;
 
-import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

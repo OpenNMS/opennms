@@ -49,23 +49,23 @@
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
-  <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher" />
+  <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
 
-  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
+  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
-  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager"/>
+  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManager"/>
 
-  <bean id="timeseriesStorageImpl" class="org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage" />
+  <bean id="timeseriesStorageImpl" class="org.opennms.netmgt.timeseries.memory.InMemoryStorage" />
   <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
 
   <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl"/>
   <onmsgi:service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider" />
 
-  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader" />
+  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
 
-  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 

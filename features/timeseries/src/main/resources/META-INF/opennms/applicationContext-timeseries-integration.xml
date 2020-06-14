@@ -60,25 +60,25 @@
 
   <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
-  <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesSearcher" />
+  <bean id="timeseriesSearcher" class="org.opennms.netmgt.timeseries.resource.TimeseriesSearcher" />
 
-  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.integration.TimeseriesWriter" />
+  <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
 
-  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager" />
+  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManager" />
   <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">
     <onmsgi:listener ref="timeseriesStorageManager" bind-method="onBind" unbind-method="onUnbind"/>
   </onmsgi:list>
 
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
   <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProvider"/>
 
-  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader" />
+  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader" />
 
-  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
+  <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 

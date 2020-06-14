@@ -32,7 +32,7 @@ package org.opennms.netmgt.timeseries.meta;
 import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
 import java.sql.SQLException;
 import java.util.Arrays;
