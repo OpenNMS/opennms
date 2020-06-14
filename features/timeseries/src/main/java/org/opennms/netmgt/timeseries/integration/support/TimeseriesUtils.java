@@ -48,9 +48,8 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
  *
  * @author jwhite
  */
-public abstract class TimeseriesUtils {
+public final class TimeseriesUtils {
 
-    public static final boolean DISABLE_INDEXING = Boolean.getBoolean("org.opennms.timeseries.disable.indexing");
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
     public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "*";

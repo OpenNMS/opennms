@@ -55,6 +55,8 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
 
+/** Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
+ * OpenNMS but can be used to enrich the data in the timeseries database to be used externally. */
 public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<String, String>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetaTagDataLoader.class);
