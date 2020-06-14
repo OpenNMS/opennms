@@ -21,6 +21,10 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
+    context_name:
+      description: the context to use for sensitive settings like GPG keys
+      type: string
+      default: "OpenNMS Build"
     previous_branch:
       description: the previous branch, if any
       type: string
@@ -436,6 +440,7 @@ commands:
 
 workflows:
   weekly-coverage:
+    <<: *defaults
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -446,38 +451,38 @@ workflows:
                 - develop
     jobs:
       - build:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
       - integration-test-with-coverage:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - build
       - code-coverage:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - integration-test-with-coverage
   build-deploy:
     <<: *defaults
     jobs:
       - build:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           filters:
             branches:
               ignore:
                 - /^from-foundation.*/
       - horizon-rpm-build:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - build
       - minion-rpm-build:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - build
       - integration-test:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - build
       - smoke-test-full:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -491,7 +496,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -505,7 +510,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
           filters:
@@ -514,7 +519,7 @@ workflows:
                 - master
                 - develop
       - minion-publish-oci:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - minion-rpm-build
           filters:
@@ -525,7 +530,7 @@ workflows:
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
@@ -539,7 +544,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - create-merge-foundation-branch:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -551,7 +556,7 @@ workflows:
             branches:
               only: << parameters.main_branch >>
       - merge-foundation-branch:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -563,7 +568,7 @@ workflows:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - create-merge-meridian-branch:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -575,7 +580,7 @@ workflows:
             branches:
               only: /^foundation.*/
       - merge-poweredby-branch:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -588,7 +593,7 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
-          context: "OpenNMS Build"
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
