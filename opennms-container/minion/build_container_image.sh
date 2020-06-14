@@ -6,14 +6,17 @@ set -o errexit
 # Use the error status of the first failure, rather than that of the last item in a pipeline.
 set -o pipefail
 
+[ -n "${YUM_CONTAINER_NAME}" ] || YUM_CONTAINER_NAME="yum-repo"
+[ -n "${BUILD_NETWORK}"  ] || BUILD_NETWORK="opennms-build-network"
+
+MYDIR="$(dirname "$0")"
+cd "$MYDIR"
+
 # shellcheck source=registry-config.sh
 source ../registry-config.sh
 
 # shellcheck source=opennms-container/version-n-tags.sh
 source ../version-tags.sh
-
-# OpenNMS Minion packages
-MINION_PACKAGES="opennms-minion"
 
 MINION_TARBALL="$(find ../.. -name \*-minion.tar.gz -type f | grep opennms-assemblies | head -n 1)"
 if [ -z "${MINION_TARBALL}" ]; then
@@ -34,3 +37,6 @@ docker build -t minion \
   .
 
 docker image save minion -o images/container.oci
+
+rm -f rpms/*.repo
+../stop_yum_server.sh
