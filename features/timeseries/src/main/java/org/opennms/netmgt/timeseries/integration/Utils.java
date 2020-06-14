@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.timeseries.integration;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.netmgt.measurements.api.FetchResults;
 
 public class Utils {
 
@@ -42,5 +45,20 @@ public class Utils {
             map.put(tag.getKey(), tag.getValue());
         }
         return map;
+    }
+
+    // TODO: Patrick: remove later
+    public static boolean equals(final FetchResults results1, final FetchResults results2) {
+        if (results1 == results2) return true;
+        if (results2 == null || results1.getClass() != results2.getClass()) return false;
+        FetchResults that = results2;
+        return Objects.equals(results1.getMetadata(), that.getMetadata()) &&
+                Objects.equals(results1.getConstants(), that.getConstants()) &&
+                Objects.equals(results1.getStep(), that.getStep()) &&
+                Arrays.equals(results1.getTimestamps(), results2.getTimestamps()) &&
+                results1.getColumns().size() == results2.getColumns().size() &&
+                results1.getColumns().entrySet().stream()
+                        .map(e -> Arrays.equals(e.getValue(), that.getColumns().get(e.getKey())))
+                        .reduce(Boolean.TRUE, Boolean::logicalAnd);
     }
 }
