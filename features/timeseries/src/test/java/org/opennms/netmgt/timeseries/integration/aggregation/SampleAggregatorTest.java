@@ -44,7 +44,6 @@ import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 
 public class SampleAggregatorTest {
 
@@ -125,7 +124,7 @@ public class SampleAggregatorTest {
     @Test
     public void shouldRejectWrongMetric() {
         ImmutableMetric wrongMetric = ImmutableMetric.builder()
-                .intrinsicTag(CommonTagNames.resourceId, "otherResource").build();
+                .intrinsicTag(IntrinsicTagNames.resourceId, "otherResource").build();
 
         sample(10, 10);
         samples.add(ImmutableSample.builder().metric(wrongMetric).time(Instant.ofEpochMilli(11)).value(11d).build());

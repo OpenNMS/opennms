@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
@@ -194,7 +195,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
                             // We wrap this in a toString() method to avoid build the string
                             // unless the log message is actually printed
                             return samples.stream()
-                                    .map(s -> s.getMetric().getFirstTagByKey(CommonTagNames.resourceId).getValue())
+                                    .map(s -> s.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue())
                                     .distinct()
                                     .collect(Collectors.joining(", "));
                         }
@@ -232,7 +233,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         Set<MetaData> metaData = new HashSet<>();
         for(Sample sample : event.getSamples()) {
             Metric metric = sample.getMetric();
-            String resourceId = metric.getFirstTagByKey(CommonTagNames.resourceId).getValue();
+            String resourceId = metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue();
             metric.getMetaTags().forEach(tag -> metaData.add(new MetaData(resourceId, tag.getKey(), tag.getValue())));
         }
         this.timeSeriesMetaDataDao.store(metaData);

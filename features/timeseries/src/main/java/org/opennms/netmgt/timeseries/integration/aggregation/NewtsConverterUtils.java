@@ -72,7 +72,7 @@ public class NewtsConverterUtils {
 
         final Timestamp timestamp = Timestamp.fromEpochMillis(sample.getTime().toEpochMilli());;
         final Context context = new Context("not relevant");
-        final Resource resource = new Resource(sample.getMetric().getFirstTagByKey("resourceId").getValue(), resourceAttributes);;
+        final Resource resource = new Resource(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.resourceId).getValue(), resourceAttributes);;
         final String name = sample.getMetric().getFirstTagByKey(IntrinsicTagNames.name).getValue();
         final MetricType type = toNewts(Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.mtype).getValue()));
         final ValueType<?> value = toNewtsValue(sample);
