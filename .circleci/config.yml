@@ -546,6 +546,7 @@ workflows:
 #                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #      - minion-deb-build:
+#          context: << parameters.context_name >>
 #          requires:
 #            - integration-test
 #          filters:
@@ -597,6 +598,7 @@ workflows:
 #            branches:
 #              only: /^foundation.*/
 #      - merge-meridian-branch:
+#          context: << parameters.context_name >>
 #          filters:
 #            branches:
 #              only: /^from-foundation.*/
