@@ -21,6 +21,10 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
+    context_name:
+      description: the context to use for sensitive settings like GPG keys
+      type: string
+      default: "OpenNMS Build"
     previous_branch:
       description: the previous branch, if any
       type: string
@@ -216,12 +220,12 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/system-logs
-            dmesg || : > ~/test-results/system-logs/dmesg 2>&1
-            ps auxf || : > ~/test-results/system-logs/ps 2>&1
-            free -m || : > ~/test-results/system-logs/free 2>&1
-            docker stats --no-stream || : > ~/test-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/
-            ls -alh ~/project/smoke-test/
+            (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
+            (free -m || :) > ~/test-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
+            ls -alh ~/project/smoke-test/ || :
       - run:
           name: Gather test artifacts
           when: always
@@ -443,6 +447,7 @@ commands:
 
 workflows:
   weekly-coverage:
+    <<: *defaults
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -452,34 +457,43 @@ workflows:
               only:
                 - develop
     jobs:
-      - build
+      - build:
+          context: << parameters.context_name >>
       - integration-test-with-coverage:
+          context: << parameters.context_name >>
           requires:
             - build
       - code-coverage:
+          context: << parameters.context_name >>
           requires:
             - integration-test-with-coverage
   build-deploy:
     <<: *defaults
     jobs:
       - build:
+          context: << parameters.context_name >>
           filters:
             branches:
               ignore:
                 - /^from-foundation.*/
       - horizon-rpm-build:
+          context: << parameters.context_name >>
           requires:
             - build
       - minion-rpm-build:
+          context: << parameters.context_name >>
           requires:
             - build
       - sentinel-rpm-build:
+          context: << parameters.context_name >>
           requires:
             - build
       - integration-test:
+          context: << parameters.context_name >>
           requires:
             - build
       - smoke-test-full:
+          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -494,6 +508,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
+          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -508,6 +523,7 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
+          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
           filters:
@@ -516,6 +532,7 @@ workflows:
                 - master
                 - develop
       - minion-publish-oci:
+          context: << parameters.context_name >>
           requires:
             - minion-rpm-build
           filters:
@@ -524,6 +541,7 @@ workflows:
                 - master
                 - develop
       - sentinel-publish-oci:
+          context: << parameters.context_name >>
           requires:
             - sentinel-rpm-build
           filters:
@@ -534,6 +552,7 @@ workflows:
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
+          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
@@ -547,6 +566,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
+          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
@@ -560,6 +580,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
+          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
@@ -573,6 +594,7 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - create-merge-foundation-branch:
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -586,6 +608,7 @@ workflows:
             branches:
               only: << parameters.main_branch >>
       - merge-foundation-branch:
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -599,6 +622,7 @@ workflows:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - create-merge-meridian-branch:
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -614,6 +638,7 @@ workflows:
             branches:
               only: /^from-foundation.*/
       - merge-poweredby-branch:
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -626,6 +651,7 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
+          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -783,7 +809,7 @@ jobs:
           path: opennms-container/sentinel/images/
   horizon-deb-build:
     executor: debian-build-executor
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: ~/
@@ -792,11 +818,6 @@ jobs:
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
-      - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
       - run:
           name: Monitor memory usage
           background: true
@@ -818,11 +839,11 @@ jobs:
           when: always
           command: |
             mkdir -p ~/build-results/system-logs
-            dmesg || : > ~/build-results/system-logs/dmesg 2>&1
-            ps auxf || : > ~/build-results/system-logs/ps 2>&1
-            free -m || : > ~/build-results/system-logs/free 2>&1
-            docker stats --no-stream || : > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_artifacts:
           when: always
           path: ~/build-results

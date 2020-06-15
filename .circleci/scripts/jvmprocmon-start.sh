@@ -18,7 +18,7 @@ dump () {
 
 dump_all() {
   echo "$(date): Enumerating & collecting JVM details..."
-  for PID in $(sudo pgrep --ns 1 java)
+  for PID in $(sudo pgrep --ns 1 java 2>/dev/null || pgrep --ns 1 java)
   do
     dump "$PID"
   done
