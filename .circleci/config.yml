@@ -476,6 +476,7 @@ workflows:
           requires:
             - build
       - minion-rpm-build:
+          context: << parameters.context_name >>
           requires:
             - build
       - integration-test:
@@ -520,6 +521,7 @@ workflows:
 #                - master
 #                - develop
 #      - minion-publish-oci:
+#          context: << parameters.context_name >>
 #          requires:
 #            - minion-rpm-build
 #          filters:
