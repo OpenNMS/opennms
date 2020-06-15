@@ -461,7 +461,7 @@ workflows:
 #            - integration-test-with-coverage
 
   build-deploy:
-#    <<: *defaults
+    <<: *defaults
     jobs:
       - build:
           context: << parameters.context_name >>
