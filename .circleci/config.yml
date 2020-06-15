@@ -378,7 +378,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-{{ .Environment.CIRCLE_SHA1 }}
+          key: << parameters.cache_prefix >>-{{ .Environment.CIRCLE_WORKFLOW_ID }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -393,7 +393,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-{{ .Environment.CIRCLE_SHA1 }}
+            - << parameters.cache_prefix >>-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - when:
           condition: << parameters.target_path >>
           steps:
