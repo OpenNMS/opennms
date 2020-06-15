@@ -417,7 +417,7 @@
                 <feature version="8.1.14.v20131031">jetty</feature>
                 <feature version="9.3.9.v20160517">jetty</feature>
                 <!--TODO: Needed?-->
-                <feature version="9.4.24.v20191120">jetty</feature>
+                <feature version="9.4.29.v20200521">jetty</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
