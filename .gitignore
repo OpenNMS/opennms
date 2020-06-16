@@ -35,7 +35,8 @@ yarn-error.log
 # Ignore Visual Studio Code
 .factorypath
 
-# Ignore Docker OCI temporary files
+# Ignore Docker/OCI temporary files
+.docker_temp*
 *.oci
 opennms-container/*/rpms/*.repo
 opennms-container/*/rpms/*.rpm
