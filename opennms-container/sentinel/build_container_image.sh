@@ -16,7 +16,7 @@ cd "$MYDIR"
 source ../registry-config.sh
 
 # shellcheck source=opennms-container/version-n-tags.sh
-source ../version-tags.sh
+source ../set-build-environment.sh
 
 RPMDIR="$(cd ../../target/rpm/RPMS/noarch; pwd -P)"
 ../launch_yum_server.sh "$RPMDIR"
