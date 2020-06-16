@@ -12,10 +12,10 @@ set -o pipefail
 MYDIR="$(dirname "$0")"
 cd "$MYDIR"
 
-# shellcheck source=registry-config.sh
+# shellcheck disable=SC1091
 source ../registry-config.sh
 
-# shellcheck source=opennms-container/version-n-tags.sh
+# shellcheck disable=SC1091
 source ../version-tags.sh
 
 RPMDIR="$(cd ../../target/rpm/RPMS/noarch; pwd -P)"

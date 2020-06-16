@@ -6,10 +6,10 @@ set -o errexit
 # Use the error status of the first failure, rather than that of the last item in a pipeline.
 set -o pipefail
 
-# shellcheck source=opennms-container/registry-config.sh
+# shellcheck disable=SC1091
 source ../registry-config.sh
 
-# shellcheck source=opennms-container/version-n-tags.sh
+# shellcheck disable=SC1091
 source ../version-tags.sh
 
 for TAG in ${OCI_TAGS[*]}; do
