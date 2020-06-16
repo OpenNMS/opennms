@@ -7,10 +7,7 @@ set -o errexit
 set -o pipefail
 
 # shellcheck disable=SC1091
-source ../registry-config.sh
-
-# shellcheck disable=SC1091
-source ../version-tags.sh
+source ../set-build-environment.sh
 
 for TAG in ${OCI_TAGS[*]}; do
   docker tag horizon "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/horizon:${TAG}"
