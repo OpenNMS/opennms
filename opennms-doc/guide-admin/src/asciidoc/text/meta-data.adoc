@@ -22,11 +22,13 @@ image:metadata/metadata-view.png[]
 === Contexts
 
 A context distinguishes different kinds of metadata use. 
-{opennms-product-name} uses several default contexts: pattern, requisition, network, node, interface, and service. 
+{opennms-product-name} uses several default contexts: pattern (used with polling), requisition, node, interface, and service. 
 
 Three special contexts provide details about nodes, interfaces and services objects.
 Each context has keys associated with it that you can use in a metadata expression. 
-You can create additional contexts in the ReST API by prefixing the context name with `X-`. 
+
+You can create user-defined contexts in the ReST API by prefixing the context name with `X-`. 
+Using an `X-` prefix can help to avoid future {opennms-product-name} contexts interfering with a user-defined context, since {opennms-product-name} contexts are not prefixed in this way.  
 
 ==== Node context
 
@@ -81,7 +83,7 @@ The following key is available under this context:
 [[ga-metadata-webui]]
 === Adding Metadata through the Web UI
 
-You can add metadata for the requisition context in the requisition editor in the web UI:
+You can edit the requisition context in the web UI:
 
 . Under the admin menu, select *Configure OpenNMS*.
 . Select *Manage Provisioning Requisitions*.
