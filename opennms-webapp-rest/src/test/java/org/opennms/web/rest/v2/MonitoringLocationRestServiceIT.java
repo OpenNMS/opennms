@@ -73,13 +73,13 @@ import com.google.common.collect.Lists;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsServiceIT.class);
+public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestServiceIT.class);
 
     @Autowired
     private MockEventIpcManager eventIpcManager;
 
-    public MonitoringLocationsServiceIT() {
+    public MonitoringLocationRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
 
@@ -116,7 +116,7 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
 
     @Test
     @Transactional
-    public void testReloadOnUpdate() throws Exception {
+    public void testEventOnUpdate() throws Exception {
         this.eventIpcManager.getEventAnticipator().reset();
 
         final OnmsMonitoringLocation location = new OnmsMonitoringLocation();
@@ -133,7 +133,7 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // add polling package
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         location.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
         sendData(PUT, MediaType.APPLICATION_XML,"/monitoringLocations/location1", JaxbUtils.marshal(location), 204);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -143,7 +143,7 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
 
     @Test
     @Transactional
-    public void testReloadOnCreationAndDeletion() throws Exception {
+    public void testEventOnCreationAndDeletion() throws Exception {
         this.eventIpcManager.getEventAnticipator().reset();
 
         final OnmsMonitoringLocation location1 = new OnmsMonitoringLocation();
@@ -162,7 +162,7 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
         location2.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
 
         // create location with associated polling packages
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location2), 201);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
@@ -171,7 +171,7 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // delete the one with polling packages
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }

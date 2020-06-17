@@ -117,13 +117,13 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation location) {
-        boolean reloadRemotePollerd = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
+        final boolean sendEvent = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
 
         final String id = getDao().save(location);
 
-        if (reloadRemotePollerd) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
-            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG");
+        if (sendEvent) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+            eventBuilder.addParam(EventConstants.PARM_LOCATION, location.getLocationName());
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
@@ -149,7 +149,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, final OnmsMonitoringLocation targetObject) {
-        boolean reloadRemotePollerd = !comparePollingPackageNames(m_dao.get(key), targetObject);
+        final boolean sendEvent = !comparePollingPackageNames(m_dao.get(key), targetObject);
 
         if (!key.equals(targetObject.getLocationName())) {
             throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getLocationName(), key);
@@ -159,9 +159,9 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
         getDao().saveOrUpdate(targetObject);
 
-        if (reloadRemotePollerd) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
-            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG");
+        if (sendEvent) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+            eventBuilder.addParam(EventConstants.PARM_LOCATION, targetObject.getLocationName());
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {
@@ -174,13 +174,13 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation location) {
-        boolean reloadRemotePollerd = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
+        final boolean sendEvent = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
 
         getDao().delete(location);
 
-        if (reloadRemotePollerd) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
-            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG");
+        if (sendEvent) {
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+            eventBuilder.addParam(EventConstants.PARM_LOCATION, location.getLocationName());
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
             } catch (final EventProxyException e) {

@@ -36,13 +36,10 @@ import java.net.InetAddress;
 import java.util.Collections;
 
 import org.easymock.EasyMock;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
@@ -71,6 +68,8 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.transaction.AfterTransaction;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
@@ -126,6 +125,53 @@ public class RemotePollerdIT implements InitializingBean {
     @Autowired
     private OverrideableThresholdingDao thresholdingDao;
 
+    @BeforeTransaction
+    public void beforeTransaction() throws Exception {
+        this.databasePopulator.populateDatabase();
+
+        PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
+        PollerConfigFactory.setInstance(new PollerConfigFactory(-1L, new FileInputStream(POLLER_CONFIG_1)));
+        changePollingPackages("RDU", "foo1");
+
+        this.remotePollerd = new RemotePollerd(
+                this.sessionUtils,
+                this.databasePopulator.getMonitoringLocationDao(),
+                PollerConfigFactory.getInstance(),
+                this.databasePopulator.getMonitoredServiceDao(),
+                new LocationAwarePollerClientImpl(new MockRpcClientFactory()),
+                this.databasePopulator.getLocationSpecificStatusDao(),
+                this.collectionAgentFactory,
+                this.persisterFactory,
+                this.eventIpcManager,
+                this.thresholdingService
+        );
+        this.annotationBasedEventListenerAdapter = new AnnotationBasedEventListenerAdapter(this.remotePollerd, eventIpcManager);
+        this.remotePollerd.start();
+    }
+
+    @AfterTransaction
+    public void afterTransaction() throws Exception {
+        this.remotePollerd.destroy();
+        this.databasePopulator.resetDatabase();
+    }
+    private void reloadRemotePollerd() {
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, RemotePollerd.NAME);
+        this.eventIpcManager.sendNow(ebldr.getEvent());
+    }
+
+    private void changePollingPackages(final String locationName, final String ... packages) {
+        final OnmsMonitoringLocation onmsMonitoringLocation = this.databasePopulator.getMonitoringLocationDao().get(locationName);
+        onmsMonitoringLocation.setPollingPackageNames(Lists.newArrayList(packages));
+        this.databasePopulator.getMonitoringLocationDao().update(onmsMonitoringLocation);
+    }
+
+    private void sendPollingPackageAssociationChanged(final String locationName) {
+        final EventBuilder ebldr = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_LOCATION, locationName);
+        this.eventIpcManager.sendNow(ebldr.getEvent());
+    }
+
     @Test
     @Transactional
     public void reportResultTest() {
@@ -175,58 +221,59 @@ public class RemotePollerdIT implements InitializingBean {
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
-    private void reloadRemotePollerd() {
-        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, RemotePollerd.NAME);
-        this.eventIpcManager.sendNow(ebldr.getEvent());
-    }
-
-    private void changePollingPackages(final String locationName, final String ... packages) {
-        final OnmsMonitoringLocation onmsMonitoringLocation = this.databasePopulator.getMonitoringLocationDao().get(locationName);
-        onmsMonitoringLocation.setPollingPackageNames(Lists.newArrayList(packages));
-        this.databasePopulator.getMonitoringLocationDao().update(onmsMonitoringLocation);
-    }
-
     @Test
+    @Transactional
     public void testDaemonReload() throws Exception {
         // initial config, package foo1 with 3 services, bound to RDU
-        Assert.assertEquals(25, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
 
         // new config, package foo1 with 2 services, package foo2 with 1 service, only foo1 bound to RDU
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
         reloadRemotePollerd();
-        Assert.assertEquals(19, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(25, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
 
         // same config, package foo1 and foo2 bound to RDU
         changePollingPackages("RDU", "foo1", "foo2");
         reloadRemotePollerd();
-        Assert.assertEquals(25, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
     }
 
-    @Before
-    public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
-        this.databasePopulator.populateDatabase();
+    @Test
+    @Transactional
+    public void testDaemonReloadForLocation() throws Exception {
+        final OnmsMonitoringLocation onmsMonitoringLocation = new OnmsMonitoringLocation();
+        onmsMonitoringLocation.setLocationName("Fulda");
+        onmsMonitoringLocation.setMonitoringArea("Fulda");
+        onmsMonitoringLocation.setPriority(100L);
+        onmsMonitoringLocation.setPollingPackageNames(Lists.newArrayList("foo1", "foo2"));
+        this.databasePopulator.getMonitoringLocationDao().save(onmsMonitoringLocation);
+        this.databasePopulator.getMonitoringLocationDao().flush();
 
-        PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
-        PollerConfigFactory.setInstance(new PollerConfigFactory(-1L, new FileInputStream(POLLER_CONFIG_1)));
+        PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
+        changePollingPackages("RDU", "foo1", "foo2");
+        changePollingPackages("Fulda", "foo1", "foo2");
+        reloadRemotePollerd();
+
+        // both locations have foo1 and foo2 assigned
+        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
+
+        // now remove foo1 from location Fulda and send event for location Fulda
+        changePollingPackages("Fulda", "foo2");
+        sendPollingPackageAssociationChanged("Fulda");
+        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
+
+        // now remove foo2 from location RDU but send an event for Fulda, so nothing will change
         changePollingPackages("RDU", "foo1");
+        sendPollingPackageAssociationChanged("Fulda");
+        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
 
-        this.remotePollerd = new RemotePollerd(
-                this.sessionUtils,
-                this.databasePopulator.getMonitoringLocationDao(),
-                PollerConfigFactory.getInstance(),
-                this.databasePopulator.getMonitoredServiceDao(),
-                new LocationAwarePollerClientImpl(new MockRpcClientFactory()),
-                this.databasePopulator.getLocationSpecificStatusDao(),
-                this.collectionAgentFactory,
-                this.persisterFactory,
-                this.eventIpcManager,
-                this.thresholdingService
-        );
-
-        this.annotationBasedEventListenerAdapter = new AnnotationBasedEventListenerAdapter(this.remotePollerd, eventIpcManager);
-        this.remotePollerd.start();
+        // now send event for RDU, changes will be applied
+        sendPollingPackageAssociationChanged("RDU");
+        Assert.assertEquals(25, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
     }
 
     @Test
@@ -268,11 +315,6 @@ public class RemotePollerdIT implements InitializingBean {
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult("RDU", remotePolledService, pollStatus);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        this.remotePollerd.destroy();
     }
 
     @Override
