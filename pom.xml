@@ -428,6 +428,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.5.5</version>
+        <configuration>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -909,6 +914,8 @@
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
+             <overrideUid>0</overrideUid>
+             <overrideGid>0</overrideGid>
              <tarLongFileMode>posix</tarLongFileMode>
            </configuration>
          </execution>
