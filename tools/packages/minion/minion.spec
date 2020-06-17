@@ -114,7 +114,7 @@ Minion Default Features
 
 %prep
 
-tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar --uid=0 --gid=0 -xzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -134,7 +134,7 @@ tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
 
 # Extract the minion assembly
 mkdir -p %{buildroot}%{minioninstprefix}
-tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+tar --uid=0 --gid=0 -xzf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
 
 # Remove extraneous directories that start with "d"
 rm -rf %{buildroot}%{minioninstprefix}/{data,debian,demos}

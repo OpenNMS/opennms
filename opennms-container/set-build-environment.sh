@@ -33,7 +33,7 @@ fi
 [ -n "${BUILD_BRANCH}"            ] || BUILD_BRANCH="$(git branch --show-current)"
 
 [ -n "${YUM_CONTAINER_NAME}"      ] || YUM_CONTAINER_NAME="yum-repo"
-[ -n "${RPMDIR}"                  ] || RPMDIR="$(cd "${TOPDIR}/../target/rpm/RPMS/noarch" || exit 1; pwd -P)"
+[ -n "${RPMDIR}"                  ] || RPMDIR="${TOPDIR}/../target/rpm/RPMS/noarch"
 
 [ -n "${CONTAINER_PROJECT}"       ] || CONTAINER_PROJECT="$(basename "${TOPDIR}")"
 [ -n "${CONTAINER_REGISTRY}"      ] || CONTAINER_REGISTRY="docker.io"
