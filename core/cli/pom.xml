@@ -53,6 +53,8 @@
           <descriptors>
             <descriptor>src/assembly/shunit.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
