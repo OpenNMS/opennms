@@ -133,6 +133,8 @@
             <descriptor>src/assembly/daemon.xml</descriptor>
             <descriptor>src/assembly/log4j2.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
