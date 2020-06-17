@@ -52,7 +52,7 @@ mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true packag
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
-tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
+tar -C $RPM_BUILD_ROOT%{instprefix} --uid=0 --gid=0 -xvzf target/centric-troubleticketer-*.tar.gz
 chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
 # HACK ALERT!
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/commons-io-*.jar
