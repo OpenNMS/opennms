@@ -14,9 +14,6 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
-  <bean id="timeseries.max_batch_size" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.max_batch_size:16}" />
-  </bean>
   <bean id="timeseries.ring_buffer_size" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.ring_buffer_size:8192}" />
   </bean>

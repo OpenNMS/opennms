@@ -113,9 +113,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private final AtomicLong numEntriesOnRingBuffer = new AtomicLong();
 
     @Inject
-    public TimeseriesWriter(@Named("timeseries.max_batch_size") Integer maxBatchSize, @Named("timeseries.ring_buffer_size") Integer ringBufferSize,
+    public TimeseriesWriter(@Named("timeseries.ring_buffer_size") Integer ringBufferSize,
                             @Named("timeseries.writer_threads") Integer numWriterThreads, @Named("timeseriesMetricRegistry") MetricRegistry registry) {
-        Preconditions.checkArgument(maxBatchSize > 0, "maxBatchSize must be strictly positive");
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");
         Preconditions.checkArgument(numWriterThreads > 0, "numWriterThreads must be positive");
@@ -143,7 +142,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
         sampleWriteTsTimer = registry.timer("samples.write.ts");
 
-        LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, this.ringBufferSize);
+        LOG.debug("Using ring_buffer_size: {}", this.ringBufferSize);
         setUpWorkerPool();
 
     }
