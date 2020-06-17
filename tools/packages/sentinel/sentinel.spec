@@ -79,7 +79,7 @@ http://www.opennms.org/wiki/Sentinel
 
 %prep
 
-tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+tar --uid=0 --gid=0 -xzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -103,7 +103,7 @@ tools/packages/sentinel/create-sentinel-assembly.sh $EXTRA_ARGS
 
 # Extract the sentinel assembly
 mkdir -p %{buildroot}%{sentinelinstprefix}
-tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz -C %{buildroot}%{sentinelinstprefix} --strip-components=1
+tar --uid=0 --gid=0 -xzf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz -C %{buildroot}%{sentinelinstprefix} --strip-components=1
 
 # Remove extraneous directories that start with "d"
 rm -rf %{buildroot}%{sentinelinstprefix}/{data,debian,demos}
