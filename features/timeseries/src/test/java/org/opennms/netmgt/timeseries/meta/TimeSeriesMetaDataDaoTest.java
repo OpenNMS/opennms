@@ -43,6 +43,8 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.core.cache.CacheConfig;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.netmgt.model.ResourcePath;
 
@@ -52,7 +54,8 @@ public class TimeSeriesMetaDataDaoTest {
 
     @Test
     public void cachingShouldWork() throws SQLException, StorageException, ExecutionException {
-        TimeSeriesMetaDataDao dao = Mockito.spy(new TimeSeriesMetaDataDao(mock(DataSource.class), 100, 60, new MetricRegistry()));
+        CacheConfig config = new CacheConfigBuilder().withName(TimeSeriesMetaDataDaoTest.class.getSimpleName()).build();
+        TimeSeriesMetaDataDao dao = Mockito.spy(new TimeSeriesMetaDataDao(mock(DataSource.class), config, new MetricRegistry()));
         Mockito.doNothing().when(dao).storeUncached(anyCollection());
         ResourcePath resourcePathA = new ResourcePath("a", "b", "c");
         MetaData meta = new MetaData(toResourceId(resourcePathA).toString(), "key", "value");
