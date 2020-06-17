@@ -10,6 +10,9 @@
 
 === Breaking Changes
 
+* VMware-related data is not longer stored in node assets.
+This data is now stored in the node's meta-data.
+
 ==== Flow Classification
 
 In versions before Horizon 26, the Flow Classification UI accepted invalid IP address values, e.g., `10,192.1,168.1,5.1-160`.  
