@@ -55,7 +55,7 @@ docker_container_config: &docker_container_config
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
-  sign-packages: opennms/sign-packages@2.1.1
+  sign-packages: opennms/sign-packages@2.1.3
 
 commands:
   extract-pom-version:
