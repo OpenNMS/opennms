@@ -32,4 +32,5 @@ public interface MetadataConstants {
 
     String NODE = "node";
     String TTL = "ttl";
+    String REQUISITION = "requisition";
 }

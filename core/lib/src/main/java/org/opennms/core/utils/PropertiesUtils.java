@@ -228,6 +228,17 @@ public abstract class PropertiesUtils {
         return defaultVal;
     }
 
+
+    public static Integer getProperty(Properties props, String name) {
+        String val = props.getProperty(name, (String) null);
+        if (val != null) {
+            try {
+                return Integer.decode(val).intValue();
+            } catch (NumberFormatException e) {
+            }
+        }
+        return null;
+    }
     /**
      * Get a long valued property, returning default value if it is not set or
      * is set to an invalid value

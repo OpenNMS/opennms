@@ -28,23 +28,29 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
+import org.opennms.core.rpc.utils.MetadataUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.StreamListener;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
@@ -72,6 +78,8 @@ public class Telemetryd implements SpringServiceDaemon {
 
     public static final String LOG_PREFIX = "telemetryd";
 
+    public static final String OPENCONFIG_CONTEXT = "openconfig";
+
     @Autowired
     private TelemetrydConfigDao telemetrydConfigDao;
 
@@ -87,8 +95,12 @@ public class Telemetryd implements SpringServiceDaemon {
     @Autowired
     private TelemetryRegistry telemetryRegistry;
 
+    @Autowired
+    private MetadataUtils metadataUtils;
+
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
+    private StreamListener streamListener;
 
     @Override
     public synchronized void start() throws Exception {
@@ -135,7 +147,9 @@ public class Telemetryd implements SpringServiceDaemon {
                 continue;
             }
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
-            listeners.add(listener);
+            if(listener!= null) {
+                listeners.add(listener);
+            }
         }
 
         // Start the consumers
@@ -148,6 +162,10 @@ public class Telemetryd implements SpringServiceDaemon {
         for (Listener listener : listeners) {
             LOG.info("Starting {} listener.", listener.getName());
             listener.start();
+            if(listener instanceof StreamListener) {
+                streamListener = (StreamListener)listener;
+                Executors.newSingleThreadExecutor().execute(this::startSubscribing);
+            }
         }
 
         LOG.info("{} is started.", NAME);
@@ -209,9 +227,37 @@ public class Telemetryd implements SpringServiceDaemon {
         }
     }
 
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(IEvent e) {
-        DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
+    @EventHandler(ueis = {EventConstants.RELOAD_DAEMON_CONFIG_UEI,
+            EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI,
+            EventConstants.INTERFACE_DELETED_EVENT_UEI})
+    public void handleEvents(IEvent iEvent) {
+        if (iEvent.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
+            DaemonTools.handleReloadEvent(iEvent, Telemetryd.NAME, (event) -> handleConfigurationChanged());
+        } else if (iEvent.getUei().equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
+            Integer nodeId = iEvent.getNodeid().intValue();
+            String ipAddress = InetAddressUtils.toIpAddrString(iEvent.getInterfaceAddress());
+            Map<String, String> config = metadataUtils.getConfigFromMetadata(nodeId, ipAddress, OPENCONFIG_CONTEXT);
+            if (!config.isEmpty() && streamListener != null) {
+                streamListener.subscribe(nodeId, ipAddress, config);
+            }
+        } else if (iEvent.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+            if (streamListener != null) {
+                streamListener.unsubscribe(iEvent.getInterfaceAddress().getHostAddress());
+            }
+        }
+    }
+
+
+
+    private void startSubscribing() {
+        Map<InetAddress, Integer> ipInterfaces = metadataUtils.getIpInterfacesWithContext(OPENCONFIG_CONTEXT);
+        ipInterfaces.forEach((inetAddress, nodeId) -> {
+            String ipAddress = InetAddressUtils.toIpAddrString(inetAddress);
+            Map<String, String> config = metadataUtils.getConfigFromMetadata(nodeId, ipAddress, OPENCONFIG_CONTEXT);
+            if (!config.isEmpty() && streamListener != null) {
+                streamListener.subscribe(nodeId, ipAddress, config);
+            }
+        });
     }
 
 }

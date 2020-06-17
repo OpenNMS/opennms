@@ -9,6 +9,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
     <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
+    <reference id="telemetryClientFactory" interface="org.opennms.features.openconfig.api.TelemetryClientFactory" availability="optional"/>
 
     <!-- TCP Listener Factory -->
     <bean id="tcpListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.TcpListenerFactory">
@@ -29,4 +30,16 @@
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
+
+    <!-- Stream Listener Factory -->
+    <bean id="telemetryStreamListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.TelemetryStreamListenerFactory">
+        <argument ref="telemetryRegistry" />
+        <property name="telemetryClientFactory" ref="telemetryClientFactory" />
+    </bean>
+    <service ref="telemetryStreamListenerFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
 </blueprint>
