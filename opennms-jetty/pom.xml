@@ -33,6 +33,8 @@
           <descriptors>
             <descriptor>src/assembly/etc.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
