@@ -7,7 +7,7 @@ executors:
       - image: opennms/build-env:1.8.0.252.b09-3.6.3-b4168
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b4008
+      - image: opennms/build-env:debian-jdk8-b5084
   docker-executor:
     docker:
       - image: docker:19.03.0-git
@@ -634,8 +634,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies:
-          skip_if_forked_pr: true
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
