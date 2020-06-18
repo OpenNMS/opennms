@@ -50,7 +50,7 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 |===
 | Name                                            | Default              | Description
 | `org.opennms.timeseries.ring_buffer_size`     | `8192`               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
-| `org.opennms.timeseries.config.writer_threads`       | `16`                 | Number of threads used to pull samples from the ring buffer and insert them into the Timeseries Database.
+| `org.opennms.timeseries.config.writer_threads`       | `16`                 | Number of threads used to pull samples from the ring buffer and insert them into the Time Series Database.
 | `org.opennms.timeseries.query.minimum_step`          | `300000`             | Minimum step size in milliseconds. Used to prevent large queries.
 | `org.opennms.timeseries.query.interval_divider`      | `2`                  | If no interval is specified in the query, the step will be divided into this many intervals when aggregating values.
 | `org.opennms.timeseries.query.heartbeat`             | `450000`             | Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your largest collection interval.
@@ -72,14 +72,14 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 [[ga-opennms-operation-timeseries-properties-recommendations]]
 ===== Recommendations
 Caches have been introduced to improve performance.
-You might need to tune the cache settings to suit your needs, see parameters above.
+You might need to tune the cache settings to suit your needs. See parameters above.
 
 [options="header, autowidth"]
 |===
 | Name                             | Description
-| TimeseriesMetaDataCache          | Caches meta data that uses _{opennms-product-name}_  internally.
-| TimeseriesSearcherCache          | Caches Metrics by tag to improve the resource lookup.
-| TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta tag values by resource
+| TimeseriesMetaDataCache          | Caches metadata that uses _{opennms-product-name}_  internally.
+| TimeseriesSearcherCache          | Caches metrics by tag to improve the resource lookup.
+| TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta-tag values by resource.
 |===
 
 The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to the _Timeseries Integration Layer_.
@@ -90,7 +90,7 @@ However, note that the memory used by the ring buffer is reserved, and larger va
 ===== Expose additional meta tags
 Metrics that are stored via the timeseries plugin contain the minimal set of tags for _{opennms-product-name}_ to work.
 This might not be sufficient if the data is used outside of _{opennms-product-name}_ as well.
-Therefore additional meta tags can be configured via `${OPENNMS_HOME}/etc/opennms.properties`.
+Configure additional meta tags via `${OPENNMS_HOME}/etc/opennms.properties`.
 
 The configuration of the tags has the following form:
 `prefix.tagKey=${query expression}`
@@ -103,7 +103,7 @@ Examples:
 `org.opennms.timeseries.tin.metatags.tag.nodelabel=${node:label}`
 `org.opennms.timeseries.tin.metatags.tag.sysObjectID=${node:sys-object-id}`
 
-Categories can be exposed by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`
+Expose categories by setting `org.opennms.timeseries.tin.metatags.exposeCategories` to `true`.
 
 Example:
 `org.opennms.timeseries.tin.metatags.exposeCategories=true`

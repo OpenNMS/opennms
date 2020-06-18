@@ -7,12 +7,12 @@ This section describes how to configure _{opennms-product-name}_ to use the _Tim
 Traditionally _{opennms-product-name}_ supports storing timeseries data in _RRD_ files on disk or via _Newts_ in _Cassandra_.
 These implementations require a deep knowledge of OpenNMS. It is hard to add another time series database.
 
-With the rise of many new time series databases we want to provide an easy way to support other timseries databases with minimal effort.
+With the rise of many new time series databases, we want to provide an easy way to support other time series databases with minimal effort.
 This lead to the development of the _Timeseries Integration Layer_.
 
-The  _Timeseries Integration Layer_ allows to integrate a new timeseries database via osgi plugin.
+The  _Timeseries Integration Layer_ allows users to integrate a new time series database via OSGi plugin.
 
-Examples of timeseries plugins:
+Examples of time series plugins:
 
 * https://github.com/opennms-forge/timeseries-integration-inmemory[In Memory]
 * https://github.com/opennms-forge/timeseries-integration-influxdb[InfluxDB]
