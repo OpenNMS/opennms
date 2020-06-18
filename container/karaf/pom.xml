@@ -146,6 +146,9 @@
                                     <directory>${project.build.directory}/assembly</directory>
                                 </fileset>
                             </filesets>
+                            <overrideUid>0</overrideUid>
+                            <overrideGid>0</overrideGid>
+                            <tarLongFileMode>posix</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>

@@ -18,6 +18,8 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <skipAssembly>false</skipAssembly>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
             </plugin>

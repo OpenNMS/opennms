@@ -257,6 +257,11 @@
 			<scope>test</scope>
 		</dependency>  
 		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
 		    <groupId>com.googlecode.gwt-test-utils</groupId>
 		    <artifactId>gwt-test-utils</artifactId>
 		    <version>0.47</version>
@@ -265,6 +270,10 @@
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
