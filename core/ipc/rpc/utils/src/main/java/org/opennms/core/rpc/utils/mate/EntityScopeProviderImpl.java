@@ -166,12 +166,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         .map(ASSET, "rackunitheight", (a) -> Optional.ofNullable(a.getRackunitheight()))
                         .map(ASSET, "managed-object-type", (a) -> Optional.ofNullable(a.getManagedObjectType()))
                         .map(ASSET, "managed-object-instance", (a) -> Optional.ofNullable(a.getManagedObjectInstance()))
-                        .map(ASSET, "geolocation", (a) -> Optional.ofNullable(a.getGeolocation()).map(Object::toString))
-                        .map(ASSET, "vmware-managed-object-id", (a) -> Optional.ofNullable(a.getVmwareManagedObjectId()))
-                        .map(ASSET, "vmware-managed-entity-type", (a) -> Optional.ofNullable(a.getVmwareManagedEntityType()))
-                        .map(ASSET, "vmware-management-server", (a) -> Optional.ofNullable(a.getVmwareManagementServer()))
-                        .map(ASSET, "vmware-topology-info", (a) -> Optional.ofNullable(a.getVmwareTopologyInfo()))
-                        .map(ASSET, "vmware-state", (a) -> Optional.ofNullable(a.getVmwareState()));
+                        .map(ASSET, "geolocation", (a) -> Optional.ofNullable(a.getGeolocation()).map(Object::toString));
                 scopes.add(assetScope);
             }
 
