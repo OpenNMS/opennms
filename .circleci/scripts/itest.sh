@@ -50,7 +50,7 @@ deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /et
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
-            sudo apt-get --allow-releaseinfo-change update && \
+            sudo apt-get update && \
 	    sudo apt-get -y install debconf-utils && \
 	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
