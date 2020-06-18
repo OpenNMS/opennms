@@ -47,7 +47,6 @@ public class Utils {
         return map;
     }
 
-    // TODO: Patrick: remove later
     public static boolean equals(final FetchResults results1, final FetchResults results2) {
         if (results1 == results2) return true;
         if (results2 == null || results1.getClass() != results2.getClass()) return false;
