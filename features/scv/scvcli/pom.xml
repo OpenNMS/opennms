@@ -34,6 +34,9 @@
                             <mainClass>org.opennms.features.scv.cli.ScvCli</mainClass>
                         </manifest>
                     </archive>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
             </plugin>
         </plugins>

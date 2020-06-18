@@ -237,6 +237,8 @@
             <descriptor>src/assembly/meta-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>

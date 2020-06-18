@@ -7,7 +7,7 @@ executors:
       - image: opennms/build-env:1.8.0.252.b09-3.6.3-b4168
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b4008
+      - image: opennms/build-env:debian-jdk8-b5084
   docker-executor:
     docker:
       - image: docker:19.03.0-git
@@ -55,7 +55,7 @@ docker_container_config: &docker_container_config
 
 orbs:
   cloudsmith: cloudsmith/cloudsmith@1.0.3
-  sign-packages: opennms/sign-packages@2.1.1
+  sign-packages: opennms/sign-packages@2.1.3
 
 commands:
   extract-pom-version:
@@ -382,7 +382,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-{{ .Environment.CIRCLE_SHA1 }}
+          key: << parameters.cache_prefix >>-v2-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -397,7 +397,8 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-{{ .Environment.CIRCLE_SHA1 }}
+            - << parameters.cache_prefix >>-v2-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+            - << parameters.cache_prefix >>-v2-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}-
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -806,8 +807,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies:
-          skip_if_forked_pr: true
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -853,8 +852,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies:
-          skip_if_forked_pr: true
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -882,8 +879,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-deb-dependencies:
-          skip_if_forked_pr: true
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg

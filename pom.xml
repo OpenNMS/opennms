@@ -448,6 +448,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.0.0</version>
+        <configuration>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -871,6 +876,8 @@
              </descriptors>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
+             <overrideUid>0</overrideUid>
+             <overrideGid>0</overrideGid>
              <tarLongFileMode>posix</tarLongFileMode>
            </configuration>
          </execution>
@@ -1324,7 +1331,7 @@
     <!-- Match Newts version -->
     <cassandraVersion>3.5.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
@@ -3265,17 +3272,6 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>${commonsBeanutilsVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-beanutils</groupId>
-        <artifactId>commons-beanutils-core</artifactId>
         <version>${commonsBeanutilsVersion}</version>
         <exclusions>
           <exclusion>

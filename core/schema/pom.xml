@@ -49,6 +49,8 @@
           <descriptors>
             <descriptor>src/assembly/liquibase.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
