@@ -76,6 +76,10 @@
       <version>1.1.5</version>
       <exclusions>
         <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
         </exclusion>
