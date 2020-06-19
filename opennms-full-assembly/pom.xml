@@ -43,6 +43,8 @@
                 <descriptor>src/assembly/default.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -78,6 +80,8 @@
                 <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -113,6 +117,8 @@
                 <descriptor>src/assembly/dir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
