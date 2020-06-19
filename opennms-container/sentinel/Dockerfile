@@ -50,8 +50,14 @@ COPY ./rpms /tmp/rpms
 
 SHELL ["/bin/bash", "-c"]
 
+# we want these to break the caching so yum will re-install now that
+# we're not copying RPMs into /tmp/rpms by default
+ARG BUILD_DATE="1970-01-01T00:00:00+0000"
+ARG REVISION
+
 # Install repositories, system and OpenNMS packages and do some cleanup
-RUN if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
+RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
+    if [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local RPMs from filesystem" && \
         dnf -y install /tmp/rpms/*.rpm; \
     elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
@@ -92,10 +98,8 @@ STOPSIGNAL SIGTERM
 CMD [ "-f" ]
 
 # Arguments for labels should not invalidate caches
-ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION
 ARG SOURCE
-ARG REVISION
 ARG BUILD_JOB_ID
 ARG BUILD_NUMBER
 ARG BUILD_URL
