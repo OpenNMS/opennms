@@ -51,8 +51,13 @@ fi
 mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true package assembly:attached
 
 %install
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
-tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
+$TAR -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
 chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
 # HACK ALERT!
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/commons-io-*.jar

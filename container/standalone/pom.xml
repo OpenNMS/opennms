@@ -234,6 +234,8 @@
                 <descriptor>src/assembly/bin.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
             </configuration>
           </execution>

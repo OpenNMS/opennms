@@ -497,8 +497,12 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 %{extrainfo2}
 
 %prep
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+$TAR -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 
-tar -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -600,8 +604,13 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p %{buildroot}%{instprefix}
 
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 # Untar the tar.gz created by opennms-full-assembly
-tar zxf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
+$TAR -xzf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
