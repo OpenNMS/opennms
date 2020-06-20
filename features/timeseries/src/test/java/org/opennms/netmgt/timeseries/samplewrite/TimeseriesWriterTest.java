@@ -79,7 +79,7 @@ public class TimeseriesWriterTest {
 
         LatchedTimeseriesStorage store = new LatchedTimeseriesStorage(numWriterThreads);
         MetricRegistry registry = new MetricRegistry();
-        TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
+        TimeseriesWriter writer = new TimeseriesWriter(ringBufferSize, numWriterThreads, registry);
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
         when(storageManager.get()).thenReturn(store);
         writer.setTimeSeriesStorage(storageManager);
@@ -107,7 +107,7 @@ public class TimeseriesWriterTest {
         Lock lock = new ReentrantLock();
         LockedTimeseriesStorage timeseriesStorage = new LockedTimeseriesStorage(lock);
         MetricRegistry registry = new MetricRegistry();
-        TimeseriesWriter writer = new TimeseriesWriter(1, ringBufferSize, numWriterThreads, registry);
+        TimeseriesWriter writer = new TimeseriesWriter(ringBufferSize, numWriterThreads, registry);
         when(storageManager.get()).thenReturn(timeseriesStorage);
         writer.setTimeSeriesStorage(storageManager);
         writer.setTimeSeriesMetaDataDao(Mockito.mock(TimeSeriesMetaDataDao.class));
