@@ -1,10 +1,10 @@
 
-This guide describes the requirements and the steps necessary in order to get started with the development of the OpenNMS project.
+This guide describes the requirements and how to get started with the development of the OpenNMS project.
 
-=== Operating System / Environment
+=== Operating System/Environment
 
-To build/compile OpenNMS it is necessary to run a *nix system.
-You do not need to run it physically, a virtual machine is sufficient, but the choice is yours.
+To build/compile OpenNMS requires running a *nix system.
+You do not need to run it physically, a virtual machine is sufficient.
 We recommend one of the following:
 
  * link:http://www.linuxmint.com/[Linux Mint] with Cinnamon Desktop environment
@@ -12,12 +12,12 @@ We recommend one of the following:
  * Mac OS X
 
 [NOTE]
-This documentation assumes that you chose a debian based desktop environment.
+This documentation describes a Debian-based desktop environment.
 
 === Installation
 
-The next chapter describes the full setup of your environment in order to meet the pre-requirements.
-Simply follow these instructions, they may vary depending on your Operating System.
+Follow these instructions to set up your enivronment. 
+They may vary depending on your operating system:
 
 [source, shell]
 ----
@@ -71,9 +71,9 @@ cd ~/dev/opennms
 ./assemble.pl -p dir
 ----
 
-For more information on how to build OpenNMS from source check this wiki link:http://www.opennms.org/wiki/Installation:Source#Building[Install from Source].
+For more information on how to build OpenNMS from source, check this wiki link:http://www.opennms.org/wiki/Installation:Source#Building[Install from Source].
 
-After OpenNMS successfully built, please follow the wiki link:http://www.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
+After successfully building OpenNMS, please follow the wiki link:http://www.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
 
 === Tooling
 We recommend the following toolset:
@@ -87,13 +87,14 @@ We recommend the following toolset:
 === Useful links
 
 ==== General
- * https://www.github.com/OpenNMS/opennms: The source code hosted on GitHub
- * http://wiki.opennms.org: Our Wiki, especially the start page is of interest. It points you in the right directions.
- * http://issues.opennms.org: Our issue/bug tracker.
- * https://github.com/opennms-forge/vagrant-opennms-dev: A vagrant box to setup a virtual box to build OpenNMS
- * https://github.com/opennms-forge/vagrant-opennms: A vagrant box to setup a virtual box to run OpenNMS
+ * https://www.github.com/OpenNMS/opennms[source code] hosted on GitHub
+ * http://wiki.opennms.org[Our Wiki], especially the start page. 
+ It points you in the right direction.
+ * Our http://issues.opennms.org[issue/bug tracker]
+ * https://github.com/opennms-forge/vagrant-opennms-dev[Vagrant box] to set up a virtual box to build OpenNMS
+ * https://github.com/opennms-forge/vagrant-opennms[vagrant box] to set up a virtual box to run OpenNMS
 
-==== Installation / Setup
+==== Installation/Setup
  * http://www.opennms.eu/docs/opennms-community-welcome-guide/0.0.5-SNAPSHOT/[]
  * http://www.opennms.org/wiki/Installation:Source[]
  * http://www.opennms.org/wiki/Developing_with_Git[]
