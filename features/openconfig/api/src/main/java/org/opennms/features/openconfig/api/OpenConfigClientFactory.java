@@ -28,11 +28,10 @@
 
 package org.opennms.features.openconfig.api;
 
-import java.util.function.Consumer;
+import java.io.IOException;
 
-public interface TelemetryClient {
+public interface OpenConfigClientFactory {
 
-    boolean subscribe(Config config, Consumer<byte[]> dataConsumer);
+    OpenConfigClient createClient(HostConfig hostConfig) throws IOException;
 
-    void stop();
 }

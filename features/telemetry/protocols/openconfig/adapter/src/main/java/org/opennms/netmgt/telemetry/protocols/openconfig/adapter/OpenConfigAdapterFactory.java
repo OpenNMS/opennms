@@ -35,6 +35,7 @@ import org.osgi.framework.BundleContext;
 
 public class OpenConfigAdapterFactory extends AbstractCollectionAdapterFactory {
 
+
     public OpenConfigAdapterFactory(BundleContext bundleContext) {
         super(bundleContext);
     }

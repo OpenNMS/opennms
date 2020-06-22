@@ -28,12 +28,9 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
-import java.util.Map;
 
 public interface StreamListener extends Listener {
 
-    void subscribe(Integer nodeId, String ipAddress, Map<String, String> config);
 
-    void unsubscribe(String ipAddress);
 }
 

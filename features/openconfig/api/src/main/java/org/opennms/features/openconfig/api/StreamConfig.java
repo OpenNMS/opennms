@@ -26,20 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.openconfig.telemetry.client;
+package org.opennms.features.openconfig.api;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
 
-import org.opennms.features.openconfig.api.TelemetryClient;
-import org.opennms.features.openconfig.api.TelemetryClientFactory;
+public class StreamConfig {
 
-public class TelemetryClientFactoryImpl implements TelemetryClientFactory {
+    private final List<String> paths;
 
+    private final int frequency;
 
-    @Override
-    public TelemetryClient createClient(String host, int port, Map<String, String> tlsFilePaths) throws IOException {
-        return new TelemetryClientImpl(host, port, tlsFilePaths);
+    private String mode;
+
+    public StreamConfig(List<String> paths, int frequency, String mode) {
+        this.paths = Objects.requireNonNull(paths);
+        this.frequency = frequency;
+        this.mode = mode;
+    }
+
+    public List<String> getPaths() {
+        return paths;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public String getMode() {
+        return mode;
     }
 
 }

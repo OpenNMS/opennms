@@ -26,38 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.openconfig.api;
+package org.opennms.netmgt.telemetry.listeners;
 
-import java.util.List;
+import java.util.Map;
 
 public class Config {
 
-    private final List<String> paths;
+    private Integer nodeId;
 
-    private final Integer frequency;
+    private String ipAddress;
 
-    private String mode;
+    private Map<String, String> params;
 
-    public Config(List<String> paths, Integer frequency) {
-        this.paths = paths;
-        this.frequency = frequency;
+    public Config(Integer nodeId, String ipAddress, Map<String, String> params) {
+        this.nodeId = nodeId;
+        this.ipAddress = ipAddress;
+        this.params = params;
     }
 
-    public List<String> getPaths() {
-        return paths;
+    public Integer getNodeId() {
+        return nodeId;
     }
 
-    public Integer getFrequency() {
-        return frequency;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public String getMode() {
-        return mode;
+    public Map<String, String> getParams() {
+        return params;
     }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-
 }

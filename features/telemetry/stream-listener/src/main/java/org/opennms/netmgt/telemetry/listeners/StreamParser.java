@@ -26,13 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.openconfig.api;
+package org.opennms.netmgt.telemetry.listeners;
 
-import java.io.IOException;
-import java.util.Map;
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public interface TelemetryClientFactory {
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
 
-    TelemetryClient createClient(String host, int port, Map<String, String> tlsFilePaths) throws IOException;
+import io.netty.buffer.ByteBuf;
 
+public interface StreamParser extends Parser {
+
+    /**
+     * Invoked when Interface is added/deleted.
+     */
+    Config getConfig(Integer nodeId, String ipAddress);
+
+    /**
+     * Invoked initially when stream listener is starting
+     */
+    List<Config> getMatchingConfig();
+
+
+    CompletableFuture<?> parse(final ByteBuf buffer,
+                               final InetSocketAddress remoteAddress) throws Exception;
 }

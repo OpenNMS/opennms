@@ -166,14 +166,6 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-telemetry-openconfig-adapter" description="OpenNMS :: Telemetry :: OpenConfig :: Adapter" version="${project.version}">
-        <feature>opennms-telemetry-collection</feature>
-        <feature>opennms-core-grpc-osgi</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>
-    </feature>
-
     <!--Coordination-->
     <feature name="sentinel-coordination-api" description="OpenNMS :: Features :: Distributed :: Coordination :: API"
              version="${project.version}">

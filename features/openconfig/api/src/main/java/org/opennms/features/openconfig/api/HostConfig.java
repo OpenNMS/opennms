@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.rpc.utils;
+package org.opennms.features.openconfig.api;
 
-public interface MetadataConstants {
+import java.util.Map;
 
-    String NODE = "node";
-    String TTL = "ttl";
+public class HostConfig {
+
+    private String host;
+
+    private Integer port;
+
+    private Map<String, String> parameters;
+
+    public HostConfig(String host, Integer port, Map<String, String> parameters) {
+        this.host = host;
+        this.port = port;
+        this.parameters = parameters;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
 }

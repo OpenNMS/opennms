@@ -574,7 +574,7 @@
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
                 <feature>opennms-telemetry-graphite</feature>
-                <feature>opennms-telemetry-openconfig-adapter</feature>
+                <feature>opennms-telemetry-openconfig</feature>
                 <feature>opennms-telemetry-openconfig-client</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
                 <feature>org.opennms.features.bsm.service.api</feature>

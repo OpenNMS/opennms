@@ -33,14 +33,15 @@ import static io.grpc.ConnectivityState.READY;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 import org.opennms.core.grpc.common.GrpcClientBuilder;
-import org.opennms.features.openconfig.api.Config;
-import org.opennms.features.openconfig.api.TelemetryClient;
+import org.opennms.features.openconfig.api.Handler;
+import org.opennms.features.openconfig.api.HostConfig;
+import org.opennms.features.openconfig.api.OpenConfigClient;
+import org.opennms.features.openconfig.api.StreamConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,37 +51,41 @@ import io.grpc.stub.StreamObserver;
 import telemetry.OpenConfigTelemetryGrpc;
 import telemetry.OpenConfigTelemetryProto;
 
-public class TelemetryClientImpl implements TelemetryClient {
+public class OpenConfigClientImpl implements OpenConfigClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TelemetryClientImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenConfigClientImpl.class);
+    private static final int DEFAULT_RETRIES = 5;
+    private static final int DEFAULT_TIMEOUT = 1000;
     private final ManagedChannel channel;
     private final String host;
-    private final int DEFAULT_RETRIES = 10;
-    private final int DEFAULT_TIMEOUT = 3000;
-    private Config config;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    public TelemetryClientImpl(String host, int port, Map<String, String> tlsFilePaths) throws IOException {
-        this.host = Objects.requireNonNull(host);
-        this.channel = GrpcClientBuilder.getChannel(host, port, tlsFilePaths);
+    public OpenConfigClientImpl(HostConfig hostConfig) throws IOException {
+        Objects.requireNonNull(hostConfig);
+        this.host = Objects.requireNonNull(hostConfig.getHost());
+        this.channel = GrpcClientBuilder.getChannel(host, hostConfig.getPort(), hostConfig.getParameters());
     }
 
-    public boolean subscribe(Config config, Consumer<byte[]> dataConsumer) {
-        if (getChannelState() != null && getChannelState().equals(READY)) {
-            this.config = config;
-            return subscribe(config.getPaths(), config.getFrequency(), dataConsumer);
+    public boolean subscribe(StreamConfig config, Handler handler) {
+        if (READY.equals(retrieveChannelState())) {
+            subscribe(config.getPaths(), config.getFrequency(), handler);
+            return true;
         } else {
-            LOG.error("Telemetry gRPC Server is not in ready state, current state {}", host);
+            LOG.error("Unable to subscribe, OpenConfig gRPC Server at `{}` is not in ready state", host);
             return false;
         }
     }
 
-    private ConnectivityState getChannelState() {
+    /**
+     * gRPC channel may not be in ready state instantly, this is internal wait to make a connection.
+     */
+    private ConnectivityState retrieveChannelState() {
         int retries = DEFAULT_RETRIES;
         ConnectivityState state = null;
         while (retries > 0) {
             state = channel.getState(true);
             if (!state.equals(READY)) {
-                LOG.warn("Telemetry gRPC Server at `{}` is not in ready state, current state {}, retrying..", host, state);
+                LOG.warn("OpenConfig gRPC Server at `{}` is not in ready state, current state {}, retrying..", host, state);
                 waitBeforeRetrying(DEFAULT_TIMEOUT);
                 retries--;
             } else {
@@ -99,7 +104,10 @@ public class TelemetryClientImpl implements TelemetryClient {
     }
 
     @Override
-    public void stop() {
+    public void close() {
+        if (executor != null) {
+            executor.shutdown();
+        }
         if (channel != null) {
             channel.shutdown();
         }
@@ -107,39 +115,38 @@ public class TelemetryClientImpl implements TelemetryClient {
 
     private class TelemetryDataHandler implements StreamObserver<OpenConfigTelemetryProto.OpenConfigData> {
 
-        private final Consumer<byte[]> consumer;
+        private final Handler handler;
         private final String host;
 
-        private TelemetryDataHandler(String host, Consumer<byte[]> consumer) {
+        private TelemetryDataHandler(String host, Handler handler) {
             this.host = host;
-            this.consumer = consumer;
+            this.handler = handler;
         }
 
         @Override
         public void onNext(OpenConfigTelemetryProto.OpenConfigData value) {
-            LOG.debug("Telemetry data : {}", value);
-            Executors.newSingleThreadScheduledExecutor().execute(() -> consumer.accept(value.toByteArray()));
+            LOG.debug("OpenConfig response : {}", value);
+            executor.execute(() -> handler.accept(value.toByteArray()));
         }
 
         @Override
         public void onError(Throwable t) {
             LOG.error("Received error on stream for host {}", host, t);
-            stop();
+            handler.onError(t.getMessage());
         }
 
         @Override
         public void onCompleted() {
             LOG.info("Response stream closed for host {}", host);
-            stop();
+            handler.onError("Server closed connection");
         }
     }
 
-    private boolean subscribe(List<String> paths, int frequency, Consumer<byte[]> dataConsumer) {
+    private void subscribe(List<String> paths, int frequency, Handler handler) {
         OpenConfigTelemetryGrpc.OpenConfigTelemetryStub asyncStub = OpenConfigTelemetryGrpc.newStub(channel);
         OpenConfigTelemetryProto.SubscriptionRequest.Builder requestBuilder = OpenConfigTelemetryProto.SubscriptionRequest.newBuilder();
         paths.forEach(path -> requestBuilder.addPathList(OpenConfigTelemetryProto.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
-        asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, dataConsumer));
-        return true;
+        asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, handler));
     }
 
 }

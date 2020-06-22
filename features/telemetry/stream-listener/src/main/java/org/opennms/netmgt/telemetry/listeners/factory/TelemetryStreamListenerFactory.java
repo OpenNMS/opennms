@@ -31,23 +31,26 @@ package org.opennms.netmgt.telemetry.listeners.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.features.openconfig.api.TelemetryClientFactory;
+import org.opennms.features.openconfig.api.OpenConfigClientFactory;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+import org.opennms.netmgt.telemetry.listeners.StreamParser;
 import org.opennms.netmgt.telemetry.listeners.TelemetryStreamListener;
-import org.opennms.netmgt.telemetry.listeners.UdpParser;
 
 public class TelemetryStreamListenerFactory implements ListenerFactory {
 
     private final TelemetryRegistry telemetryRegistry;
 
-    private TelemetryClientFactory telemetryClientFactory;
+    private final EventSubscriptionService eventSubscriptionService;
 
+    private OpenConfigClientFactory openConfigClientFactory;
 
-    public TelemetryStreamListenerFactory(TelemetryRegistry telemetryRegistry) {
+    public TelemetryStreamListenerFactory(TelemetryRegistry telemetryRegistry, EventSubscriptionService eventSubscriptionService) {
         this.telemetryRegistry = telemetryRegistry;
+        this.eventSubscriptionService = eventSubscriptionService;
     }
 
     @Override
@@ -57,20 +60,23 @@ public class TelemetryStreamListenerFactory implements ListenerFactory {
 
     @Override
     public Listener createBean(ListenerDefinition listenerDefinition) {
-        final List<UdpParser> parsers = listenerDefinition.getParsers().stream()
+        final List<StreamParser> parsers = listenerDefinition.getParsers().stream()
                 .map(p -> telemetryRegistry.getParser(p))
-                .filter(p -> p instanceof UdpParser)
-                .map(p -> (UdpParser) p).collect(Collectors.toList());
+                .filter(p -> p instanceof StreamParser)
+                .map(p -> (StreamParser) p).collect(Collectors.toList());
         if (parsers.size() != listenerDefinition.getParsers().size()) {
-            throw new IllegalArgumentException("Each parser must be of type UdpParser but was not.");
+            throw new IllegalArgumentException("Each parser must be of type StreamParser but was not.");
         }
+        // Expects only one parser for stream listener.
+        StreamParser parser = parsers.get(0);
         return new TelemetryStreamListener(listenerDefinition.getName(),
-                parsers,
-                telemetryRegistry.getMetricRegistry(),
-                telemetryClientFactory);
+                parser,
+                openConfigClientFactory,
+                eventSubscriptionService,
+                telemetryRegistry.getMetricRegistry());
     }
 
-    public void setTelemetryClientFactory(TelemetryClientFactory telemetryClientFactory) {
-        this.telemetryClientFactory = telemetryClientFactory;
+    public void setOpenConfigClientFactory(OpenConfigClientFactory openConfigClientFactory) {
+        this.openConfigClientFactory = openConfigClientFactory;
     }
 }

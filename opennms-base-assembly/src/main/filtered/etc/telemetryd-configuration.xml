@@ -25,13 +25,22 @@
     </queue>
 
     <!-- OpenConfig Stream Consumer & adapters -->
-    <listener name="OpenConfig-Stream-Consumer" class-name="org.opennms.netmgt.telemetry.listeners.TelemetryStreamListener" enabled="true">
-        <parser name="OpenConfig-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="OpenConfig" />
+    <listener name="OpenConfig-Stream-Consumer" class-name="org.opennms.netmgt.telemetry.listeners.TelemetryStreamListener" enabled="false">
+        <parser name="OpenConfig-Parser" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.parser.OpenConfigParser" queue="OpenConfig" >
+            <parameter key="enabled" value="requisition:oc.enabled"/>
+            <parameter key="port" value="${requisition:oc.port}"/>
+            <parameter key="mode" value="${requisition:oc.mode}"/>
+            <parameter key="paths" value="${requisition:oc.paths}"/>
+            <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
+            <parameter key="tls.client.cert.path" value="${requisition:client.cert.path}"/>
+            <parameter key="tls.client.key.path" value="${requisition:client.key.path}"/>
+            <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
+        </parser>
     </listener>
 
     <queue name="OpenConfig">
         <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="true">
-
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
             <package name="OpenConfig-Default">
                 <rrd step="300">
                     <rra>RRA:AVERAGE:0.5:1:2016</rra>

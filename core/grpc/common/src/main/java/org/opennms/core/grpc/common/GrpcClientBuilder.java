@@ -48,37 +48,39 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 public class GrpcClientBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcClientBuilder.class);
-    private static final String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
-    private static final String CLIENT_PRIVATE_KEY_FILE_PATH = "client.private.key.filepath";
-    private static final String TRUST_CERTIFICATE_FILE_PATH = "trust.cert.filepath";
+    private static final String CLIENT_CERTIFICATE_FILE_PATH = "tls.clientCertFilepath";
+    private static final String CLIENT_PRIVATE_KEY_FILE_PATH = "tls.clientPrivateKeyFilepath";
+    private static final String TRUST_CERTIFICATE_FILE_PATH = "tls.trustCertFilepath";
+    private static final String TLS_ENABLED = "tls.enabled";
 
-
-    public static ManagedChannel getChannel(String host, int port, Map<String, String> tlsFilePaths) throws IOException {
+    public static ManagedChannel getChannel(String host, int port, Map<String, String> properties) throws IOException {
 
         NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress(host, port)
                 .keepAliveWithoutCalls(true);
-        boolean tlsEnabled = Boolean.getBoolean(tlsFilePaths.get("tls.enabled"));
-        if (tlsEnabled && tlsFilePaths != null && !tlsFilePaths.isEmpty()) {
+        boolean tlsEnabled = Boolean.parseBoolean(properties.get(TLS_ENABLED));
+        if (tlsEnabled) {
             return channelBuilder
                     .negotiationType(NegotiationType.TLS)
-                    .sslContext(buildSslContext(tlsFilePaths).build())
+                    .sslContext(buildSslContext(properties).build())
                     .build();
         } else {
             return channelBuilder.usePlaintext().build();
         }
     }
 
-    private static SslContextBuilder buildSslContext(Map<String, String> tlsFilePaths) throws SSLException {
+    private static SslContextBuilder buildSslContext(Map<String, String> properties) throws SSLException {
         SslContextBuilder builder = GrpcSslContexts.forClient();
-        String clientCertChainFilePath = tlsFilePaths.get(CLIENT_CERTIFICATE_FILE_PATH);
-        String clientPrivateKeyFilePath = tlsFilePaths.get(CLIENT_PRIVATE_KEY_FILE_PATH);
-        String trustCertCollectionFilePath = tlsFilePaths.get(TRUST_CERTIFICATE_FILE_PATH);
+        String clientCertChainFilePath = properties.get(CLIENT_CERTIFICATE_FILE_PATH);
+        String clientPrivateKeyFilePath = properties.get(CLIENT_PRIVATE_KEY_FILE_PATH);
+        String trustCertCollectionFilePath = properties.get(TRUST_CERTIFICATE_FILE_PATH);
 
-        if (Strings.isNullOrEmpty(trustCertCollectionFilePath)) {
+        if (!Strings.isNullOrEmpty(trustCertCollectionFilePath)) {
             builder.trustManager(new File(trustCertCollectionFilePath));
         }
         if (!Strings.isNullOrEmpty(clientCertChainFilePath) && !Strings.isNullOrEmpty(clientPrivateKeyFilePath)) {
             builder.keyManager(new File(clientCertChainFilePath), new File(clientPrivateKeyFilePath));
+        } else if (!Strings.isNullOrEmpty(clientCertChainFilePath) || !Strings.isNullOrEmpty(clientPrivateKeyFilePath)) {
+            LOG.error("Only one of the required file paths were provided, need both client cert and client private key");
         }
         return builder;
     }

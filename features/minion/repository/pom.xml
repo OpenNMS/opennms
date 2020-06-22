@@ -66,7 +66,6 @@
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-dnsresolver-shell</feature>
                                 <feature>opennms-dnsresolver-netty</feature>
-                                <feature>opennms-core-grpc-osgi</feature>
                                 <feature>opennms-core-ipc-grpc-client</feature>
                                 <feature>opennms-distributed-core-impl</feature>
                                 <feature>scv-api</feature>
