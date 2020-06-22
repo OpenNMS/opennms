@@ -4,9 +4,9 @@
 
 The _UDP Listener_ can be used to open a UDP socket and forward the received packets to a _Parser_.
 
-The _UDP Listener_ can support multiple _Parsers_ if all of these _Parsers_ do support protocol detection.
+The _UDP Listener_ can support multiple _Parsers_ if all of these _Parsers_ support protocol detection.
 If this is the case, each _Parser_ defined for the _Listener_ will be asked if it can handle the incoming packet.
-The first _Parser_ which accepts the packet is then used to parse the packet and dispatch it to its _Queue_.
+The first _Parser_ that accepts the packet is then used to parse the packet and dispatch it to its _Queue_.
 
 If only a single _Parser_ is defined in the _Listener_, the packet is directly handed over for parsing.
 
@@ -20,7 +20,7 @@ If only a single _Parser_ is defined in the _Listener_, the packet is directly h
 
 ===== Parameters
 
-.Listener specific parameters for the UdpListener
+.Listener-specific parameters for the UdpListener
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value
