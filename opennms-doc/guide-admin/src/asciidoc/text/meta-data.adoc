@@ -105,7 +105,9 @@ Each expression can contain multiple references to metadata that will be replace
 Placeholders start with `${` and end with `}` containing a reference to a context-key pair. 
 You may choose to define multiple fallback context-key pairs and and an optional trailing default value.
 Separate context and key by a `:`.
-Use a `|` to separate optional fall back context-key pairs and default value.  
+Use a `|` to separate optional fallback context-key pairs and default value. 
+If the first context:key item is not available (not on a service, interface, node or any other of the special contexts) the next one after the | is used. 
+The last one, the default value, is not interpreted as a `context:key` but is used as a literal and will always succeed. 
 
 *Examples*
 
