@@ -66,6 +66,8 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ResourcePath;
@@ -214,9 +216,54 @@ public class RemotePollerd implements SpringServiceDaemon {
         return mapOfScheduledServices;
     }
 
-    public void handleConfigurationChanged() {
+    private void updateScheduledServicesForLocation(final OnmsMonitoringLocation location) {
+        final List<String> pollingPackageNames = location.getPollingPackageNames();
         final Map<String, List<RemotePolledService>> servicesByPackage = new HashMap<>();
+        LOG.debug("Location '{}' has polling packages: {}", location.getLocationName(), pollingPackageNames);
 
+        final Set<RemotePolledService> servicesToBeScheduled = new HashSet<>();
+
+        for (final String pollingPackageName : pollingPackageNames) {
+            servicesToBeScheduled.addAll(servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> getServicesForPackage(location, pkgName)));
+        }
+
+        final Map<JobKey, RemotePolledService> mapOfScheduledServices = getMapOfScheduledServices(location.getLocationName());
+        final Set<RemotePolledService> scheduledServices = mapOfScheduledServices.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toSet());
+
+        // remove services that will not be scheduled anymore
+        for (final Map.Entry<JobKey, RemotePolledService> entry : mapOfScheduledServices.entrySet()) {
+            if (!servicesToBeScheduled.contains(entry.getValue())) {
+                try {
+                    scheduler.deleteJob(entry.getKey());
+                } catch (SchedulerException e) {
+                    LOG.warn("Failed to delete job {} for service {}.", entry.getKey(), entry.getValue(), e);
+                }
+            }
+        }
+
+        // add missing services that are not scheduled yet
+        for (final RemotePolledService polledService : servicesToBeScheduled) {
+            if (!scheduledServices.contains(polledService)) {
+                try {
+                    scheduleService(location.getLocationName(), polledService);
+                } catch (SchedulerException e) {
+                    LOG.warn("Failed to schedule {}.", polledService, e);
+                }
+            }
+        }
+    }
+
+    public void handleConfigurationChangedForLocation(final String locationName) {
+        LOG.info("Re-scheduling all services for location '{}'...", locationName);
+
+        sessionUtils.withReadOnlyTransaction(() -> {
+            updateScheduledServicesForLocation(monitoringLocationDao.get(locationName));
+            return null;
+        });
+    }
+
+
+    public void handleConfigurationChanged() {
         try {
             this.pollerConfig.update();
         } catch (IOException e) {
@@ -226,39 +273,7 @@ public class RemotePollerd implements SpringServiceDaemon {
         LOG.info("Re-scheduling all services...");
         sessionUtils.withReadOnlyTransaction(() -> {
             for (final OnmsMonitoringLocation location : monitoringLocationDao.findAll()) {
-                final List<String> pollingPackageNames = location.getPollingPackageNames();
-                LOG.debug("Location '{}' has polling packages: {}", location.getLocationName(), pollingPackageNames);
-
-                final Set<RemotePolledService> servicesToBeScheduled = new HashSet<>();
-
-                for (final String pollingPackageName : pollingPackageNames) {
-                    servicesToBeScheduled.addAll(servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> getServicesForPackage(location, pkgName)));
-                }
-
-                final Map<JobKey, RemotePolledService> mapOfScheduledServices = getMapOfScheduledServices(location.getLocationName());
-                final Set<RemotePolledService> scheduledServices = mapOfScheduledServices.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toSet());
-
-                // remove services that will not be scheduled anymore
-                for (final Map.Entry<JobKey, RemotePolledService> entry : mapOfScheduledServices.entrySet()) {
-                    if (!servicesToBeScheduled.contains(entry.getValue())) {
-                        try {
-                            scheduler.deleteJob(entry.getKey());
-                        } catch (SchedulerException e) {
-                            LOG.warn("Failed to delete job {} for service {}.", entry.getKey(), entry.getValue(), e);
-                        }
-                    }
-                }
-
-                // add missing services that are not scheduled yet
-                for (final RemotePolledService polledService : servicesToBeScheduled) {
-                    if (!scheduledServices.contains(polledService)) {
-                        try {
-                            scheduleService(location.getLocationName(), polledService);
-                        } catch (SchedulerException e) {
-                            LOG.warn("Failed to schedule {}.", polledService, e);
-                        }
-                    }
-                }
+                updateScheduledServicesForLocation(location);
             }
             return null;
         });
@@ -479,5 +494,16 @@ public class RemotePollerd implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void reloadDaemonConfig(final IEvent e) {
         DaemonTools.handleReloadEvent(e, RemotePollerd.NAME, (event) -> handleConfigurationChanged());
+    }
+
+    @EventHandler(uei = EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI)
+    public void reloadDaemonConfigForLocation(final IEvent e) {
+        final IParm parm = e.getParm(EventConstants.PARM_LOCATION);
+        if (parm != null ) {
+            final IValue value = parm.getValue();
+            if (value != null) {
+                handleConfigurationChangedForLocation(value.getContent());
+            }
+        }
     }
 }

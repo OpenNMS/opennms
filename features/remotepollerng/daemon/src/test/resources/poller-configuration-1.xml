@@ -33,15 +33,8 @@
             <parameter key="rrd-base-name" value="http" />
             <parameter key="ds-name" value="http" />
         </service>
-        <service name="HTTPS" interval="300000" user-defined="false" status="on">
-            <parameter key="retry" value="1" />
-            <parameter key="timeout" value="5000" />
-            <parameter key="port" value="443" />
-            <parameter key="url" value="/" />
-            <parameter key="rrd-repository" value="target/rrd/response" />
-            <!--  an example of using a different dsName and rrd file name -->
-            <parameter key="rrd-base-name" value="https" />
-            <parameter key="ds-name" value="responseTime" />
+        <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
         </service>
 
         <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
@@ -54,6 +47,6 @@
 
     <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
     <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
-    <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+    <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
 
 </poller-configuration>

@@ -28,4 +28,15 @@
         <severity>Normal</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
     </event>
+
+    <event>
+        <uei>uei.opennms.org/internal/poller/pollingPackageAssociationsChanged</uei>
+        <event-label>OpenNMS-defined remote poller event: Poller package association changed for location %parm[location]%</event-label>
+        <descr>&lt;p>The poller association for remote location %parm[location]% changed.&lt;/p>
+            &lt;p>This event is generated when the list of polling package names is modified for a monitoring location.&lt;/p></descr>
+        <logmsg dest="logndisplay">
+            The set of associated polling package names changed for monitoring location %parm[location]%.
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
 </events>
