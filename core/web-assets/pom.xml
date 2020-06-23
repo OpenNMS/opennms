@@ -24,8 +24,6 @@
           <artifactId>frontend-maven-plugin</artifactId>
           <version>${frontendPluginVersion}</version>
           <configuration>
-            <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-            <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
             <installDirectory>target</installDirectory>
             <srcdir>${basedir}/src/main/assets</srcdir>
             <triggerfiles>
