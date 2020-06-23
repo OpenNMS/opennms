@@ -28,7 +28,19 @@ _Parsers_ and _Listeners_ must work together closely.
 Therefore, they can not be combined in any random way.
 Which _Parser_ is supported by which _Listener_ is described in the documentation of each respective _Parser_.
 
-TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. It specifies the maximum delta in seconds between exporter and Minion time stamps. If violated, an alarm will be generated for the exporting device. The default value is 0, so clock skew detection is disabled. Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events. The default is `3600` seconds, so every hour an event will be sent.
+TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. 
+It specifies the maximum delta in seconds between exporter and Minion time stamps. 
+If violated, an alarm will be generated for the exporting device. 
+The default value is 0, so clock skew detection is disabled. 
+Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.
+
+==== Working with Minions
+While {opennms-product-name} can operate as both a listener and a parser, Minion cannot.
+A Minion receives data (listens). 
+Listeners on Minion must use parsers on {opennms-product-name} or Sentinel to process the data. 
+
+Be aware that
 
 === _Adapters_
 _Adapters_ enrich and process the data dispatched over a queue.
@@ -72,7 +84,7 @@ For example:
 </queue>
 ----
 
-When setting these options on Minion they can be added as `parser` properties, and on Sentinel as `adapter` properties:
+When setting these options on Minion you can add them as `parser` properties, and on Sentinel as `adapter` properties:
 [source]
 ----
 name=IPFIX-Listener

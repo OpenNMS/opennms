@@ -1,14 +1,13 @@
 
 ==== IPFIX
 
-The _IP Flow Information Export (IPFIX)_ protocol is a vendor-neutral standard standard for transmitting traffic flow information.
+The _IP Flow Information Export (IPFIX)_ protocol is a vendor-neutral standard for transmitting traffic flow information.
 See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
-
 
 [[telemetryd-ipfix-parser-udp]]
 ===== IPFIX UDP Parser
 
-The IPFIX UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to a <<telemetryd-ipfix-adapter, IPFIX Adapter>>.
+The IPFIX UDP Parser accepts packets received by a <<telemetryd-listener-udp, UDP Listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX Adapter>>.
 
 The IPFIX UDP Parser supports protocol detection.
 
@@ -48,6 +47,25 @@ The IPFIX TCP Parser accepts packets received by a <<telemetryd-listener-tcp, TC
 
 This parser does not currently have any configurable parameters.
 
+===== Configure IPFIX Listener on a Minion
+
+To enable and configure a _TCP Listener_ for IPFIX on Minion, connect to the _Karaf Console_ and set the following properties:
+
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
+admin@minion()> config:property-set name IPFIX
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
+admin@minion()> config:property-set parameters.port 50000
+admin@minion()> config:property-set parsers.0.name IPFIX 
+admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser
+admin@minion()> config:update
+----
+
+NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
+If you do not specify the queue name, the fallback is the name of the parser. 
 
 [[telemetryd-ipfix-adapter]]
 ===== IPFIX Adapter
