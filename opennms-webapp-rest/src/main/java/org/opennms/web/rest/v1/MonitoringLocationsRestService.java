@@ -121,7 +121,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			final boolean sendEvent = monitoringLocation.getPollingPackageNames() != null && !monitoringLocation.getPollingPackageNames().isEmpty();
 
 			if (sendEvent) {
-				final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+				final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
 				eventBuilder.addParam(EventConstants.PARM_LOCATION, monitoringLocation.getLocationName());
 				try {
 					m_eventProxy.send(eventBuilder.getEvent());
@@ -169,7 +169,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			    LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
 			    m_monitoringLocationDao.save(def);
 				if (sendEvent) {
-					final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+					final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
 					eventBuilder.addParam(EventConstants.PARM_LOCATION, monitoringLocation);
 					try {
 						m_eventProxy.send(eventBuilder.getEvent());
@@ -198,7 +198,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			m_monitoringLocationDao.delete(monitoringLocation);
 
 			if (sendEvent) {
-				final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+				final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
 				eventBuilder.addParam(EventConstants.PARM_LOCATION, monitoringLocation);
 				try {
 					m_eventProxy.send(eventBuilder.getEvent());

@@ -122,7 +122,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
         final String id = getDao().save(location);
 
         if (sendEvent) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
             eventBuilder.addParam(EventConstants.PARM_LOCATION, location.getLocationName());
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
@@ -160,7 +160,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
         getDao().saveOrUpdate(targetObject);
 
         if (sendEvent) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
             eventBuilder.addParam(EventConstants.PARM_LOCATION, targetObject.getLocationName());
             try {
                 m_eventProxy.send(eventBuilder.getEvent());
@@ -179,7 +179,7 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
         getDao().delete(location);
 
         if (sendEvent) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
+            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
             eventBuilder.addParam(EventConstants.PARM_LOCATION, location.getLocationName());
             try {
                 m_eventProxy.send(eventBuilder.getEvent());

@@ -496,7 +496,7 @@ public class RemotePollerd implements SpringServiceDaemon {
         DaemonTools.handleReloadEvent(e, RemotePollerd.NAME, (event) -> handleConfigurationChanged());
     }
 
-    @EventHandler(uei = EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI)
+    @EventHandler(uei = EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI)
     public void reloadDaemonConfigForLocation(final IEvent e) {
         final IParm parm = e.getParm(EventConstants.PARM_LOCATION);
         if (parm != null ) {

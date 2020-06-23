@@ -133,7 +133,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // add polling package
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         location.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
         sendData(PUT, MediaType.APPLICATION_XML,"/monitoringLocations/location1", JaxbUtils.marshal(location), 204);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -162,7 +162,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         location2.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
 
         // create location with associated polling packages
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location2), 201);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
@@ -171,7 +171,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // delete the one with polling packages
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }

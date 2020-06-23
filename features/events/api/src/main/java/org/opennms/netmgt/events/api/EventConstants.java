@@ -108,7 +108,7 @@ public abstract class EventConstants {
     /**
      * The poller package association changed event UEI.
      */
-    public static final String POLLER_PACKAGE_ASSOCIATION_CHANGED_EVENT_UEI = "uei.opennms.org/internal/poller/pollingPackageAssociationsChanged";
+    public static final String POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI = "uei.opennms.org/internal/poller/pollingPackageAssociationsChanged";
 
     /**
      * The node added event UEI.
